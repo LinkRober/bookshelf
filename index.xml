@@ -1,20 +1,20 @@
 <?xml version="1.0" encoding="utf-8" standalone="yes" ?>
 <rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
   <channel>
-    <title>大梦一场的董二千先生</title>
+    <title>Hugo tranquilpeak theme</title>
     <link>https://linkrober.github.io/bookshelf/index.xml</link>
-    <description>Recent content on 大梦一场的董二千先生</description>
+    <description>Recent content on Hugo tranquilpeak theme</description>
     <generator>Hugo -- gohugo.io</generator>
-    <language>utf-8</language>
+    <language>zh-cn</language>
     <lastBuildDate>Fri, 31 Mar 2017 10:27:09 +0800</lastBuildDate>
     <atom:link href="https://linkrober.github.io/bookshelf/index.xml" rel="self" type="application/rss+xml" />
     
     <item>
       <title>我的第一篇文章</title>
-      <link>https://linkrober.github.io/bookshelf/post/good-to-great/</link>
+      <link>https://linkrober.github.io/bookshelf/2017/03/%E6%88%91%E7%9A%84%E7%AC%AC%E4%B8%80%E7%AF%87%E6%96%87%E7%AB%A0/</link>
       <pubDate>Fri, 31 Mar 2017 10:27:09 +0800</pubDate>
       
-      <guid>https://linkrober.github.io/bookshelf/post/good-to-great/</guid>
+      <guid>https://linkrober.github.io/bookshelf/2017/03/%E6%88%91%E7%9A%84%E7%AC%AC%E4%B8%80%E7%AF%87%E6%96%87%E7%AB%A0/</guid>
       <description>&lt;p&gt;平凡才是唯一的答案。曾经的轰轰烈烈，终成过往云烟。生存下来，就会有新发现。&lt;/p&gt;
 </description>
     </item>
