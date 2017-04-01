@@ -2,19 +2,11 @@
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
   
   <url>
-    <loc>https://linkrober.github.io/bookshelf/blog/oc-message-transform/</loc>
-    <lastmod>2017-04-01T19:57:23+08:00</lastmod>
-  </url>
-  
-  <url>
-    <loc>https://linkrober.github.io/bookshelf/blog/</loc>
-    <lastmod>2017-04-01T19:57:23+08:00</lastmod>
-    <priority>0</priority>
+    <loc>https://linkrober.github.io/bookshelf/archive/</loc>
   </url>
   
   <url>
     <loc>https://linkrober.github.io/bookshelf/</loc>
-    <lastmod>2017-04-01T19:57:23+08:00</lastmod>
     <priority>0</priority>
   </url>
   
