@@ -1,13 +1,12 @@
 <?xml version="1.0" encoding="utf-8" standalone="yes" ?>
 <rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
   <channel>
-    <title>Posts on 董二千</title>
-    <link>https://linkrober.github.io/bookshelf/post/index.xml</link>
-    <description>Recent content in Posts on 董二千</description>
+    <title>Development on 董二千</title>
+    <link>https://linkrober.github.io/bookshelf/categories/development/index.xml</link>
+    <description>Recent content in Development on 董二千</description>
     <generator>Hugo -- gohugo.io</generator>
     <language>zh-cn</language>
-    <lastBuildDate>Sat, 01 Apr 2017 21:48:51 +0800</lastBuildDate>
-    <atom:link href="https://linkrober.github.io/bookshelf/post/index.xml" rel="self" type="application/rss+xml" />
+    <atom:link href="https://linkrober.github.io/bookshelf/categories/development/index.xml" rel="self" type="application/rss+xml" />
     
     <item>
       <title>消息转发</title>
