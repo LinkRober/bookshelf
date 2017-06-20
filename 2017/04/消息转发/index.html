@@ -28,36 +28,36 @@
     
 
     
-    <meta name="description" content="描述：如果类不能执行这个方法，会执行动态消息转发，如果该类还是不能动态的添加方法，则走完整的消息转发。分两步，第一步看看有没有其他类可以执行该方法，如果没有走第二步，将所有的细节封装到NSInvocation中，给接受者最后一次机会。
- 演示： 动态消息转发 &gt;在一个类MessageObj中定义两个方法，testDynamicMethodForward一个有实现方法，start一个没有实现的方法，调用没有实现的方法，在动态消息转发的时候将这个方法hook到已经实现的方法上：
-@interface MessageObj() @end @implementation MessageObj //-(void)start{} void testDynamicMethodForward(){ printf(&quot;testDynamicMethodForward \n&quot;); } &#43;(BOOL)resolveInstanceMethod:(SEL)sel { class_addMethod([self class], sel, (IMP)testDynamicMethodForward, &quot;v@@:&quot;); return YES; } @end  打印如下：testDynamicMethodForward
-完整的消息转发第一步 &gt;定义两个类，第一个类MessageObj有一个未实现的方法start，并且没有实现动态消息转发。第二个类OtherClass，有一个和第一个类中未实现的方法同名的方法start，在进行完整消息转发的第一步时，将MessageObj中未实现的方法hook到，OtherClass的同名方法start中
-OtherClass类
-@interface OtherClass : NSObject @end @implementation OtherClass -(void)start{ NSLog(@&quot;do some thing %@&quot;,[self class]); } @end  MessageObj类
-@implementation MessageObj //-(void)start{} -(id)forwardingTargetForSelector:(SEL)aSelector { printf(&quot;%p \n&quot;,&amp;aSelector); OtherClass *obj = [OtherClass new]; return obj; }  调用start方法
-MessageObj *obj = [MessageObj new]; [obj start];  打印：do some thing OtherClass">
-    <meta property="og:description" content="描述：如果类不能执行这个方法，会执行动态消息转发，如果该类还是不能动态的添加方法，则走完整的消息转发。分两步，第一步看看有没有其他类可以执行该方法，如果没有走第二步，将所有的细节封装到NSInvocation中，给接受者最后一次机会。
- 演示： 动态消息转发 &gt;在一个类MessageObj中定义两个方法，testDynamicMethodForward一个有实现方法，start一个没有实现的方法，调用没有实现的方法，在动态消息转发的时候将这个方法hook到已经实现的方法上：
-@interface MessageObj() @end @implementation MessageObj //-(void)start{} void testDynamicMethodForward(){ printf(&quot;testDynamicMethodForward \n&quot;); } &#43;(BOOL)resolveInstanceMethod:(SEL)sel { class_addMethod([self class], sel, (IMP)testDynamicMethodForward, &quot;v@@:&quot;); return YES; } @end  打印如下：testDynamicMethodForward
-完整的消息转发第一步 &gt;定义两个类，第一个类MessageObj有一个未实现的方法start，并且没有实现动态消息转发。第二个类OtherClass，有一个和第一个类中未实现的方法同名的方法start，在进行完整消息转发的第一步时，将MessageObj中未实现的方法hook到，OtherClass的同名方法start中
-OtherClass类
-@interface OtherClass : NSObject @end @implementation OtherClass -(void)start{ NSLog(@&quot;do some thing %@&quot;,[self class]); } @end  MessageObj类
-@implementation MessageObj //-(void)start{} -(id)forwardingTargetForSelector:(SEL)aSelector { printf(&quot;%p \n&quot;,&amp;aSelector); OtherClass *obj = [OtherClass new]; return obj; }  调用start方法
-MessageObj *obj = [MessageObj new]; [obj start];  打印：do some thing OtherClass">
+    <meta name="description" content="
+描述：如果类不能执行这个方法，会执行动态消息转发，如果该类还是不能动态的添加方法，则走完整的消息转发。分两步，第一步看看有没有其他类可以执行该方法，如果没有走第二步，将所有的细节封装到NSInvocation中，给接受者最后一次机会。
+
+
+演示：
+动态消息转发
+&gt;在一个类MessageObj中定义两个方法，testDynamicMethodForward一个有实现方法，start一个没有实现的方法，调用没有实现的方法，在动态消息转发的时候将这个方法hook到已经实现的方法上：
+">
+    <meta property="og:description" content="
+描述：如果类不能执行这个方法，会执行动态消息转发，如果该类还是不能动态的添加方法，则走完整的消息转发。分两步，第一步看看有没有其他类可以执行该方法，如果没有走第二步，将所有的细节封装到NSInvocation中，给接受者最后一次机会。
+
+
+演示：
+动态消息转发
+&gt;在一个类MessageObj中定义两个方法，testDynamicMethodForward一个有实现方法，start一个没有实现的方法，调用没有实现的方法，在动态消息转发的时候将这个方法hook到已经实现的方法上：
+">
     <meta property="og:type" content="blog">
     <meta property="og:title" content="消息转发">
     <meta property="og:url" content="/2017/04/%E6%B6%88%E6%81%AF%E8%BD%AC%E5%8F%91/">
     <meta property="og:site_name" content="董二千">
     <meta name="twitter:card" content="summary">
     <meta name="twitter:title" content="董二千">
-    <meta name="twitter:description" content="描述：如果类不能执行这个方法，会执行动态消息转发，如果该类还是不能动态的添加方法，则走完整的消息转发。分两步，第一步看看有没有其他类可以执行该方法，如果没有走第二步，将所有的细节封装到NSInvocation中，给接受者最后一次机会。
- 演示： 动态消息转发 &gt;在一个类MessageObj中定义两个方法，testDynamicMethodForward一个有实现方法，start一个没有实现的方法，调用没有实现的方法，在动态消息转发的时候将这个方法hook到已经实现的方法上：
-@interface MessageObj() @end @implementation MessageObj //-(void)start{} void testDynamicMethodForward(){ printf(&quot;testDynamicMethodForward \n&quot;); } &#43;(BOOL)resolveInstanceMethod:(SEL)sel { class_addMethod([self class], sel, (IMP)testDynamicMethodForward, &quot;v@@:&quot;); return YES; } @end  打印如下：testDynamicMethodForward
-完整的消息转发第一步 &gt;定义两个类，第一个类MessageObj有一个未实现的方法start，并且没有实现动态消息转发。第二个类OtherClass，有一个和第一个类中未实现的方法同名的方法start，在进行完整消息转发的第一步时，将MessageObj中未实现的方法hook到，OtherClass的同名方法start中
-OtherClass类
-@interface OtherClass : NSObject @end @implementation OtherClass -(void)start{ NSLog(@&quot;do some thing %@&quot;,[self class]); } @end  MessageObj类
-@implementation MessageObj //-(void)start{} -(id)forwardingTargetForSelector:(SEL)aSelector { printf(&quot;%p \n&quot;,&amp;aSelector); OtherClass *obj = [OtherClass new]; return obj; }  调用start方法
-MessageObj *obj = [MessageObj new]; [obj start];  打印：do some thing OtherClass">
+    <meta name="twitter:description" content="
+描述：如果类不能执行这个方法，会执行动态消息转发，如果该类还是不能动态的添加方法，则走完整的消息转发。分两步，第一步看看有没有其他类可以执行该方法，如果没有走第二步，将所有的细节封装到NSInvocation中，给接受者最后一次机会。
+
+
+演示：
+动态消息转发
+&gt;在一个类MessageObj中定义两个方法，testDynamicMethodForward一个有实现方法，start一个没有实现的方法，调用没有实现的方法，在动态消息转发的时候将这个方法hook到已经实现的方法上：
+">
     
     
 
@@ -148,16 +148,6 @@ MessageObj *obj = [MessageObj new]; [obj start];  打印：do some thing OtherCl
 
   <li class="sidebar-button">
     
-      <a class="sidebar-button-link " href="https://LinkRober.github.io/bookshelf/archives">
-    
-      <i class="sidebar-button-icon fa fa-lg fa-archive"></i>
-      
-      <span class="sidebar-button-desc">归档</span>
-    </a>
-  </li>
-
-  <li class="sidebar-button">
-    
       <a class="sidebar-button-link " href="https://LinkRober.github.io/bookshelf/#about">
     
       <i class="sidebar-button-icon fa fa-lg fa-question"></i>
@@ -192,16 +182,6 @@ MessageObj *obj = [MessageObj new]; [obj start];  打印：do some thing OtherCl
     </ul>
     <ul class="sidebar-buttons">
       
-  <li class="sidebar-button">
-    
-      <a class="sidebar-button-link " href="https://LinkRober.github.io/bookshelf/index.xml">
-    
-      <i class="sidebar-button-icon fa fa-lg fa-rss"></i>
-      
-      <span class="sidebar-button-desc">RSS</span>
-    </a>
-  </li>
-
     </ul>
   </div>
 </nav>
@@ -223,9 +203,9 @@ MessageObj *obj = [MessageObj new]; [obj start];  打印：do some thing OtherCl
   
   <div class="postShorten-meta post-meta">
   
-    <time itemprop="datePublished" datetime="2017-04-01T21:48:51&#43;08:00">
+    <time itemprop="datePublished" datetime="2017-04-03T03:05:31&#43;08:00">
       
-  四月 1, 2017
+  四月 3, 2017
 
     </time>
   
@@ -251,7 +231,8 @@ MessageObj *obj = [MessageObj new]; [obj start];  打印：do some thing OtherCl
 
 <p>演示：
 动态消息转发
-&gt;在一个类<code>MessageObj</code>中定义两个方法，<code>testDynamicMethodForward</code>一个有实现方法，<code>start</code>一个没有实现的方法，调用没有实现的方法，在动态消息转发的时候将这个方法hook到已经实现的方法上：</p>
+&gt;在一个类<code>MessageObj</code>中定义两个方法，<code>testDynamicMethodForward</code>一个有实现方法，<code>start</code>一个没有实现的方法，调用没有实现的方法，在动态消息转发的时候将这个方法hook到已经实现的方法上：
+</p>
 
 <pre><code>@interface MessageObj()
 @end
@@ -366,7 +347,6 @@ void testDynamicMethodForward(){
 - 在方法不能识别的时候做一些保护，防止crash
 - 调试的时候打印一些感兴趣的日志
 - 也可以hook系统的方法玩玩呀</p>
-
               
             </div>
           </div>
@@ -392,7 +372,7 @@ void testDynamicMethodForward(){
       
         <li class="post-action">
           
-            <a class="post-action-btn btn btn--disabled">
+            <a class="post-action-btn btn btn--default tooltip--top" href="https://LinkRober.github.io/bookshelf/2017/04/git-order/" data-tooltip="git order">
           
             <i class="fa fa-angle-left"></i>
             <span class="hide-xs hide-sm text-small icon-ml">上一篇</span>
@@ -400,7 +380,7 @@ void testDynamicMethodForward(){
         </li>
         <li class="post-action">
           
-            <a class="post-action-btn btn btn--default tooltip--top" href="https://LinkRober.github.io/bookshelf/archive/" data-tooltip="Blog Index">
+            <a class="post-action-btn btn btn--default tooltip--top" href="https://LinkRober.github.io/bookshelf/archives/" data-tooltip="Blog Index">
           
             <span class="hide-xs hide-sm text-small icon-mr">下一篇</span>
             <i class="fa fa-angle-right"></i>
@@ -473,7 +453,7 @@ void testDynamicMethodForward(){
       
         <li class="post-action">
           
-            <a class="post-action-btn btn btn--disabled">
+            <a class="post-action-btn btn btn--default tooltip--top" href="https://LinkRober.github.io/bookshelf/2017/04/git-order/" data-tooltip="git order">
           
             <i class="fa fa-angle-left"></i>
             <span class="hide-xs hide-sm text-small icon-ml">上一篇</span>
@@ -481,7 +461,7 @@ void testDynamicMethodForward(){
         </li>
         <li class="post-action">
           
-            <a class="post-action-btn btn btn--default tooltip--top" href="https://LinkRober.github.io/bookshelf/archive/" data-tooltip="Blog Index">
+            <a class="post-action-btn btn btn--default tooltip--top" href="https://LinkRober.github.io/bookshelf/archives/" data-tooltip="Blog Index">
           
             <span class="hide-xs hide-sm text-small icon-mr">下一篇</span>
             <i class="fa fa-angle-right"></i>
@@ -605,6 +585,23 @@ void testDynamicMethodForward(){
           <div class="media">
             
             <div class="media-body">
+              <a class="link-unstyled" href="https://linkrober.github.io/bookshelf/2017/04/git-order/">
+                <h3 class="media-heading">git order</h3>
+              </a>
+              <span class="media-meta">
+                <span class="media-date text-small">
+                  Apr 4, 2017
+                </span>
+              </span>
+              <div class="media-content hide-xs font-merryweather">常用命令    git orde name meaning tip     git push origin branch_name push本地分支到远程仓库    git stash apply pull 完毕后出栈    git stash 入栈，进入暂存区    git pull origin master --allow-unrelated-histories 强制pull    git rm -r --cached .DS_Store 如果在刚开始没加gitignore文件，后来加本地会有缓存，要删除    git checkout --track origin/serverfix 是下面命令的简写    git checkout -b serverfix origin/serverfix 从远程分支检出一份本地分支，并切换到该分支    git fetch branch_name 拉一个远程分支    git fetch orgin 同步远程仓库内容到本地    git branch branch_name 创建本地分支    git chekout -b branch_name 创建本地分支并切换到该分支    git checkout -b branch_name origin/branch_name 拉远程分支到本地    git push origin TagName 上传tag    git tag -d TadName 删除本地tag    git push origin --delete tag TagName 删除远程tag    git push origin :branch_name 删除远程分支 “:”前面的空格不能少，原理是push一个空分支到server，相当于删除   git branch -D branch_name 删除本地分支    vim ~/.</div>
+            </div>
+            <div style="clear:both;"></div>
+            <hr>
+          </div>
+        
+          <div class="media">
+            
+            <div class="media-body">
               <a class="link-unstyled" href="https://linkrober.github.io/bookshelf/2017/04/%E6%B6%88%E6%81%AF%E8%BD%AC%E5%8F%91/">
                 <h3 class="media-heading">消息转发</h3>
               </a>
@@ -613,14 +610,14 @@ void testDynamicMethodForward(){
                   Apr 4, 2017
                 </span>
               </span>
-              <div class="media-content hide-xs font-merryweather">描述：如果类不能执行这个方法，会执行动态消息转发，如果该类还是不能动态的添加方法，则走完整的消息转发。分两步，第一步看看有没有其他类可以执行该方法，如果没有走第二步，将所有的细节封装到NSInvocation中，给接受者最后一次机会。
- 演示： 动态消息转发 &gt;在一个类MessageObj中定义两个方法，testDynamicMethodForward一个有实现方法，start一个没有实现的方法，调用没有实现的方法，在动态消息转发的时候将这个方法hook到已经实现的方法上：
-@interface MessageObj() @end @implementation MessageObj //-(void)start{} void testDynamicMethodForward(){ printf(&quot;testDynamicMethodForward \n&quot;); } +(BOOL)resolveInstanceMethod:(SEL)sel { class_addMethod([self class], sel, (IMP)testDynamicMethodForward, &quot;v@@:&quot;); return YES; } @end  打印如下：testDynamicMethodForward
-完整的消息转发第一步 &gt;定义两个类，第一个类MessageObj有一个未实现的方法start，并且没有实现动态消息转发。第二个类OtherClass，有一个和第一个类中未实现的方法同名的方法start，在进行完整消息转发的第一步时，将MessageObj中未实现的方法hook到，OtherClass的同名方法start中
-OtherClass类
-@interface OtherClass : NSObject @end @implementation OtherClass -(void)start{ NSLog(@&quot;do some thing %@&quot;,[self class]); } @end  MessageObj类
-@implementation MessageObj //-(void)start{} -(id)forwardingTargetForSelector:(SEL)aSelector { printf(&quot;%p \n&quot;,&amp;aSelector); OtherClass *obj = [OtherClass new]; return obj; }  调用start方法
-MessageObj *obj = [MessageObj new]; [obj start];  打印：do some thing OtherClass</div>
+              <div class="media-content hide-xs font-merryweather"><blockquote>
+<p>描述：如果类不能执行这个方法，会执行动态<strong>消息转发</strong>，如果该类还是不能动态的添加方法，则走<strong>完整的消息转发</strong>。分两步，第一步<strong>看看有没有其他类可以执行该方法</strong>，如果没有走第二步，<strong>将所有的细节封装到NSInvocation中，给接受者最后一次机会</strong>。</p>
+</blockquote>
+
+<p>演示：
+动态消息转发
+&gt;在一个类<code>MessageObj</code>中定义两个方法，<code>testDynamicMethodForward</code>一个有实现方法，<code>start</code>一个没有实现的方法，调用没有实现的方法，在动态消息转发的时候将这个方法hook到已经实现的方法上：
+</p></div>
             </div>
             <div style="clear:both;"></div>
             <hr>
@@ -650,7 +647,7 @@ MessageObj *obj = [MessageObj new]; [obj start];  打印：do some thing OtherCl
          data-message-zero=""
          data-message-one=""
          data-message-other="">
-         2 posts found
+         3 posts found
       </p>
     </div>
   </div>

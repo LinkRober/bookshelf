@@ -11,7 +11,7 @@
     <item>
       <title>消息转发</title>
       <link>https://linkrober.github.io/bookshelf/2017/04/%E6%B6%88%E6%81%AF%E8%BD%AC%E5%8F%91/</link>
-      <pubDate>Sat, 01 Apr 2017 21:48:51 +0800</pubDate>
+      <pubDate>Mon, 03 Apr 2017 03:05:31 +0800</pubDate>
       
       <guid>https://linkrober.github.io/bookshelf/2017/04/%E6%B6%88%E6%81%AF%E8%BD%AC%E5%8F%91/</guid>
       <description>&lt;blockquote&gt;
@@ -20,7 +20,8 @@
 
 &lt;p&gt;演示：
 动态消息转发
-&amp;gt;在一个类&lt;code&gt;MessageObj&lt;/code&gt;中定义两个方法，&lt;code&gt;testDynamicMethodForward&lt;/code&gt;一个有实现方法，&lt;code&gt;start&lt;/code&gt;一个没有实现的方法，调用没有实现的方法，在动态消息转发的时候将这个方法hook到已经实现的方法上：&lt;/p&gt;
+&amp;gt;在一个类&lt;code&gt;MessageObj&lt;/code&gt;中定义两个方法，&lt;code&gt;testDynamicMethodForward&lt;/code&gt;一个有实现方法，&lt;code&gt;start&lt;/code&gt;一个没有实现的方法，调用没有实现的方法，在动态消息转发的时候将这个方法hook到已经实现的方法上：
+&lt;/p&gt;
 
 &lt;pre&gt;&lt;code&gt;@interface MessageObj()
 @end
@@ -134,8 +135,7 @@ void testDynamicMethodForward(){
 &lt;p&gt;用途：
 - 在方法不能识别的时候做一些保护，防止crash
 - 调试的时候打印一些感兴趣的日志
-- 也可以hook系统的方法玩玩呀&lt;/p&gt;
-</description>
+- 也可以hook系统的方法玩玩呀&lt;/p&gt;</description>
     </item>
     
   </channel>
