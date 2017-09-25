@@ -864,6 +864,68 @@
           <div class="media">
             
             <div class="media-body">
+              <a class="link-unstyled" href="https://linkrober.github.io/bookshelf/2015/05/new-post/">
+                <h3 class="media-heading">New Post</h3>
+              </a>
+              <span class="media-meta">
+                <span class="media-date text-small">
+                  May 5, 2015
+                </span>
+              </span>
+              <div class="media-content hide-xs font-merryweather"><p>hahahahahahahah</p>
+
+<p></p></div>
+            </div>
+            <div style="clear:both;"></div>
+            <hr>
+          </div>
+        
+          <div class="media">
+            
+            <div class="media-body">
+              <a class="link-unstyled" href="https://linkrober.github.io/bookshelf/2015/05/run-loops%E5%9F%BA%E7%A1%80%E6%A6%82%E5%BF%B5%E7%AF%87%E4%B8%80/">
+                <h3 class="media-heading">Run Loops基础概念篇一</h3>
+              </a>
+              <span class="media-meta">
+                <span class="media-date text-small">
+                  May 5, 2015
+                </span>
+              </span>
+              <div class="media-content hide-xs font-merryweather"><h3 id="run-loops">Run Loops</h3>
+
+<blockquote>
+<p>下面会用一些陌生的或者容易让人混淆的字符，我们先来统一概念再继续，这样能够让你更加愉快的阅读：
+<strong><em>runloop:</em></strong>iOS一个底层机制的专业术语。
+<strong>run loop:</strong>一种运行的循环。
+<strong>Handler:</strong>指<code>handlePort:</code>、<code>customSrc:</code>、<code>mySelector:</code>、<code>timerFired:</code>，指开发者希望当进入run loop的时候要执行的操作
+<strong>run-loop observer：</strong>观察runloop行为的观察者
+<strong>run-loop mode：</strong>每个runloop都要指定一种mode，一种mode可以对应多个input source
+<strong>runloop object：</strong>runloop相关的对象，这里分Cocoa和CoreFoundation中的</p>
+</blockquote>
+
+<p>*Runloop*是线程架构相关的一部分，是事件处理的循环。你可以用它来安排循环执行任务，协调相关的事件（kCFRunLoopEntry、kCFRunLoopExit等）。
+用几行示意代码来展示：</p>
+
+<pre><code>function loop() {
+    initialize();
+    do {
+        var message = get_next_message();
+        process_message(message);
+    } while (message != quit);
+}
+</code></pre>
+
+<p>*Runloop*实际上是一个管理要处理的事件和消息的对象，并为开发者提供了一个入口来执行run loop的逻辑部分。一直处于类似于“接受消息&ndash;&gt;等待&ndash;&gt;处理”这样的一个循环汇总
+
+&gt;*Runloop*的目的：一般我们自己写的线程在执行完相应的任务就会退出，而runloop<strong>让你的线程在有事干的时候干活，没事干的时候休息，节省系统资源</strong>。</p></div>
+            </div>
+            <div style="clear:both;"></div>
+            <hr>
+          </div>
+        
+          <div class="media">
+            
+            <div class="media-body">
               <a class="link-unstyled" href="https://linkrober.github.io/bookshelf/post/">
                 <h3 class="media-heading">Posts</h3>
               </a>
@@ -885,7 +947,7 @@
          data-message-zero=""
          data-message-one=""
          data-message-other="">
-         3 posts found
+         5 posts found
       </p>
     </div>
   </div>

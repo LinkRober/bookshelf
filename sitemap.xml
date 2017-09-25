@@ -12,6 +12,16 @@
   </url>
   
   <url>
+    <loc>https://linkrober.github.io/bookshelf/2015/05/new-post/</loc>
+    <lastmod>2015-05-28T00:00:00+00:00</lastmod>
+  </url>
+  
+  <url>
+    <loc>https://linkrober.github.io/bookshelf/2015/05/run-loops%E5%9F%BA%E7%A1%80%E6%A6%82%E5%BF%B5%E7%AF%87%E4%B8%80/</loc>
+    <lastmod>2015-05-28T00:00:00+00:00</lastmod>
+  </url>
+  
+  <url>
     <loc>https://linkrober.github.io/bookshelf/archives/</loc>
   </url>
   
@@ -45,8 +55,32 @@
   </url>
   
   <url>
+    <loc>https://linkrober.github.io/bookshelf/tags/runloop/</loc>
+    <lastmod>2015-05-28T00:00:00+00:00</lastmod>
+    <priority>0</priority>
+  </url>
+  
+  <url>
     <loc>https://linkrober.github.io/bookshelf/tags/runtime/</loc>
     <lastmod>2017-04-03T03:05:31+08:00</lastmod>
+    <priority>0</priority>
+  </url>
+  
+  <url>
+    <loc>https://linkrober.github.io/bookshelf/categories/subcategory/</loc>
+    <lastmod>2015-05-28T00:00:00+00:00</lastmod>
+    <priority>0</priority>
+  </url>
+  
+  <url>
+    <loc>https://linkrober.github.io/bookshelf/tags/tag1/</loc>
+    <lastmod>2015-05-28T00:00:00+00:00</lastmod>
+    <priority>0</priority>
+  </url>
+  
+  <url>
+    <loc>https://linkrober.github.io/bookshelf/tags/tag2/</loc>
+    <lastmod>2015-05-28T00:00:00+00:00</lastmod>
     <priority>0</priority>
   </url>
   
