@@ -125,6 +125,74 @@
           <div class="media">
             
             <div class="media-body">
+              <a class="link-unstyled" href="https://linkrober.github.io/bookshelf/2017/09/run-loops%E5%9F%BA%E7%A1%80%E6%A6%82%E5%BF%B5%E7%AF%87%E4%BA%8C/">
+                <h3 class="media-heading">Run Loops基础概念篇二</h3>
+              </a>
+              <span class="media-meta">
+                <span class="media-date text-small">
+                  Sep 9, 2017
+                </span>
+              </span>
+              <div class="media-content hide-xs font-merryweather"><h3 id="when-would-you-use-a-run-loop">When Would You Use a Run Loop?</h3>
+
+<p>你唯一要使用run loop，就是当你要在application中创建线程的时候。你Application的主线程是架构很重要的一部分。所以，iOS系统为app的提供了*runloop*代码，并自动开始。在iOS中运行Main loop作为app启动步骤的一部分。</p></div>
+            </div>
+            <div style="clear:both;"></div>
+            <hr>
+          </div>
+        
+          <div class="media">
+            
+            <div class="media-body">
+              <a class="link-unstyled" href="https://linkrober.github.io/bookshelf/2017/09/run-loops%E5%9F%BA%E7%A1%80%E6%A6%82%E5%BF%B5%E7%AF%87%E4%B8%80/">
+                <h3 class="media-heading">Run Loops基础概念篇一</h3>
+              </a>
+              <span class="media-meta">
+                <span class="media-date text-small">
+                  Sep 9, 2017
+                </span>
+              </span>
+              <div class="media-content hide-xs font-merryweather"><h3 id="run-loops">Run Loops</h3>
+
+<blockquote>
+<p>下面会用一些陌生的或者容易让人混淆的字符，我们先来统一概念再继续，这样能够让你更加愉快的阅读：</p>
+
+<p><strong>runloop:</strong>iOS一个底层机制的专业术语。</p>
+
+<p><strong>run loop:</strong>一种运行的循环。</p>
+
+<p><strong>Handler:</strong>指<code>handlePort:</code>、<code>customSrc:</code>、<code>mySelector:</code>、<code>timerFired:</code>，指开发者希望当进入run loop的时候要执行的操作</p>
+
+<p><strong>run-loop observer：</strong>观察runloop行为的观察者</p>
+
+<p><strong>run-loop mode：</strong>每个runloop都要指定一种mode，一种mode可以对应多个input source</p>
+
+<p><strong>runloop object：</strong>runloop相关的对象，这里分Cocoa和CoreFoundation中的</p>
+</blockquote>
+
+<p><i>Runloop</i>是线程架构相关的一部分，是事件处理的循环。你可以用它来安排循环执行任务，协调相关的事件（kCFRunLoopEntry、kCFRunLoopExit等）。
+用几行示意代码来展示：</p>
+
+<pre><code>function loop() {
+    initialize();
+    do {
+        var message = get_next_message();
+        process_message(message);
+    } while (message != quit);
+}
+</code></pre>
+
+<p><i>Runloop</i>实际上是一个管理要处理的事件和消息的对象，并为开发者提供了一个入口来执行run loop的逻辑部分。一直处于类似于“接受消息&ndash;&gt;等待&ndash;&gt;处理”这样的一个循环汇总
+
+&gt;<i>Runloop</i>的目的：一般我们自己写的线程在执行完相应的任务就会退出，而runloop<strong>让你的线程在有事干的时候干活，没事干的时候休息，节省系统资源</strong>。</p></div>
+            </div>
+            <div style="clear:both;"></div>
+            <hr>
+          </div>
+        
+          <div class="media">
+            
+            <div class="media-body">
               <a class="link-unstyled" href="https://linkrober.github.io/bookshelf/2017/04/git-order/">
                 <h3 class="media-heading">git order</h3>
               </a>
@@ -133,7 +201,61 @@
                   Apr 4, 2017
                 </span>
               </span>
-              <div class="media-content hide-xs font-merryweather">常用命令    git orde name meaning tip     git push origin branch_name push本地分支到远程仓库    git stash apply pull 完毕后出栈    git stash 入栈，进入暂存区    git pull origin master --allow-unrelated-histories 强制pull    git rm -r --cached .DS_Store 如果在刚开始没加gitignore文件，后来加本地会有缓存，要删除    git checkout --track origin/serverfix 是下面命令的简写    git checkout -b serverfix origin/serverfix 从远程分支检出一份本地分支，并切换到该分支    git fetch branch_name 拉一个远程分支    git fetch orgin 同步远程仓库内容到本地    git branch branch_name 创建本地分支    git chekout -b branch_name 创建本地分支并切换到该分支    git checkout -b branch_name origin/branch_name 拉远程分支到本地    git push origin TagName 上传tag    git tag -d TadName 删除本地tag    git push origin --delete tag TagName 删除远程tag    git push origin :branch_name 删除远程分支 “:”前面的空格不能少，原理是push一个空分支到server，相当于删除   git branch -D branch_name 删除本地分支    vim ~/.</div>
+              <div class="media-content hide-xs font-merryweather"><h1 id="常用命令">常用命令</h1>
+
+<table>
+<thead>
+<tr>
+<th align="center">git orde name</th>
+<th align="center">meaning</th>
+<th align="center">tip</th>
+</tr>
+</thead>
+
+<tbody>
+<tr>
+<td align="center"><code>git push origin branch_name</code></td>
+<td align="center">push本地分支到远程仓库</td>
+<td align="center"></td>
+</tr>
+
+<tr>
+<td align="center"><code>git stash apply</code></td>
+<td align="center">pull 完毕后出栈</td>
+<td align="center"></td>
+</tr>
+
+<tr>
+<td align="center"><code>git stash</code></td>
+<td align="center">入栈，进入暂存区</td>
+<td align="center"></td>
+</tr>
+
+<tr>
+<td align="center"><code>git pull origin master --allow-unrelated-histories</code></td>
+<td align="center">强制pull</td>
+<td align="center"></td>
+</tr>
+
+<tr>
+<td align="center"><code>git rm -r --cached .DS_Store</code></td>
+<td align="center">如果在刚开始没加gitignore文件，后来加本地会有缓存，要删除</td>
+<td align="center"></td>
+</tr>
+
+<tr>
+<td align="center"><code>git checkout --track origin/serverfix</code></td>
+<td align="center">是下面命令的简写</td>
+<td align="center"></td>
+</tr>
+
+<tr>
+<td align="center"><code>git checkout -b serverfix origin/serverfix</code></td>
+<td align="center">从远程分支检出一份本地分支，并切换到该分支</td>
+<td align="center"></td>
+</tr>
+</tbody>
+</table></div>
             </div>
             <div style="clear:both;"></div>
             <hr>
@@ -166,74 +288,12 @@
           <div class="media">
             
             <div class="media-body">
-              <a class="link-unstyled" href="https://linkrober.github.io/bookshelf/2015/05/new-post/">
-                <h3 class="media-heading">New Post</h3>
-              </a>
-              <span class="media-meta">
-                <span class="media-date text-small">
-                  May 5, 2015
-                </span>
-              </span>
-              <div class="media-content hide-xs font-merryweather"><p>hahahahahahahah</p>
-
-<p></p></div>
-            </div>
-            <div style="clear:both;"></div>
-            <hr>
-          </div>
-        
-          <div class="media">
-            
-            <div class="media-body">
-              <a class="link-unstyled" href="https://linkrober.github.io/bookshelf/2015/05/run-loops%E5%9F%BA%E7%A1%80%E6%A6%82%E5%BF%B5%E7%AF%87%E4%B8%80/">
-                <h3 class="media-heading">Run Loops基础概念篇一</h3>
-              </a>
-              <span class="media-meta">
-                <span class="media-date text-small">
-                  May 5, 2015
-                </span>
-              </span>
-              <div class="media-content hide-xs font-merryweather"><h3 id="run-loops">Run Loops</h3>
-
-<blockquote>
-<p>下面会用一些陌生的或者容易让人混淆的字符，我们先来统一概念再继续，这样能够让你更加愉快的阅读：
-<strong><em>runloop:</em></strong>iOS一个底层机制的专业术语。
-<strong>run loop:</strong>一种运行的循环。
-<strong>Handler:</strong>指<code>handlePort:</code>、<code>customSrc:</code>、<code>mySelector:</code>、<code>timerFired:</code>，指开发者希望当进入run loop的时候要执行的操作
-<strong>run-loop observer：</strong>观察runloop行为的观察者
-<strong>run-loop mode：</strong>每个runloop都要指定一种mode，一种mode可以对应多个input source
-<strong>runloop object：</strong>runloop相关的对象，这里分Cocoa和CoreFoundation中的</p>
-</blockquote>
-
-<p>*Runloop*是线程架构相关的一部分，是事件处理的循环。你可以用它来安排循环执行任务，协调相关的事件（kCFRunLoopEntry、kCFRunLoopExit等）。
-用几行示意代码来展示：</p>
-
-<pre><code>function loop() {
-    initialize();
-    do {
-        var message = get_next_message();
-        process_message(message);
-    } while (message != quit);
-}
-</code></pre>
-
-<p>*Runloop*实际上是一个管理要处理的事件和消息的对象，并为开发者提供了一个入口来执行run loop的逻辑部分。一直处于类似于“接受消息&ndash;&gt;等待&ndash;&gt;处理”这样的一个循环汇总
-
-&gt;*Runloop*的目的：一般我们自己写的线程在执行完相应的任务就会退出，而runloop<strong>让你的线程在有事干的时候干活，没事干的时候休息，节省系统资源</strong>。</p></div>
-            </div>
-            <div style="clear:both;"></div>
-            <hr>
-          </div>
-        
-          <div class="media">
-            
-            <div class="media-body">
               <a class="link-unstyled" href="https://linkrober.github.io/bookshelf/post/">
                 <h3 class="media-heading">Posts</h3>
               </a>
               <span class="media-meta">
                 <span class="media-date text-small">
-                  Apr 4, 2017
+                  Sep 9, 2017
                 </span>
               </span>
               <div class="media-content hide-xs font-merryweather"></div>
