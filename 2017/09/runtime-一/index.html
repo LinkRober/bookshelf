@@ -1,5 +1,9 @@
 
 
+  
+    
+  
+
 
   
 
@@ -16,25 +20,110 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <meta name="generator" content="Hugo 0.19">
-    <title>Posts</title>
+    <title>Runtime (一)</title>
     <meta name="author" content="董二千">
-    <meta name="keywords" content="">
+    <meta name="keywords" content="runtime">
 
     <link rel="icon" href="https://LinkRober.github.io/bookshelf/favicon.png">
     
-      <link rel="alternate" type="application/rss+xml" title="RSS" href="https://LinkRober.github.io/bookshelf/post/index.xml">
-    
 
     
-    <meta name="description" content="我们为什么要学习，毕竟改变需要时间">
-    <meta property="og:description" content="我们为什么要学习，毕竟改变需要时间">
+    <meta name="description" content="Message
+
+这篇文章描述了消息如何通过使用objc_msgSend发送，如何通过方法名称找到对应方法的reference
+
+The objc_msgSend Function
+
+在Object-C中，发送的消息直到运行时才绑定到正真的方式实现。
+
+[receiver message]
+
+
+objc_msgSend是真正调用消息的函数，这个函数持有消息的接受者和方法的名称：
+
+objc_msgSend(receiver,selector)
+
+
+任何其他的参数也是通过这个方法传入：
+
+objc_msgSend(receiver,selector,arg1,arg2,...)
+
+
+这个方法会做一些必要的事情来进行动态绑定：
+
+
+首先找到方法的实现即selector的引用。因为在不同的类中都可以实现相同方法名的方法，所以通过方法的实现找到真正的receiver的class。
+然后传入该方法指定的receiver和参数。
+最后将实现的返回值作为它自己的返回值。
+
+
+">
+    <meta property="og:description" content="Message
+
+这篇文章描述了消息如何通过使用objc_msgSend发送，如何通过方法名称找到对应方法的reference
+
+The objc_msgSend Function
+
+在Object-C中，发送的消息直到运行时才绑定到正真的方式实现。
+
+[receiver message]
+
+
+objc_msgSend是真正调用消息的函数，这个函数持有消息的接受者和方法的名称：
+
+objc_msgSend(receiver,selector)
+
+
+任何其他的参数也是通过这个方法传入：
+
+objc_msgSend(receiver,selector,arg1,arg2,...)
+
+
+这个方法会做一些必要的事情来进行动态绑定：
+
+
+首先找到方法的实现即selector的引用。因为在不同的类中都可以实现相同方法名的方法，所以通过方法的实现找到真正的receiver的class。
+然后传入该方法指定的receiver和参数。
+最后将实现的返回值作为它自己的返回值。
+
+
+">
     <meta property="og:type" content="blog">
-    <meta property="og:title" content="Posts">
-    <meta property="og:url" content="/post/">
+    <meta property="og:title" content="Runtime (一)">
+    <meta property="og:url" content="/2017/09/runtime-%E4%B8%80/">
     <meta property="og:site_name" content="董二千">
     <meta name="twitter:card" content="summary">
     <meta name="twitter:title" content="董二千">
-    <meta name="twitter:description" content="我们为什么要学习，毕竟改变需要时间">
+    <meta name="twitter:description" content="Message
+
+这篇文章描述了消息如何通过使用objc_msgSend发送，如何通过方法名称找到对应方法的reference
+
+The objc_msgSend Function
+
+在Object-C中，发送的消息直到运行时才绑定到正真的方式实现。
+
+[receiver message]
+
+
+objc_msgSend是真正调用消息的函数，这个函数持有消息的接受者和方法的名称：
+
+objc_msgSend(receiver,selector)
+
+
+任何其他的参数也是通过这个方法传入：
+
+objc_msgSend(receiver,selector,arg1,arg2,...)
+
+
+这个方法会做一些必要的事情来进行动态绑定：
+
+
+首先找到方法的实现即selector的引用。因为在不同的类中都可以实现相同方法名的方法，所以通过方法的实现找到真正的receiver的class。
+然后传入该方法指定的receiver和参数。
+最后将实现的返回值作为它自己的返回值。
+
+
+">
     
     
 
@@ -68,7 +157,7 @@
 
   <body>
     <div id="blog">
-      <header id="header" data-behavior="1">
+      <header id="header" data-behavior="4">
   <i id="btn-open-sidebar" class="fa fa-lg fa-bars"></i>
   <div class="header-title">
     <a class="header-title-link" href="https://LinkRober.github.io/bookshelf/">董二千</a>
@@ -88,7 +177,7 @@
   
 </header>
 
-      <nav id="sidebar" data-behavior="1">
+      <nav id="sidebar" data-behavior="4">
   <div class="sidebar-container">
     
       <div class="sidebar-profile">
@@ -175,35 +264,20 @@
 
       
 
-      <div id="main" data-behavior="1"
+      <div id="main" data-behavior="4"
         class="
                hasCoverMetaIn
                ">
-        <section class="postShorten-group main-content-wrap">
+        <article class="post" itemscope itemType="http://schema.org/BlogPosting">
           
           
-            
+            <div class="post-header main-content-wrap text-left">
   
-    
-      
-        
-      
-    
+    <h1 class="post-title" itemprop="headline">
+      Runtime (一)
+    </h1>
   
-
-
-  
-
-<article class="postShorten postShorten--thumbnailimg-bottom" itemscope itemType="http://schema.org/BlogPosting">
-  <div class="postShorten-wrap">
-    
-    <div class="postShorten-header">
-      <h1 class="postShorten-title" itemprop="headline">
-        <a class="link-unstyled" href="https://linkrober.github.io/bookshelf/2017/09/runtime-%E4%B8%80/">
-          Runtime (一)
-        </a>
-      </h1>
-      <div class="postShorten-meta post-meta">
+  <div class="postShorten-meta post-meta">
   
     <time itemprop="datePublished" datetime="2017-09-29T00:00:00Z">
       
@@ -223,10 +297,11 @@
 
 </div>
 
-    </div>
-    <div class="postShorten-excerpt" itemprop="articleBody">
-      <p>
-        <h3 id="message">Message</h3>
+</div>
+          
+          <div class="post-content markdown" itemprop="articleBody">
+            <div class="main-content-wrap">
+              <h3 id="message">Message</h3>
 
 <p>这篇文章描述了消息如何通过使用<code>objc_msgSend</code>发送，如何通过方法名称找到对应方法的reference</p>
 
@@ -255,283 +330,166 @@
 <li>最后将实现的返回值作为它自己的返回值。</li>
 </ul>
 
-<p><blockquote>
-        <br>
-        <a href="https://linkrober.github.io/bookshelf/2017/09/runtime-%E4%B8%80/" class="postShorten-excerpt_link link">阅读全文</a>
-        
-      </p>
-    </div>
-  </div>
-  
-</article>
-
-          
-            
-  
-    
-      
-        
-      
-    
-  
-
-
-  
-
-<article class="postShorten postShorten--thumbnailimg-bottom" itemscope itemType="http://schema.org/BlogPosting">
-  <div class="postShorten-wrap">
-    
-    <div class="postShorten-header">
-      <h1 class="postShorten-title" itemprop="headline">
-        <a class="link-unstyled" href="https://linkrober.github.io/bookshelf/2017/09/run-loops-%E4%BA%8C/">
-          Run Loops (二)
-        </a>
-      </h1>
-      <div class="postShorten-meta post-meta">
-  
-    <time itemprop="datePublished" datetime="2017-09-26T00:00:00Z">
-      
-  九月 26, 2017
-
-    </time>
-  
-  
-  
-  
-    <span>发布在</span>
-    
-      <a class="category-link" href="https://LinkRober.github.io/bookshelf/categories/development">Development</a>
-    
-  
-
-
-</div>
-
-    </div>
-    <div class="postShorten-excerpt" itemprop="articleBody">
-      <p>
-        <h3 id="when-would-you-use-a-run-loop">When Would You Use a Run Loop?</h3>
-
-<p>你唯一要使用run loop，就是当你要在application中创建线程的时候。你Application的主线程是架构很重要的一部分。所以，iOS系统为app的提供了<i>runloop</i>代码，并自动开始。在iOS中运行Main loop作为app启动步骤的一部分。
-        <br>
-        <a href="https://linkrober.github.io/bookshelf/2017/09/run-loops-%E4%BA%8C/" class="postShorten-excerpt_link link">阅读全文</a>
-        
-      </p>
-    </div>
-  </div>
-  
-</article>
-
-          
-            
-  
-    
-      
-        
-      
-    
-  
-
-
-  
-
-<article class="postShorten postShorten--thumbnailimg-bottom" itemscope itemType="http://schema.org/BlogPosting">
-  <div class="postShorten-wrap">
-    
-    <div class="postShorten-header">
-      <h1 class="postShorten-title" itemprop="headline">
-        <a class="link-unstyled" href="https://linkrober.github.io/bookshelf/2017/09/run-loops-%E4%B8%80/">
-          Run Loops (一)
-        </a>
-      </h1>
-      <div class="postShorten-meta post-meta">
-  
-    <time itemprop="datePublished" datetime="2017-09-25T00:00:00Z">
-      
-  九月 25, 2017
-
-    </time>
-  
-  
-  
-  
-    <span>发布在</span>
-    
-      <a class="category-link" href="https://LinkRober.github.io/bookshelf/categories/development">Development</a>
-    
-  
-
-
-</div>
-
-    </div>
-    <div class="postShorten-excerpt" itemprop="articleBody">
-      <p>
-        <h3 id="run-loops">Run Loops</h3>
-
 <blockquote>
-<p>下面会用一些陌生的或者容易让人混淆的字符，我们先来统一概念再继续，这样能够让你更加愉快的阅读：</p>
+<p>Note:编译器生成调用消息的方法，在日常开发中永远不要在你写的代码中直接调用。
 
-<p><strong>runloop:</strong>iOS一个底层机制的专业术语。</p>
-
-<p><strong>run loop:</strong>一种运行的循环。</p>
-
-<p><strong>Handler:</strong>指<code>handlePort:</code>、<code>customSrc:</code>、<code>mySelector:</code>、<code>timerFired:</code>，指开发者希望当进入run loop的时候要执行的操作</p>
-
-<p><strong>run-loop observer：</strong>观察runloop行为的观察者</p>
-
-<p><strong>run-loop mode：</strong>每个runloop都要指定一种mode，一种mode可以对应多个input source</p>
-
-<p><strong>runloop object：</strong>runloop相关的对象，这里分Cocoa和CoreFoundation中的</p>
+在架构中消息传递的关键在于编译器编译每个class和object。每个class的结构中包含两个重要元素：</p>
 </blockquote>
 
-<p><i>Runloop</i>是线程架构相关的一部分，是事件处理的循环。你可以用它来安排循环执行任务，协调相关的事件（kCFRunLoopEntry、kCFRunLoopExit等）。
-用几行示意代码来展示：</p>
+<ul>
+<li>指向父类的指针</li>
+<li>一个类的派发表 ，这个表记录了方法的selector和定义该方法的地址。<code>setOrigin::</code>方法和其对应的地址；<code>display</code>和其对应的地址。</li>
+</ul>
 
-<pre><code>function loop() {
-    initialize();
-    do {
-        var message = get_next_message();
-        process_message(message);
-    } while (message != quit);
+<p>当一个新的对象被创建，内存被分配，实例变量被初始化。第一件事就是对象变量指针指向它的类结构。这个指针一般被称作<code>isa</code>,给予对象访问类的权利。所有的类都是从这个类继承而来。</p>
+
+<blockquote>
+<p>Note:尽管这是oc不太严谨的一部分(容易被hook)，但是这也是oc对象在运行时不可缺少的一部分。一个对象需要一个和它等效的结构体来代表，在任何地方都可以用它来定义。如果你曾经需要创建一个根对象。这个对象自动继承<code>NSObject</code>或者<code>NSProxy</code>都会携带一个<code>isa</code>变量。</p>
+</blockquote>
+
+<p>类的这些元素和对象结构如下：</p>
+
+<p><img src="../../../messaging1.png" alt="messaging1" /></p>
+
+<p>当消息被发送到一个对象，消息方法跟随对象的<code>isa</code>指向类结构，在派发表中一直向上寻找对应的方法。如果你不能在这里找到你需要的方法，<code>objc_msgSend</code>方法会继续向上在父类的派发表里面尝试寻找该方法。还是失败就会一直寻找直到到达<code>NSObject</code>类，一旦找到selector，就会从表中的入口调用该方法，把它传递到对象的数据结构中。</p>
+
+<p>这种方式的方法调用是在运行时进行的。在面向对象编程的专业术语中，我们称它为—<strong>动态消息绑定</strong></p>
+
+<p>为了加速消息处理的过程，运行时系统会缓存曾经使用过的selectors和对应的方法地址。每个类是被分开缓存的。和在类中定义的方法一样，它也包含继承方法的selector。在查找派发表之前，消息路径会第一个会检查接受者类的缓存.如果方法的selector在缓存中，消息只比方法调用慢一点点。一旦程序运行了足够长的时间唤醒缓存，几乎发送的所有消息都能在缓存中找到。在程序运行的时候，缓存动态的增加来容纳新的方法。</p>
+
+<h4 id="using-hidden-arguments">Using Hidden Arguments</h4>
+
+<p>当<code>objc_msgSend</code>寻找实现方法的过程，它调用方法并传递所有的参数。同时它也为这个程序传递了两个隐藏的参数：</p>
+
+<ul>
+<li>接受者对象</li>
+<li>方法的selector</li>
+</ul>
+
+<p>这些参数给予每个方法的实现明确的信息。因为这两个参数的隐藏不能表现在编码中，一般是在编译的时候被插入到具体的实现。</p>
+
+<p>尽管这些参数没有被明确的声明，源码仍然可以引用到它们(就像可以引用对象的实例变量)。方法通过<code>self</code>引用接受者对象，通过<code>_cmd</code>代表selector。在下面的例子中，<code>_cmd</code>指向<code>strange</code>方法的selector，这个对象的<code>self</code>接受<code>strange</code>消息。</p>
+
+<pre><code>- strange
+{
+	id target = getTheReceiver();
+	SEL method = getTheMethod();
+
+	if(target == self || method == _cmd)
+		return nil;
+	return [target performSelector:method];
 }
 </code></pre>
 
-<p><i>Runloop</i>实际上是一个管理要处理的事件和消息的对象，并为开发者提供了一个入口来执行run loop的逻辑部分。一直处于类似于“接受消息&ndash;&gt;等待&ndash;&gt;处理”这样的一个循环汇总
+<h4 id="getting-a-method-address">Getting a Method Address</h4>
 
-&gt;<i>Runloop</i>的目的：一般我们自己写的线程在执行完相应的任务就会退出，而runloop<strong>让你的线程在有事干的时候干活，没事干的时候休息，节省系统资源</strong>。
-        <br>
-        <a href="https://linkrober.github.io/bookshelf/2017/09/run-loops-%E4%B8%80/" class="postShorten-excerpt_link link">阅读全文</a>
-        
-      </p>
-    </div>
-  </div>
-  
-</article>
+<p>避免动态绑定的唯一办法，就是拿到方法的地址直接调用，就像调用一个方法一样。这只适合在一些少有情况下：当一个具体的方法需要被多次成功的执行，你想要在每次方法执行的时候避免消息带来的开销。</p>
 
-          
+<p>定义在<code>NSObject</code>类中的方法<code>methodForSelector:</code>你可以获得一个指向方法具体实现的指针，然后使用指针调用程序。<code>methodForSelector:</code>方法返回的指针一定要小心的包裹来指向一个适当的函数类型。返回值和输入参数都需要包含在里面。</p>
+
+<p>下面的例子展示了<code>setFilled:</code>方法调用的实现过程：</p>
+
+<pre><code>void (*setter)(id,SEL,BOOL);
+int i;
+setter = (void (*)(id,SEL,BOOL))[target methodForSelector:@selector(setFilled:)];
+for(i = 0;i &lt; 100;i++){
+	setter(targetList[i],@selector(setFilled:),YES);
+}
+</code></pre>
+
+<p>首先<code>self</code>和<code>_cmd</code>被传递到具体的实现，在两个参数在方法中通过语法的方式被隐藏，但是当这些参数在被作为一个funcation被调用的时候必须要明确。
+使用<code>methodForSelector:</code>来避免动态绑定可以节省大部分时间。但是如果同一个消息被多次调用，动态绑定的缓存机制可能更优雅点，因为上面的<code>for</code>循环会遍历所有tartet。
+记住，<code>methodForSelector:</code>是Cocoa的运行时系统提供的，它不是OC语言自己的特性。</p>
+              
+            </div>
+          </div>
+          <div id="post-footer" class="post-footer main-content-wrap">
             
-  
-    
+              
+                
+                
+                  <div class="post-footer-tags">
+                    <span class="text-color-light text-small">标签</span><br/>
+                    
+  <a class="tag tag--primary tag--small" href="https://linkrober.github.io/bookshelf//tags/runtime/">runtime</a>
+
+                  </div>
+                
+              
+            
+            <div class="post-actions-wrap">
+  <nav>
+    <ul class="post-actions post-action-nav">
       
-        
+        <li class="post-action">
+          
+            <a class="post-action-btn btn btn--disabled">
+          
+            <i class="fa fa-angle-left"></i>
+            <span class="hide-xs hide-sm text-small icon-ml">上一篇</span>
+          </a>
+        </li>
+        <li class="post-action">
+          
+            <a class="post-action-btn btn btn--default tooltip--top" href="https://LinkRober.github.io/bookshelf/2017/09/run-loops-%E4%BA%8C/" data-tooltip="Run Loops (二)">
+          
+            <span class="hide-xs hide-sm text-small icon-mr">下一篇</span>
+            <i class="fa fa-angle-right"></i>
+          </a>
+        </li>
       
+    </ul>
+  </nav>
+  <ul class="post-actions post-action-share">
     
-  
-
-
-  
-
-<article class="postShorten postShorten--thumbnailimg-bottom" itemscope itemType="http://schema.org/BlogPosting">
-  <div class="postShorten-wrap">
-    
-    <div class="postShorten-header">
-      <h1 class="postShorten-title" itemprop="headline">
-        <a class="link-unstyled" href="https://linkrober.github.io/bookshelf/2017/04/git-order/">
-          git order
+      <li class="post-action hide-lg hide-md hide-sm">
+        <a class="post-action-btn btn btn--default btn-open-shareoptions" href="#btn-open-shareoptions">
+          <i class="fa fa-share-alt"></i>
         </a>
-      </h1>
-      <div class="postShorten-meta post-meta">
-  
-    <time itemprop="datePublished" datetime="2017-04-03T17:06:19&#43;08:00">
+      </li>
+      <li class="post-action hide-xs">
+        <a class="post-action-btn btn btn--default" target="new" href="https://plus.google.com/share?url=https%3a%2f%2flinkrober.github.io%2fbookshelf%2f2017%2f09%2fruntime-%25E4%25B8%2580%2f">
+          <i class="fa fa-google-plus"></i>
+        </a>
+      </li>
+      <li class="post-action hide-xs">
+        <a class="post-action-btn btn btn--default" target="new" href="https://www.facebook.com/sharer/sharer.php?u=https%3a%2f%2flinkrober.github.io%2fbookshelf%2f2017%2f09%2fruntime-%25E4%25B8%2580%2f">
+          <i class="fa fa-facebook-official"></i>
+        </a>
+      </li>
+      <li class="post-action hide-xs">
+        <a class="post-action-btn btn btn--default" target="new" href="https://twitter.com/intent/tweet?text=https%3a%2f%2flinkrober.github.io%2fbookshelf%2f2017%2f09%2fruntime-%25E4%25B8%2580%2f">
+          <i class="fa fa-twitter"></i>
+        </a>
+      </li>
+    
+    
+      <li class="post-action">
+        <a class="post-action-btn btn btn--default" href="#disqus_thread">
+          <i class="fa fa-comment-o"></i>
+        </a>
+      </li>
+    
+    <li class="post-action">
       
-  四月 3, 2017
-
-    </time>
-  
-  
-  
-  
-    <span>发布在</span>
-    
-      <a class="category-link" href="https://LinkRober.github.io/bookshelf/categories/tool">tool</a>
-    
-  
-
-
+        <a class="post-action-btn btn btn--default" href="#">
+      
+        <i class="fa fa-list"></i>
+      </a>
+    </li>
+  </ul>
 </div>
 
-    </div>
-    <div class="postShorten-excerpt" itemprop="articleBody">
-      <p>
-        <h3 id="常用命令">常用命令</h3>
 
-<p>
-        <br>
-        <a href="https://linkrober.github.io/bookshelf/2017/04/git-order/" class="postShorten-excerpt_link link">阅读全文</a>
-        
-      </p>
-    </div>
-  </div>
-  
-</article>
-
-          
             
-  
-    
-      
-        
-      
-    
-  
-
-
-  
-
-<article class="postShorten postShorten--thumbnailimg-bottom" itemscope itemType="http://schema.org/BlogPosting">
-  <div class="postShorten-wrap">
-    
-    <div class="postShorten-header">
-      <h1 class="postShorten-title" itemprop="headline">
-        <a class="link-unstyled" href="https://linkrober.github.io/bookshelf/2017/04/%E6%B6%88%E6%81%AF%E8%BD%AC%E5%8F%91/">
-          消息转发
-        </a>
-      </h1>
-      <div class="postShorten-meta post-meta">
-  
-    <time itemprop="datePublished" datetime="2017-04-03T03:05:31&#43;08:00">
-      
-  四月 3, 2017
-
-    </time>
-  
-  
-  
-  
-    <span>发布在</span>
-    
-      <a class="category-link" href="https://LinkRober.github.io/bookshelf/categories/development">Development</a>
-    
-  
-
-
+              
+                <div id="disqus_thread">
+  <noscript>Please enable JavaScript to view the <a href="//disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
 </div>
-
-    </div>
-    <div class="postShorten-excerpt" itemprop="articleBody">
-      <p>
-        <blockquote>
-<p>描述：如果类不能执行这个方法，会执行动态<strong>消息转发</strong>，如果该类还是不能动态的添加方法，则走<strong>完整的消息转发</strong>。分两步，第一步<strong>看看有没有其他类可以执行该方法</strong>，如果没有走第二步，<strong>将所有的细节封装到NSInvocation中，给接受者最后一次机会</strong>。</p>
-</blockquote>
-
-<p>演示：
-动态消息转发
-&gt;在一个类<code>MessageObj</code>中定义两个方法，<code>testDynamicMethodForward</code>一个有实现方法，<code>start</code>一个没有实现的方法，调用没有实现的方法，在动态消息转发的时候将这个方法hook到已经实现的方法上：
-
-        <br>
-        <a href="https://linkrober.github.io/bookshelf/2017/04/%E6%B6%88%E6%81%AF%E8%BD%AC%E5%8F%91/" class="postShorten-excerpt_link link">阅读全文</a>
-        
-      </p>
-    </div>
-  </div>
-  
-</article>
-
-          
-          
-
-        </section>
+              
+            
+          </div>
+        </article>
         <footer id="footer" class="main-content-wrap">
   <span class="copyrights">
     &copy; 2017 董二千. All Rights Reserved
@@ -539,6 +497,92 @@
 </footer>
 
       </div>
+      <div id="bottom-bar" class="post-bottom-bar" data-behavior="4">
+        <div class="post-actions-wrap">
+  <nav>
+    <ul class="post-actions post-action-nav">
+      
+        <li class="post-action">
+          
+            <a class="post-action-btn btn btn--disabled">
+          
+            <i class="fa fa-angle-left"></i>
+            <span class="hide-xs hide-sm text-small icon-ml">上一篇</span>
+          </a>
+        </li>
+        <li class="post-action">
+          
+            <a class="post-action-btn btn btn--default tooltip--top" href="https://LinkRober.github.io/bookshelf/2017/09/run-loops-%E4%BA%8C/" data-tooltip="Run Loops (二)">
+          
+            <span class="hide-xs hide-sm text-small icon-mr">下一篇</span>
+            <i class="fa fa-angle-right"></i>
+          </a>
+        </li>
+      
+    </ul>
+  </nav>
+  <ul class="post-actions post-action-share">
+    
+      <li class="post-action hide-lg hide-md hide-sm">
+        <a class="post-action-btn btn btn--default btn-open-shareoptions" href="#btn-open-shareoptions">
+          <i class="fa fa-share-alt"></i>
+        </a>
+      </li>
+      <li class="post-action hide-xs">
+        <a class="post-action-btn btn btn--default" target="new" href="https://plus.google.com/share?url=https%3a%2f%2flinkrober.github.io%2fbookshelf%2f2017%2f09%2fruntime-%25E4%25B8%2580%2f">
+          <i class="fa fa-google-plus"></i>
+        </a>
+      </li>
+      <li class="post-action hide-xs">
+        <a class="post-action-btn btn btn--default" target="new" href="https://www.facebook.com/sharer/sharer.php?u=https%3a%2f%2flinkrober.github.io%2fbookshelf%2f2017%2f09%2fruntime-%25E4%25B8%2580%2f">
+          <i class="fa fa-facebook-official"></i>
+        </a>
+      </li>
+      <li class="post-action hide-xs">
+        <a class="post-action-btn btn btn--default" target="new" href="https://twitter.com/intent/tweet?text=https%3a%2f%2flinkrober.github.io%2fbookshelf%2f2017%2f09%2fruntime-%25E4%25B8%2580%2f">
+          <i class="fa fa-twitter"></i>
+        </a>
+      </li>
+    
+    
+      <li class="post-action">
+        <a class="post-action-btn btn btn--default" href="#disqus_thread">
+          <i class="fa fa-comment-o"></i>
+        </a>
+      </li>
+    
+    <li class="post-action">
+      
+        <a class="post-action-btn btn btn--default" href="#">
+      
+        <i class="fa fa-list"></i>
+      </a>
+    </li>
+  </ul>
+</div>
+
+
+      </div>
+      <div id="share-options-bar" class="share-options-bar" data-behavior="4">
+  <ul class="share-options">
+    <li class="share-option">
+      <a class="share-option-btn" target="new" href="https://plus.google.com/share?url=https%3a%2f%2flinkrober.github.io%2fbookshelf%2f2017%2f09%2fruntime-%25E4%25B8%2580%2f">
+        <i class="fa fa-google-plus"></i><span>分享到 Google&#43;</span>
+      </a>
+    </li>
+    <li class="share-option">
+      <a class="share-option-btn" target="new" href="https://www.facebook.com/sharer/sharer.php?u=https%3a%2f%2flinkrober.github.io%2fbookshelf%2f2017%2f09%2fruntime-%25E4%25B8%2580%2f">
+        <i class="fa fa-facebook-official"></i><span>分享到 Facebook</span>
+      </a>
+    </li>
+    <li class="share-option">
+      <a class="share-option-btn" target="new" href="https://twitter.com/intent/tweet?text=https%3a%2f%2flinkrober.github.io%2fbookshelf%2f2017%2f09%2fruntime-%25E4%25B8%2580%2f">
+        <i class="fa fa-twitter"></i><span>分享到 Twitter</span>
+      </a>
+    </li>
+  </ul>
+</div>
+<div id="share-options-mask" class="share-options-mask"></div>
     </div>
     
     <div id="about">
@@ -809,6 +853,32 @@ $(document).ready(function() {
   });
 });
 </script>
+
+  
+    
+      <script>
+        var disqus_config = function () {
+          this.page.url = 'https:\/\/linkrober.github.io\/bookshelf\/2017\/09\/runtime-%E4%B8%80\/';
+          
+            this.page.identifier = '\/2017\/09\/runtime-%E4%B8%80\/'
+          
+        };
+        (function() {
+          
+          
+          if (window.location.hostname == "localhost") {
+            return;
+          }
+          var d = document, s = d.createElement('script');
+          var disqus_shortname = '董二千';
+          s.src = '//' + disqus_shortname + '.disqus.com/embed.js';
+
+          s.setAttribute('data-timestamp', +new Date());
+          (d.head || d.body).appendChild(s);
+        })();
+      </script>
+    
+  
 
 
     

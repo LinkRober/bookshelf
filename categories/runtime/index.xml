@@ -10,13 +10,11 @@
     
     <item>
       <title>Runtime (一)</title>
-      <link>https://linkrober.github.io/bookshelf/1/01/runtime-%E4%B8%80/</link>
-      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+      <link>https://linkrober.github.io/bookshelf/2017/09/runtime-%E4%B8%80/</link>
+      <pubDate>Fri, 29 Sep 2017 00:00:00 +0000</pubDate>
       
-      <guid>https://linkrober.github.io/bookshelf/1/01/runtime-%E4%B8%80/</guid>
-      <description>&lt;p&gt;&lt;/p&gt;
-
-&lt;h3 id=&#34;message&#34;&gt;Message&lt;/h3&gt;
+      <guid>https://linkrober.github.io/bookshelf/2017/09/runtime-%E4%B8%80/</guid>
+      <description>&lt;h3 id=&#34;message&#34;&gt;Message&lt;/h3&gt;
 
 &lt;p&gt;这篇文章描述了消息如何通过使用&lt;code&gt;objc_msgSend&lt;/code&gt;发送，如何通过方法名称找到对应方法的reference&lt;/p&gt;
 
@@ -46,10 +44,10 @@
 &lt;/ul&gt;
 
 &lt;blockquote&gt;
-&lt;p&gt;Note:编译器生成调用消息的方法，在日常开发中永远不要在你写的代码中直接调用。&lt;/p&gt;
-&lt;/blockquote&gt;
+&lt;p&gt;Note:编译器生成调用消息的方法，在日常开发中永远不要在你写的代码中直接调用。
 
-&lt;p&gt;在架构中消息传递的关键在于编译器编译每个class和object。每个class的结构中包含两个重要元素：&lt;/p&gt;
+在架构中消息传递的关键在于编译器编译每个class和object。每个class的结构中包含两个重要元素：&lt;/p&gt;
+&lt;/blockquote&gt;
 
 &lt;ul&gt;
 &lt;li&gt;指向父类的指针&lt;/li&gt;

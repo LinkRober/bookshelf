@@ -202,6 +202,90 @@
     
     <div class="postShorten-header">
       <h1 class="postShorten-title" itemprop="headline">
+        <a class="link-unstyled" href="https://linkrober.github.io/bookshelf/2017/09/runtime-%E4%B8%80/">
+          Runtime (一)
+        </a>
+      </h1>
+      <div class="postShorten-meta post-meta">
+  
+    <time itemprop="datePublished" datetime="2017-09-29T00:00:00Z">
+      
+  九月 29, 2017
+
+    </time>
+  
+  
+  
+  
+    <span>发布在</span>
+    
+      <a class="category-link" href="https://LinkRober.github.io/bookshelf/categories/development">Development</a>
+    
+  
+
+
+</div>
+
+    </div>
+    <div class="postShorten-excerpt" itemprop="articleBody">
+      <p>
+        <h3 id="message">Message</h3>
+
+<p>这篇文章描述了消息如何通过使用<code>objc_msgSend</code>发送，如何通过方法名称找到对应方法的reference</p>
+
+<h4 id="the-objc-msgsend-function">The objc_msgSend Function</h4>
+
+<p>在Object-C中，发送的消息直到运行时才绑定到正真的方式实现。</p>
+
+<pre><code>[receiver message]
+</code></pre>
+
+<p><code>objc_msgSend</code>是真正调用消息的函数，这个函数持有消息的接受者和方法的名称：</p>
+
+<pre><code>objc_msgSend(receiver,selector)
+</code></pre>
+
+<p>任何其他的参数也是通过这个方法传入：</p>
+
+<pre><code>objc_msgSend(receiver,selector,arg1,arg2,...)
+</code></pre>
+
+<p>这个方法会做一些必要的事情来进行动态绑定：</p>
+
+<ul>
+<li>首先找到方法的实现即selector的引用。因为在不同的类中都可以实现相同方法名的方法，所以通过方法的实现找到真正的receiver的class。</li>
+<li>然后传入该方法指定的receiver和参数。</li>
+<li>最后将实现的返回值作为它自己的返回值。</li>
+</ul>
+
+<p><blockquote>
+        <br>
+        <a href="https://linkrober.github.io/bookshelf/2017/09/runtime-%E4%B8%80/" class="postShorten-excerpt_link link">阅读全文</a>
+        
+      </p>
+    </div>
+  </div>
+  
+</article>
+
+            
+              
+  
+    
+      
+        
+      
+    
+  
+
+
+  
+
+<article class="postShorten postShorten--thumbnailimg-bottom" itemscope itemType="http://schema.org/BlogPosting">
+  <div class="postShorten-wrap">
+    
+    <div class="postShorten-header">
+      <h1 class="postShorten-title" itemprop="headline">
         <a class="link-unstyled" href="https://linkrober.github.io/bookshelf/2017/09/run-loops-%E4%BA%8C/">
           Run Loops (二)
         </a>
@@ -455,6 +539,52 @@
           <div class="media">
             
             <div class="media-body">
+              <a class="link-unstyled" href="https://linkrober.github.io/bookshelf/2017/09/runtime-%E4%B8%80/">
+                <h3 class="media-heading">Runtime (一)</h3>
+              </a>
+              <span class="media-meta">
+                <span class="media-date text-small">
+                  Sep 9, 2017
+                </span>
+              </span>
+              <div class="media-content hide-xs font-merryweather"><h3 id="message">Message</h3>
+
+<p>这篇文章描述了消息如何通过使用<code>objc_msgSend</code>发送，如何通过方法名称找到对应方法的reference</p>
+
+<h4 id="the-objc-msgsend-function">The objc_msgSend Function</h4>
+
+<p>在Object-C中，发送的消息直到运行时才绑定到正真的方式实现。</p>
+
+<pre><code>[receiver message]
+</code></pre>
+
+<p><code>objc_msgSend</code>是真正调用消息的函数，这个函数持有消息的接受者和方法的名称：</p>
+
+<pre><code>objc_msgSend(receiver,selector)
+</code></pre>
+
+<p>任何其他的参数也是通过这个方法传入：</p>
+
+<pre><code>objc_msgSend(receiver,selector,arg1,arg2,...)
+</code></pre>
+
+<p>这个方法会做一些必要的事情来进行动态绑定：</p>
+
+<ul>
+<li>首先找到方法的实现即selector的引用。因为在不同的类中都可以实现相同方法名的方法，所以通过方法的实现找到真正的receiver的class。</li>
+<li>然后传入该方法指定的receiver和参数。</li>
+<li>最后将实现的返回值作为它自己的返回值。</li>
+</ul>
+
+<blockquote></div>
+            </div>
+            <div style="clear:both;"></div>
+            <hr>
+          </div>
+        
+          <div class="media">
+            
+            <div class="media-body">
               <a class="link-unstyled" href="https://linkrober.github.io/bookshelf/2017/09/run-loops-%E4%BA%8C/">
                 <h3 class="media-heading">Run Loops (二)</h3>
               </a>
@@ -575,23 +705,6 @@
                 </span>
               </span>
               <div class="media-content hide-xs font-merryweather"></div>
-            </div>
-            <div style="clear:both;"></div>
-            <hr>
-          </div>
-        
-          <div class="media">
-            
-            <div class="media-body">
-              <a class="link-unstyled" href="https://linkrober.github.io/bookshelf/1/01/runtime-%E4%B8%80/">
-                <h3 class="media-heading">Runtime (一)</h3>
-              </a>
-              <span class="media-meta">
-                <span class="media-date text-small">
-                  Jan 1, 0001
-                </span>
-              </span>
-              <div class="media-content hide-xs font-merryweather"><p></p></div>
             </div>
             <div style="clear:both;"></div>
             <hr>
