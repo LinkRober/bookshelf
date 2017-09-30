@@ -10,11 +10,11 @@
     <atom:link href="https://linkrober.github.io/bookshelf/post/index.xml" rel="self" type="application/rss+xml" />
     
     <item>
-      <title>Run Loops基础概念篇二</title>
-      <link>https://linkrober.github.io/bookshelf/2017/09/run-loops%E5%9F%BA%E7%A1%80%E6%A6%82%E5%BF%B5%E7%AF%87%E4%BA%8C/</link>
+      <title>Run Loops (二)</title>
+      <link>https://linkrober.github.io/bookshelf/2017/09/run-loops-%E4%BA%8C/</link>
       <pubDate>Tue, 26 Sep 2017 00:00:00 +0000</pubDate>
       
-      <guid>https://linkrober.github.io/bookshelf/2017/09/run-loops%E5%9F%BA%E7%A1%80%E6%A6%82%E5%BF%B5%E7%AF%87%E4%BA%8C/</guid>
+      <guid>https://linkrober.github.io/bookshelf/2017/09/run-loops-%E4%BA%8C/</guid>
       <description>&lt;h3 id=&#34;when-would-you-use-a-run-loop&#34;&gt;When Would You Use a Run Loop?&lt;/h3&gt;
 
 &lt;p&gt;你唯一要使用run loop，就是当你要在application中创建线程的时候。你Application的主线程是架构很重要的一部分。所以，iOS系统为app的提供了&lt;i&gt;runloop&lt;/i&gt;代码，并自动开始。在iOS中运行Main loop作为app启动步骤的一部分。&lt;/p&gt;
@@ -144,11 +144,11 @@
     </item>
     
     <item>
-      <title>Run Loops基础概念篇一</title>
-      <link>https://linkrober.github.io/bookshelf/2017/09/run-loops%E5%9F%BA%E7%A1%80%E6%A6%82%E5%BF%B5%E7%AF%87%E4%B8%80/</link>
+      <title>Run Loops (一)</title>
+      <link>https://linkrober.github.io/bookshelf/2017/09/run-loops-%E4%B8%80/</link>
       <pubDate>Mon, 25 Sep 2017 00:00:00 +0000</pubDate>
       
-      <guid>https://linkrober.github.io/bookshelf/2017/09/run-loops%E5%9F%BA%E7%A1%80%E6%A6%82%E5%BF%B5%E7%AF%87%E4%B8%80/</guid>
+      <guid>https://linkrober.github.io/bookshelf/2017/09/run-loops-%E4%B8%80/</guid>
       <description>&lt;h3 id=&#34;run-loops&#34;&gt;Run Loops&lt;/h3&gt;
 
 &lt;blockquote&gt;

@@ -20,44 +20,29 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <meta name="generator" content="Hugo 0.19">
-    <title>消息转发</title>
+    <title>Run Loops篇 二</title>
     <meta name="author" content="董二千">
-    <meta name="keywords" content="">
+    <meta name="keywords" content="runloop">
 
     <link rel="icon" href="https://LinkRober.github.io/bookshelf/favicon.png">
     
 
     
-    <meta name="description" content="
-描述：如果类不能执行这个方法，会执行动态消息转发，如果该类还是不能动态的添加方法，则走完整的消息转发。分两步，第一步看看有没有其他类可以执行该方法，如果没有走第二步，将所有的细节封装到NSInvocation中，给接受者最后一次机会。
+    <meta name="description" content="When Would You Use a Run Loop?
 
+你唯一要使用run loop，就是当你要在application中创建线程的时候。你Application的主线程是架构很重要的一部分。所以，iOS系统为app的提供了runloop代码，并自动开始。在iOS中运行Main loop作为app启动步骤的一部分。">
+    <meta property="og:description" content="When Would You Use a Run Loop?
 
-演示：
-动态消息转发
-&gt;在一个类MessageObj中定义两个方法，testDynamicMethodForward一个有实现方法，start一个没有实现的方法，调用没有实现的方法，在动态消息转发的时候将这个方法hook到已经实现的方法上：
-">
-    <meta property="og:description" content="
-描述：如果类不能执行这个方法，会执行动态消息转发，如果该类还是不能动态的添加方法，则走完整的消息转发。分两步，第一步看看有没有其他类可以执行该方法，如果没有走第二步，将所有的细节封装到NSInvocation中，给接受者最后一次机会。
-
-
-演示：
-动态消息转发
-&gt;在一个类MessageObj中定义两个方法，testDynamicMethodForward一个有实现方法，start一个没有实现的方法，调用没有实现的方法，在动态消息转发的时候将这个方法hook到已经实现的方法上：
-">
+你唯一要使用run loop，就是当你要在application中创建线程的时候。你Application的主线程是架构很重要的一部分。所以，iOS系统为app的提供了runloop代码，并自动开始。在iOS中运行Main loop作为app启动步骤的一部分。">
     <meta property="og:type" content="blog">
-    <meta property="og:title" content="消息转发">
-    <meta property="og:url" content="/2017/04/%E6%B6%88%E6%81%AF%E8%BD%AC%E5%8F%91/">
+    <meta property="og:title" content="Run Loops篇 二">
+    <meta property="og:url" content="/2017/09/run-loops%E7%AF%87-%E4%BA%8C/">
     <meta property="og:site_name" content="董二千">
     <meta name="twitter:card" content="summary">
     <meta name="twitter:title" content="董二千">
-    <meta name="twitter:description" content="
-描述：如果类不能执行这个方法，会执行动态消息转发，如果该类还是不能动态的添加方法，则走完整的消息转发。分两步，第一步看看有没有其他类可以执行该方法，如果没有走第二步，将所有的细节封装到NSInvocation中，给接受者最后一次机会。
+    <meta name="twitter:description" content="When Would You Use a Run Loop?
 
-
-演示：
-动态消息转发
-&gt;在一个类MessageObj中定义两个方法，testDynamicMethodForward一个有实现方法，start一个没有实现的方法，调用没有实现的方法，在动态消息转发的时候将这个方法hook到已经实现的方法上：
-">
+你唯一要使用run loop，就是当你要在application中创建线程的时候。你Application的主线程是架构很重要的一部分。所以，iOS系统为app的提供了runloop代码，并自动开始。在iOS中运行Main loop作为app启动步骤的一部分。">
     
     
 
@@ -208,14 +193,14 @@
             <div class="post-header main-content-wrap text-left">
   
     <h1 class="post-title" itemprop="headline">
-      消息转发
+      Run Loops篇 二
     </h1>
   
   <div class="postShorten-meta post-meta">
   
-    <time itemprop="datePublished" datetime="2017-04-03T03:05:31&#43;08:00">
+    <time itemprop="datePublished" datetime="2017-09-26T00:00:00Z">
       
-  四月 3, 2017
+  九月 26, 2017
 
     </time>
   
@@ -235,128 +220,132 @@
           
           <div class="post-content markdown" itemprop="articleBody">
             <div class="main-content-wrap">
-              <blockquote>
-<p>描述：如果类不能执行这个方法，会执行动态<strong>消息转发</strong>，如果该类还是不能动态的添加方法，则走<strong>完整的消息转发</strong>。分两步，第一步<strong>看看有没有其他类可以执行该方法</strong>，如果没有走第二步，<strong>将所有的细节封装到NSInvocation中，给接受者最后一次机会</strong>。</p>
-</blockquote>
+              <h3 id="when-would-you-use-a-run-loop">When Would You Use a Run Loop?</h3>
 
-<p>演示：
-动态消息转发
-&gt;在一个类<code>MessageObj</code>中定义两个方法，<code>testDynamicMethodForward</code>一个有实现方法，<code>start</code>一个没有实现的方法，调用没有实现的方法，在动态消息转发的时候将这个方法hook到已经实现的方法上：
-</p>
+<p>你唯一要使用run loop，就是当你要在application中创建线程的时候。你Application的主线程是架构很重要的一部分。所以，iOS系统为app的提供了<i>runloop</i>代码，并自动开始。在iOS中运行Main loop作为app启动步骤的一部分。</p>
 
-<pre><code>@interface MessageObj()
-@end
+<p>对于其他的线程，你需要考虑是否必须要使用<i>run loop</i>。如果有需要，配置并自己启动它。你不需要在每个线程中都启用run loop。例如，如果你使用一个线程来执行一些很长时间的运行和已经准备好的任务，你可能要避免使用它。Run loop的目的主要是用来解决线程间的通信。例如，如果你打算做下面的事情，你需要开启一个run loop。</p>
 
+<ul>
+<li>使用port或者自定义input source来和其他线程通讯</li>
+<li>在线程中使用timer</li>
+<li>在Cocoa application使用<code>performSelector…</code>方法</li>
+<li>维持线程来执行周期性的任务
 
-@implementation MessageObj
+如果你选择使用run loop，配置和设置就是接下来要做的。纵观整个线程编码过程，你应该有一个明确的认识在什么时候退出线程，这比强制退出好很多。关于如何配置和退出run loop的信息在这<a href="https://developer.apple.com/library/content/documentation/Cocoa/Conceptual/Multithreading/RunLoopManagement/RunLoopManagement.html#//apple_ref/doc/uid/10000057i-CH16-SW5">Using Run Loop Objects</a>。</li>
+</ul>
 
-//-(void)start{}
-void testDynamicMethodForward(){
-    printf(&quot;testDynamicMethodForward \n&quot;);
-}
+<h3 id="using-run-loop-objects">Using Run Loop Objects</h3>
 
-+(BOOL)resolveInstanceMethod:(SEL)sel {
-    class_addMethod([self class], sel, (IMP)testDynamicMethodForward, &quot;v@@:&quot;);
-    return YES;
-}
-@end
-</code></pre>
+<p><i>run loop</i>对象提供了主要的接口来添加input sources，timers，run-loop observers到<i>run loop</i>中再运行它。每个线程有一个和它相关的run loop object。在Cocoa中，这个对象是<a href="https://developer.apple.com/documentation/foundation/runloop">NSRunLoop</a>的实例。在应用的底层，它是<a href="https://developer.apple.com/documentation/corefoundation/cfrunloop">CFRunLoopRef</a>类的指针。</p>
 
-<p>打印如下：testDynamicMethodForward</p>
+<h3 id="getting-a-run-loop-object">Getting a Run Loop Object</h3>
 
-<p>完整的消息转发第一步
-&gt;定义两个类，第一个类<code>MessageObj</code>有一个未实现的方法<code>start</code>，并且没有实现动态消息转发。第二个类<code>OtherClass</code>，有一个和第一个类中未实现的方法同名的方法<code>start</code>，在进行完整消息转发的第一步时，将<code>MessageOb</code>j中未实现的方法hook到，<code>OtherClass</code>的同名方法<code>start</code>中</p>
+<p>获取当前线程的runloop对象，你使用下面的一种方式：</p>
 
-<p>OtherClass类</p>
+<ul>
+<li>在Cocoa Application中，使用<a href="https://developer.apple.com/documentation/foundation/runloop/1412291-current">NSRunLoop</a>的类方法<a href="https://developer.apple.com/documentation/foundation/runloop">currentRunLoop</a>，来获取<code>NSRunLoop</code>对象。</li>
+<li>使用<a href="https://developer.apple.com/documentation/corefoundation/1542428-cfrunloopgetcurrent">CFRunLoopGetCurrent</a>方法。</li>
+</ul>
 
-<pre><code>@interface OtherClass : NSObject
+<p>尽管它们不是无缝桥接的类，当需要的时候你可以从<code>NSRunLoop</code>对象获得一个<code>CFRunLoopRef</code>指针。<code>NSRunLoop</code>类定义了一个<a href="https://developer.apple.com/documentation/foundation/nsrunloop/1410140-getcfrunloop">getCFRunLoop</a>方法，它返回了一个<code>CFRunLoopRef</code>类型，这你可以传入到Core Foundation中。因为两个对象指向同一个run loop，需要的时候你可以混合使用。</p>
 
-@end
+<h3 id="configuring-the-run-loop">Configuring the Run Loop</h3>
 
-@implementation OtherClass
+<p>当你在自定义线程中跑run loop的时候，你至少添加一个input source或timer到run loop中，如果一个*run loop*没有任何source来监听，当你尝试运行它的时候，它会立即退出。如何向run loop中添加一个source，请看这里<a href="https://developer.apple.com/library/content/documentation/Cocoa/Conceptual/Multithreading/RunLoopManagement/RunLoopManagement.html#//apple_ref/doc/uid/10000057i-CH16-SW7">Configuring Run Loop Sources</a>。</p>
 
--(void)start{
-    NSLog(@&quot;do some thing %@&quot;,[self class]);
-}
+<p>除了装载sources，你也可以装载run loop observers，使用它们来监听run loop的执行步骤。为了装载run loop observer，你创建了一个<a href="https://developer.apple.com/documentation/corefoundation/cfrunloopobserver">CFRunLoopObserverRef</a>指针，并且使用<a href="https://developer.apple.com/documentation/corefoundation/1542504-cfrunloopaddobserver">CFRunLoopAddObserver</a>方法并把它添加到你的run loop中。Run loop observer必须要使用Core Foundation来创建。</p>
 
-@end
-</code></pre>
+<p>下面展示了在一个线程中，添加一个run loop observer到run loop中的主要的代码部分。</p>
 
-<p>MessageObj类</p>
-
-<pre><code>@implementation MessageObj
-
-//-(void)start{}
-
--(id)forwardingTargetForSelector:(SEL)aSelector {
-    printf(&quot;%p \n&quot;,&amp;aSelector);
-    OtherClass *obj = [OtherClass new];
-    return obj;
-}
-</code></pre>
-
-<p>调用<code>start</code>方法</p>
-
-<pre><code>MessageObj *obj = [MessageObj new];
-[obj start];
-</code></pre>
-
-<p>打印：do some thing OtherClass</p>
-
-<p>完整消息转发的第二步
-如果以上两步都失败了，就走到这里。定义两个类<code>MessageObj</code>、<code>OtherClass</code>，<code>MessageObj</code>中存在<code>OtherClass</code>的实例。当走到消息转发的第三步时，先进行方法重签名<code>-(NSMethodSignature *)methodSignatureForSelector:(SEL)aSelector</code>，再走最后的消息转发<code>-(void)forwardInvocation:(NSInvocation *)anInvocation</code>。</p>
-
-<p>OtherClass类</p>
-
-<pre><code>@interface OtherClass : NSObject
-
-@end
-@implementation OtherClass
-
--(void)start{
-    NSLog(@&quot;message transform third part %@&quot;,[self class]);
-}
-
-@end
-</code></pre>
-
-<p>MessageObj类</p>
-
-<pre><code>@implementation MessageObj
-
-
--(instancetype)init {
-    if (self = [super init]) {
-        otherClass = [OtherClass new];
-    }
-    return  self;
-}
-
-
-//-(void)start{}
-//方法重签名
--(NSMethodSignature *)methodSignatureForSelector:(SEL)aSelector {
-    NSMethodSignature *signature = [super methodSignatureForSelector:aSelector];
-    if (!signature) {
-        signature = [otherClass methodSignatureForSelector:aSelector];
-    }
-    return signature;
-}
-//最后的消息转发
--(void)forwardInvocation:(NSInvocation *)anInvocation {
-    if (!otherClass) {
-        [self doesNotRecognizeSelector:[anInvocation selector]];
-    }
-    [anInvocation invokeWithTarget:otherClass];
+<pre><code>- (void)threadMain
+{
+	//The application use garbage collection,so no autorelease pool is needed.
+	NSRunLoop *myRunLoop = [NSRunLoop currentRunLoop];	
+	//Create a run loop observer and attach it to the run loop.
+	CFRunLoopObserverContent context = {0,self,NULL,NULL,NULL};
+	CFRunLoopObserverRef observer = CFRunLoopObserverCreate(kCFAllocatorDefault,kCFRunLoopAllActivities,YES,0,&amp;myRunLoopObserver,&amp;context);
+	if(observer)
+	{
+		CFRunLoopRef cfLoop = [myRunLoop getCFRunLoop];
+		CFRunLoopAddObserver(cfLoop,observer,kCFRunLoopDefaultMode);		
+	}	
+	//Create and schedule the timer.
+		[NSTimer scheduledTimerWithTimeInterval:0.1 target:self selector:@selector(doFireTimer:) userInfo:nil repeats:YES];
+		NSInteger loopCount = 10;
+	do 
+	{
+		//Run the run loop 10 times to let the timer fire
+		[myRunLoop runUntilDate:[NSDate dateWithTimeIntervalSinceNow:1]];
+		loopCount--;
+	}
+	while(loopCount);
 }
 </code></pre>
 
-<p>打印：message transform third part OtherClass</p>
+<p>当为一个活跃的线程配置run loop的时候，至少添加一个input source到接受的消息。尽管你能够只需要通过一个timer来启动run loop中，但是，一旦timer触发之后，它就会无效的，这会引起run loop的退出。传入一个repeat的timer可以保持run loop运行很长一段时间。但是将会周期性的调用触发的timer来唤醒你的线程。这是维持线程中<i>run loop</i>的另一种方式，一个input source等待事件的到达，让你的线程处于睡眠中，直到它被唤醒。</p>
 
-<p>用途：
-- 在方法不能识别的时候做一些保护，防止crash
-- 调试的时候打印一些感兴趣的日志
-- 也可以hook系统的方法玩玩呀</p>
+<h3 id="starting-the-run-loop">Starting the Run Loop</h3>
+
+<p>一个run loop必须装载至少一个input source或者timer来。如果没有，run loop立即退出。
+下面有几种办法开启一个run loop。</p>
+
+<ul>
+<li>无条件的启动run loop</li>
+<li>设置一个超时时间启动run loop</li>
+<li>通过一种特殊的模式启动run loop</li>
+</ul>
+
+<p>无条件的启动<i>runloop</i>是最简单的，但是这也是最不推荐的一种方式。无条件的启动你的runloop，把线程作为<i>runloop</i>的一个参数。这种方式对runloop的控制权很小。你可以添加或移除input source和timers，唯一停止<i>runloop</i>的方式就是kill。这种启动方式没有办法在自定义mode。</p>
+
+<p>除了无条件的启动一个runloop，使用time out value来开始一个<i>runloop</i>更好。当你使用time out value，runloop运行直到事件到达或者超时。如果事件抵达，事件会被派发到一个handler来处理，然后run loop退出。你的code又能够重新开始runloop去处理下一个事件。如果超时，你可以简单的重启runloop，或者利用这段时间做任何需要的事。</p>
+
+<p>除了time out value，你也可以使用一个指定的mode来运行runloop。Modes和timeout value并不是互斥的。当运行runloop的时候也可以同时使用它们。Modes限制了source的type。详细被描述在<a href="https://developer.apple.com/library/content/documentation/Cocoa/Conceptual/Multithreading/RunLoopManagement/RunLoopManagement.html#//apple_ref/doc/uid/10000057i-CH16-SW12">Run Loop Modes</a>。</p>
+
+<p>下面的code主要部分展示了runloop的基本结构。本质上，你添加你的input source和timer到runloop。重复调用其中一个routine来开始一个<i>run loop</i>。每次run loop routine 返回的时，你检查<i>run lop</i>是否满足某些条件导致退出thread。例子中使用Core Foundation的run loop routines，以至于它能检查返回的结果并检测run loop为什么退出。你也能使用<a href="https://developer.apple.com/documentation/foundation/runloop">NSRunLoop</a>的方法以一种相似的方式来运行runloop，如果你正在使用Cocoa框架中的NSRunLoop，它是不需要检查return value的。</p>
+
+<pre><code>- (void)skeletonThreadMain {
+	//Set up an autorelease pool here if not using garbage collection.
+	BOOL done = NO;
+	//Add your sources or timer to the run loop and do any other setup
+	do
+	{
+		//Start the run loop but return after earch source is handled
+		SInt32 result = CFRunLoopRunInMode(kCFRunLoopDefaultMode,10,YES)
+		
+		//If a source explicitly stopped the run loop,or if there no sources or timers,go head and exit.
+		if ((result == kCFRunLoopRunStopped) || (result == kCFRunLoopRunFinished))
+		done = YES;
+		
+		//Check for any other exit conditions here and set the done variable as needed
+	}
+	while(!done);
+	//Clean up code here. Be sure to release any allocated autorelease pools.
+}
+</code></pre>
+
+<p>递归运行run loop也是可能的。换句话说，你能够调用<a href="https://developer.apple.com/documentation/corefoundation/1542011-cfrunlooprun">CFRunLoopRun</a>、<a href="https://developer.apple.com/documentation/corefoundation/1541988-cfrunloopruninmode">CFRunLoopRunInMode</a>,任何<code>NSRunLoop</code>的方法，从input source 或者 timer的handler routine开始runloop。当这样做的时候，你可以使用你想要的mode来运行内嵌的runloop。包括被outer run loop正在使用的mode。</p>
+
+<h3 id="exiting-the-run-loop">Exiting the Run Loop</h3>
+
+<p>有两种办法使runloop在处理事件之前退出。</p>
+
+<ul>
+<li>为<i>Runloop</i>配置一个time out时间</li>
+<li>主动告诉<i>Runloop</i>停止</li>
+</ul>
+
+<p>使用time out时间是一种比较好的选择。在退出之前，指定一个time out时间让runloop完成所有的任务，包括向<i>runloop observer</i>发送通知。</p>
+
+<p>使用<a href="https://developer.apple.com/documentation/corefoundation/1541796-cfrunloopstop">CFRunLoopStop</a>方法停止一个<i>runloop</i>，产生一个类似于超时的结果。使用runloop发送完剩下的runloop通知然后退出。唯一不同的就是只有当你无条件的启动<i>Runloop</i>的时候才能使用这种方式退出。</p>
+
+<p>尽管移除runloop的input source和timers可以引起runloop的退出，但是这不是一种稳定的方式。一些系统一般添加input source到run loop来处理需要的事件。因为你的code不需要关心这些input source。所以你不能移除input sources，让<i>run loop</i>退出。</p>
+
+<h3 id="thread-safety-and-run-loop-objects">Thread Safety and Run Loop Objects</h3>
+
+<p>线程安全取决于你使用操作<i>runloop</i>的API。在Core Foundation中的方法一般是线程安全的，可以被任何其他线程调用。如果你正在执行操作，这些操作改变了runloop的配置。无论什么时候，这样做任然是一个很好的实践。</p>
+
+<p>Cocoa的<a href="https://developer.apple.com/documentation/foundation/runloop">NSRunLoop</a>类。Cocoa的NSRunLoop和Core Foundation不一样，不是线程安全的。如果你使用<code>NSRunLoop</code>类来修改你的runloop，你应该在原来的线程中做这些操作。在其他线程添加一个input source或者timer到原来runloop可能引起crash，或者一个意想不到的行为。</p>
               
             </div>
           </div>
@@ -368,9 +357,7 @@ void testDynamicMethodForward(){
                   <div class="post-footer-tags">
                     <span class="text-color-light text-small">标签</span><br/>
                     
-  <a class="tag tag--primary tag--small" href="https://linkrober.github.io/bookshelf//tags/runtime/">runtime</a>
-
-  <a class="tag tag--primary tag--small" href="https://linkrober.github.io/bookshelf//tags/oc/">oc</a>
+  <a class="tag tag--primary tag--small" href="https://linkrober.github.io/bookshelf//tags/runloop/">runloop</a>
 
                   </div>
                 
@@ -382,7 +369,7 @@ void testDynamicMethodForward(){
       
         <li class="post-action">
           
-            <a class="post-action-btn btn btn--default tooltip--top" href="https://LinkRober.github.io/bookshelf/2017/04/git-order/" data-tooltip="git order">
+            <a class="post-action-btn btn btn--disabled">
           
             <i class="fa fa-angle-left"></i>
             <span class="hide-xs hide-sm text-small icon-ml">上一篇</span>
@@ -390,7 +377,7 @@ void testDynamicMethodForward(){
         </li>
         <li class="post-action">
           
-            <a class="post-action-btn btn btn--default tooltip--top" href="https://LinkRober.github.io/bookshelf/archives/" data-tooltip="Blog Index">
+            <a class="post-action-btn btn btn--default tooltip--top" href="https://LinkRober.github.io/bookshelf/2017/09/run-loops%E7%AF%87-%E4%B8%80/" data-tooltip="Run Loops篇 一">
           
             <span class="hide-xs hide-sm text-small icon-mr">下一篇</span>
             <i class="fa fa-angle-right"></i>
@@ -407,17 +394,17 @@ void testDynamicMethodForward(){
         </a>
       </li>
       <li class="post-action hide-xs">
-        <a class="post-action-btn btn btn--default" target="new" href="https://plus.google.com/share?url=https%3a%2f%2flinkrober.github.io%2fbookshelf%2f2017%2f04%2f%25E6%25B6%2588%25E6%2581%25AF%25E8%25BD%25AC%25E5%258F%2591%2f">
+        <a class="post-action-btn btn btn--default" target="new" href="https://plus.google.com/share?url=https%3a%2f%2flinkrober.github.io%2fbookshelf%2f2017%2f09%2frun-loops%25E7%25AF%2587-%25E4%25BA%258C%2f">
           <i class="fa fa-google-plus"></i>
         </a>
       </li>
       <li class="post-action hide-xs">
-        <a class="post-action-btn btn btn--default" target="new" href="https://www.facebook.com/sharer/sharer.php?u=https%3a%2f%2flinkrober.github.io%2fbookshelf%2f2017%2f04%2f%25E6%25B6%2588%25E6%2581%25AF%25E8%25BD%25AC%25E5%258F%2591%2f">
+        <a class="post-action-btn btn btn--default" target="new" href="https://www.facebook.com/sharer/sharer.php?u=https%3a%2f%2flinkrober.github.io%2fbookshelf%2f2017%2f09%2frun-loops%25E7%25AF%2587-%25E4%25BA%258C%2f">
           <i class="fa fa-facebook-official"></i>
         </a>
       </li>
       <li class="post-action hide-xs">
-        <a class="post-action-btn btn btn--default" target="new" href="https://twitter.com/intent/tweet?text=https%3a%2f%2flinkrober.github.io%2fbookshelf%2f2017%2f04%2f%25E6%25B6%2588%25E6%2581%25AF%25E8%25BD%25AC%25E5%258F%2591%2f">
+        <a class="post-action-btn btn btn--default" target="new" href="https://twitter.com/intent/tweet?text=https%3a%2f%2flinkrober.github.io%2fbookshelf%2f2017%2f09%2frun-loops%25E7%25AF%2587-%25E4%25BA%258C%2f">
           <i class="fa fa-twitter"></i>
         </a>
       </li>
@@ -463,7 +450,7 @@ void testDynamicMethodForward(){
       
         <li class="post-action">
           
-            <a class="post-action-btn btn btn--default tooltip--top" href="https://LinkRober.github.io/bookshelf/2017/04/git-order/" data-tooltip="git order">
+            <a class="post-action-btn btn btn--disabled">
           
             <i class="fa fa-angle-left"></i>
             <span class="hide-xs hide-sm text-small icon-ml">上一篇</span>
@@ -471,7 +458,7 @@ void testDynamicMethodForward(){
         </li>
         <li class="post-action">
           
-            <a class="post-action-btn btn btn--default tooltip--top" href="https://LinkRober.github.io/bookshelf/archives/" data-tooltip="Blog Index">
+            <a class="post-action-btn btn btn--default tooltip--top" href="https://LinkRober.github.io/bookshelf/2017/09/run-loops%E7%AF%87-%E4%B8%80/" data-tooltip="Run Loops篇 一">
           
             <span class="hide-xs hide-sm text-small icon-mr">下一篇</span>
             <i class="fa fa-angle-right"></i>
@@ -488,17 +475,17 @@ void testDynamicMethodForward(){
         </a>
       </li>
       <li class="post-action hide-xs">
-        <a class="post-action-btn btn btn--default" target="new" href="https://plus.google.com/share?url=https%3a%2f%2flinkrober.github.io%2fbookshelf%2f2017%2f04%2f%25E6%25B6%2588%25E6%2581%25AF%25E8%25BD%25AC%25E5%258F%2591%2f">
+        <a class="post-action-btn btn btn--default" target="new" href="https://plus.google.com/share?url=https%3a%2f%2flinkrober.github.io%2fbookshelf%2f2017%2f09%2frun-loops%25E7%25AF%2587-%25E4%25BA%258C%2f">
           <i class="fa fa-google-plus"></i>
         </a>
       </li>
       <li class="post-action hide-xs">
-        <a class="post-action-btn btn btn--default" target="new" href="https://www.facebook.com/sharer/sharer.php?u=https%3a%2f%2flinkrober.github.io%2fbookshelf%2f2017%2f04%2f%25E6%25B6%2588%25E6%2581%25AF%25E8%25BD%25AC%25E5%258F%2591%2f">
+        <a class="post-action-btn btn btn--default" target="new" href="https://www.facebook.com/sharer/sharer.php?u=https%3a%2f%2flinkrober.github.io%2fbookshelf%2f2017%2f09%2frun-loops%25E7%25AF%2587-%25E4%25BA%258C%2f">
           <i class="fa fa-facebook-official"></i>
         </a>
       </li>
       <li class="post-action hide-xs">
-        <a class="post-action-btn btn btn--default" target="new" href="https://twitter.com/intent/tweet?text=https%3a%2f%2flinkrober.github.io%2fbookshelf%2f2017%2f04%2f%25E6%25B6%2588%25E6%2581%25AF%25E8%25BD%25AC%25E5%258F%2591%2f">
+        <a class="post-action-btn btn btn--default" target="new" href="https://twitter.com/intent/tweet?text=https%3a%2f%2flinkrober.github.io%2fbookshelf%2f2017%2f09%2frun-loops%25E7%25AF%2587-%25E4%25BA%258C%2f">
           <i class="fa fa-twitter"></i>
         </a>
       </li>
@@ -525,17 +512,17 @@ void testDynamicMethodForward(){
       <div id="share-options-bar" class="share-options-bar" data-behavior="4">
   <ul class="share-options">
     <li class="share-option">
-      <a class="share-option-btn" target="new" href="https://plus.google.com/share?url=https%3a%2f%2flinkrober.github.io%2fbookshelf%2f2017%2f04%2f%25E6%25B6%2588%25E6%2581%25AF%25E8%25BD%25AC%25E5%258F%2591%2f">
+      <a class="share-option-btn" target="new" href="https://plus.google.com/share?url=https%3a%2f%2flinkrober.github.io%2fbookshelf%2f2017%2f09%2frun-loops%25E7%25AF%2587-%25E4%25BA%258C%2f">
         <i class="fa fa-google-plus"></i><span>分享到 Google&#43;</span>
       </a>
     </li>
     <li class="share-option">
-      <a class="share-option-btn" target="new" href="https://www.facebook.com/sharer/sharer.php?u=https%3a%2f%2flinkrober.github.io%2fbookshelf%2f2017%2f04%2f%25E6%25B6%2588%25E6%2581%25AF%25E8%25BD%25AC%25E5%258F%2591%2f">
+      <a class="share-option-btn" target="new" href="https://www.facebook.com/sharer/sharer.php?u=https%3a%2f%2flinkrober.github.io%2fbookshelf%2f2017%2f09%2frun-loops%25E7%25AF%2587-%25E4%25BA%258C%2f">
         <i class="fa fa-facebook-official"></i><span>分享到 Facebook</span>
       </a>
     </li>
     <li class="share-option">
-      <a class="share-option-btn" target="new" href="https://twitter.com/intent/tweet?text=https%3a%2f%2flinkrober.github.io%2fbookshelf%2f2017%2f04%2f%25E6%25B6%2588%25E6%2581%25AF%25E8%25BD%25AC%25E5%258F%2591%2f">
+      <a class="share-option-btn" target="new" href="https://twitter.com/intent/tweet?text=https%3a%2f%2flinkrober.github.io%2fbookshelf%2f2017%2f09%2frun-loops%25E7%25AF%2587-%25E4%25BA%258C%2f">
         <i class="fa fa-twitter"></i><span>分享到 Twitter</span>
       </a>
     </li>
@@ -595,8 +582,8 @@ void testDynamicMethodForward(){
           <div class="media">
             
             <div class="media-body">
-              <a class="link-unstyled" href="https://linkrober.github.io/bookshelf/2017/09/run-loops-%E4%BA%8C/">
-                <h3 class="media-heading">Run Loops (二)</h3>
+              <a class="link-unstyled" href="https://linkrober.github.io/bookshelf/2017/09/run-loops%E7%AF%87-%E4%BA%8C/">
+                <h3 class="media-heading">Run Loops篇 二</h3>
               </a>
               <span class="media-meta">
                 <span class="media-date text-small">
@@ -614,8 +601,8 @@ void testDynamicMethodForward(){
           <div class="media">
             
             <div class="media-body">
-              <a class="link-unstyled" href="https://linkrober.github.io/bookshelf/2017/09/run-loops-%E4%B8%80/">
-                <h3 class="media-heading">Run Loops (一)</h3>
+              <a class="link-unstyled" href="https://linkrober.github.io/bookshelf/2017/09/run-loops%E7%AF%87-%E4%B8%80/">
+                <h3 class="media-heading">Run Loops篇 一</h3>
               </a>
               <span class="media-meta">
                 <span class="media-date text-small">
@@ -771,9 +758,9 @@ $(document).ready(function() {
     
       <script>
         var disqus_config = function () {
-          this.page.url = 'https:\/\/linkrober.github.io\/bookshelf\/2017\/04\/%E6%B6%88%E6%81%AF%E8%BD%AC%E5%8F%91\/';
+          this.page.url = 'https:\/\/linkrober.github.io\/bookshelf\/2017\/09\/run-loops%E7%AF%87-%E4%BA%8C\/';
           
-            this.page.identifier = '\/2017\/04\/%E6%B6%88%E6%81%AF%E8%BD%AC%E5%8F%91\/'
+            this.page.identifier = '\/2017\/09\/run-loops%E7%AF%87-%E4%BA%8C\/'
           
         };
         (function() {
