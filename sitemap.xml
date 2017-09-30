@@ -67,6 +67,15 @@
   </url>
   
   <url>
+    <loc>https://linkrober.github.io/bookshelf/categories/runtime/</loc>
+    <priority>0</priority>
+  </url>
+  
+  <url>
+    <loc>https://linkrober.github.io/bookshelf/1/01/runtime-%E4%B8%80/</loc>
+  </url>
+  
+  <url>
     <loc>https://linkrober.github.io/bookshelf/tags/</loc>
     <priority>0</priority>
   </url>
