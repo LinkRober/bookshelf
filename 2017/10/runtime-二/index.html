@@ -1,5 +1,9 @@
 
 
+  
+    
+  
+
 
   
 
@@ -16,25 +20,23 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <meta name="generator" content="Hugo 0.17 with theme Tranquilpeak 0.4.1-BETA">
-    <title>Oc</title>
+    <title>Runtime (二)</title>
     <meta name="author" content="董二千">
     <meta name="keywords" content="">
 
     <link rel="icon" href="https://LinkRober.github.io/bookshelf/favicon.png">
     
-      <link rel="alternate" type="application/rss+xml" title="RSS" href="https://LinkRober.github.io/bookshelf/tags/oc/index.xml">
-    
 
     
-    <meta name="description" content="我们为什么要学习，毕竟改变需要时间">
-    <meta property="og:description" content="我们为什么要学习，毕竟改变需要时间">
+    <meta name="description" content="">
+    <meta property="og:description" content="">
     <meta property="og:type" content="blog">
-    <meta property="og:title" content="Oc">
-    <meta property="og:url" content="/tags/oc/">
+    <meta property="og:title" content="Runtime (二)">
+    <meta property="og:url" content="/2017/10/runtime-%E4%BA%8C/">
     <meta property="og:site_name" content="董二千">
     <meta name="twitter:card" content="summary">
     <meta name="twitter:title" content="董二千">
-    <meta name="twitter:description" content="我们为什么要学习，毕竟改变需要时间">
+    <meta name="twitter:description" content="">
     
     
 
@@ -69,7 +71,7 @@
 
   <body>
     <div id="blog">
-      <header id="header" data-behavior="1">
+      <header id="header" data-behavior="4">
   <i id="btn-open-sidebar" class="fa fa-lg fa-bars"></i>
   <div class="header-title">
     <a class="header-title-link" href="https://LinkRober.github.io/bookshelf/">董二千</a>
@@ -89,7 +91,7 @@
   
 </header>
 
-      <nav id="sidebar" data-behavior="1">
+      <nav id="sidebar" data-behavior="4">
   <div class="sidebar-container">
     
       <div class="sidebar-profile">
@@ -178,85 +180,163 @@
 </nav>
 
       
-        
 
-      
-      <div id="main" data-behavior="1"
+      <div id="main" data-behavior="4"
         class="
                hasCoverMetaIn
                ">
-        
-          <section class="postShorten-group main-content-wrap">
-            
-            
-              
+        <article class="post" itemscope itemType="http://schema.org/BlogPosting">
+          
+          
+            <div class="post-header main-content-wrap text-left">
   
-    
-      
-        
-      
-    
+    <h1 class="post-title" itemprop="headline">
+      Runtime (二)
+    </h1>
   
-
-
   
-
-<article class="postShorten postShorten--thumbnailimg-bottom" itemscope itemType="http://schema.org/BlogPosting">
-  <div class="postShorten-wrap">
-    
-    <div class="postShorten-header">
-      <h1 class="postShorten-title" itemprop="headline">
-        <a class="link-unstyled" href="https://linkrober.github.io/bookshelf/2017/04/%E6%B6%88%E6%81%AF%E8%BD%AC%E5%8F%91/">
-          消息转发
-        </a>
-      </h1>
-      
   <div class="postShorten-meta post-meta">
     
-      <time itemprop="datePublished" datetime="2017-04-03T03:05:31&#43;08:00">
+      <time itemprop="datePublished" datetime="2017-10-09T18:06:28&#43;08:00">
         
-  四月 3, 2017
+  十月 9, 2017
 
       </time>
     
     
-  
-  
-    <span>发布在</span>
-    
-      <a class="category-link" href="https://LinkRober.github.io/bookshelf/categories/development">Development</a>
-    
-  
-
 
   </div>
 
-    </div>
-    <div class="postShorten-excerpt" itemprop="articleBody">
-      <blockquote>
-<p>描述：如果类不能执行这个方法，会执行动态<strong>消息转发</strong>，如果该类还是不能动态的添加方法，则走<strong>完整的消息转发</strong>。分两步，第一步<strong>看看有没有其他类可以执行该方法</strong>，如果没有走第二步，<strong>将所有的细节封装到NSInvocation中，给接受者最后一次机会</strong>。</p>
-</blockquote>
-
-<p>演示：
-动态消息转发
-&gt;在一个类<code>MessageObj</code>中定义两个方法，<code>testDynamicMethodForward</code>一个有实现方法，<code>start</code>一个没有实现的方法，调用没有实现的方法，在动态消息转发的时候将这个方法hook到已经实现的方法上：
-</p>
-      <p>
-        <a href="https://linkrober.github.io/bookshelf/2017/04/%E6%B6%88%E6%81%AF%E8%BD%AC%E5%8F%91/" class="postShorten-excerpt_link link">阅读全文</a>
+</div>
+          
+          <div class="post-content markdown" itemprop="articleBody">
+            <div class="main-content-wrap">
+              <p></p>
+              
+            </div>
+          </div>
+          <div id="post-footer" class="post-footer main-content-wrap">
+            
+              
+            
+            
+  <div class="post-actions-wrap">
+      <nav >
+        <ul class="post-actions post-action-nav">
+            <li class="post-action">
+              
+                <a class="post-action-btn btn btn--disabled">
+              
+                <i class="fa fa-angle-left"></i>
+                <span class="hide-xs hide-sm text-small icon-ml">下一篇</span>
+              </a>
+            </li>
+            <li class="post-action">
+              
+                <a class="post-action-btn btn btn--default tooltip--top" href="https://LinkRober.github.io/bookshelf/2017/09/run-loops-%E4%BA%8C/" data-tooltip="Run Loops (二)">
+              
+                <span class="hide-xs hide-sm text-small icon-mr">上一篇</span>
+                <i class="fa fa-angle-right"></i>
+              </a>
+            </li>
+        </ul>
+      </nav>
+    <ul class="post-actions post-action-share" >
+      
+        <li class="post-action hide-lg hide-md hide-sm">
+          <a class="post-action-btn btn btn--default btn-open-shareoptions" href="#btn-open-shareoptions">
+            <i class="fa fa-share-alt"></i>
+          </a>
+        </li>
         
-      </p>
-    </div>
+      
+      
+        <li class="post-action">
+          <a class="post-action-btn btn btn--default" href="#disqus_thread">
+            <i class="fa fa-comment-o"></i>
+          </a>
+        </li>
+      
+      <li class="post-action">
+        
+          <a class="post-action-btn btn btn--default" href="#">
+        
+          <i class="fa fa-list"></i>
+        </a>
+      </li>
+    </ul>
   </div>
-  
-</article>
+
 
             
+              
+                <div id="disqus_thread">
+  <noscript>Please enable JavaScript to view the <a href="//disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
+</div>
+              
             
-
-          </section>
-        
+          </div>
+        </article>
         
       </div>
+      <div id="bottom-bar" class="post-bottom-bar" data-behavior="4">
+        
+  <div class="post-actions-wrap">
+      <nav >
+        <ul class="post-actions post-action-nav">
+            <li class="post-action">
+              
+                <a class="post-action-btn btn btn--disabled">
+              
+                <i class="fa fa-angle-left"></i>
+                <span class="hide-xs hide-sm text-small icon-ml">下一篇</span>
+              </a>
+            </li>
+            <li class="post-action">
+              
+                <a class="post-action-btn btn btn--default tooltip--top" href="https://LinkRober.github.io/bookshelf/2017/09/run-loops-%E4%BA%8C/" data-tooltip="Run Loops (二)">
+              
+                <span class="hide-xs hide-sm text-small icon-mr">上一篇</span>
+                <i class="fa fa-angle-right"></i>
+              </a>
+            </li>
+        </ul>
+      </nav>
+    <ul class="post-actions post-action-share" >
+      
+        <li class="post-action hide-lg hide-md hide-sm">
+          <a class="post-action-btn btn btn--default btn-open-shareoptions" href="#btn-open-shareoptions">
+            <i class="fa fa-share-alt"></i>
+          </a>
+        </li>
+        
+      
+      
+        <li class="post-action">
+          <a class="post-action-btn btn btn--default" href="#disqus_thread">
+            <i class="fa fa-comment-o"></i>
+          </a>
+        </li>
+      
+      <li class="post-action">
+        
+          <a class="post-action-btn btn btn--default" href="#">
+        
+          <i class="fa fa-list"></i>
+        </a>
+      </li>
+    </ul>
+  </div>
+
+
+      </div>
+      <div id="share-options-bar" class="share-options-bar" data-behavior="4">
+  <i id="btn-close-shareoptions" class="fa fa-close"></i>
+  <ul class="share-options">
+    
+  </ul>
+</div>
+<div id="share-options-mask" class="share-options-mask"></div>
     </div>
     
     <div id="about">
@@ -306,6 +386,23 @@
       <div class="no-result text-color-light text-center"></div>
       <div class="results">
         
+        
+          <div class="media">
+            
+            <div class="media-body">
+              <a class="link-unstyled" href="https://linkrober.github.io/bookshelf/2017/10/runtime-%E4%BA%8C/">
+                <h3 class="media-heading">Runtime (二)</h3>
+              </a>
+              <span class="media-meta">
+                <span class="media-date text-small">
+                  Oct 10, 2017
+                </span>
+              </span>
+              <div class="media-content hide-xs font-merryweather"><p></p></div>
+            </div>
+            <div style="clear:both;"></div>
+            <hr>
+          </div>
         
           <div class="media">
             
@@ -425,7 +522,7 @@
          data-message-zero=""
          data-message-one=""
          data-message-other="">
-         4 posts found
+         5 posts found
       </p>
     </div>
   </div>
@@ -458,6 +555,32 @@ $(document).ready(function() {
   });
 });
 </script>
+
+  
+    
+      <script>
+        var disqus_config = function () {
+          this.page.url = 'https:\/\/linkrober.github.io\/bookshelf\/2017\/10\/runtime-%E4%BA%8C\/';
+          
+            this.page.identifier = '\/2017\/10\/runtime-%E4%BA%8C\/'
+          
+        };
+        (function() {
+          
+          
+          if (window.location.hostname == "localhost") {
+            return;
+          }
+          var d = document, s = d.createElement('script');
+          var disqus_shortname = 'dongerqian.disqus.com';
+          s.src = '//' + disqus_shortname + '.disqus.com/embed.js';
+
+          s.setAttribute('data-timestamp', +new Date());
+          (d.head || d.body).appendChild(s);
+        })();
+      </script>
+    
+  
 
 
 
