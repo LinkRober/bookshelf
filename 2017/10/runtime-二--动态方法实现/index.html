@@ -1,5 +1,9 @@
 
 
+  
+    
+  
+
 
   
 
@@ -16,25 +20,50 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <meta name="generator" content="Hugo 0.19">
-    <title>Runtime</title>
+    <title>Runtime (二)  动态方法实现</title>
     <meta name="author" content="董二千">
     <meta name="keywords" content="">
 
     <link rel="icon" href="https://LinkRober.github.io/bookshelf/favicon.png">
     
-      <link rel="alternate" type="application/rss+xml" title="RSS" href="https://LinkRober.github.io/bookshelf/categories/runtime/index.xml">
-    
 
     
-    <meta name="description" content="我们为什么要学习，毕竟改变需要时间">
-    <meta property="og:description" content="我们为什么要学习，毕竟改变需要时间">
+    <meta name="description" content="Dynamic Method Resolution
+
+有的时候，你可能想要提供方法的动态实现。例如，Object-C 属性特征包含了@dynamic
+
+@dynamic propertyName;
+
+
+这里是告诉编译器属性相关方法的实现会被动态的提供。
+你可以实现resolveInstanceMethod:和resolveClassMethod:为各个实例和类动态的提供一个selector。
+">
+    <meta property="og:description" content="Dynamic Method Resolution
+
+有的时候，你可能想要提供方法的动态实现。例如，Object-C 属性特征包含了@dynamic
+
+@dynamic propertyName;
+
+
+这里是告诉编译器属性相关方法的实现会被动态的提供。
+你可以实现resolveInstanceMethod:和resolveClassMethod:为各个实例和类动态的提供一个selector。
+">
     <meta property="og:type" content="blog">
-    <meta property="og:title" content="Runtime">
-    <meta property="og:url" content="/categories/runtime/">
+    <meta property="og:title" content="Runtime (二)  动态方法实现">
+    <meta property="og:url" content="/2017/10/runtime-%E4%BA%8C--%E5%8A%A8%E6%80%81%E6%96%B9%E6%B3%95%E5%AE%9E%E7%8E%B0/">
     <meta property="og:site_name" content="董二千">
     <meta name="twitter:card" content="summary">
     <meta name="twitter:title" content="董二千">
-    <meta name="twitter:description" content="我们为什么要学习，毕竟改变需要时间">
+    <meta name="twitter:description" content="Dynamic Method Resolution
+
+有的时候，你可能想要提供方法的动态实现。例如，Object-C 属性特征包含了@dynamic
+
+@dynamic propertyName;
+
+
+这里是告诉编译器属性相关方法的实现会被动态的提供。
+你可以实现resolveInstanceMethod:和resolveClassMethod:为各个实例和类动态的提供一个selector。
+">
     
     
 
@@ -68,7 +97,7 @@
 
   <body>
     <div id="blog">
-      <header id="header" data-behavior="1">
+      <header id="header" data-behavior="4">
   <i id="btn-open-sidebar" class="fa fa-lg fa-bars"></i>
   <div class="header-title">
     <a class="header-title-link" href="https://LinkRober.github.io/bookshelf/">董二千</a>
@@ -88,7 +117,7 @@
   
 </header>
 
-      <nav id="sidebar" data-behavior="1">
+      <nav id="sidebar" data-behavior="4">
   <div class="sidebar-container">
     
       <div class="sidebar-profile">
@@ -174,105 +203,155 @@
 </nav>
 
       
-        
 
-      
-      <div id="main" data-behavior="1"
+      <div id="main" data-behavior="4"
         class="
                hasCoverMetaIn
                ">
-        
-          <section class="postShorten-group main-content-wrap">
-            
-            
-              
+        <article class="post" itemscope itemType="http://schema.org/BlogPosting">
+          
+          
+            <div class="post-header main-content-wrap text-left">
   
-    
+    <h1 class="post-title" itemprop="headline">
+      Runtime (二)  动态方法实现
+    </h1>
+  
+  <div class="postShorten-meta post-meta">
+  
+    <time itemprop="datePublished" datetime="2017-10-09T18:06:28&#43;08:00">
       
-        
-      
-    
-  
-
-
-  
-
-<article class="postShorten postShorten--thumbnailimg-bottom" itemscope itemType="http://schema.org/BlogPosting">
-  <div class="postShorten-wrap">
-    
-    <div class="postShorten-header">
-      <h1 class="postShorten-title" itemprop="headline">
-        <a class="link-unstyled" href="https://linkrober.github.io/bookshelf/2017/09/runtime-%E4%B8%80-%E6%B6%88%E6%81%AF/">
-          Runtime (一) 消息
-        </a>
-      </h1>
-      <div class="postShorten-meta post-meta">
-  
-    <time itemprop="datePublished" datetime="2017-09-29T00:00:00Z">
-      
-  九月 29, 2017
+  十月 9, 2017
 
     </time>
   
   
-  
-  
-    <span>发布在</span>
-    
-      <a class="category-link" href="https://LinkRober.github.io/bookshelf/categories/runtime">runtime</a>
-    
-  
-
 
 </div>
 
-    </div>
-    <div class="postShorten-excerpt" itemprop="articleBody">
-      <p>
-        <h3 id="message">Message</h3>
+</div>
+          
+          <div class="post-content markdown" itemprop="articleBody">
+            <div class="main-content-wrap">
+              <h3 id="dynamic-method-resolution">Dynamic Method Resolution</h3>
 
-<p>这篇文章描述了消息如何通过使用<code>objc_msgSend</code>发送，如何通过方法名称找到对应方法的reference</p>
+<p>有的时候，你可能想要提供方法的动态实现。例如，Object-C 属性特征包含了<code>@dynamic</code></p>
 
-<h4 id="the-objc-msgsend-function">The objc_msgSend Function</h4>
-
-<p>在Object-C中，发送的消息直到运行时才绑定到正真的方式实现。</p>
-
-<pre><code>[receiver message]
+<pre><code>@dynamic propertyName;
 </code></pre>
 
-<p><code>objc_msgSend</code>是真正调用消息的函数，这个函数持有消息的接受者和方法的名称：</p>
+<p>这里是告诉编译器属性相关方法的实现会被动态的提供。
+你可以实现<code>resolveInstanceMethod:</code>和<code>resolveClassMethod:</code>为各个实例和类动态的提供一个selector。
+</p>
 
-<pre><code>objc_msgSend(receiver,selector)
+<p>一个Object-C方法是一个简单的C函数，它最少持有两个参数&ndash;<code>self</code>和<code>_cmd</code>。你可以使用<code>class_addMethod</code>添加一个函数到类中作为方法，函数大概像这样：</p>
+
+<pre><code>void dynamicMethodIMP(id self,SEL _cmd) {
+	//implementation...
+}
 </code></pre>
 
-<p>任何其他的参数也是通过这个方法传入：</p>
+<p>你可以动态的把它添加到类中作为一个方法，通过使用<code>resolveInstanceMethod:</code>调用<code>resolveThisMethodDynamically</code>方法，像这样：</p>
 
-<pre><code>objc_msgSend(receiver,selector,arg1,arg2,...)
+<pre><code>@implementation MyClass
++ (BOOL)resolveInstanceMethod:(SEL)aSEL
+{
+	if(aSEL == @selector(resolveThisMethodDynamically)){
+		class_addMethod([self class],aSEL,(IMP)dynamicMethodIMP,&quot;v@:&quot;);
+		return YES;
+	}
+	return [super resolveInstanceMethod:aSEL];
+}
 </code></pre>
 
-<p>这个方法会做一些必要的事情来进行动态绑定：</p>
+<p>@end
+一个类在消息转发机制开始前有机会动态的添加一个方法。如果<code>respondsToSelector:</code>或者<code>instancesRespondToSelector:</code>方法被调用时，动态的方法接受者首先会被给予一次机会，为selector提供一个<code>IMP</code>。如果你实现了<code>resolveInstanceMethod:</code>方法，但是想要指定的selector，通过转发机制被转发，你要return <code>NO</code>。</p>
 
-<ul>
-<li>首先找到方法的实现即selector的引用。因为在不同的类中都可以实现相同方法名的方法，所以通过方法的实现找到真正的receiver的class。</li>
-<li>然后传入该方法指定的receiver和参数。</li>
-<li>最后将实现的返回值作为它自己的返回值。</li>
-</ul>
+<h3 id="dynamic-loading">Dynamic Loading</h3>
 
-<p><blockquote>
-        <br>
-        <a href="https://linkrober.github.io/bookshelf/2017/09/runtime-%E4%B8%80-%E6%B6%88%E6%81%AF/" class="postShorten-excerpt_link link">阅读全文</a>
-        
-      </p>
-    </div>
-  </div>
-  
-</article>
+<p>一个Object-C程序可以在运行的时候加载和链接新的类。动态加载可以用来做很多不同的事情。例如，系统偏好中的不同模块是通过动态加载的方式实现的。
+在Cocoa的环境中，动态加载一般被用来让应用更具灵活性。在编写自己的模块的时候，可以在runtime的时候被加载。更多的是用接口加载自定义的模版。OS X的系统设置中加载自定义的偏好模块。你应用程序的模块扩展等。
+因此在Mach-O文件中有一个runtime函数执行Object-C的动态加载(objc_loadModules,定义在objc/objc-load.h中)，Cocoa的<code>NSBundle</code>类为动态加载提供了一个更方便的接口&ndash;面向对象的聚合相关服务的接口。</p>
+              
+            </div>
+          </div>
+          <div id="post-footer" class="post-footer main-content-wrap">
+            
+              
+            
+            <div class="post-actions-wrap">
+  <nav>
+    <ul class="post-actions post-action-nav">
+      
+        <li class="post-action">
+          
+            <a class="post-action-btn btn btn--disabled">
+          
+            <i class="fa fa-angle-left"></i>
+            <span class="hide-xs hide-sm text-small icon-ml">上一篇</span>
+          </a>
+        </li>
+        <li class="post-action">
+          
+            <a class="post-action-btn btn btn--default tooltip--top" href="https://LinkRober.github.io/bookshelf/2017/09/runtime-%E4%B8%80-%E6%B6%88%E6%81%AF/" data-tooltip="Runtime (一) 消息">
+          
+            <span class="hide-xs hide-sm text-small icon-mr">下一篇</span>
+            <i class="fa fa-angle-right"></i>
+          </a>
+        </li>
+      
+    </ul>
+  </nav>
+  <ul class="post-actions post-action-share">
+    
+      <li class="post-action hide-lg hide-md hide-sm">
+        <a class="post-action-btn btn btn--default btn-open-shareoptions" href="#btn-open-shareoptions">
+          <i class="fa fa-share-alt"></i>
+        </a>
+      </li>
+      <li class="post-action hide-xs">
+        <a class="post-action-btn btn btn--default" target="new" href="https://plus.google.com/share?url=https%3a%2f%2flinkrober.github.io%2fbookshelf%2f2017%2f10%2fruntime-%25E4%25BA%258C--%25E5%258A%25A8%25E6%2580%2581%25E6%2596%25B9%25E6%25B3%2595%25E5%25AE%259E%25E7%258E%25B0%2f">
+          <i class="fa fa-google-plus"></i>
+        </a>
+      </li>
+      <li class="post-action hide-xs">
+        <a class="post-action-btn btn btn--default" target="new" href="https://www.facebook.com/sharer/sharer.php?u=https%3a%2f%2flinkrober.github.io%2fbookshelf%2f2017%2f10%2fruntime-%25E4%25BA%258C--%25E5%258A%25A8%25E6%2580%2581%25E6%2596%25B9%25E6%25B3%2595%25E5%25AE%259E%25E7%258E%25B0%2f">
+          <i class="fa fa-facebook-official"></i>
+        </a>
+      </li>
+      <li class="post-action hide-xs">
+        <a class="post-action-btn btn btn--default" target="new" href="https://twitter.com/intent/tweet?text=https%3a%2f%2flinkrober.github.io%2fbookshelf%2f2017%2f10%2fruntime-%25E4%25BA%258C--%25E5%258A%25A8%25E6%2580%2581%25E6%2596%25B9%25E6%25B3%2595%25E5%25AE%259E%25E7%258E%25B0%2f">
+          <i class="fa fa-twitter"></i>
+        </a>
+      </li>
+    
+    
+      <li class="post-action">
+        <a class="post-action-btn btn btn--default" href="#disqus_thread">
+          <i class="fa fa-comment-o"></i>
+        </a>
+      </li>
+    
+    <li class="post-action">
+      
+        <a class="post-action-btn btn btn--default" href="#">
+      
+        <i class="fa fa-list"></i>
+      </a>
+    </li>
+  </ul>
+</div>
+
 
             
+              
+                <div id="disqus_thread">
+  <noscript>Please enable JavaScript to view the <a href="//disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
+</div>
+              
             
-
-          </section>
-        
+          </div>
+        </article>
         <footer id="footer" class="main-content-wrap">
   <span class="copyrights">
     &copy; 2017 董二千. All Rights Reserved
@@ -280,6 +359,92 @@
 </footer>
 
       </div>
+      <div id="bottom-bar" class="post-bottom-bar" data-behavior="4">
+        <div class="post-actions-wrap">
+  <nav>
+    <ul class="post-actions post-action-nav">
+      
+        <li class="post-action">
+          
+            <a class="post-action-btn btn btn--disabled">
+          
+            <i class="fa fa-angle-left"></i>
+            <span class="hide-xs hide-sm text-small icon-ml">上一篇</span>
+          </a>
+        </li>
+        <li class="post-action">
+          
+            <a class="post-action-btn btn btn--default tooltip--top" href="https://LinkRober.github.io/bookshelf/2017/09/runtime-%E4%B8%80-%E6%B6%88%E6%81%AF/" data-tooltip="Runtime (一) 消息">
+          
+            <span class="hide-xs hide-sm text-small icon-mr">下一篇</span>
+            <i class="fa fa-angle-right"></i>
+          </a>
+        </li>
+      
+    </ul>
+  </nav>
+  <ul class="post-actions post-action-share">
+    
+      <li class="post-action hide-lg hide-md hide-sm">
+        <a class="post-action-btn btn btn--default btn-open-shareoptions" href="#btn-open-shareoptions">
+          <i class="fa fa-share-alt"></i>
+        </a>
+      </li>
+      <li class="post-action hide-xs">
+        <a class="post-action-btn btn btn--default" target="new" href="https://plus.google.com/share?url=https%3a%2f%2flinkrober.github.io%2fbookshelf%2f2017%2f10%2fruntime-%25E4%25BA%258C--%25E5%258A%25A8%25E6%2580%2581%25E6%2596%25B9%25E6%25B3%2595%25E5%25AE%259E%25E7%258E%25B0%2f">
+          <i class="fa fa-google-plus"></i>
+        </a>
+      </li>
+      <li class="post-action hide-xs">
+        <a class="post-action-btn btn btn--default" target="new" href="https://www.facebook.com/sharer/sharer.php?u=https%3a%2f%2flinkrober.github.io%2fbookshelf%2f2017%2f10%2fruntime-%25E4%25BA%258C--%25E5%258A%25A8%25E6%2580%2581%25E6%2596%25B9%25E6%25B3%2595%25E5%25AE%259E%25E7%258E%25B0%2f">
+          <i class="fa fa-facebook-official"></i>
+        </a>
+      </li>
+      <li class="post-action hide-xs">
+        <a class="post-action-btn btn btn--default" target="new" href="https://twitter.com/intent/tweet?text=https%3a%2f%2flinkrober.github.io%2fbookshelf%2f2017%2f10%2fruntime-%25E4%25BA%258C--%25E5%258A%25A8%25E6%2580%2581%25E6%2596%25B9%25E6%25B3%2595%25E5%25AE%259E%25E7%258E%25B0%2f">
+          <i class="fa fa-twitter"></i>
+        </a>
+      </li>
+    
+    
+      <li class="post-action">
+        <a class="post-action-btn btn btn--default" href="#disqus_thread">
+          <i class="fa fa-comment-o"></i>
+        </a>
+      </li>
+    
+    <li class="post-action">
+      
+        <a class="post-action-btn btn btn--default" href="#">
+      
+        <i class="fa fa-list"></i>
+      </a>
+    </li>
+  </ul>
+</div>
+
+
+      </div>
+      <div id="share-options-bar" class="share-options-bar" data-behavior="4">
+  <ul class="share-options">
+    <li class="share-option">
+      <a class="share-option-btn" target="new" href="https://plus.google.com/share?url=https%3a%2f%2flinkrober.github.io%2fbookshelf%2f2017%2f10%2fruntime-%25E4%25BA%258C--%25E5%258A%25A8%25E6%2580%2581%25E6%2596%25B9%25E6%25B3%2595%25E5%25AE%259E%25E7%258E%25B0%2f">
+        <i class="fa fa-google-plus"></i><span>分享到 Google&#43;</span>
+      </a>
+    </li>
+    <li class="share-option">
+      <a class="share-option-btn" target="new" href="https://www.facebook.com/sharer/sharer.php?u=https%3a%2f%2flinkrober.github.io%2fbookshelf%2f2017%2f10%2fruntime-%25E4%25BA%258C--%25E5%258A%25A8%25E6%2580%2581%25E6%2596%25B9%25E6%25B3%2595%25E5%25AE%259E%25E7%258E%25B0%2f">
+        <i class="fa fa-facebook-official"></i><span>分享到 Facebook</span>
+      </a>
+    </li>
+    <li class="share-option">
+      <a class="share-option-btn" target="new" href="https://twitter.com/intent/tweet?text=https%3a%2f%2flinkrober.github.io%2fbookshelf%2f2017%2f10%2fruntime-%25E4%25BA%258C--%25E5%258A%25A8%25E6%2580%2581%25E6%2596%25B9%25E6%25B3%2595%25E5%25AE%259E%25E7%258E%25B0%2f">
+        <i class="fa fa-twitter"></i><span>分享到 Twitter</span>
+      </a>
+    </li>
+  </ul>
+</div>
+<div id="share-options-mask" class="share-options-mask"></div>
     </div>
     
     <div id="about">
@@ -576,6 +741,32 @@ $(document).ready(function() {
   });
 });
 </script>
+
+  
+    
+      <script>
+        var disqus_config = function () {
+          this.page.url = 'https:\/\/linkrober.github.io\/bookshelf\/2017\/10\/runtime-%E4%BA%8C--%E5%8A%A8%E6%80%81%E6%96%B9%E6%B3%95%E5%AE%9E%E7%8E%B0\/';
+          
+            this.page.identifier = '\/2017\/10\/runtime-%E4%BA%8C--%E5%8A%A8%E6%80%81%E6%96%B9%E6%B3%95%E5%AE%9E%E7%8E%B0\/'
+          
+        };
+        (function() {
+          
+          
+          if (window.location.hostname == "localhost") {
+            return;
+          }
+          var d = document, s = d.createElement('script');
+          var disqus_shortname = 'dongerqian.disqus.com';
+          s.src = '//' + disqus_shortname + '.disqus.com/embed.js';
+
+          s.setAttribute('data-timestamp', +new Date());
+          (d.head || d.body).appendChild(s);
+        })();
+      </script>
+    
+  
 
 
     
