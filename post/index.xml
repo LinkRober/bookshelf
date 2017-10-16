@@ -6,8 +6,119 @@
     <description>Recent content in Posts on 董二千</description>
     <generator>Hugo -- gohugo.io</generator>
     <language>zh-cn</language>
-    <lastBuildDate>Mon, 09 Oct 2017 18:06:28 +0800</lastBuildDate>
+    <lastBuildDate>Mon, 16 Oct 2017 00:00:00 +0000</lastBuildDate>
     <atom:link href="https://linkrober.github.io/bookshelf/post/index.xml" rel="self" type="application/rss+xml" />
+    
+    <item>
+      <title>Runtime(三) 消息转发</title>
+      <link>https://linkrober.github.io/bookshelf/2017/10/runtime%E4%B8%89-%E6%B6%88%E6%81%AF%E8%BD%AC%E5%8F%91/</link>
+      <pubDate>Mon, 16 Oct 2017 00:00:00 +0000</pubDate>
+      
+      <guid>https://linkrober.github.io/bookshelf/2017/10/runtime%E4%B8%89-%E6%B6%88%E6%81%AF%E8%BD%AC%E5%8F%91/</guid>
+      <description>&lt;p&gt;向对象发送一个消息，如果没有处理就会发生错误。但是在产生错误之前，runtime会给接受对象第二次机会来处理消息。
+&lt;/p&gt;
+
+&lt;h3 id=&#34;forwarding&#34;&gt;Forwarding&lt;/h3&gt;
+
+&lt;p&gt;向对象发送一个消息，如果没有处理就会发生错误。但是在产生错误之前，runtime会向对象发送&lt;code&gt;forwardInvocation:&lt;/code&gt;消息，消息携带了一个&lt;code&gt;NSInvocation&lt;/code&gt;对象，这个对象里面包裹了原始消息和参数。&lt;/p&gt;
+
+&lt;p&gt;你可以实现&lt;code&gt;forwardInvocation:&lt;/code&gt;方法来处理消息，来避免错误的发生。正如方法名所暗示的&lt;code&gt;forwardInvocation:&lt;/code&gt;一般用来向另一个对象转发消息。&lt;/p&gt;
+
+&lt;p&gt;为了看到转发的过程和结果，我们想象下面的场景：首先，你设计了一个对象能够响应&lt;code&gt;negotiate&lt;/code&gt;方法，你希望它能够响应另外一个对象的消息。无论&lt;code&gt;negotiate&lt;/code&gt;的方法体是在哪里实现的,你可以通过传入&lt;code&gt;negotiate&lt;/code&gt;消息到另一个对象来完成。下一步，假设你想要&lt;code&gt;negotiate&lt;/code&gt;消息的响应可以被另外一个类明确的接受。一种办法是通过继承的方式，让你的类从父类中继承这个方法。但是如果在不同的继承链中，这种方法是不可能实现的。&lt;/p&gt;
+
+&lt;p&gt;即使你的类不能通过继承的方式使用&lt;code&gt;negotiate&lt;/code&gt;方法，我们仍然可以借用下面这种方式，向另一个类对象传递消息。&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;- (id)negotiate
+{
+    if ( [someOtherObject respondsTo:@selector(negotiate)] )
+        return [someOtherObject negotiate];
+    return self;
+}
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;但是这种方式有点笨重，特别是如果你有大量的消息需要传递到另一个类的时候。你必须要在一个方法里面覆盖所有你想要调用的其他类的方法。而且，可能有些方法你不能考虑周全。所有的方法集合都依赖于运行时事件，在以后类的实现中作为新的方法发生改变。&lt;/p&gt;
+
+&lt;p&gt;第二次机会被&lt;code&gt;forwardInvocation:&lt;/code&gt;方法所提供，这是一种比较特殊的解决方式，它是动态的而不是静态的。它工作起来就像是：当一个对象不能响应一个消息，因为在消息中没有selector匹配这个方法。runtime会用&lt;code&gt;forwardInvocation:&lt;/code&gt;消息来通知对象。每个对象都从NSObject里继承了&lt;code&gt;forwardInvocation:&lt;/code&gt;方法。但是NSObject只是简单的调用&lt;code&gt;doesNotRecognizeSelector:&lt;/code&gt;。通过重写NSObject版本的实现，你可以利用这次机会，通过&lt;code&gt;forwardInvocation:&lt;/code&gt;消息提供一个方法转发到另一个类中。
+为了转发一个消息，所有的&lt;code&gt;forwardInvocation:&lt;/code&gt;方法必须包含下面的两个步骤:&lt;/p&gt;
+
+&lt;ul&gt;
+&lt;li&gt;确定消息的去向&lt;/li&gt;
+&lt;li&gt;转发的时候携带原始的参数&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;p&gt;消息可以通过&lt;code&gt;invokeWithTarget:&lt;/code&gt;方法被发送：&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;- (void)forwardInvocation:(NSInvocation *)anInvocation
+{
+	if ([someOtherObject respondsToSelector:[anInvocation selector]])
+		[aInvocation invokeWithTarget:someOtherObject];
+	else
+		[super forwardInvocation:anInvocation];
+}
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;被转发的消息的返回值被返回到原始的sender。所有返回值的类型包括：ids、structures，双精度浮点数。
+对于unrecognized消息，&lt;code&gt;forwardInvocation:&lt;/code&gt;方法就像一个消息转发中心，将message包裹起来发送到不同的接受者。或者作为一个中转站，发送所有消息到同样的地方。它可以转发一个消息到另一个。&lt;code&gt;forwardInvocation:&lt;/code&gt;方法可以定位几个消息消息到单一的response。&lt;code&gt;forwardInvocation:&lt;/code&gt;要做的是准备实现。但是，这次机会为转发链中的链接对象提供更多程序设计的可能。&lt;/p&gt;
+
+&lt;blockquote&gt;
+&lt;p&gt;&lt;strong&gt;Note:&lt;/strong&gt;&lt;code&gt;forwardInvocation:&lt;/code&gt;方法开始处理消息，只有它们不能调用在接受者中已经存在的方法时。比如，你想要你的对象去转发&lt;code&gt;negotiate&lt;/code&gt;消息到另一个对象，但对象并没有自己对该消息的实现。如果是这样，消息将永远不会到达&lt;code&gt;forwardInvocation:&lt;/code&gt;&lt;/p&gt;
+&lt;/blockquote&gt;
+
+&lt;h3 id=&#34;forwarding-and-multiple-inheritance&#34;&gt;Forwarding and Multiple Inheritance&lt;/h3&gt;
+
+&lt;p&gt;转发可以模仿多继承，可以实现多继承的一些效果。对象通过转发来响应消息，就像是借用或者继承了另一个类的某个方法的实现
+&lt;img src=&#34;../../../forwarding.png&#34; alt=&#34;forwarding&#34; /&gt;&lt;/p&gt;
+
+&lt;p&gt;在这个例子中，Warrior类的实例转发一个&lt;code&gt;negotiate&lt;/code&gt;消息到Diplomat类的实例。Warrior可以像Diplomat一样调用negotiate。看起来就像响应&lt;code&gt;negotiate&lt;/code&gt;方法。
+对象转发消息，这样“继承”的方法来自两种继承架构链。上面的例子中，它就像Warrior的类继承自Diplomat ，就像子类继承父类一样。&lt;/p&gt;
+
+&lt;p&gt;转发提供了很多特性，一般你可以用它来实现多继承。但是，这和多继承有两个很大不同地方：首先，在一个类中，多继承组合出不同的能力。它趋向于较庞大的多接口对象。另一方面，继承可以区分不同种类的方法到不同的对象。&lt;/p&gt;
+
+&lt;h3 id=&#34;forwarding-and-inheritance&#34;&gt;Forwarding and Inheritance&lt;/h3&gt;
+
+&lt;p&gt;尽管转发可以模仿继承，NSObject类绝不能混合这两种方式。像&lt;code&gt;respondsToSelector:&lt;/code&gt;和&lt;code&gt;isKindOfClass:&lt;/code&gt;方法，只能在继承链中看到，不能用于消息转发链。例如，一个Warrior对象被查询是否响应&lt;code&gt;negotiate&lt;/code&gt;消息，&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;if([aWarrior respondsToSelector:@selector(negotiate)])
+...
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;答案是&lt;code&gt;NO&lt;/code&gt;，在某种意义上，即使它能无错误的接受&lt;code&gt;negotiate&lt;/code&gt;消息，并且响应它们，通过转发它们到Diplomat。&lt;/p&gt;
+
+&lt;p&gt;在许多情况下，&lt;code&gt;NO&lt;/code&gt;是正确的答案。但也需不是。如果你使用转发来设置一个替代的object或者扩展一个类的能力，转发机制应该像继承一样透明。如果你想要你的对象的行为就好像真正是通过继承来实现消息转发的。你将需要重新实现&lt;code&gt;respondsToSelector:&lt;/code&gt;和&lt;code&gt;isKindOfClass:&lt;/code&gt;包括你的转发算法：&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;- (BOOL)respondsToSelector:(SEL)aSelector
+{
+	if([super respondsToSelector:aSelector])
+		return YESl
+	else {
+		/* Here,test whether the aSelector message can *
+		 * be forwarded to another object and whether that *
+		 * object can respond to it.Return YES if it can. */
+	}
+	return NO;
+}
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;除了&lt;code&gt;respondsToSelector:&lt;/code&gt;和&lt;code&gt;isKindOfClass:&lt;/code&gt;,&lt;code&gt;instancesRespondToSelector:&lt;/code&gt;方法应该反映转发算法。如果协议被使用,&lt;code&gt;conformsToProtocol:&lt;/code&gt;方法应该同样被添加到这个list中。类似的，如果一个对象转发任何它接受的远程消息，它应该有一个&lt;code&gt;methodSignatureForSelector:&lt;/code&gt;方法的实现，它能返回方法精确的描述。最终响应转发的消息。例如，如果一个对象能够转发一个消息到它的替代者，你应该向下面这样实现&lt;code&gt;methodSignatureForSelector:&lt;/code&gt;方法：&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;- (NSMethodSignature *)methodSignatureForSelector:(SEL)selector
+{
+	NSMethodSignature *signature = [super methodSignatureForSelector:selector];
+	if(!signature){
+		signature = [surrogate methodSignatureForSelector:selector];
+	}
+	return signature;
+}
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;你可能考虑把转发算法放在私有代码的某个地方并且拥有所有这些方法,&lt;code&gt;forwardInvocation:&lt;/code&gt;包括调用它。&lt;/p&gt;
+
+&lt;blockquote&gt;
+&lt;p&gt;&lt;strong&gt;Note:&lt;/strong&gt;这是一个高级技巧，仅仅适用于没有其他解决方案的时候。这也不将作为继承的替代。如果你必须使用这个技术，确保你能完全理解在进行转发和要转发到的目标类的行为。&lt;/p&gt;
+&lt;/blockquote&gt;
+
+&lt;p&gt;在这部分提到的方法被描述在&lt;code&gt;NSObject&lt;/code&gt;类的说明中。更多的关于&lt;code&gt;invokeWithTarget:&lt;/code&gt;请看&lt;a href=&#34;https://developer.apple.com/documentation/foundation/nsinvocation&#34;&gt;NSInvocation&lt;/a&gt;类的说明。&lt;/p&gt;</description>
+    </item>
     
     <item>
       <title>Runtime (二)  动态方法实现</title>
@@ -17,14 +128,15 @@
       <guid>https://linkrober.github.io/bookshelf/2017/10/runtime-%E4%BA%8C--%E5%8A%A8%E6%80%81%E6%96%B9%E6%B3%95%E5%AE%9E%E7%8E%B0/</guid>
       <description>&lt;h3 id=&#34;dynamic-method-resolution&#34;&gt;Dynamic Method Resolution&lt;/h3&gt;
 
-&lt;p&gt;有的时候，你可能想要提供方法的动态实现。例如，Object-C 属性特征包含了&lt;code&gt;@dynamic&lt;/code&gt;&lt;/p&gt;
+&lt;p&gt;有的时候，你可能想要提供方法的动态实现。例如，Object-C 属性特征包含了&lt;code&gt;@dynamic&lt;/code&gt;
+&lt;/p&gt;
 
 &lt;pre&gt;&lt;code&gt;@dynamic propertyName;
 &lt;/code&gt;&lt;/pre&gt;
 
-&lt;p&gt;这里是告诉编译器属性相关方法的实现会被动态的提供。
-你可以实现&lt;code&gt;resolveInstanceMethod:&lt;/code&gt;和&lt;code&gt;resolveClassMethod:&lt;/code&gt;为各个实例和类动态的提供一个selector。
-&lt;/p&gt;
+&lt;p&gt;这里是告诉编译器属性相关方法的实现会被动态的提供。&lt;/p&gt;
+
+&lt;p&gt;你可以实现&lt;code&gt;resolveInstanceMethod:&lt;/code&gt;和&lt;code&gt;resolveClassMethod:&lt;/code&gt;为各个实例和类动态的提供一个selector。&lt;/p&gt;
 
 &lt;p&gt;一个Object-C方法是一个简单的C函数，它最少持有两个参数&amp;ndash;&lt;code&gt;self&lt;/code&gt;和&lt;code&gt;_cmd&lt;/code&gt;。你可以使用&lt;code&gt;class_addMethod&lt;/code&gt;添加一个函数到类中作为方法，函数大概像这样：&lt;/p&gt;
 
@@ -68,7 +180,8 @@
 
 &lt;h4 id=&#34;the-objc-msgsend-function&#34;&gt;The objc_msgSend Function&lt;/h4&gt;
 
-&lt;p&gt;在Object-C中，发送的消息直到运行时才绑定到正真的方式实现。&lt;/p&gt;
+&lt;p&gt;在Object-C中，发送的消息直到运行时才绑定到正真的方式实现。
+&lt;/p&gt;
 
 &lt;pre&gt;&lt;code&gt;[receiver message]
 &lt;/code&gt;&lt;/pre&gt;
@@ -92,10 +205,10 @@
 &lt;/ul&gt;
 
 &lt;blockquote&gt;
-&lt;p&gt;Note:编译器生成调用消息的方法，在日常开发中永远不要在你写的代码中直接调用。
-
-在架构中消息传递的关键在于编译器编译每个class和object。每个class的结构中包含两个重要元素：&lt;/p&gt;
+&lt;p&gt;Note:编译器生成调用消息的方法，在日常开发中永远不要在你写的代码中直接调用。&lt;/p&gt;
 &lt;/blockquote&gt;
+
+&lt;p&gt;在架构中消息传递的关键在于编译器编译每个class和object。每个class的结构中包含两个重要元素：&lt;/p&gt;
 
 &lt;ul&gt;
 &lt;li&gt;指向父类的指针&lt;/li&gt;
@@ -171,7 +284,8 @@ for(i = 0;i &amp;lt; 100;i++){
       <guid>https://linkrober.github.io/bookshelf/2017/09/run-loops-%E4%BA%8C/</guid>
       <description>&lt;h3 id=&#34;when-would-you-use-a-run-loop&#34;&gt;When Would You Use a Run Loop?&lt;/h3&gt;
 
-&lt;p&gt;你唯一要使用run loop，就是当你要在application中创建线程的时候。你Application的主线程是架构很重要的一部分。所以，iOS系统为app的提供了&lt;i&gt;runloop&lt;/i&gt;代码，并自动开始。在iOS中运行Main loop作为app启动步骤的一部分。&lt;/p&gt;
+&lt;p&gt;你唯一要使用run loop，就是当你要在application中创建线程的时候。你Application的主线程是架构很重要的一部分。所以，iOS系统为app的提供了&lt;i&gt;runloop&lt;/i&gt;代码，并自动开始。在iOS中运行Main loop作为app启动步骤的一部分。
+&lt;/p&gt;
 
 &lt;p&gt;对于其他的线程，你需要考虑是否必须要使用&lt;i&gt;run loop&lt;/i&gt;。如果有需要，配置并自己启动它。你不需要在每个线程中都启用run loop。例如，如果你使用一个线程来执行一些很长时间的运行和已经准备好的任务，你可能要避免使用它。Run loop的目的主要是用来解决线程间的通信。例如，如果你打算做下面的事情，你需要开启一个run loop。&lt;/p&gt;
 
@@ -179,10 +293,10 @@ for(i = 0;i &amp;lt; 100;i++){
 &lt;li&gt;使用port或者自定义input source来和其他线程通讯&lt;/li&gt;
 &lt;li&gt;在线程中使用timer&lt;/li&gt;
 &lt;li&gt;在Cocoa application使用&lt;code&gt;performSelector…&lt;/code&gt;方法&lt;/li&gt;
-&lt;li&gt;维持线程来执行周期性的任务
-
-如果你选择使用run loop，配置和设置就是接下来要做的。纵观整个线程编码过程，你应该有一个明确的认识在什么时候退出线程，这比强制退出好很多。关于如何配置和退出run loop的信息在这&lt;a href=&#34;https://developer.apple.com/library/content/documentation/Cocoa/Conceptual/Multithreading/RunLoopManagement/RunLoopManagement.html#//apple_ref/doc/uid/10000057i-CH16-SW5&#34;&gt;Using Run Loop Objects&lt;/a&gt;。&lt;/li&gt;
+&lt;li&gt;维持线程来执行周期性的任务&lt;/li&gt;
 &lt;/ul&gt;
+
+&lt;p&gt;如果你选择使用run loop，配置和设置就是接下来要做的。纵观整个线程编码过程，你应该有一个明确的认识在什么时候退出线程，这比强制退出好很多。关于如何配置和退出run loop的信息在这&lt;a href=&#34;https://developer.apple.com/library/content/documentation/Cocoa/Conceptual/Multithreading/RunLoopManagement/RunLoopManagement.html#//apple_ref/doc/uid/10000057i-CH16-SW5&#34;&gt;Using Run Loop Objects&lt;/a&gt;。&lt;/p&gt;
 
 &lt;h3 id=&#34;using-run-loop-objects&#34;&gt;Using Run Loop Objects&lt;/h3&gt;
 
@@ -303,11 +417,10 @@ for(i = 0;i &amp;lt; 100;i++){
       <pubDate>Mon, 25 Sep 2017 00:00:00 +0000</pubDate>
       
       <guid>https://linkrober.github.io/bookshelf/2017/09/run-loops-%E4%B8%80/</guid>
-      <description>&lt;h3 id=&#34;run-loops&#34;&gt;Run Loops&lt;/h3&gt;
+      <description>&lt;p&gt;
+&amp;gt;下面会用一些陌生的或者容易让人混淆的字符，我们先来统一概念再继续，这样能够让你更加愉快的阅读：&lt;/p&gt;
 
 &lt;blockquote&gt;
-&lt;p&gt;下面会用一些陌生的或者容易让人混淆的字符，我们先来统一概念再继续，这样能够让你更加愉快的阅读：&lt;/p&gt;
-
 &lt;p&gt;&lt;strong&gt;runloop:&lt;/strong&gt;iOS一个底层机制的专业术语。&lt;/p&gt;
 
 &lt;p&gt;&lt;strong&gt;run loop:&lt;/strong&gt;一种运行的循环。&lt;/p&gt;
@@ -333,9 +446,11 @@ for(i = 0;i &amp;lt; 100;i++){
 }
 &lt;/code&gt;&lt;/pre&gt;
 
-&lt;p&gt;&lt;i&gt;Runloop&lt;/i&gt;实际上是一个管理要处理的事件和消息的对象，并为开发者提供了一个入口来执行run loop的逻辑部分。一直处于类似于“接受消息&amp;ndash;&amp;gt;等待&amp;ndash;&amp;gt;处理”这样的一个循环汇总
+&lt;p&gt;&lt;i&gt;Runloop&lt;/i&gt;实际上是一个管理要处理的事件和消息的对象，并为开发者提供了一个入口来执行run loop的逻辑部分。一直处于类似于“接受消息&amp;ndash;&amp;gt;等待&amp;ndash;&amp;gt;处理”这样的一个循环汇总&lt;/p&gt;
 
-&amp;gt;&lt;i&gt;Runloop&lt;/i&gt;的目的：一般我们自己写的线程在执行完相应的任务就会退出，而runloop&lt;strong&gt;让你的线程在有事干的时候干活，没事干的时候休息，节省系统资源&lt;/strong&gt;。&lt;/p&gt;
+&lt;blockquote&gt;
+&lt;p&gt;&lt;i&gt;Runloop&lt;/i&gt;的目的：一般我们自己写的线程在执行完相应的任务就会退出，而runloop&lt;strong&gt;让你的线程在有事干的时候干活，没事干的时候休息，节省系统资源&lt;/strong&gt;。&lt;/p&gt;
+&lt;/blockquote&gt;
 
 &lt;p&gt;&lt;i&gt;unloop&lt;/i&gt;的管理不全是自动的，&lt;strong&gt;对于自己的线程，必须要自己添加代码，并在适当的时候启动Run loop&lt;/strong&gt;来响应接受的事件。
 Cocoa和Core Foundation提供了*runloop objects*来帮助你配置和管理线程的run loop。你的Application不需要自己创建这些对象(像alloc、init这些方法)。每个thread，包括Application的主线程，都已经有runloop object，有方法可以直接获取这这些对象，类似于这样的&lt;code&gt;[NSRunLoop currentRunLoop]&lt;/code&gt;。&lt;/p&gt;
@@ -1050,10 +1165,11 @@ NSRunLoop *runLoop = [NSRunLoop currentRunLoop];
 &lt;p&gt;描述：如果类不能执行这个方法，会执行动态&lt;strong&gt;消息转发&lt;/strong&gt;，如果该类还是不能动态的添加方法，则走&lt;strong&gt;完整的消息转发&lt;/strong&gt;。分两步，第一步&lt;strong&gt;看看有没有其他类可以执行该方法&lt;/strong&gt;，如果没有走第二步，&lt;strong&gt;将所有的细节封装到NSInvocation中，给接受者最后一次机会&lt;/strong&gt;。&lt;/p&gt;
 &lt;/blockquote&gt;
 
+&lt;p&gt;&lt;/p&gt;
+
 &lt;p&gt;演示：
 动态消息转发
-&amp;gt;在一个类&lt;code&gt;MessageObj&lt;/code&gt;中定义两个方法，&lt;code&gt;testDynamicMethodForward&lt;/code&gt;一个有实现方法，&lt;code&gt;start&lt;/code&gt;一个没有实现的方法，调用没有实现的方法，在动态消息转发的时候将这个方法hook到已经实现的方法上：
-&lt;/p&gt;
+&amp;gt;在一个类&lt;code&gt;MessageObj&lt;/code&gt;中定义两个方法，&lt;code&gt;testDynamicMethodForward&lt;/code&gt;一个有实现方法，&lt;code&gt;start&lt;/code&gt;一个没有实现的方法，调用没有实现的方法，在动态消息转发的时候将这个方法hook到已经实现的方法上：&lt;/p&gt;
 
 &lt;pre&gt;&lt;code&gt;@interface MessageObj()
 @end

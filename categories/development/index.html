@@ -202,6 +202,182 @@
     
     <div class="postShorten-header">
       <h1 class="postShorten-title" itemprop="headline">
+        <a class="link-unstyled" href="https://linkrober.github.io/bookshelf/2017/10/runtime%E4%B8%89-%E6%B6%88%E6%81%AF%E8%BD%AC%E5%8F%91/">
+          Runtime(三) 消息转发
+        </a>
+      </h1>
+      <div class="postShorten-meta post-meta">
+  
+    <time itemprop="datePublished" datetime="2017-10-16T00:00:00Z">
+      
+  十月 16, 2017
+
+    </time>
+  
+  
+  
+  
+    <span>发布在</span>
+    
+      <a class="category-link" href="https://LinkRober.github.io/bookshelf/categories/development">development</a>
+    
+  
+
+
+</div>
+
+    </div>
+    <div class="postShorten-excerpt" itemprop="articleBody">
+      <p>
+        向对象发送一个消息，如果没有处理就会发生错误。但是在产生错误之前，runtime会给接受对象第二次机会来处理消息。
+
+        <br>
+        <a href="https://linkrober.github.io/bookshelf/2017/10/runtime%E4%B8%89-%E6%B6%88%E6%81%AF%E8%BD%AC%E5%8F%91/" class="postShorten-excerpt_link link">阅读全文</a>
+        
+      </p>
+    </div>
+  </div>
+  
+</article>
+
+            
+              
+  
+    
+      
+        
+      
+    
+  
+
+
+  
+
+<article class="postShorten postShorten--thumbnailimg-bottom" itemscope itemType="http://schema.org/BlogPosting">
+  <div class="postShorten-wrap">
+    
+    <div class="postShorten-header">
+      <h1 class="postShorten-title" itemprop="headline">
+        <a class="link-unstyled" href="https://linkrober.github.io/bookshelf/2017/10/runtime-%E4%BA%8C--%E5%8A%A8%E6%80%81%E6%96%B9%E6%B3%95%E5%AE%9E%E7%8E%B0/">
+          Runtime (二)  动态方法实现
+        </a>
+      </h1>
+      <div class="postShorten-meta post-meta">
+  
+    <time itemprop="datePublished" datetime="2017-10-09T18:06:28&#43;08:00">
+      
+  十月 9, 2017
+
+    </time>
+  
+  
+  
+  
+    <span>发布在</span>
+    
+      <a class="category-link" href="https://LinkRober.github.io/bookshelf/categories/development">development</a>
+    
+  
+
+
+</div>
+
+    </div>
+    <div class="postShorten-excerpt" itemprop="articleBody">
+      <p>
+        <h3 id="dynamic-method-resolution">Dynamic Method Resolution</h3>
+
+<p>有的时候，你可能想要提供方法的动态实现。例如，Object-C 属性特征包含了<code>@dynamic</code>
+
+        <br>
+        <a href="https://linkrober.github.io/bookshelf/2017/10/runtime-%E4%BA%8C--%E5%8A%A8%E6%80%81%E6%96%B9%E6%B3%95%E5%AE%9E%E7%8E%B0/" class="postShorten-excerpt_link link">阅读全文</a>
+        
+      </p>
+    </div>
+  </div>
+  
+</article>
+
+            
+              
+  
+    
+      
+        
+      
+    
+  
+
+
+  
+
+<article class="postShorten postShorten--thumbnailimg-bottom" itemscope itemType="http://schema.org/BlogPosting">
+  <div class="postShorten-wrap">
+    
+    <div class="postShorten-header">
+      <h1 class="postShorten-title" itemprop="headline">
+        <a class="link-unstyled" href="https://linkrober.github.io/bookshelf/2017/09/runtime-%E4%B8%80-%E6%B6%88%E6%81%AF/">
+          Runtime (一) 消息
+        </a>
+      </h1>
+      <div class="postShorten-meta post-meta">
+  
+    <time itemprop="datePublished" datetime="2017-09-29T00:00:00Z">
+      
+  九月 29, 2017
+
+    </time>
+  
+  
+  
+  
+    <span>发布在</span>
+    
+      <a class="category-link" href="https://LinkRober.github.io/bookshelf/categories/development">development</a>
+    
+  
+
+
+</div>
+
+    </div>
+    <div class="postShorten-excerpt" itemprop="articleBody">
+      <p>
+        <h3 id="message">Message</h3>
+
+<p>这篇文章描述了消息如何通过使用<code>objc_msgSend</code>发送，如何通过方法名称找到对应方法的reference</p>
+
+<h4 id="the-objc-msgsend-function">The objc_msgSend Function</h4>
+
+<p>在Object-C中，发送的消息直到运行时才绑定到正真的方式实现。
+
+        <br>
+        <a href="https://linkrober.github.io/bookshelf/2017/09/runtime-%E4%B8%80-%E6%B6%88%E6%81%AF/" class="postShorten-excerpt_link link">阅读全文</a>
+        
+      </p>
+    </div>
+  </div>
+  
+</article>
+
+            
+              
+  
+    
+      
+        
+      
+    
+  
+
+
+  
+
+<article class="postShorten postShorten--thumbnailimg-bottom" itemscope itemType="http://schema.org/BlogPosting">
+  <div class="postShorten-wrap">
+    
+    <div class="postShorten-header">
+      <h1 class="postShorten-title" itemprop="headline">
         <a class="link-unstyled" href="https://linkrober.github.io/bookshelf/2017/09/run-loops-%E4%BA%8C/">
           Run Loops (二)
         </a>
@@ -232,6 +408,7 @@
         <h3 id="when-would-you-use-a-run-loop">When Would You Use a Run Loop?</h3>
 
 <p>你唯一要使用run loop，就是当你要在application中创建线程的时候。你Application的主线程是架构很重要的一部分。所以，iOS系统为app的提供了<i>runloop</i>代码，并自动开始。在iOS中运行Main loop作为app启动步骤的一部分。
+
         <br>
         <a href="https://linkrober.github.io/bookshelf/2017/09/run-loops-%E4%BA%8C/" class="postShorten-excerpt_link link">阅读全文</a>
         
@@ -286,39 +463,7 @@
     </div>
     <div class="postShorten-excerpt" itemprop="articleBody">
       <p>
-        <h3 id="run-loops">Run Loops</h3>
-
-<blockquote>
-<p>下面会用一些陌生的或者容易让人混淆的字符，我们先来统一概念再继续，这样能够让你更加愉快的阅读：</p>
-
-<p><strong>runloop:</strong>iOS一个底层机制的专业术语。</p>
-
-<p><strong>run loop:</strong>一种运行的循环。</p>
-
-<p><strong>Handler:</strong>指<code>handlePort:</code>、<code>customSrc:</code>、<code>mySelector:</code>、<code>timerFired:</code>，指开发者希望当进入run loop的时候要执行的操作</p>
-
-<p><strong>run-loop observer：</strong>观察runloop行为的观察者</p>
-
-<p><strong>run-loop mode：</strong>每个runloop都要指定一种mode，一种mode可以对应多个input source</p>
-
-<p><strong>runloop object：</strong>runloop相关的对象，这里分Cocoa和CoreFoundation中的</p>
-</blockquote>
-
-<p><i>Runloop</i>是线程架构相关的一部分，是事件处理的循环。你可以用它来安排循环执行任务，协调相关的事件（kCFRunLoopEntry、kCFRunLoopExit等）。
-用几行示意代码来展示：</p>
-
-<pre><code>function loop() {
-    initialize();
-    do {
-        var message = get_next_message();
-        process_message(message);
-    } while (message != quit);
-}
-</code></pre>
-
-<p><i>Runloop</i>实际上是一个管理要处理的事件和消息的对象，并为开发者提供了一个入口来执行run loop的逻辑部分。一直处于类似于“接受消息&ndash;&gt;等待&ndash;&gt;处理”这样的一个循环汇总
-
-&gt;<i>Runloop</i>的目的：一般我们自己写的线程在执行完相应的任务就会退出，而runloop<strong>让你的线程在有事干的时候干活，没事干的时候休息，节省系统资源</strong>。
+        
         <br>
         <a href="https://linkrober.github.io/bookshelf/2017/09/run-loops-%E4%B8%80/" class="postShorten-excerpt_link link">阅读全文</a>
         
@@ -377,10 +522,7 @@
 <p>描述：如果类不能执行这个方法，会执行动态<strong>消息转发</strong>，如果该类还是不能动态的添加方法，则走<strong>完整的消息转发</strong>。分两步，第一步<strong>看看有没有其他类可以执行该方法</strong>，如果没有走第二步，<strong>将所有的细节封装到NSInvocation中，给接受者最后一次机会</strong>。</p>
 </blockquote>
 
-<p>演示：
-动态消息转发
-&gt;在一个类<code>MessageObj</code>中定义两个方法，<code>testDynamicMethodForward</code>一个有实现方法，<code>start</code>一个没有实现的方法，调用没有实现的方法，在动态消息转发的时候将这个方法hook到已经实现的方法上：
-
+<p>
         <br>
         <a href="https://linkrober.github.io/bookshelf/2017/04/%E6%B6%88%E6%81%AF%E8%BD%AC%E5%8F%91/" class="postShorten-excerpt_link link">阅读全文</a>
         
@@ -455,6 +597,24 @@
           <div class="media">
             
             <div class="media-body">
+              <a class="link-unstyled" href="https://linkrober.github.io/bookshelf/2017/10/runtime%E4%B8%89-%E6%B6%88%E6%81%AF%E8%BD%AC%E5%8F%91/">
+                <h3 class="media-heading">Runtime(三) 消息转发</h3>
+              </a>
+              <span class="media-meta">
+                <span class="media-date text-small">
+                  Oct 10, 2017
+                </span>
+              </span>
+              <div class="media-content hide-xs font-merryweather"><p>向对象发送一个消息，如果没有处理就会发生错误。但是在产生错误之前，runtime会给接受对象第二次机会来处理消息。
+</p></div>
+            </div>
+            <div style="clear:both;"></div>
+            <hr>
+          </div>
+        
+          <div class="media">
+            
+            <div class="media-body">
               <a class="link-unstyled" href="https://linkrober.github.io/bookshelf/2017/10/runtime-%E4%BA%8C--%E5%8A%A8%E6%80%81%E6%96%B9%E6%B3%95%E5%AE%9E%E7%8E%B0/">
                 <h3 class="media-heading">Runtime (二)  动态方法实现</h3>
               </a>
@@ -465,13 +625,7 @@
               </span>
               <div class="media-content hide-xs font-merryweather"><h3 id="dynamic-method-resolution">Dynamic Method Resolution</h3>
 
-<p>有的时候，你可能想要提供方法的动态实现。例如，Object-C 属性特征包含了<code>@dynamic</code></p>
-
-<pre><code>@dynamic propertyName;
-</code></pre>
-
-<p>这里是告诉编译器属性相关方法的实现会被动态的提供。
-你可以实现<code>resolveInstanceMethod:</code>和<code>resolveClassMethod:</code>为各个实例和类动态的提供一个selector。
+<p>有的时候，你可能想要提供方法的动态实现。例如，Object-C 属性特征包含了<code>@dynamic</code>
 </p></div>
             </div>
             <div style="clear:both;"></div>
@@ -495,30 +649,8 @@
 
 <h4 id="the-objc-msgsend-function">The objc_msgSend Function</h4>
 
-<p>在Object-C中，发送的消息直到运行时才绑定到正真的方式实现。</p>
-
-<pre><code>[receiver message]
-</code></pre>
-
-<p><code>objc_msgSend</code>是真正调用消息的函数，这个函数持有消息的接受者和方法的名称：</p>
-
-<pre><code>objc_msgSend(receiver,selector)
-</code></pre>
-
-<p>任何其他的参数也是通过这个方法传入：</p>
-
-<pre><code>objc_msgSend(receiver,selector,arg1,arg2,...)
-</code></pre>
-
-<p>这个方法会做一些必要的事情来进行动态绑定：</p>
-
-<ul>
-<li>首先找到方法的实现即selector的引用。因为在不同的类中都可以实现相同方法名的方法，所以通过方法的实现找到真正的receiver的class。</li>
-<li>然后传入该方法指定的receiver和参数。</li>
-<li>最后将实现的返回值作为它自己的返回值。</li>
-</ul>
-
-<blockquote></div>
+<p>在Object-C中，发送的消息直到运行时才绑定到正真的方式实现。
+</p></div>
             </div>
             <div style="clear:both;"></div>
             <hr>
@@ -537,7 +669,8 @@
               </span>
               <div class="media-content hide-xs font-merryweather"><h3 id="when-would-you-use-a-run-loop">When Would You Use a Run Loop?</h3>
 
-<p>你唯一要使用run loop，就是当你要在application中创建线程的时候。你Application的主线程是架构很重要的一部分。所以，iOS系统为app的提供了<i>runloop</i>代码，并自动开始。在iOS中运行Main loop作为app启动步骤的一部分。</p></div>
+<p>你唯一要使用run loop，就是当你要在application中创建线程的时候。你Application的主线程是架构很重要的一部分。所以，iOS系统为app的提供了<i>runloop</i>代码，并自动开始。在iOS中运行Main loop作为app启动步骤的一部分。
+</p></div>
             </div>
             <div style="clear:both;"></div>
             <hr>
@@ -554,39 +687,7 @@
                   Sep 9, 2017
                 </span>
               </span>
-              <div class="media-content hide-xs font-merryweather"><h3 id="run-loops">Run Loops</h3>
-
-<blockquote>
-<p>下面会用一些陌生的或者容易让人混淆的字符，我们先来统一概念再继续，这样能够让你更加愉快的阅读：</p>
-
-<p><strong>runloop:</strong>iOS一个底层机制的专业术语。</p>
-
-<p><strong>run loop:</strong>一种运行的循环。</p>
-
-<p><strong>Handler:</strong>指<code>handlePort:</code>、<code>customSrc:</code>、<code>mySelector:</code>、<code>timerFired:</code>，指开发者希望当进入run loop的时候要执行的操作</p>
-
-<p><strong>run-loop observer：</strong>观察runloop行为的观察者</p>
-
-<p><strong>run-loop mode：</strong>每个runloop都要指定一种mode，一种mode可以对应多个input source</p>
-
-<p><strong>runloop object：</strong>runloop相关的对象，这里分Cocoa和CoreFoundation中的</p>
-</blockquote>
-
-<p><i>Runloop</i>是线程架构相关的一部分，是事件处理的循环。你可以用它来安排循环执行任务，协调相关的事件（kCFRunLoopEntry、kCFRunLoopExit等）。
-用几行示意代码来展示：</p>
-
-<pre><code>function loop() {
-    initialize();
-    do {
-        var message = get_next_message();
-        process_message(message);
-    } while (message != quit);
-}
-</code></pre>
-
-<p><i>Runloop</i>实际上是一个管理要处理的事件和消息的对象，并为开发者提供了一个入口来执行run loop的逻辑部分。一直处于类似于“接受消息&ndash;&gt;等待&ndash;&gt;处理”这样的一个循环汇总
-
-&gt;<i>Runloop</i>的目的：一般我们自己写的线程在执行完相应的任务就会退出，而runloop<strong>让你的线程在有事干的时候干活，没事干的时候休息，节省系统资源</strong>。</p></div>
+              <div class="media-content hide-xs font-merryweather"></div>
             </div>
             <div style="clear:both;"></div>
             <hr>
@@ -626,10 +727,7 @@
 <p>描述：如果类不能执行这个方法，会执行动态<strong>消息转发</strong>，如果该类还是不能动态的添加方法，则走<strong>完整的消息转发</strong>。分两步，第一步<strong>看看有没有其他类可以执行该方法</strong>，如果没有走第二步，<strong>将所有的细节封装到NSInvocation中，给接受者最后一次机会</strong>。</p>
 </blockquote>
 
-<p>演示：
-动态消息转发
-&gt;在一个类<code>MessageObj</code>中定义两个方法，<code>testDynamicMethodForward</code>一个有实现方法，<code>start</code>一个没有实现的方法，调用没有实现的方法，在动态消息转发的时候将这个方法hook到已经实现的方法上：
-</p></div>
+<p></p></div>
             </div>
             <div style="clear:both;"></div>
             <hr>
@@ -659,7 +757,7 @@
          data-message-zero=""
          data-message-one=""
          data-message-other="">
-         7 posts found
+         8 posts found
       </p>
     </div>
   </div>
