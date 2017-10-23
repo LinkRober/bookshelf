@@ -2,48 +2,48 @@
 <rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
   <channel>
     <title>Tags on 董二千</title>
-    <link>https://dongerqian.disqus.com/tags/</link>
+    <link>https://LinkRober.github.io/bookshelf/tags/</link>
     <description>Recent content in Tags on 董二千</description>
     <generator>Hugo -- gohugo.io</generator>
     <language>zh-cn</language>
     <lastBuildDate>Mon, 03 Apr 2017 17:06:19 +0800</lastBuildDate>
     
-	<atom:link href="https://dongerqian.disqus.com/tags/index.xml" rel="self" type="application/rss+xml" />
+	<atom:link href="https://LinkRober.github.io/bookshelf/tags/index.xml" rel="self" type="application/rss+xml" />
     
     
     <item>
       <title>Git</title>
-      <link>https://dongerqian.disqus.com/tags/git/</link>
+      <link>https://LinkRober.github.io/bookshelf/tags/git/</link>
       <pubDate>Mon, 03 Apr 2017 17:06:19 +0800</pubDate>
       
-      <guid>https://dongerqian.disqus.com/tags/git/</guid>
+      <guid>https://LinkRober.github.io/bookshelf/tags/git/</guid>
       <description></description>
     </item>
     
     <item>
       <title>React Native</title>
-      <link>https://dongerqian.disqus.com/tags/react-native/</link>
+      <link>https://LinkRober.github.io/bookshelf/tags/react-native/</link>
       <pubDate>Mon, 23 Oct 2017 00:00:00 +0000</pubDate>
       
-      <guid>https://dongerqian.disqus.com/tags/react-native/</guid>
+      <guid>https://LinkRober.github.io/bookshelf/tags/react-native/</guid>
       <description></description>
     </item>
     
     <item>
       <title>Runloop</title>
-      <link>https://dongerqian.disqus.com/tags/runloop/</link>
+      <link>https://LinkRober.github.io/bookshelf/tags/runloop/</link>
       <pubDate>Tue, 26 Sep 2017 00:00:00 +0000</pubDate>
       
-      <guid>https://dongerqian.disqus.com/tags/runloop/</guid>
+      <guid>https://LinkRober.github.io/bookshelf/tags/runloop/</guid>
       <description></description>
     </item>
     
     <item>
       <title>Runtime</title>
-      <link>https://dongerqian.disqus.com/tags/runtime/</link>
+      <link>https://LinkRober.github.io/bookshelf/tags/runtime/</link>
       <pubDate>Mon, 16 Oct 2017 00:00:00 +0000</pubDate>
       
-      <guid>https://dongerqian.disqus.com/tags/runtime/</guid>
+      <guid>https://LinkRober.github.io/bookshelf/tags/runtime/</guid>
       <description></description>
     </item>
     

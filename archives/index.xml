@@ -2,12 +2,12 @@
 <rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
   <channel>
     <title>Archives on 董二千</title>
-    <link>https://dongerqian.disqus.com/archives/</link>
+    <link>https://LinkRober.github.io/bookshelf/archives/</link>
     <description>Recent content in Archives on 董二千</description>
     <generator>Hugo -- gohugo.io</generator>
     <language>zh-cn</language>
     
-	<atom:link href="https://dongerqian.disqus.com/archives/index.xml" rel="self" type="application/rss+xml" />
+	<atom:link href="https://LinkRober.github.io/bookshelf/archives/index.xml" rel="self" type="application/rss+xml" />
     
     
   </channel>
