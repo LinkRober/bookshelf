@@ -51,7 +51,7 @@
     
 
     
-      <meta property="og:image" content="https://LinkRober.github.io/rn_image.png">
+      <meta property="og:image" content="https://LinkRober.github.io/bookshelf/rn_image.png">
     
     
     
@@ -874,9 +874,11 @@ $(document).ready(function() {
         (function() {
           
           
-
+          if (window.location.hostname == "localhost") {
+            return;
+          }
           var d = document, s = d.createElement('script');
-          var disqus_shortname = 'dongerqian.disqus.com';
+          var disqus_shortname = 'dongerqian';
           s.src = '//' + disqus_shortname + '.disqus.com/embed.js';
 
           s.setAttribute('data-timestamp', +new Date());
@@ -884,7 +886,7 @@ $(document).ready(function() {
         })();
       </script>
     
-    
+  
 
 
     
