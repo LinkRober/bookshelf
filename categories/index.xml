@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes" ?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>Categories on 董二千</title>
+    <link>https://LinkRober.github.io/bookshelf/categories/</link>
+    <description>Recent content in Categories on 董二千</description>
+    <generator>Hugo -- gohugo.io</generator>
+    <language>zh-cn</language>
+    
+	<atom:link href="https://LinkRober.github.io/bookshelf/categories/index.xml" rel="self" type="application/rss+xml" />
+    
+    
+    <item>
+      <title>Development</title>
+      <link>https://LinkRober.github.io/bookshelf/categories/development/</link>
+      <pubDate>Mon, 16 Oct 2017 00:00:00 +0000</pubDate>
+      
+      <guid>https://LinkRober.github.io/bookshelf/categories/development/</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>Tool</title>
+      <link>https://LinkRober.github.io/bookshelf/categories/tool/</link>
+      <pubDate>Mon, 03 Apr 2017 17:06:19 +0800</pubDate>
+      
+      <guid>https://LinkRober.github.io/bookshelf/categories/tool/</guid>
+      <description></description>
+    </item>
+    
+  </channel>
+</rss>
