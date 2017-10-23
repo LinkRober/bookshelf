@@ -2,21 +2,21 @@
 <rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
   <channel>
     <title>React Native on 董二千</title>
-    <link>https://LinkRober.github.io/bookshelf/tags/react-native/</link>
+    <link>https://dongerqian.disqus.com/tags/react-native/</link>
     <description>Recent content in React Native on 董二千</description>
     <generator>Hugo -- gohugo.io</generator>
     <language>zh-cn</language>
     <lastBuildDate>Mon, 23 Oct 2017 00:00:00 +0000</lastBuildDate>
     
-	<atom:link href="https://LinkRober.github.io/bookshelf/tags/react-native/index.xml" rel="self" type="application/rss+xml" />
+	<atom:link href="https://dongerqian.disqus.com/tags/react-native/index.xml" rel="self" type="application/rss+xml" />
     
     
     <item>
       <title>React Native如何集成到现有项目中</title>
-      <link>https://LinkRober.github.io/bookshelf/2017/10/react-native%E5%A6%82%E4%BD%95%E9%9B%86%E6%88%90%E5%88%B0%E7%8E%B0%E6%9C%89%E9%A1%B9%E7%9B%AE%E4%B8%AD/</link>
+      <link>https://dongerqian.disqus.com/2017/10/react-native%E5%A6%82%E4%BD%95%E9%9B%86%E6%88%90%E5%88%B0%E7%8E%B0%E6%9C%89%E9%A1%B9%E7%9B%AE%E4%B8%AD/</link>
       <pubDate>Mon, 23 Oct 2017 00:00:00 +0000</pubDate>
       
-      <guid>https://LinkRober.github.io/bookshelf/2017/10/react-native%E5%A6%82%E4%BD%95%E9%9B%86%E6%88%90%E5%88%B0%E7%8E%B0%E6%9C%89%E9%A1%B9%E7%9B%AE%E4%B8%AD/</guid>
+      <guid>https://dongerqian.disqus.com/2017/10/react-native%E5%A6%82%E4%BD%95%E9%9B%86%E6%88%90%E5%88%B0%E7%8E%B0%E6%9C%89%E9%A1%B9%E7%9B%AE%E4%B8%AD/</guid>
       <description>&lt;p&gt;虽然ReactNative能做到iOS和Android的大部分逻辑共享一套代码，节约开发成本；能做到像JSPatch那样热修复，为线上问题提供非常灵活的解决方案。但是为什么大部分公司还是持观望态度，或者只在产品的某些部分用RN进行开发呢？
 &lt;/p&gt;</description>
     </item>

@@ -2,31 +2,31 @@
 <rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
   <channel>
     <title>Runtime on 董二千</title>
-    <link>https://LinkRober.github.io/bookshelf/tags/runtime/</link>
+    <link>https://dongerqian.disqus.com/tags/runtime/</link>
     <description>Recent content in Runtime on 董二千</description>
     <generator>Hugo -- gohugo.io</generator>
     <language>zh-cn</language>
     <lastBuildDate>Mon, 16 Oct 2017 00:00:00 +0000</lastBuildDate>
     
-	<atom:link href="https://LinkRober.github.io/bookshelf/tags/runtime/index.xml" rel="self" type="application/rss+xml" />
+	<atom:link href="https://dongerqian.disqus.com/tags/runtime/index.xml" rel="self" type="application/rss+xml" />
     
     
     <item>
       <title>Runtime(三) 消息转发</title>
-      <link>https://LinkRober.github.io/bookshelf/2017/10/runtime%E4%B8%89-%E6%B6%88%E6%81%AF%E8%BD%AC%E5%8F%91/</link>
+      <link>https://dongerqian.disqus.com/2017/10/runtime%E4%B8%89-%E6%B6%88%E6%81%AF%E8%BD%AC%E5%8F%91/</link>
       <pubDate>Mon, 16 Oct 2017 00:00:00 +0000</pubDate>
       
-      <guid>https://LinkRober.github.io/bookshelf/2017/10/runtime%E4%B8%89-%E6%B6%88%E6%81%AF%E8%BD%AC%E5%8F%91/</guid>
+      <guid>https://dongerqian.disqus.com/2017/10/runtime%E4%B8%89-%E6%B6%88%E6%81%AF%E8%BD%AC%E5%8F%91/</guid>
       <description>&lt;p&gt;向对象发送一个消息，如果没有处理就会发生错误。但是在产生错误之前，runtime会给接受对象第二次机会来处理消息。
 &lt;/p&gt;</description>
     </item>
     
     <item>
       <title>Runtime (二)  动态方法实现</title>
-      <link>https://LinkRober.github.io/bookshelf/2017/10/runtime-%E4%BA%8C--%E5%8A%A8%E6%80%81%E6%96%B9%E6%B3%95%E5%AE%9E%E7%8E%B0/</link>
+      <link>https://dongerqian.disqus.com/2017/10/runtime-%E4%BA%8C--%E5%8A%A8%E6%80%81%E6%96%B9%E6%B3%95%E5%AE%9E%E7%8E%B0/</link>
       <pubDate>Mon, 09 Oct 2017 18:06:28 +0800</pubDate>
       
-      <guid>https://LinkRober.github.io/bookshelf/2017/10/runtime-%E4%BA%8C--%E5%8A%A8%E6%80%81%E6%96%B9%E6%B3%95%E5%AE%9E%E7%8E%B0/</guid>
+      <guid>https://dongerqian.disqus.com/2017/10/runtime-%E4%BA%8C--%E5%8A%A8%E6%80%81%E6%96%B9%E6%B3%95%E5%AE%9E%E7%8E%B0/</guid>
       <description>&lt;h3 id=&#34;dynamic-method-resolution&#34;&gt;Dynamic Method Resolution&lt;/h3&gt;
 
 &lt;p&gt;有的时候，你可能想要提供方法的动态实现。例如，Object-C 属性特征包含了&lt;code&gt;@dynamic&lt;/code&gt;
@@ -35,10 +35,10 @@
     
     <item>
       <title>Runtime (一) 消息</title>
-      <link>https://LinkRober.github.io/bookshelf/2017/09/runtime-%E4%B8%80-%E6%B6%88%E6%81%AF/</link>
+      <link>https://dongerqian.disqus.com/2017/09/runtime-%E4%B8%80-%E6%B6%88%E6%81%AF/</link>
       <pubDate>Fri, 29 Sep 2017 00:00:00 +0000</pubDate>
       
-      <guid>https://LinkRober.github.io/bookshelf/2017/09/runtime-%E4%B8%80-%E6%B6%88%E6%81%AF/</guid>
+      <guid>https://dongerqian.disqus.com/2017/09/runtime-%E4%B8%80-%E6%B6%88%E6%81%AF/</guid>
       <description>&lt;h3 id=&#34;message&#34;&gt;Message&lt;/h3&gt;
 
 &lt;p&gt;这篇文章描述了消息如何通过使用&lt;code&gt;objc_msgSend&lt;/code&gt;发送，如何通过方法名称找到对应方法的reference&lt;/p&gt;
@@ -51,10 +51,10 @@
     
     <item>
       <title>消息转发</title>
-      <link>https://LinkRober.github.io/bookshelf/2017/04/%E6%B6%88%E6%81%AF%E8%BD%AC%E5%8F%91/</link>
+      <link>https://dongerqian.disqus.com/2017/04/%E6%B6%88%E6%81%AF%E8%BD%AC%E5%8F%91/</link>
       <pubDate>Mon, 03 Apr 2017 03:05:31 +0800</pubDate>
       
-      <guid>https://LinkRober.github.io/bookshelf/2017/04/%E6%B6%88%E6%81%AF%E8%BD%AC%E5%8F%91/</guid>
+      <guid>https://dongerqian.disqus.com/2017/04/%E6%B6%88%E6%81%AF%E8%BD%AC%E5%8F%91/</guid>
       <description>&lt;blockquote&gt;
 &lt;p&gt;描述：如果类不能执行这个方法，会执行动态&lt;strong&gt;消息转发&lt;/strong&gt;，如果该类还是不能动态的添加方法，则走&lt;strong&gt;完整的消息转发&lt;/strong&gt;。分两步，第一步&lt;strong&gt;看看有没有其他类可以执行该方法&lt;/strong&gt;，如果没有走第二步，&lt;strong&gt;将所有的细节封装到NSInvocation中，给接受者最后一次机会&lt;/strong&gt;。&lt;/p&gt;
 &lt;/blockquote&gt;
