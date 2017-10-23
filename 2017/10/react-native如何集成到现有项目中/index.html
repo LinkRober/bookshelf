@@ -28,9 +28,13 @@
     
 
     
-    <meta name="description" content="虽然ReactNative能做到iOS和Android的大部分逻辑共享一套代码，节约开发成本；能做到像JSPatch那样热修复，为线上问题提供非常灵活的解决方案。但是为什么大部分公司还是持观望态度，或者只在产品的某些部分用RN进行开发呢？
+    <meta name="description" content="
+
+虽然ReactNative能做到iOS和Android的大部分逻辑共享一套代码，节约开发成本；能做到像JSPatch那样热修复，为线上问题提供非常灵活的解决方案。但是为什么大部分公司还是持观望态度，或者只在产品的某些部分用RN进行开发呢？
 ">
-    <meta property="og:description" content="虽然ReactNative能做到iOS和Android的大部分逻辑共享一套代码，节约开发成本；能做到像JSPatch那样热修复，为线上问题提供非常灵活的解决方案。但是为什么大部分公司还是持观望态度，或者只在产品的某些部分用RN进行开发呢？
+    <meta property="og:description" content="
+
+虽然ReactNative能做到iOS和Android的大部分逻辑共享一套代码，节约开发成本；能做到像JSPatch那样热修复，为线上问题提供非常灵活的解决方案。但是为什么大部分公司还是持观望态度，或者只在产品的某些部分用RN进行开发呢？
 ">
     <meta property="og:type" content="blog">
     <meta property="og:title" content="React Native如何集成到现有项目中">
@@ -38,7 +42,9 @@
     <meta property="og:site_name" content="董二千">
     <meta name="twitter:card" content="summary">
     <meta name="twitter:title" content="董二千">
-    <meta name="twitter:description" content="虽然ReactNative能做到iOS和Android的大部分逻辑共享一套代码，节约开发成本；能做到像JSPatch那样热修复，为线上问题提供非常灵活的解决方案。但是为什么大部分公司还是持观望态度，或者只在产品的某些部分用RN进行开发呢？
+    <meta name="twitter:description" content="
+
+虽然ReactNative能做到iOS和Android的大部分逻辑共享一套代码，节约开发成本；能做到像JSPatch那样热修复，为线上问题提供非常灵活的解决方案。但是为什么大部分公司还是持观望态度，或者只在产品的某些部分用RN进行开发呢？
 ">
     
     
@@ -51,7 +57,7 @@
     
 
     
-      <meta property="og:image" content="https://LinkRober.github.io/bookshelf/rn_image.png">
+      <meta property="og:image" content="https://LinkRober.github.io/bookshelf/rn_image.jpeg">
     
     
     
@@ -229,7 +235,9 @@
           
           <div class="post-content markdown" itemprop="articleBody">
             <div class="main-content-wrap">
-              <p>虽然ReactNative能做到iOS和Android的大部分逻辑共享一套代码，节约开发成本；能做到像JSPatch那样热修复，为线上问题提供非常灵活的解决方案。但是为什么大部分公司还是持观望态度，或者只在产品的某些部分用RN进行开发呢？
+              <!-- coverImage = '../../../rn_image.jpeg' -->
+
+<p>虽然ReactNative能做到iOS和Android的大部分逻辑共享一套代码，节约开发成本；能做到像JSPatch那样热修复，为线上问题提供非常灵活的解决方案。但是为什么大部分公司还是持观望态度，或者只在产品的某些部分用RN进行开发呢？
 </p>
 
 <p>首先，React Native官方的某些组件仍然存在性能瓶颈，开发复杂场景的时候可能会遇到性能问题，像ListView，虽然推出了FlatList但是也存在着一些Bug。其次，RN的周边生态并不完善，很多OC或Swift上已有的Library在NR上需要重新用JS实现或者需要把这些库桥接到RN。因此大部分公司会选择交互不复杂，展示较多的场景来尝试。本章，主要介绍如果在已有的App中集成React Native。</p>
@@ -246,7 +254,7 @@
 </ol>
 
 <div class="alert info ">
-  <p>&ndash;no-ff: 前置条件：安装Node、npm最新版本</p>
+  <p>前置条件：安装Node、npm最新版本</p>
 </div>
 
 <h6 id="设置rn的依赖和目录结构">设置RN的依赖和目录结构</h6>
@@ -289,7 +297,7 @@
 </code></pre>
 
 <div class="alert warning ">
-  <p>&ndash;no-ff: 要确保这里安装的版本和package.json里说明的版本一致</p>
+  <p>要确保这里安装的版本和package.json里说明的版本一致</p>
 </div>
 
 <p>执行这个命令之后，将会在项目的根目录下创建一个<code>/node_modules</code>的目录，这里保存着所有你项目中所需的JavaScript依赖。</p>
@@ -652,7 +660,9 @@ class SettingsView extends React.PureComponent{
                   Oct 10, 2017
                 </span>
               </span>
-              <div class="media-content hide-xs font-merryweather"><p>虽然ReactNative能做到iOS和Android的大部分逻辑共享一套代码，节约开发成本；能做到像JSPatch那样热修复，为线上问题提供非常灵活的解决方案。但是为什么大部分公司还是持观望态度，或者只在产品的某些部分用RN进行开发呢？
+              <div class="media-content hide-xs font-merryweather"><!-- coverImage = '../../../rn_image.jpeg' -->
+
+<p>虽然ReactNative能做到iOS和Android的大部分逻辑共享一套代码，节约开发成本；能做到像JSPatch那样热修复，为线上问题提供非常灵活的解决方案。但是为什么大部分公司还是持观望态度，或者只在产品的某些部分用RN进行开发呢？
 </p></div>
             </div>
             <div style="clear:both;"></div>
