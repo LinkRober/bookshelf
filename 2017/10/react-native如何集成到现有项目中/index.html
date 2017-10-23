@@ -471,7 +471,7 @@ class SettingsView extends React.PureComponent{
     
     
       <li class="post-action">
-        <a class="post-action-btn btn btn--default" href="#disqus_thread">
+        <a class="post-action-btn btn btn--default" id='forbidenAevent' href="#disqus_thread">
           <i class="fa fa-comment-o"></i>
         </a>
       </li>
@@ -904,7 +904,13 @@ s.setAttribute('data-timestamp', +new Date());
 })();
 </script>
 
-  
+  <script>
+    document.getElementById('forbidenAevent').addEventListener("click", function(event){
+    if(event) {
+      event.preventDefault();
+    }
+});
+  </script>
 
 
     
