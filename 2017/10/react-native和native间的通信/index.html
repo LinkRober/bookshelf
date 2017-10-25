@@ -20,7 +20,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <meta name="generator" content="Hugo 0.30.2">
-    <title>React Native如何集成到现有项目中</title>
+    <title>React Native和Native间的通信</title>
     <meta name="author" content="董二千">
     <meta name="keywords" content="React Native">
 
@@ -49,8 +49,8 @@ React Native是如何转换成Native的
 
 ">
     <meta property="og:type" content="blog">
-    <meta property="og:title" content="React Native如何集成到现有项目中">
-    <meta property="og:url" content="/2017/10/react-native%E5%A6%82%E4%BD%95%E9%9B%86%E6%88%90%E5%88%B0%E7%8E%B0%E6%9C%89%E9%A1%B9%E7%9B%AE%E4%B8%AD/">
+    <meta property="og:title" content="React Native和Native间的通信">
+    <meta property="og:url" content="/2017/10/react-native%E5%92%8Cnative%E9%97%B4%E7%9A%84%E9%80%9A%E4%BF%A1/">
     <meta property="og:site_name" content="董二千">
     <meta name="twitter:card" content="summary">
     <meta name="twitter:title" content="董二千">
@@ -75,7 +75,7 @@ React Native是如何转换成Native的
     
 
     
-      <meta property="og:image" content="https://LinkRober.github.io/bookshelf/rn_thumbnailImage.jpeg">
+      <meta property="og:image" content="https://LinkRober.github.io/bookshelf/rn_image.jpeg">
     
     
       <meta property="og:image" content="https://LinkRober.github.io/rn_image.jpg">
@@ -226,14 +226,14 @@ React Native是如何转换成Native的
       <div class="post-header main-content-wrap text-left">
   
     <h1 class="post-title" itemprop="headline">
-      React Native如何集成到现有项目中
+      React Native和Native间的通信
     </h1>
   
   <div class="postShorten-meta post-meta">
   
-    <time itemprop="datePublished" datetime="2017-10-23T00:00:00Z">
+    <time itemprop="datePublished" datetime="2017-10-25T00:00:00Z">
       
-  十月 23, 2017
+  十月 25, 2017
 
     </time>
   
@@ -274,184 +274,143 @@ React Native是如何转换成Native的
 
 <p></p>
 
-<p>虽然ReactNative能做到iOS和Android的大部分逻辑共享一套代码，节约开发成本；能做到像JSPatch那样热修复，为线上问题提供非常灵活的解决方案。但是为什么大部分公司还是持观望态度，或者只在产品的某些部分用RN进行开发呢？</p>
+<h4 id="native-rn">Native -&gt; RN</h4>
 
-<p>首先，React Native官方的某些组件仍然存在性能瓶颈，开发复杂场景的时候可能会遇到性能问题，像ListView，虽然推出了FlatList但是也存在着一些Bug。其次，RN的周边生态并不完善，很多OC或Swift上已有的Library在NR上需要重新用JS实现或者需要把这些库桥接到RN。因此大部分公司会选择交互不复杂，展示较多的场景来尝试。本章，主要介绍如果在已有的App中集成React Native。</p>
+<h6 id="properties">Properties</h6>
 
-<h4 id="关键步骤">关键步骤</h4>
+<p><code>properties</code>是RN和Native间通信最简单的方式。我们只需要在初始化<code>RCTRootView</code>的时候，将需要的数据通过方法入参的形式传入，它是一个字典类型。</p>
 
-<ol>
-<li>设置RN的依赖和目录结构</li>
-<li>搞清楚你要在你的项目中使用的RN组件</li>
-<li>使用CocoaPods添加你要使用的RN组件的依赖</li>
-<li>在JavaScript环境下，开发你的RN模块</li>
-<li>添加一个<code>RCTRootView</code>到你的app。它将会作为容器展示你的RN模块。</li>
-<li>启动RN服务，Run你的App。</li>
-</ol>
-
-<div class="alert info ">
-  <p>前置条件：安装Node、npm最新版本</p>
-</div>
-
-<h6 id="设置rn的依赖和目录结构">设置RN的依赖和目录结构</h6>
-
-<p>为React Native项目创建一个新的文件夹，在文件夹中新建<code>/ios</code>目录，拷贝所有原项目的内容到<code>/ios</code>目录下。</p>
-
-<h6 id="安装javascript依赖">安装JavaScript依赖</h6>
-
-<p>在刚刚新建的文件夹中（即根目录中）创建一个<code>package.json</code>文件，并添加一下内容：</p>
-
-<pre><code>{
-  &quot;name&quot;: &quot;Snapvote&quot;,
-  &quot;version&quot;: &quot;0.0.1&quot;,
-  &quot;private&quot;: true,
-  &quot;scripts&quot;: {
-    &quot;start&quot;: &quot;node node_modules/react-native/local-cli/cli.js start&quot;,
-    &quot;test&quot;: &quot;jest&quot;
-  },
-  &quot;dependencies&quot;: {
-    &quot;react&quot;: &quot;16.0.0-alpha.12&quot;,
-    &quot;react-native&quot;: &quot;0.48.4&quot;,
-    &quot;react-native-vector-icons&quot;: &quot;^4.4.2&quot;,
-    &quot;whatwg-fetch&quot;: &quot;^2.0.3&quot;
-  },
-  &quot;devDependencies&quot;: {
-    &quot;babel-jest&quot;: &quot;21.2.0&quot;,
-    &quot;babel-preset-react-native&quot;: &quot;4.0.0&quot;,
-    &quot;jest&quot;: &quot;21.2.0&quot;,
-    &quot;react-test-renderer&quot;: &quot;16.0.0-alpha.12&quot;
-  },
-  &quot;jest&quot;: {
-    &quot;preset&quot;: &quot;react-native&quot;
-  }
-}
+<pre><code>- (instancetype)initWithBundleURL:(NSURL *)bundleURL
+                       moduleName:(NSString *)moduleName
+                initialProperties:<span class="highlight-text red">(NSDictionary *)initialProperties</span>
+                    launchOptions:(NSDictionary *)launchOptions
 </code></pre>
 
-<p>接下去，安装react和react-native包。打开Terminal，在你项目的根目录下面执行下面命令：</p>
+<p>在RN中我们用来承接<code>initialProperties</code>参数的就是每个js类的<code>props</code>。如果我们需要在Native中修改<code>props</code>属性，就要对<code>RCTRootView</code>的<code>appProperties</code>进行重新赋值，然后RN会对视图进行重新渲染，当且仅当两次赋值不一样的时候才会重新渲染。</p>
 
-<pre><code>npm install --save r16.0.0-alpha.12 react-native
+<pre><code>rootView.appProperties = @{@&quot;content&quot; : imageList};
 </code></pre>
 
 <div class="alert warning ">
-  <p>要确保这里安装的版本和package.json里说明的版本一致</p>
+  <p>需要注意的是，赋值操作必需要放在Native的主线程。而且js中的<code>componentWillReceiveProps</code>和<code>componentWillUpdateProps</code>并不会因为重新渲染而被再次调用，你只能在<code>componentWillMount</code>方法中访问新的<code>props</code></p>
 </div>
 
-<p>执行这个命令之后，将会在项目的根目录下创建一个<code>/node_modules</code>的目录，这里保存着所有你项目中所需的JavaScript依赖。</p>
+<h6 id="rcteventemitter">RCTEventEmitter</h6>
 
-<h6 id="安装cocoapods">安装CocoaPods</h6>
+<p>我们可以使用<code>RCTEventEmitter</code>类来让js监听native的事件，facebook的文档中是这样描述<code>RCTEventEmitter</code>的：</p>
 
-<p>这里就不说了</p>
-
-<h6 id="配置cocoapods依赖">配置CocoaPods依赖</h6>
-
-<p>在你集成RN到你项目中之前，你需要选择你要使用的React Native库。你将通过CocoaPod库的开发模式将其集成进去。
-<img src="../../../pod_develop.png" alt="pod_develop" />
-这些库的<code>subspec</code>文件都会在<code>/node_modules</code>目录下被说明,最后执行<code>pod install</code>命令，所有的React Native库依赖到这里就都准备好了。
-<img src="../../../pod_file.png" alt="pod_file" /></p>
-
-<h6 id="业务代码">业务代码</h6>
-
-<ol>
-<li><p>创建 <code>index.js</code> 文件
-在项目的根目录下创建<code>index.js</code>文件，这个文件是你RN项目的
-<span class="highlight-text danger">
-入口
-</span>，所有在Native中要用到的RN模块都在这里面进行注册。例如项目中的投票列表、设置页面等。各个模块的名称要和Native中的模块名称对应。
-<img src="../../../rn_modul.png" alt="rn_modul" /></p></li>
-
-<li><p>添加React Native 代码（JavaScript和CSS）</p></li>
-</ol>
-
-<pre><code>'use strict';
-
-import React from 'react';
-import {
-  AppRegistry,
-  StyleSheet,
-  Text,
-  View,
-  FlatList,
-  NativeModules,
-  Image,
-  ActivityIndicator,
-  TouchableOpacity,
-  ScrollView,
-  Switch,
-  TouchableWithoutFeedback,
-  Alert,
-  NativeEventEmitter,
-  
-} from 'react-native';
-
-import StarRatingView from './starRating.view.js'
-
-var { width, height } = require('Dimensions').get('window');
-var nativeModuleManager = NativeModules.XYRCTBrigeModule;
-
-class SettingsView extends React.PureComponent{
-
-    constructor(props){
-        super(props);
-    }
-    .....
-    .....
+<pre><code>/**
+ * RCTEventEmitter is an abstract base class to be used for modules that emit
+ * events to be observed by JS.
+ */
 </code></pre>
 
-<p>在Native中使用<code>RCTRootView</code>作为RN模块的容器。所有通过RN渲染出来的视图都会展示在该View上。</p>
+<p>它是一个模块的抽象基类，用来发送被JS监听的事件。我们通过</p>
 
-<pre><code>#import &lt;React/RCTBundleURLProvider.h&gt;
-#import &lt;React/RCTRootView.h&gt;
+<pre><code>- (void)sendEventWithName:(NSString *)name body:(id)body
+</code></pre>
 
-@implementation AppDelegate
+<p>方法来完成事件的发送。入参是事件名称和需要携带的参数（Dictionary）。
+每一个<code>RCTRootView</code>都有一个<code>RCTBridge</code>属性，它是RN中非常重要的一个类，负责Native和JS之间的通信。通过<code>RCTBridge</code>的:</p>
 
-- (BOOL)application:(UIApplication *)application didFinishLaunchingWithOptions:(NSDictionary *)launchOptions
-{
-  NSURL *jsCodeLocation;
-  <span class="highlight-text green">//设置获取JavaScript文件的路径，从服务器或者本地文件获取</span>
-#if DEBUG
-  jsCodeLocation = [NSURL URLWithString:@&quot;http://10.0.30.119:8081/index.ios.bundle?platform=ios&quot;];
-#else
-  jsCodeLocation = [[RCTBundleURLProvider sharedSettings] jsBundleURLForBundleRoot:@&quot;index.ios&quot; fallbackResource:nil];
-#endif
-  
-  <span class="highlight-text green">//通过URL、模块名称加载对应的RN视图，生成一个OC对象`RCTRootView`，最后将该View添加到controller的View上</span>
-  RCTRootView *rootView = [[RCTRootView alloc] initWithBundleURL:jsCodeLocation
-                                                      moduleName:@&quot;TabberView&quot;
-                                               initialProperties:nil
-                                                   launchOptions:launchOptions];
-  rootView.backgroundColor = [[UIColor alloc] initWithRed:1.0f green:1.0f blue:1.0f alpha:1];
-  
-  self.window = [[UIWindow alloc] initWithFrame:[UIScreen mainScreen].bounds];
-  UIViewController *rootViewController = [UIViewController new];
-  rootViewController.view = rootView;
-  self.window.rootViewController = rootViewController;
-  [self.window makeKeyAndVisible];
-  return YES;
+<pre><code>/**
+ * Retrieve a bridge module instance by name or class. Note that modules are
+ * lazily instantiated, so calling these methods for the first time with a given
+ * module name/class may cause the class to be sychronously instantiated,
+ * potentially blocking both the calling thread and main thread for a short time.
+ */
+- (id)moduleForName:(NSString *)moduleName;
+</code></pre>
+
+<p>方法，我们可以拿到每个<code>RCTRootView</code>对应的<code>RCTEventEmitter</code>实例（它是通过lazy load的方式初始化的），因为这里的<code>moduleName</code>参数可以是类名也可以是自定义的模块名称，所以在项目中如果出现多个实例，需要在初始化通过view的<code>reactTag</code>属性来区分。该属性声明在分类<code>UIView+React.h</code>中。</p>
+
+<pre><code>RCT_EXPORT_MODULE();
+
++ (EventEmitterManger *)mangerWithRootView:(RCTRootView *)rootView {
+    return [rootView.bridge moduleForName:NSStringFromClass(self)];
 }
 </code></pre>
 
-<p>到这里就完成了一个简单React Native App的集成。</p>
+<p>这样我们就拿到目标RootView对应的<code>RCTEventEmitter</code>对象。接下来我们需要为事件定义一个identifier，重写</p>
 
-<h4 id="测试">测试</h4>
+<pre><code>/**
+ * Override this method to return an array of supported event names. Attempting
+ * to observe or send an event that isn't included in this list will result in
+ * an error.
+ */
+- (NSArray&lt;NSString *&gt; *)supportedEvents;
+</code></pre>
 
-<ol>
-<li>因为HTTPS的限制，请将Domain添加到<code>Info.plist</code>的白名单
-<code>
-&lt;key&gt;NSAppTransportSecurity&lt;/key&gt;
-&lt;dict&gt;
-&lt;key&gt;NSExceptionDomains&lt;/key&gt;
-&lt;dict&gt;
-    &lt;key&gt;localhost&lt;/key&gt;
-    &lt;dict&gt;
-        &lt;key&gt;NSTemporaryExceptionAllowsInsecureHTTPLoads&lt;/key&gt;
-        &lt;true/&gt;
-    &lt;/dict&gt;
-&lt;/dict&gt;
-&lt;/dict&gt;
-</code></li>
-<li>执行<code>npm start</code>开启本地服务</li>
-<li>Xcode run.</li>
-</ol>
+<p>方法，把你方法的identifer作为数组的一个元素返回。这样就可以使用上面所说的方法进行消息的发送了。
+到这里Native端的代码已经完成了，下面看在js中如何设置。
+我们需要在对应的js中引入一个<code>NativeModules</code>、<code>NativeEventEmitter</code>模块，然后获取监听模块的manger</p>
+
+<pre><code>var raToRnManger = NativeModules.EventEmitterManger
+</code></pre>
+
+<p>在js对象的声明周期方法<code>componentWillMount</code>中设置监听，接下来就等native发送消息了。</p>
+
+<pre><code>componentWillMount(){
+         var raToRnMangerEmitter = new NativeEventEmitter(raToRnManger)
+          const subscription = raToRnMangerEmitter.addListener(&quot;EventReminder&quot;,
+              (reminder) =&gt; {
+                  console.log(&quot;test&quot;)
+                    this.setState({
+                        name:&quot;B&quot;
+                    })
+              }
+          );
+    }
+</code></pre>
+
+<h4 id="rn-native">RN -&gt; Native</h4>
+
+<h6 id="rctbridgemodule">RCTBridgeModule</h6>
+
+<p>在Native端定义RN模块的时候，让其遵循<code>&lt;RCTBridgeModule&gt;</code>协议，在实现文件中暴露出你想要从RN向Native发送的消息</p>
+
+<pre><code>RCT_EXPORT_METHOD(exampleMethod:(NSString *)name)
+{
+    NSLog(@&quot;%@&quot;,name);
+}
+</code></pre>
+
+<p>如果你想要该方法参数支持闭包，可以使用RN内置的闭包类型<code>RCTResponseSenderBlock</code></p>
+
+<pre><code>RCT_EXPORT_METHOD(exampleCallbackMethod:(RCTResponseSenderBlock)callback)
+{
+    NSDictionary *param = @{@&quot;letter&quot;:@&quot;B&quot;};
+    callback(@[[NSNull null], param]);
+}
+</code></pre>
+
+<p>在js端，通过<code>NativeModules</code>模块拿到Native中对应的模块</p>
+
+<pre><code>var manger = NativeModules.ExportMethodManger
+</code></pre>
+
+<p>如果RN中某个事件被触发了，直接通过manger向Native发送消息，消息名称正如你在Native中声明的那样</p>
+
+<pre><code>onPressLearnMore(){
+        manger.exampleMethod(&quot;##############Learn More############&quot;)
+    }
+</code></pre>
+
+<p>在Native项目中嵌入RN，你绝对不想要在js中再写一套网络请求吧。这时候就会遇到用RN展示UI，而数据请求放在在Native中做的情况。我们可以使用<code>XMLHttpRequest</code>这类js网络框架，但是这里想说的是<code>async/await</code>语法，它在ES6中被提供。从命名上一眼就能看出其目的，异步方法等待消息返回。</p>
+
+<pre><code>async updateEvents(){
+        try {
+            var events = await manger.findEvents();
+            this.setState({
+                letter:events[0].letter
+            });
+          } catch (e) {
+            console.error(e);
+          }
+    }
+</code></pre>
+
+<p>这样，如果Native中<code>findEvents</code>是一个异步的方法就可以在js中等待Native的回调了。</p>
               
             </div>
           </div>
@@ -475,7 +434,7 @@ class SettingsView extends React.PureComponent{
       
         <li class="post-action">
           
-            <a class="post-action-btn btn btn--default tooltip--top" href="https://LinkRober.github.io/bookshelf/2017/10/react-native%E5%92%8Cnative%E9%97%B4%E7%9A%84%E9%80%9A%E4%BF%A1/" data-tooltip="React Native和Native间的通信">
+            <a class="post-action-btn btn btn--disabled">
           
             <i class="fa fa-angle-left"></i>
             <span class="hide-xs hide-sm text-small icon-ml">上一篇</span>
@@ -483,7 +442,7 @@ class SettingsView extends React.PureComponent{
         </li>
         <li class="post-action">
           
-            <a class="post-action-btn btn btn--default tooltip--top" href="https://LinkRober.github.io/bookshelf/2017/10/runtime%E4%B8%89-%E6%B6%88%E6%81%AF%E8%BD%AC%E5%8F%91/" data-tooltip="Runtime(三) 消息转发">
+            <a class="post-action-btn btn btn--default tooltip--top" href="https://LinkRober.github.io/bookshelf/2017/10/react-native%E5%A6%82%E4%BD%95%E9%9B%86%E6%88%90%E5%88%B0%E7%8E%B0%E6%9C%89%E9%A1%B9%E7%9B%AE%E4%B8%AD/" data-tooltip="React Native如何集成到现有项目中">
           
             <span class="hide-xs hide-sm text-small icon-mr">下一篇</span>
             <i class="fa fa-angle-right"></i>
@@ -500,17 +459,17 @@ class SettingsView extends React.PureComponent{
         </a>
       </li>
       <li class="post-action hide-xs">
-        <a class="post-action-btn btn btn--default" target="new" href="https://plus.google.com/share?url=https%3a%2f%2fLinkRober.github.io%2fbookshelf%2f2017%2f10%2freact-native%25E5%25A6%2582%25E4%25BD%2595%25E9%259B%2586%25E6%2588%2590%25E5%2588%25B0%25E7%258E%25B0%25E6%259C%2589%25E9%25A1%25B9%25E7%259B%25AE%25E4%25B8%25AD%2f">
+        <a class="post-action-btn btn btn--default" target="new" href="https://plus.google.com/share?url=https%3a%2f%2fLinkRober.github.io%2fbookshelf%2f2017%2f10%2freact-native%25E5%2592%258Cnative%25E9%2597%25B4%25E7%259A%2584%25E9%2580%259A%25E4%25BF%25A1%2f">
           <i class="fa fa-google-plus"></i>
         </a>
       </li>
       <li class="post-action hide-xs">
-        <a class="post-action-btn btn btn--default" target="new" href="https://www.facebook.com/sharer/sharer.php?u=https%3a%2f%2fLinkRober.github.io%2fbookshelf%2f2017%2f10%2freact-native%25E5%25A6%2582%25E4%25BD%2595%25E9%259B%2586%25E6%2588%2590%25E5%2588%25B0%25E7%258E%25B0%25E6%259C%2589%25E9%25A1%25B9%25E7%259B%25AE%25E4%25B8%25AD%2f">
+        <a class="post-action-btn btn btn--default" target="new" href="https://www.facebook.com/sharer/sharer.php?u=https%3a%2f%2fLinkRober.github.io%2fbookshelf%2f2017%2f10%2freact-native%25E5%2592%258Cnative%25E9%2597%25B4%25E7%259A%2584%25E9%2580%259A%25E4%25BF%25A1%2f">
           <i class="fa fa-facebook-official"></i>
         </a>
       </li>
       <li class="post-action hide-xs">
-        <a class="post-action-btn btn btn--default" target="new" href="https://twitter.com/intent/tweet?text=https%3a%2f%2fLinkRober.github.io%2fbookshelf%2f2017%2f10%2freact-native%25E5%25A6%2582%25E4%25BD%2595%25E9%259B%2586%25E6%2588%2590%25E5%2588%25B0%25E7%258E%25B0%25E6%259C%2589%25E9%25A1%25B9%25E7%259B%25AE%25E4%25B8%25AD%2f">
+        <a class="post-action-btn btn btn--default" target="new" href="https://twitter.com/intent/tweet?text=https%3a%2f%2fLinkRober.github.io%2fbookshelf%2f2017%2f10%2freact-native%25E5%2592%258Cnative%25E9%2597%25B4%25E7%259A%2584%25E9%2580%259A%25E4%25BF%25A1%2f">
           <i class="fa fa-twitter"></i>
         </a>
       </li>
@@ -556,7 +515,7 @@ class SettingsView extends React.PureComponent{
       
         <li class="post-action">
           
-            <a class="post-action-btn btn btn--default tooltip--top" href="https://LinkRober.github.io/bookshelf/2017/10/react-native%E5%92%8Cnative%E9%97%B4%E7%9A%84%E9%80%9A%E4%BF%A1/" data-tooltip="React Native和Native间的通信">
+            <a class="post-action-btn btn btn--disabled">
           
             <i class="fa fa-angle-left"></i>
             <span class="hide-xs hide-sm text-small icon-ml">上一篇</span>
@@ -564,7 +523,7 @@ class SettingsView extends React.PureComponent{
         </li>
         <li class="post-action">
           
-            <a class="post-action-btn btn btn--default tooltip--top" href="https://LinkRober.github.io/bookshelf/2017/10/runtime%E4%B8%89-%E6%B6%88%E6%81%AF%E8%BD%AC%E5%8F%91/" data-tooltip="Runtime(三) 消息转发">
+            <a class="post-action-btn btn btn--default tooltip--top" href="https://LinkRober.github.io/bookshelf/2017/10/react-native%E5%A6%82%E4%BD%95%E9%9B%86%E6%88%90%E5%88%B0%E7%8E%B0%E6%9C%89%E9%A1%B9%E7%9B%AE%E4%B8%AD/" data-tooltip="React Native如何集成到现有项目中">
           
             <span class="hide-xs hide-sm text-small icon-mr">下一篇</span>
             <i class="fa fa-angle-right"></i>
@@ -581,17 +540,17 @@ class SettingsView extends React.PureComponent{
         </a>
       </li>
       <li class="post-action hide-xs">
-        <a class="post-action-btn btn btn--default" target="new" href="https://plus.google.com/share?url=https%3a%2f%2fLinkRober.github.io%2fbookshelf%2f2017%2f10%2freact-native%25E5%25A6%2582%25E4%25BD%2595%25E9%259B%2586%25E6%2588%2590%25E5%2588%25B0%25E7%258E%25B0%25E6%259C%2589%25E9%25A1%25B9%25E7%259B%25AE%25E4%25B8%25AD%2f">
+        <a class="post-action-btn btn btn--default" target="new" href="https://plus.google.com/share?url=https%3a%2f%2fLinkRober.github.io%2fbookshelf%2f2017%2f10%2freact-native%25E5%2592%258Cnative%25E9%2597%25B4%25E7%259A%2584%25E9%2580%259A%25E4%25BF%25A1%2f">
           <i class="fa fa-google-plus"></i>
         </a>
       </li>
       <li class="post-action hide-xs">
-        <a class="post-action-btn btn btn--default" target="new" href="https://www.facebook.com/sharer/sharer.php?u=https%3a%2f%2fLinkRober.github.io%2fbookshelf%2f2017%2f10%2freact-native%25E5%25A6%2582%25E4%25BD%2595%25E9%259B%2586%25E6%2588%2590%25E5%2588%25B0%25E7%258E%25B0%25E6%259C%2589%25E9%25A1%25B9%25E7%259B%25AE%25E4%25B8%25AD%2f">
+        <a class="post-action-btn btn btn--default" target="new" href="https://www.facebook.com/sharer/sharer.php?u=https%3a%2f%2fLinkRober.github.io%2fbookshelf%2f2017%2f10%2freact-native%25E5%2592%258Cnative%25E9%2597%25B4%25E7%259A%2584%25E9%2580%259A%25E4%25BF%25A1%2f">
           <i class="fa fa-facebook-official"></i>
         </a>
       </li>
       <li class="post-action hide-xs">
-        <a class="post-action-btn btn btn--default" target="new" href="https://twitter.com/intent/tweet?text=https%3a%2f%2fLinkRober.github.io%2fbookshelf%2f2017%2f10%2freact-native%25E5%25A6%2582%25E4%25BD%2595%25E9%259B%2586%25E6%2588%2590%25E5%2588%25B0%25E7%258E%25B0%25E6%259C%2589%25E9%25A1%25B9%25E7%259B%25AE%25E4%25B8%25AD%2f">
+        <a class="post-action-btn btn btn--default" target="new" href="https://twitter.com/intent/tweet?text=https%3a%2f%2fLinkRober.github.io%2fbookshelf%2f2017%2f10%2freact-native%25E5%2592%258Cnative%25E9%2597%25B4%25E7%259A%2584%25E9%2580%259A%25E4%25BF%25A1%2f">
           <i class="fa fa-twitter"></i>
         </a>
       </li>
@@ -618,17 +577,17 @@ class SettingsView extends React.PureComponent{
       <div id="share-options-bar" class="share-options-bar" data-behavior="4">
   <ul class="share-options">
     <li class="share-option">
-      <a class="share-option-btn" target="new" href="https://plus.google.com/share?url=https%3a%2f%2fLinkRober.github.io%2fbookshelf%2f2017%2f10%2freact-native%25E5%25A6%2582%25E4%25BD%2595%25E9%259B%2586%25E6%2588%2590%25E5%2588%25B0%25E7%258E%25B0%25E6%259C%2589%25E9%25A1%25B9%25E7%259B%25AE%25E4%25B8%25AD%2f">
+      <a class="share-option-btn" target="new" href="https://plus.google.com/share?url=https%3a%2f%2fLinkRober.github.io%2fbookshelf%2f2017%2f10%2freact-native%25E5%2592%258Cnative%25E9%2597%25B4%25E7%259A%2584%25E9%2580%259A%25E4%25BF%25A1%2f">
         <i class="fa fa-google-plus"></i><span>分享到 Google&#43;</span>
       </a>
     </li>
     <li class="share-option">
-      <a class="share-option-btn" target="new" href="https://www.facebook.com/sharer/sharer.php?u=https%3a%2f%2fLinkRober.github.io%2fbookshelf%2f2017%2f10%2freact-native%25E5%25A6%2582%25E4%25BD%2595%25E9%259B%2586%25E6%2588%2590%25E5%2588%25B0%25E7%258E%25B0%25E6%259C%2589%25E9%25A1%25B9%25E7%259B%25AE%25E4%25B8%25AD%2f">
+      <a class="share-option-btn" target="new" href="https://www.facebook.com/sharer/sharer.php?u=https%3a%2f%2fLinkRober.github.io%2fbookshelf%2f2017%2f10%2freact-native%25E5%2592%258Cnative%25E9%2597%25B4%25E7%259A%2584%25E9%2580%259A%25E4%25BF%25A1%2f">
         <i class="fa fa-facebook-official"></i><span>分享到 Facebook</span>
       </a>
     </li>
     <li class="share-option">
-      <a class="share-option-btn" target="new" href="https://twitter.com/intent/tweet?text=https%3a%2f%2fLinkRober.github.io%2fbookshelf%2f2017%2f10%2freact-native%25E5%25A6%2582%25E4%25BD%2595%25E9%259B%2586%25E6%2588%2590%25E5%2588%25B0%25E7%258E%25B0%25E6%259C%2589%25E9%25A1%25B9%25E7%259B%25AE%25E4%25B8%25AD%2f">
+      <a class="share-option-btn" target="new" href="https://twitter.com/intent/tweet?text=https%3a%2f%2fLinkRober.github.io%2fbookshelf%2f2017%2f10%2freact-native%25E5%2592%258Cnative%25E9%2597%25B4%25E7%259A%2584%25E9%2580%259A%25E4%25BF%25A1%2f">
         <i class="fa fa-twitter"></i><span>分享到 Twitter</span>
       </a>
     </li>
@@ -944,9 +903,9 @@ $(document).ready(function() {
     
       <script>
         var disqus_config = function () {
-          this.page.url = 'https:\/\/LinkRober.github.io\/bookshelf\/2017\/10\/react-native%E5%A6%82%E4%BD%95%E9%9B%86%E6%88%90%E5%88%B0%E7%8E%B0%E6%9C%89%E9%A1%B9%E7%9B%AE%E4%B8%AD\/';
+          this.page.url = 'https:\/\/LinkRober.github.io\/bookshelf\/2017\/10\/react-native%E5%92%8Cnative%E9%97%B4%E7%9A%84%E9%80%9A%E4%BF%A1\/';
           
-            this.page.identifier = '\/2017\/10\/react-native%E5%A6%82%E4%BD%95%E9%9B%86%E6%88%90%E5%88%B0%E7%8E%B0%E6%9C%89%E9%A1%B9%E7%9B%AE%E4%B8%AD\/'
+            this.page.identifier = '\/2017\/10\/react-native%E5%92%8Cnative%E9%97%B4%E7%9A%84%E9%80%9A%E4%BF%A1\/'
           
         };
         (function() {
