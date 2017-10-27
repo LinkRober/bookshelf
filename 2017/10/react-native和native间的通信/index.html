@@ -35,8 +35,6 @@
 
 React Native如何集成到现有项目中
 React Native和Native间的通信
-封装Native模块在React Native中调用
-React Native是如何转换成Native的
 
 
 ">
@@ -47,8 +45,6 @@ React Native是如何转换成Native的
 
 React Native如何集成到现有项目中
 React Native和Native间的通信
-封装Native模块在React Native中调用
-React Native是如何转换成Native的
 
 
 ">
@@ -65,8 +61,6 @@ React Native是如何转换成Native的
 
 React Native如何集成到现有项目中
 React Native和Native间的通信
-封装Native模块在React Native中调用
-React Native是如何转换成Native的
 
 
 ">
@@ -275,8 +269,6 @@ thumbnailImagePosition = 'bottom' -->
 <ul>
 <li><a href="https://linkrober.github.io/bookshelf/2017/10/react-native%E5%A6%82%E4%BD%95%E9%9B%86%E6%88%90%E5%88%B0%E7%8E%B0%E6%9C%89%E9%A1%B9%E7%9B%AE%E4%B8%AD/">React Native如何集成到现有项目中</a></li>
 <li><a href="https://linkrober.github.io/bookshelf/2017/10/react-native%E5%92%8Cnative%E9%97%B4%E7%9A%84%E9%80%9A%E4%BF%A1/">React Native和Native间的通信</a></li>
-<li>封装Native模块在React Native中调用</li>
-<li>React Native是如何转换成Native的</li>
 </ul>
 
 <p></p>
@@ -296,6 +288,32 @@ thumbnailImagePosition = 'bottom' -->
 <p>在RN中我们用来承接<code>initialProperties</code>参数的就是每个js类的<code>props</code>。如果我们需要在Native中修改<code>props</code>属性，就要对<code>RCTRootView</code>的<code>appProperties</code>进行重新赋值，然后RN会对视图进行重新渲染，当且仅当两次赋值不一样的时候才会重新渲染。</p>
 
 <pre><code>rootView.appProperties = @{@&quot;content&quot; : imageList};
+</code></pre>
+
+<p>我们也可以使用</p>
+
+<pre><code>- (instancetype)initWithBridge:(RCTBridge *)bridge
+                    moduleName:(NSString *)moduleName
+             initialProperties:(NSDictionary *)initialProperties NS_DESIGNATED_INITIALIZER;
+</code></pre>
+
+<p>在初始化bridge时以代理的方式将bundleURL传入：</p>
+
+<pre><code>- (instancetype)initWithDelegate:(id&lt;RCTBridgeDelegate&gt;)delegate
+                   launchOptions:(NSDictionary *)launchOptions;
+
+
+ @protocol RCTBridgeDelegate &lt;NSObject&gt;
+
+/**
+ * The location of the JavaScript source file. When running from the packager
+ * this should be an absolute URL, e.g. `http://localhost:8081/index.ios.bundle`.
+ * When running from a locally bundled JS file, this should be a `file://` url
+ * pointing to a path inside the app resources, e.g. `file://.../main.jsbundle`.
+ */
+- (NSURL *)sourceURLForBridge:(RCTBridge *)bridge;
+
+@optional 
 </code></pre>
 
 <div class="alert warning ">
@@ -670,8 +688,6 @@ thumbnailImagePosition = 'bottom' -->
 <ul>
 <li><a href="https://linkrober.github.io/bookshelf/2017/10/react-native%E5%A6%82%E4%BD%95%E9%9B%86%E6%88%90%E5%88%B0%E7%8E%B0%E6%9C%89%E9%A1%B9%E7%9B%AE%E4%B8%AD/">React Native如何集成到现有项目中</a></li>
 <li><a href="https://linkrober.github.io/bookshelf/2017/10/react-native%E5%92%8Cnative%E9%97%B4%E7%9A%84%E9%80%9A%E4%BF%A1/">React Native和Native间的通信</a></li>
-<li>封装Native模块在React Native中调用</li>
-<li>React Native是如何转换成Native的</li>
 </ul>
 
 <p></p></div>
@@ -699,8 +715,6 @@ thumbnailImagePosition = 'bottom' -->
 <ul>
 <li><a href="https://linkrober.github.io/bookshelf/2017/10/react-native%E5%A6%82%E4%BD%95%E9%9B%86%E6%88%90%E5%88%B0%E7%8E%B0%E6%9C%89%E9%A1%B9%E7%9B%AE%E4%B8%AD/">React Native如何集成到现有项目中</a></li>
 <li>React Native和Native间的通信</li>
-<li>封装Native模块在React Native中调用</li>
-<li>React Native是如何转换成Native的</li>
 </ul>
 
 <p></p></div>
