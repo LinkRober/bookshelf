@@ -6,10 +6,23 @@
     <description>Recent content in Posts on 董二千</description>
     <generator>Hugo -- gohugo.io</generator>
     <language>zh-cn</language>
-    <lastBuildDate>Sat, 28 Oct 2017 00:00:00 +0000</lastBuildDate>
+    <lastBuildDate>Mon, 27 Nov 2017 00:00:00 +0000</lastBuildDate>
     
 	<atom:link href="https://LinkRober.github.io/bookshelf/post/index.xml" rel="self" type="application/rss+xml" />
     
+    
+    <item>
+      <title>图像处理流程概述</title>
+      <link>https://LinkRober.github.io/bookshelf/2017/11/%E5%9B%BE%E5%83%8F%E5%A4%84%E7%90%86%E6%B5%81%E7%A8%8B%E6%A6%82%E8%BF%B0/</link>
+      <pubDate>Mon, 27 Nov 2017 00:00:00 +0000</pubDate>
+      
+      <guid>https://LinkRober.github.io/bookshelf/2017/11/%E5%9B%BE%E5%83%8F%E5%A4%84%E7%90%86%E6%B5%81%E7%A8%8B%E6%A6%82%E8%BF%B0/</guid>
+      <description>&lt;p&gt;&lt;img src=&#34;http://upload-images.jianshu.io/upload_images/1086250-3eac00965effbe70?imageMogr2/auto-orient/strip%7CimageView2/2/w/320&#34; alt=&#34;&#34; /&gt;&lt;/p&gt;
+
+&lt;p&gt;视频编辑分为两部分：&lt;strong&gt;Camrea Engine（视频资源采集）&lt;/strong&gt;和&lt;strong&gt;Video Edit Engine（后期视频编辑）&lt;/strong&gt;。在Camrea Engine采集的时候我们也可以做一些编辑操作，这叫预处理，比如说加滤镜。等到把采集到的资源交给Video Edit Engine时就是后处理。&lt;/p&gt;
+
+&lt;p&gt;&lt;/p&gt;</description>
+    </item>
     
     <item>
       <title>RCTRootView、RCTBridge做了什么</title>
