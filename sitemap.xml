@@ -81,7 +81,7 @@
   
   <url>
     <loc>https://LinkRober.github.io/bookshelf/categories/development/</loc>
-    <lastmod>2017-11-27T00:00:00+00:00</lastmod>
+    <lastmod>2017-10-28T00:00:00+00:00</lastmod>
     <priority>0</priority>
   </url>
   
@@ -129,6 +129,12 @@
   
   <url>
     <loc>https://LinkRober.github.io/bookshelf/tags/%E5%9B%BE%E5%83%8F/</loc>
+    <lastmod>2017-11-27T00:00:00+00:00</lastmod>
+    <priority>0</priority>
+  </url>
+  
+  <url>
+    <loc>https://LinkRober.github.io/bookshelf/categories/%E5%9B%BE%E5%BD%A2%E5%9B%BE%E5%83%8F/</loc>
     <lastmod>2017-11-27T00:00:00+00:00</lastmod>
     <priority>0</priority>
   </url>
