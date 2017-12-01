@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes" ?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>Arithmetic on 董二千</title>
+    <link>https://LinkRober.github.io/bookshelf/categories/arithmetic/</link>
+    <description>Recent content in Arithmetic on 董二千</description>
+    <generator>Hugo -- gohugo.io</generator>
+    <language>zh-cn</language>
+    <lastBuildDate>Fri, 01 Dec 2017 00:00:00 +0000</lastBuildDate>
+    
+	<atom:link href="https://LinkRober.github.io/bookshelf/categories/arithmetic/index.xml" rel="self" type="application/rss+xml" />
+    
+    
+    <item>
+      <title>快速排序</title>
+      <link>https://LinkRober.github.io/bookshelf/2017/12/%E5%BF%AB%E9%80%9F%E6%8E%92%E5%BA%8F/</link>
+      <pubDate>Fri, 01 Dec 2017 00:00:00 +0000</pubDate>
+      
+      <guid>https://LinkRober.github.io/bookshelf/2017/12/%E5%BF%AB%E9%80%9F%E6%8E%92%E5%BA%8F/</guid>
+      <description>&lt;span class=&#34;highlight-text primary&#34;&gt;
+故事
+&lt;/span&gt;
+
+&lt;p&gt;快速排序由&lt;strong&gt;C.A.R.Hoare（东尼霍尔）&lt;/strong&gt;在1960年提出。之后又有许多人对此进行改进。如果你对快速排序感兴趣可以去看看东尼霍尔1962年在Computer Journal发表的论文“Quicksort”以及《算法导论》的第七章。&lt;/p&gt;</description>
+    </item>
+    
+  </channel>
+</rss>

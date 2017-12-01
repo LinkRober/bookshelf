@@ -3,6 +3,11 @@
   xmlns:xhtml="http://www.w3.org/1999/xhtml">
   
   <url>
+    <loc>https://LinkRober.github.io/bookshelf/2017/12/%E5%BF%AB%E9%80%9F%E6%8E%92%E5%BA%8F/</loc>
+    <lastmod>2017-12-01T00:00:00+00:00</lastmod>
+  </url>
+  
+  <url>
     <loc>https://LinkRober.github.io/bookshelf/2017/11/%E5%9B%BE%E5%83%8F%E5%A4%84%E7%90%86%E6%B5%81%E7%A8%8B%E6%A6%82%E8%BF%B0/</loc>
     <lastmod>2017-11-27T00:00:00+00:00</lastmod>
   </url>
@@ -63,7 +68,14 @@
   </url>
   
   <url>
+    <loc>https://LinkRober.github.io/bookshelf/categories/arithmetic/</loc>
+    <lastmod>2017-12-01T00:00:00+00:00</lastmod>
+    <priority>0</priority>
+  </url>
+  
+  <url>
     <loc>https://LinkRober.github.io/bookshelf/categories/</loc>
+    <lastmod>2017-12-01T00:00:00+00:00</lastmod>
     <priority>0</priority>
   </url>
   
@@ -81,7 +93,7 @@
   
   <url>
     <loc>https://LinkRober.github.io/bookshelf/post/</loc>
-    <lastmod>2017-11-27T00:00:00+00:00</lastmod>
+    <lastmod>2017-12-01T00:00:00+00:00</lastmod>
     <priority>0</priority>
   </url>
   
@@ -122,8 +134,20 @@
   </url>
   
   <url>
+    <loc>https://LinkRober.github.io/bookshelf/tags/%E5%BF%AB%E9%80%9F%E6%8E%92%E5%BA%8F/</loc>
+    <lastmod>2017-12-01T00:00:00+00:00</lastmod>
+    <priority>0</priority>
+  </url>
+  
+  <url>
+    <loc>https://LinkRober.github.io/bookshelf/tags/%E7%AE%97%E6%B3%95/</loc>
+    <lastmod>2017-12-01T00:00:00+00:00</lastmod>
+    <priority>0</priority>
+  </url>
+  
+  <url>
     <loc>https://LinkRober.github.io/bookshelf/</loc>
-    <lastmod>2017-11-27T00:00:00+00:00</lastmod>
+    <lastmod>2017-12-01T00:00:00+00:00</lastmod>
     <priority>0</priority>
   </url>
   
