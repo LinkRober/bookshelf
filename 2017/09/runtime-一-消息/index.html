@@ -234,7 +234,7 @@ The objc_msgSend Function
   
     <span>发布在</span>
     
-      <a class="category-link" href="https://LinkRober.github.io/bookshelf/categories/development">development</a>
+      <a class="category-link" href="https://LinkRober.github.io/bookshelf/categories/ios">iOS</a>
     
   
 
@@ -357,6 +357,8 @@ for(i = 0;i &lt; 100;i++){
                     <span class="text-color-light text-small">标签</span><br/>
                     
   <a class="tag tag--primary tag--small" href="https://LinkRober.github.io/bookshelf//tags/runtime/">runtime</a>
+
+  <a class="tag tag--primary tag--small" href="https://LinkRober.github.io/bookshelf//tags/objectc/">ObjectC</a>
 
                   </div>
                 
@@ -581,6 +583,35 @@ for(i = 0;i &lt; 100;i++){
           <div class="media">
             
             <div class="media-body">
+              <a class="link-unstyled" href="https://LinkRober.github.io/bookshelf/2017/12/ios%E5%A4%9A%E7%BA%BF%E7%A8%8B%E4%B8%AD%E7%9A%84%E9%94%81/">
+                <h3 class="media-heading">iOS多线程中的锁</h3>
+              </a>
+              <span class="media-meta">
+                <span class="media-date text-small">
+                  Dec 12, 2017
+                </span>
+              </span>
+              <div class="media-content hide-xs font-merryweather"><p>涉及到多线程共享资源的情况下就避免不了资源竞争的问题，这时候就会用到各种锁，例如，<code>@synchronized</code>、<code>NSLock</code>、<code>OSSpinLock</code>等等，虽然都是锁，但是锁的底层实现也不尽相同。大概可以分为：<span class="highlight-text blue">互斥锁</span>、<span class="highlight-text blue">自旋锁</span>、<span class="highlight-text blue">递归锁</span>、
+<span class="highlight-text blue">读写锁</span>。</p>
+
+<pre><code>{
+	lock()//加锁
+		doSomeThing()//临界区
+	unlock()//解锁
+}
+</code></pre>
+
+<p>我们锁的目的是在任何时刻最多只能有一个线程在修改资源，即在任何时刻只能有一个操作者保持锁。</p>
+
+<p></p></div>
+            </div>
+            <div style="clear:both;"></div>
+            <hr>
+          </div>
+        
+          <div class="media">
+            
+            <div class="media-body">
               <a class="link-unstyled" href="https://LinkRober.github.io/bookshelf/2017/12/%E5%BF%AB%E9%80%9F%E6%8E%92%E5%BA%8F/">
                 <h3 class="media-heading">快速排序</h3>
               </a>
@@ -783,23 +814,6 @@ thumbnailImagePosition = 'bottom' -->
             <hr>
           </div>
         
-          <div class="media">
-            
-            <div class="media-body">
-              <a class="link-unstyled" href="https://LinkRober.github.io/bookshelf/2017/09/run-loops-%E4%B8%80/">
-                <h3 class="media-heading">Run Loops (一)</h3>
-              </a>
-              <span class="media-meta">
-                <span class="media-date text-small">
-                  Sep 9, 2017
-                </span>
-              </span>
-              <div class="media-content hide-xs font-merryweather"></div>
-            </div>
-            <div style="clear:both;"></div>
-            <hr>
-          </div>
-        
       </div>
     </div>
     <div class="modal-footer">
@@ -807,7 +821,7 @@ thumbnailImagePosition = 'bottom' -->
          data-message-zero=""
          data-message-one=""
          data-message-other="">
-         13 posts found
+         14 posts found
       </p>
     </div>
   </div>

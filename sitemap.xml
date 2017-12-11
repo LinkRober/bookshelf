@@ -3,6 +3,11 @@
   xmlns:xhtml="http://www.w3.org/1999/xhtml">
   
   <url>
+    <loc>https://LinkRober.github.io/bookshelf/2017/12/ios%E5%A4%9A%E7%BA%BF%E7%A8%8B%E4%B8%AD%E7%9A%84%E9%94%81/</loc>
+    <lastmod>2017-12-01T00:00:00+00:00</lastmod>
+  </url>
+  
+  <url>
     <loc>https://LinkRober.github.io/bookshelf/2017/12/%E5%BF%AB%E9%80%9F%E6%8E%92%E5%BA%8F/</loc>
     <lastmod>2017-12-01T00:00:00+00:00</lastmod>
   </url>
@@ -74,14 +79,14 @@
   </url>
   
   <url>
-    <loc>https://LinkRober.github.io/bookshelf/categories/</loc>
+    <loc>https://LinkRober.github.io/bookshelf/tags/c/</loc>
     <lastmod>2017-12-01T00:00:00+00:00</lastmod>
     <priority>0</priority>
   </url>
   
   <url>
-    <loc>https://LinkRober.github.io/bookshelf/categories/development/</loc>
-    <lastmod>2017-10-28T00:00:00+00:00</lastmod>
+    <loc>https://LinkRober.github.io/bookshelf/categories/</loc>
+    <lastmod>2017-12-01T00:00:00+00:00</lastmod>
     <priority>0</priority>
   </url>
   
@@ -92,13 +97,37 @@
   </url>
   
   <url>
+    <loc>https://LinkRober.github.io/bookshelf/categories/ios/</loc>
+    <lastmod>2017-12-01T00:00:00+00:00</lastmod>
+    <priority>0</priority>
+  </url>
+  
+  <url>
+    <loc>https://LinkRober.github.io/bookshelf/tags/javsscript/</loc>
+    <lastmod>2017-10-28T00:00:00+00:00</lastmod>
+    <priority>0</priority>
+  </url>
+  
+  <url>
+    <loc>https://LinkRober.github.io/bookshelf/tags/objectc/</loc>
+    <lastmod>2017-12-01T00:00:00+00:00</lastmod>
+    <priority>0</priority>
+  </url>
+  
+  <url>
     <loc>https://LinkRober.github.io/bookshelf/post/</loc>
     <lastmod>2017-12-01T00:00:00+00:00</lastmod>
     <priority>0</priority>
   </url>
   
   <url>
-    <loc>https://LinkRober.github.io/bookshelf/tags/react-native/</loc>
+    <loc>https://LinkRober.github.io/bookshelf/tags/reactnative/</loc>
+    <lastmod>2017-10-28T00:00:00+00:00</lastmod>
+    <priority>0</priority>
+  </url>
+  
+  <url>
+    <loc>https://LinkRober.github.io/bookshelf/categories/reactnative/</loc>
     <lastmod>2017-10-28T00:00:00+00:00</lastmod>
     <priority>0</priority>
   </url>
@@ -117,7 +146,7 @@
   
   <url>
     <loc>https://LinkRober.github.io/bookshelf/tags/</loc>
-    <lastmod>2017-04-03T17:06:19+08:00</lastmod>
+    <lastmod>2017-12-01T00:00:00+00:00</lastmod>
     <priority>0</priority>
   </url>
   
@@ -140,6 +169,12 @@
   </url>
   
   <url>
+    <loc>https://LinkRober.github.io/bookshelf/tags/%E5%A4%9A%E7%BA%BF%E7%A8%8B/</loc>
+    <lastmod>2017-12-01T00:00:00+00:00</lastmod>
+    <priority>0</priority>
+  </url>
+  
+  <url>
     <loc>https://LinkRober.github.io/bookshelf/tags/%E5%BF%AB%E9%80%9F%E6%8E%92%E5%BA%8F/</loc>
     <lastmod>2017-12-01T00:00:00+00:00</lastmod>
     <priority>0</priority>
@@ -153,6 +188,12 @@
   
   <url>
     <loc>https://LinkRober.github.io/bookshelf/</loc>
+    <lastmod>2017-12-01T00:00:00+00:00</lastmod>
+    <priority>0</priority>
+  </url>
+  
+  <url>
+    <loc>https://LinkRober.github.io/bookshelf/tags/%E9%94%81/</loc>
     <lastmod>2017-12-01T00:00:00+00:00</lastmod>
     <priority>0</priority>
   </url>
