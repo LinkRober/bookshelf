@@ -6,10 +6,28 @@
     <description>Recent content on 董二千</description>
     <generator>Hugo -- gohugo.io</generator>
     <language>zh-cn</language>
-    <lastBuildDate>Fri, 01 Dec 2017 00:00:00 +0000</lastBuildDate>
+    <lastBuildDate>Fri, 22 Dec 2017 00:00:00 +0000</lastBuildDate>
     
 	<atom:link href="https://LinkRober.github.io/bookshelf/index.xml" rel="self" type="application/rss+xml" />
     
+    
+    <item>
+      <title>Native和JS通信概述</title>
+      <link>https://LinkRober.github.io/bookshelf/2017/12/native%E5%92%8Cjs%E9%80%9A%E4%BF%A1%E6%A6%82%E8%BF%B0/</link>
+      <pubDate>Fri, 22 Dec 2017 00:00:00 +0000</pubDate>
+      
+      <guid>https://LinkRober.github.io/bookshelf/2017/12/native%E5%92%8Cjs%E9%80%9A%E4%BF%A1%E6%A6%82%E8%BF%B0/</guid>
+      <description>&lt;p&gt;本系列文章作为学习RN期间的总结&lt;/p&gt;
+
+&lt;ul&gt;
+&lt;li&gt;&lt;a href=&#34;https://linkrober.github.io/bookshelf/2017/10/react-native%E5%A6%82%E4%BD%95%E9%9B%86%E6%88%90%E5%88%B0%E7%8E%B0%E6%9C%89%E9%A1%B9%E7%9B%AE%E4%B8%AD/&#34;&gt;React Native如何集成到现有项目中&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;&lt;a href=&#34;https://linkrober.github.io/bookshelf/2017/10/react-native%E5%92%8Cnative%E9%97%B4%E7%9A%84%E9%80%9A%E4%BF%A1/&#34;&gt;React Native和Native间的通信实践&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;&lt;a href=&#34;https://linkrober.github.io/bookshelf/2017/10/rctrootviewrctbridge%E5%81%9A%E4%BA%86%E4%BB%80%E4%B9%88/&#34;&gt;RCTRootView、RCTBridge做了什么&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;Native和JS通信概述&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;p&gt;&lt;/p&gt;</description>
+    </item>
     
     <item>
       <title>iOS多线程中的锁</title>
@@ -68,7 +86,7 @@
 
 &lt;ul&gt;
 &lt;li&gt;&lt;a href=&#34;https://linkrober.github.io/bookshelf/2017/10/react-native%E5%A6%82%E4%BD%95%E9%9B%86%E6%88%90%E5%88%B0%E7%8E%B0%E6%9C%89%E9%A1%B9%E7%9B%AE%E4%B8%AD/&#34;&gt;React Native如何集成到现有项目中&lt;/a&gt;&lt;/li&gt;
-&lt;li&gt;&lt;a href=&#34;https://linkrober.github.io/bookshelf/2017/10/react-native%E5%92%8Cnative%E9%97%B4%E7%9A%84%E9%80%9A%E4%BF%A1/&#34;&gt;React Native和Native间的通信&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;&lt;a href=&#34;https://linkrober.github.io/bookshelf/2017/10/react-native%E5%92%8Cnative%E9%97%B4%E7%9A%84%E9%80%9A%E4%BF%A1/&#34;&gt;React Native和Native间的通信实践&lt;/a&gt;&lt;/li&gt;
 &lt;li&gt;RCTRootView、RCTBridge做了什么&lt;/li&gt;
 &lt;/ul&gt;
 
@@ -76,11 +94,11 @@
     </item>
     
     <item>
-      <title>React Native和Native间的通信</title>
-      <link>https://LinkRober.github.io/bookshelf/2017/10/react-native%E5%92%8Cnative%E9%97%B4%E7%9A%84%E9%80%9A%E4%BF%A1/</link>
+      <title>React Native和Native间的通信实践</title>
+      <link>https://LinkRober.github.io/bookshelf/2017/10/react-native%E5%92%8Cnative%E9%97%B4%E7%9A%84%E9%80%9A%E4%BF%A1%E5%AE%9E%E8%B7%B5/</link>
       <pubDate>Wed, 25 Oct 2017 00:00:00 +0000</pubDate>
       
-      <guid>https://LinkRober.github.io/bookshelf/2017/10/react-native%E5%92%8Cnative%E9%97%B4%E7%9A%84%E9%80%9A%E4%BF%A1/</guid>
+      <guid>https://LinkRober.github.io/bookshelf/2017/10/react-native%E5%92%8Cnative%E9%97%B4%E7%9A%84%E9%80%9A%E4%BF%A1%E5%AE%9E%E8%B7%B5/</guid>
       <description>&lt;!-- thumbnailImage = &#39;rn_image.jpeg&#39;
 thumbnailImagePosition = &#39;bottom&#39; --&gt;
 
@@ -88,7 +106,7 @@ thumbnailImagePosition = &#39;bottom&#39; --&gt;
 
 &lt;ul&gt;
 &lt;li&gt;&lt;a href=&#34;https://linkrober.github.io/bookshelf/2017/10/react-native%E5%A6%82%E4%BD%95%E9%9B%86%E6%88%90%E5%88%B0%E7%8E%B0%E6%9C%89%E9%A1%B9%E7%9B%AE%E4%B8%AD/&#34;&gt;React Native如何集成到现有项目中&lt;/a&gt;&lt;/li&gt;
-&lt;li&gt;React Native和Native间的通信&lt;/li&gt;
+&lt;li&gt;React Native和Native间的通信实践&lt;/li&gt;
 &lt;li&gt;&lt;a href=&#34;https://linkrober.github.io/bookshelf/2017/10/rctrootviewrctbridge%E5%81%9A%E4%BA%86%E4%BB%80%E4%B9%88/&#34;&gt;RCTRootView、RCTBridge做了什么&lt;/a&gt;&lt;/li&gt;
 &lt;/ul&gt;
 
@@ -108,7 +126,7 @@ thumbnailImagePosition = &#39;bottom&#39; --&gt;
 
 &lt;ul&gt;
 &lt;li&gt;React Native如何集成到现有项目中&lt;/li&gt;
-&lt;li&gt;&lt;a href=&#34;https://linkrober.github.io/bookshelf/2017/10/react-native%E5%92%8Cnative%E9%97%B4%E7%9A%84%E9%80%9A%E4%BF%A1/&#34;&gt;React Native和Native间的通信&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;&lt;a href=&#34;https://linkrober.github.io/bookshelf/2017/10/react-native%E5%92%8Cnative%E9%97%B4%E7%9A%84%E9%80%9A%E4%BF%A1/&#34;&gt;React Native和Native间的通信实践&lt;/a&gt;&lt;/li&gt;
 &lt;li&gt;&lt;a href=&#34;https://linkrober.github.io/bookshelf/2017/10/rctrootviewrctbridge%E5%81%9A%E4%BA%86%E4%BB%80%E4%B9%88/&#34;&gt;RCTRootView、RCTBridge做了什么&lt;/a&gt;&lt;/li&gt;
 &lt;/ul&gt;
 

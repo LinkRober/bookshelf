@@ -20,25 +20,49 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <meta name="generator" content="Hugo 0.30.2">
-    <title>Runtime(三) 消息转发</title>
+    <title>Native和JS通信概述</title>
     <meta name="author" content="董二千">
-    <meta name="keywords" content="runtime">
+    <meta name="keywords" content="React Native">
 
     <link rel="icon" href="https://LinkRober.github.io/bookshelf/favicon.png">
     
 
     
-    <meta name="description" content="向对象发送一个消息，如果没有处理就会发生错误。但是在产生错误之前，runtime会给接受对象第二次机会来处理消息。
+    <meta name="description" content="本系列文章作为学习RN期间的总结
+
+
+React Native如何集成到现有项目中
+React Native和Native间的通信实践
+RCTRootView、RCTBridge做了什么
+Native和JS通信概述
+
+
 ">
-    <meta property="og:description" content="向对象发送一个消息，如果没有处理就会发生错误。但是在产生错误之前，runtime会给接受对象第二次机会来处理消息。
+    <meta property="og:description" content="本系列文章作为学习RN期间的总结
+
+
+React Native如何集成到现有项目中
+React Native和Native间的通信实践
+RCTRootView、RCTBridge做了什么
+Native和JS通信概述
+
+
 ">
     <meta property="og:type" content="blog">
-    <meta property="og:title" content="Runtime(三) 消息转发">
-    <meta property="og:url" content="/2017/10/runtime%E4%B8%89-%E6%B6%88%E6%81%AF%E8%BD%AC%E5%8F%91/">
+    <meta property="og:title" content="Native和JS通信概述">
+    <meta property="og:url" content="/2017/12/native%E5%92%8Cjs%E9%80%9A%E4%BF%A1%E6%A6%82%E8%BF%B0/">
     <meta property="og:site_name" content="董二千">
     <meta name="twitter:card" content="summary">
     <meta name="twitter:title" content="董二千">
-    <meta name="twitter:description" content="向对象发送一个消息，如果没有处理就会发生错误。但是在产生错误之前，runtime会给接受对象第二次机会来处理消息。
+    <meta name="twitter:description" content="本系列文章作为学习RN期间的总结
+
+
+React Native如何集成到现有项目中
+React Native和Native间的通信实践
+RCTRootView、RCTBridge做了什么
+Native和JS通信概述
+
+
 ">
     
     
@@ -51,6 +75,8 @@
     
 
     
+    
+      <meta property="og:image" content="https://LinkRober.github.io/rn_image.jpg">
     
     
 
@@ -189,25 +215,23 @@
 </nav>
 
       
-
-      <div id="main" data-behavior="4"
-        class="
-               hasCoverMetaIn
-               ">
-        <article class="post" itemscope itemType="http://schema.org/BlogPosting">
-          
-          
-            <div class="post-header main-content-wrap text-left">
+  <div class="post-header-cover
+              text-left
+              "
+       style="background-image:url('../../../rn_image.jpg')"
+       data-behavior="4">
+    
+      <div class="post-header main-content-wrap text-left">
   
     <h1 class="post-title" itemprop="headline">
-      Runtime(三) 消息转发
+      Native和JS通信概述
     </h1>
   
   <div class="postShorten-meta post-meta">
   
-    <time itemprop="datePublished" datetime="2017-10-16T00:00:00Z">
+    <time itemprop="datePublished" datetime="2017-12-22T00:00:00Z">
       
-  十月 16, 2017
+  十二月 22, 2017
 
     </time>
   
@@ -216,7 +240,7 @@
   
     <span>发布在</span>
     
-      <a class="category-link" href="https://LinkRober.github.io/bookshelf/categories/ios">iOS</a>
+      <a class="category-link" href="https://LinkRober.github.io/bookshelf/categories/reactnative">ReactNative</a>
     
   
 
@@ -224,112 +248,129 @@
 </div>
 
 </div>
+    
+  </div>
+
+
+      <div id="main" data-behavior="4"
+        class="hasCover
+               hasCoverMetaIn
+               ">
+        <article class="post" itemscope itemType="http://schema.org/BlogPosting">
+          
           
           <div class="post-content markdown" itemprop="articleBody">
             <div class="main-content-wrap">
-              <p>向对象发送一个消息，如果没有处理就会发生错误。但是在产生错误之前，runtime会给接受对象第二次机会来处理消息。
-</p>
-
-<h3 id="forwarding">Forwarding</h3>
-
-<p>向对象发送一个消息，如果没有处理就会发生错误。但是在产生错误之前，runtime会向对象发送<code>forwardInvocation:</code>消息，消息携带了一个<code>NSInvocation</code>对象，这个对象里面包裹了原始消息和参数。</p>
-
-<p>你可以实现<code>forwardInvocation:</code>方法来处理消息，来避免错误的发生。正如方法名所暗示的<code>forwardInvocation:</code>一般用来向另一个对象转发消息。</p>
-
-<p>为了看到转发的过程和结果，我们想象下面的场景：首先，你设计了一个对象能够响应<code>negotiate</code>方法，你希望它能够响应另外一个对象的消息。无论<code>negotiate</code>的方法体是在哪里实现的,你可以通过传入<code>negotiate</code>消息到另一个对象来完成。下一步，假设你想要<code>negotiate</code>消息的响应可以被另外一个类明确的接受。一种办法是通过继承的方式，让你的类从父类中继承这个方法。但是如果在不同的继承链中，这种方法是不可能实现的。</p>
-
-<p>即使你的类不能通过继承的方式使用<code>negotiate</code>方法，我们仍然可以借用下面这种方式，向另一个类对象传递消息。</p>
-
-<pre><code>- (id)negotiate
-{
-    if ( [someOtherObject respondsTo:@selector(negotiate)] )
-        return [someOtherObject negotiate];
-    return self;
-}
-</code></pre>
-
-<p>但是这种方式有点笨重，特别是如果你有大量的消息需要传递到另一个类的时候。你必须要在一个方法里面覆盖所有你想要调用的其他类的方法。而且，可能有些方法你不能考虑周全。所有的方法集合都依赖于运行时事件，在以后类的实现中作为新的方法发生改变。</p>
-
-<p>第二次机会被<code>forwardInvocation:</code>方法所提供，这是一种比较特殊的解决方式，它是动态的而不是静态的。它工作起来就像是：当一个对象不能响应一个消息，因为在消息中没有selector匹配这个方法。runtime会用<code>forwardInvocation:</code>消息来通知对象。每个对象都从NSObject里继承了<code>forwardInvocation:</code>方法。但是NSObject只是简单的调用<code>doesNotRecognizeSelector:</code>。通过重写NSObject版本的实现，你可以利用这次机会，通过<code>forwardInvocation:</code>消息提供一个方法转发到另一个类中。
-为了转发一个消息，所有的<code>forwardInvocation:</code>方法必须包含下面的两个步骤:</p>
+              <p>本系列文章作为学习RN期间的总结</p>
 
 <ul>
-<li>确定消息的去向</li>
-<li>转发的时候携带原始的参数</li>
+<li><a href="https://linkrober.github.io/bookshelf/2017/10/react-native%E5%A6%82%E4%BD%95%E9%9B%86%E6%88%90%E5%88%B0%E7%8E%B0%E6%9C%89%E9%A1%B9%E7%9B%AE%E4%B8%AD/">React Native如何集成到现有项目中</a></li>
+<li><a href="https://linkrober.github.io/bookshelf/2017/10/react-native%E5%92%8Cnative%E9%97%B4%E7%9A%84%E9%80%9A%E4%BF%A1/">React Native和Native间的通信实践</a></li>
+<li><a href="https://linkrober.github.io/bookshelf/2017/10/rctrootviewrctbridge%E5%81%9A%E4%BA%86%E4%BB%80%E4%B9%88/">RCTRootView、RCTBridge做了什么</a></li>
+<li>Native和JS通信概述</li>
 </ul>
 
-<p>消息可以通过<code>invokeWithTarget:</code>方法被发送：</p>
+<p></p>
 
-<pre><code>- (void)forwardInvocation:(NSInvocation *)anInvocation
+<h4 id="流程梳理">流程梳理</h4>
+
+<p>首先，无论是JS端还是OC端都会持有一个bridge负责对来自OC端或者JS端ModuleId、MedhodId的映射，再做消息处理。现附上一张来自JSPath作者Bang的图。
+<img src="../../../来自JSPath作者Bang的一张流程图.png" alt="来自JSPath作者Bang的一张流程图" /></p>
+
+<p>JS调用某个方法向OC发送消息，方法首先会被分解成ModuleId、MethodId和参数，发送到OCBridge。那么OCBridge是如何接受的呢？</p>
+
+<p>在第一次初始化ReactNative的时候模块信息会被初始化，包括模块名称、方法名。在注册模块的时候我们会用到<code>RCT_EXPORT_MODULE();</code>这个宏，宏展开</p>
+
+<pre><code>#define RCT_EXPORT_MODULE(js_name) \
+RCT_EXTERN void RCTRegisterModule(Class); \
++ (NSString *)moduleName { return @#js_name; } \
++ (void)load { RCTRegisterModule(self); }
+</code></pre>
+
+<p>方法1:如果自定义了模块的名称就使用自定义的名称而不是原类的名称</p>
+
+<p>方法2:在+(void)load方法里对类进行一次注册，注册代码如下</p>
+
+<pre><code>void RCTRegisterModule(Class moduleClass)
 {
-	if ([someOtherObject respondsToSelector:[anInvocation selector]])
-		[aInvocation invokeWithTarget:someOtherObject];
-	else
-		[super forwardInvocation:anInvocation];
+  static dispatch_once_t onceToken;
+  dispatch_once(&amp;onceToken, ^{
+    RCTModuleClasses = [NSMutableArray new];
+  });
+
+  RCTAssert([moduleClass conformsToProtocol:@protocol(RCTBridgeModule)],
+            @&quot;%@ does not conform to the RCTBridgeModule protocol&quot;,
+            moduleClass);
+
+  // Register module
+  [RCTModuleClasses addObject:moduleClass];
 }
 </code></pre>
 
-<p>被转发的消息的返回值被返回到原始的sender。所有返回值的类型包括：ids、structures，双精度浮点数。
-对于unrecognized消息，<code>forwardInvocation:</code>方法就像一个消息转发中心，将message包裹起来发送到不同的接受者。或者作为一个中转站，发送所有消息到同样的地方。它可以转发一个消息到另一个。<code>forwardInvocation:</code>方法可以定位几个消息消息到单一的response。<code>forwardInvocation:</code>要做的是准备实现。但是，这次机会为转发链中的链接对象提供更多程序设计的可能。</p>
+<p>如果当前类遵循协议<code>RCTBridgeModule</code>,就把它放到一个静态变量数组<code>RCTModuleClasses</code>中。所以启动之后，所有RN需要的模块都会被动态载入。
+这时候还有一个重要的东西需要处理就是callback，JSBridge会把callback缓存起来，仅仅把callbackId传递到OCBridge。
+这时候OCBridge拿到了传过来的ModuleId、MethodId、callbackId，再通过OC端的配置表分别取出模块和方法。模块会被转化为<code>RCTModuleData</code>对象，方法都会被转化为一个<code>RCTModuleMethod</code>对象，看一下这个对象</p>
+
+<pre><code>{
+  Class _moduleClass;
+  const RCTMethodInfo *_methodInfo;
+  NSString *_JSMethodName;
+
+  SEL _selector;
+  NSInvocation *_invocation;
+  NSArray&lt;RCTArgumentBlock&gt; *_argumentBlocks;
+}
+</code></pre>
+
+<p>发现了<code>_moduleClass</code>、<code>_argumentBlocks</code>、<code>_invocation</code>、<code>_selector</code>这时候就很容易想到消息转发的最后一个阶段，将消息的目标、selector、参数封装到NSInvocation中进行消息转发。</p>
+
+<p>刚才上面讲到模块的注册，那么方法是如何筛选的呢？注意下面的3个宏</p>
+
+<pre><code>#define RCT_EXPORT_METHOD(method) \
+  RCT_REMAP_METHOD(, method)
+</code></pre>
+
+<pre><code>#define RCT_REMAP_METHOD(js_name, method) \
+  _RCT_EXTERN_REMAP_METHOD(js_name, method, NO) \
+  - (void)method;
+</code></pre>
+
+<pre><code>#define _RCT_EXTERN_REMAP_METHOD(js_name, method, is_blocking_synchronous_method) \
+  + (const RCTMethodInfo *)RCT_CONCAT(__rct_export__, RCT_CONCAT(js_name, RCT_CONCAT(__LINE__, __COUNTER__))) { \
+    static RCTMethodInfo config = {#js_name, #method, is_blocking_synchronous_method}; \
+    return &amp;config; \
+  }
+</code></pre>
+
+<p>在我们具体定义方法的时候并没有<code>-(void)</code>字符串前缀，因为在预编译的时候，宏会帮我们加上这段字符（看第二个宏）。
+第三个宏主要实现了字符串的拼接，<code>(__LINE__, __COUNTER__)</code>的意思是为当前的宏生成一个唯一的tag（行数+一个数字），再和前面的<code>js_name</code>连接，最后再和<code>__rct_export__</code>连接，大概像这样</p>
+
+<pre><code>-(void)__rct_export__8976699MethodName{
+	//
+}
+</code></pre>
 
 <blockquote>
-<p><strong>Note:</strong><code>forwardInvocation:</code>方法开始处理消息，只有它们不能调用在接受者中已经存在的方法时。比如，你想要你的对象去转发<code>negotiate</code>消息到另一个对象，但对象并没有自己对该消息的实现。如果是这样，消息将永远不会到达<code>forwardInvocation:</code></p>
+<p>其实<strong>COUNTER</strong>是一个预定义的宏，这个值在编译过程中将从0开始计数，每次被调用时加1。</p>
 </blockquote>
 
-<h3 id="forwarding-and-multiple-inheritance">Forwarding and Multiple Inheritance</h3>
+<p>所有JSBridge传过来的参数都是<code>NSNumber</code>,OCBridge会把它们转化成基本类型和字符串。上面在提到JSBridge传参数的时候会带一个callbackId，这时候OCBridge会根据这个Id生成一个callback，保存在内存中。</p>
 
-<p>转发可以模仿多继承，可以实现多继承的一些效果。对象通过转发来响应消息，就像是借用或者继承了另一个类的某个方法的实现
-<img src="../../../forwarding.png" alt="forwarding" /></p>
-
-<p>在这个例子中，Warrior类的实例转发一个<code>negotiate</code>消息到Diplomat类的实例。Warrior可以像Diplomat一样调用negotiate。看起来就像响应<code>negotiate</code>方法。
-对象转发消息，这样“继承”的方法来自两种继承架构链。上面的例子中，它就像Warrior的类继承自Diplomat ，就像子类继承父类一样。</p>
-
-<p>转发提供了很多特性，一般你可以用它来实现多继承。但是，这和多继承有两个很大不同地方：首先，在一个类中，多继承组合出不同的能力。它趋向于较庞大的多接口对象。另一方面，继承可以区分不同种类的方法到不同的对象。</p>
-
-<h3 id="forwarding-and-inheritance">Forwarding and Inheritance</h3>
-
-<p>尽管转发可以模仿继承，NSObject类绝不能混合这两种方式。像<code>respondsToSelector:</code>和<code>isKindOfClass:</code>方法，只能在继承链中看到，不能用于消息转发链。例如，一个Warrior对象被查询是否响应<code>negotiate</code>消息，</p>
-
-<pre><code>if([aWarrior respondsToSelector:@selector(negotiate)])
-...
-</code></pre>
-
-<p>答案是<code>NO</code>，在某种意义上，即使它能无错误的接受<code>negotiate</code>消息，并且响应它们，通过转发它们到Diplomat。</p>
-
-<p>在许多情况下，<code>NO</code>是正确的答案。但也需不是。如果你使用转发来设置一个替代的object或者扩展一个类的能力，转发机制应该像继承一样透明。如果你想要你的对象的行为就好像真正是通过继承来实现消息转发的。你将需要重新实现<code>respondsToSelector:</code>和<code>isKindOfClass:</code>包括你的转发算法：</p>
-
-<pre><code>- (BOOL)respondsToSelector:(SEL)aSelector
-{
-	if([super respondsToSelector:aSelector])
-		return YESl
-	else {
-		/* Here,test whether the aSelector message can *
-		 * be forwarded to another object and whether that *
-		 * object can respond to it.Return YES if it can. */
-	}
-	return NO;
-}
-</code></pre>
-
-<p>除了<code>respondsToSelector:</code>和<code>isKindOfClass:</code>,<code>instancesRespondToSelector:</code>方法应该反映转发算法。如果协议被使用,<code>conformsToProtocol:</code>方法应该同样被添加到这个list中。类似的，如果一个对象转发任何它接受的远程消息，它应该有一个<code>methodSignatureForSelector:</code>方法的实现，它能返回方法精确的描述。最终响应转发的消息。例如，如果一个对象能够转发一个消息到它的替代者，你应该向下面这样实现<code>methodSignatureForSelector:</code>方法：</p>
-
-<pre><code>- (NSMethodSignature *)methodSignatureForSelector:(SEL)selector
-{
-	NSMethodSignature *signature = [super methodSignatureForSelector:selector];
-	if(!signature){
-		signature = [surrogate methodSignatureForSelector:selector];
-	}
-	return signature;
-}
-</code></pre>
-
-<p>你可能考虑把转发算法放在私有代码的某个地方并且拥有所有这些方法,<code>forwardInvocation:</code>包括调用它。</p>
+<p>这时候OC执行方法的调用，执行block。将参数和callbackId传到JSBridge，JSBridge根据Id找到之前缓存的JSCallback，进行调用。到这里就完成了个闭环。</p>
 
 <blockquote>
-<p><strong>Note:</strong>这是一个高级技巧，仅仅适用于没有其他解决方案的时候。这也不将作为继承的替代。如果你必须使用这个技术，确保你能完全理解在进行转发和要转发到的目标类的行为。</p>
+<p>JS是怎么调用OC的呢？</p>
 </blockquote>
 
-<p>在这部分提到的方法被描述在<code>NSObject</code>类的说明中。更多的关于<code>invokeWithTarget:</code>请看<a href="https://developer.apple.com/documentation/foundation/nsinvocation">NSInvocation</a>类的说明。</p>
+<p>其实并不是JS调用OC，而是JS将消息放到一个消息队列里面MessageQueue，等OC来取，这里面还有很多问题值得讨论多长时间取一次；不来取怎么办。有待我们继续研究</p>
+
+<hr />
+
+<blockquote>
+<p>为什么OC和JS可以实现这种框架？</p>
+</blockquote>
+
+<p>要实现这个机制需要语言有动态反射的特性，即可以通过类/方法名字符串找到对应的类/方法进行调用，没有这特性就做不了。</p>
               
             </div>
           </div>
@@ -341,7 +382,9 @@
                   <div class="post-footer-tags">
                     <span class="text-color-light text-small">标签</span><br/>
                     
-  <a class="tag tag--primary tag--small" href="https://LinkRober.github.io/bookshelf//tags/runtime/">runtime</a>
+  <a class="tag tag--primary tag--small" href="https://LinkRober.github.io/bookshelf//tags/reactnative/">ReactNative</a>
+
+  <a class="tag tag--primary tag--small" href="https://LinkRober.github.io/bookshelf//tags/javsscript/">JavsScript</a>
 
   <a class="tag tag--primary tag--small" href="https://LinkRober.github.io/bookshelf//tags/objectc/">ObjectC</a>
 
@@ -355,7 +398,7 @@
       
         <li class="post-action">
           
-            <a class="post-action-btn btn btn--default tooltip--top" href="https://LinkRober.github.io/bookshelf/2017/10/react-native%E5%A6%82%E4%BD%95%E9%9B%86%E6%88%90%E5%88%B0%E7%8E%B0%E6%9C%89%E9%A1%B9%E7%9B%AE%E4%B8%AD/" data-tooltip="React Native如何集成到现有项目中">
+            <a class="post-action-btn btn btn--disabled">
           
             <i class="fa fa-angle-left"></i>
             <span class="hide-xs hide-sm text-small icon-ml">上一篇</span>
@@ -363,7 +406,7 @@
         </li>
         <li class="post-action">
           
-            <a class="post-action-btn btn btn--default tooltip--top" href="https://LinkRober.github.io/bookshelf/2017/10/runtime-%E4%BA%8C--%E5%8A%A8%E6%80%81%E6%96%B9%E6%B3%95%E5%AE%9E%E7%8E%B0/" data-tooltip="Runtime (二)  动态方法实现">
+            <a class="post-action-btn btn btn--default tooltip--top" href="https://LinkRober.github.io/bookshelf/2017/12/ios%E5%A4%9A%E7%BA%BF%E7%A8%8B%E4%B8%AD%E7%9A%84%E9%94%81/" data-tooltip="iOS多线程中的锁">
           
             <span class="hide-xs hide-sm text-small icon-mr">下一篇</span>
             <i class="fa fa-angle-right"></i>
@@ -380,17 +423,17 @@
         </a>
       </li>
       <li class="post-action hide-xs">
-        <a class="post-action-btn btn btn--default" target="new" href="https://plus.google.com/share?url=https%3a%2f%2fLinkRober.github.io%2fbookshelf%2f2017%2f10%2fruntime%25E4%25B8%2589-%25E6%25B6%2588%25E6%2581%25AF%25E8%25BD%25AC%25E5%258F%2591%2f">
+        <a class="post-action-btn btn btn--default" target="new" href="https://plus.google.com/share?url=https%3a%2f%2fLinkRober.github.io%2fbookshelf%2f2017%2f12%2fnative%25E5%2592%258Cjs%25E9%2580%259A%25E4%25BF%25A1%25E6%25A6%2582%25E8%25BF%25B0%2f">
           <i class="fa fa-google-plus"></i>
         </a>
       </li>
       <li class="post-action hide-xs">
-        <a class="post-action-btn btn btn--default" target="new" href="https://www.facebook.com/sharer/sharer.php?u=https%3a%2f%2fLinkRober.github.io%2fbookshelf%2f2017%2f10%2fruntime%25E4%25B8%2589-%25E6%25B6%2588%25E6%2581%25AF%25E8%25BD%25AC%25E5%258F%2591%2f">
+        <a class="post-action-btn btn btn--default" target="new" href="https://www.facebook.com/sharer/sharer.php?u=https%3a%2f%2fLinkRober.github.io%2fbookshelf%2f2017%2f12%2fnative%25E5%2592%258Cjs%25E9%2580%259A%25E4%25BF%25A1%25E6%25A6%2582%25E8%25BF%25B0%2f">
           <i class="fa fa-facebook-official"></i>
         </a>
       </li>
       <li class="post-action hide-xs">
-        <a class="post-action-btn btn btn--default" target="new" href="https://twitter.com/intent/tweet?text=https%3a%2f%2fLinkRober.github.io%2fbookshelf%2f2017%2f10%2fruntime%25E4%25B8%2589-%25E6%25B6%2588%25E6%2581%25AF%25E8%25BD%25AC%25E5%258F%2591%2f">
+        <a class="post-action-btn btn btn--default" target="new" href="https://twitter.com/intent/tweet?text=https%3a%2f%2fLinkRober.github.io%2fbookshelf%2f2017%2f12%2fnative%25E5%2592%258Cjs%25E9%2580%259A%25E4%25BF%25A1%25E6%25A6%2582%25E8%25BF%25B0%2f">
           <i class="fa fa-twitter"></i>
         </a>
       </li>
@@ -436,7 +479,7 @@
       
         <li class="post-action">
           
-            <a class="post-action-btn btn btn--default tooltip--top" href="https://LinkRober.github.io/bookshelf/2017/10/react-native%E5%A6%82%E4%BD%95%E9%9B%86%E6%88%90%E5%88%B0%E7%8E%B0%E6%9C%89%E9%A1%B9%E7%9B%AE%E4%B8%AD/" data-tooltip="React Native如何集成到现有项目中">
+            <a class="post-action-btn btn btn--disabled">
           
             <i class="fa fa-angle-left"></i>
             <span class="hide-xs hide-sm text-small icon-ml">上一篇</span>
@@ -444,7 +487,7 @@
         </li>
         <li class="post-action">
           
-            <a class="post-action-btn btn btn--default tooltip--top" href="https://LinkRober.github.io/bookshelf/2017/10/runtime-%E4%BA%8C--%E5%8A%A8%E6%80%81%E6%96%B9%E6%B3%95%E5%AE%9E%E7%8E%B0/" data-tooltip="Runtime (二)  动态方法实现">
+            <a class="post-action-btn btn btn--default tooltip--top" href="https://LinkRober.github.io/bookshelf/2017/12/ios%E5%A4%9A%E7%BA%BF%E7%A8%8B%E4%B8%AD%E7%9A%84%E9%94%81/" data-tooltip="iOS多线程中的锁">
           
             <span class="hide-xs hide-sm text-small icon-mr">下一篇</span>
             <i class="fa fa-angle-right"></i>
@@ -461,17 +504,17 @@
         </a>
       </li>
       <li class="post-action hide-xs">
-        <a class="post-action-btn btn btn--default" target="new" href="https://plus.google.com/share?url=https%3a%2f%2fLinkRober.github.io%2fbookshelf%2f2017%2f10%2fruntime%25E4%25B8%2589-%25E6%25B6%2588%25E6%2581%25AF%25E8%25BD%25AC%25E5%258F%2591%2f">
+        <a class="post-action-btn btn btn--default" target="new" href="https://plus.google.com/share?url=https%3a%2f%2fLinkRober.github.io%2fbookshelf%2f2017%2f12%2fnative%25E5%2592%258Cjs%25E9%2580%259A%25E4%25BF%25A1%25E6%25A6%2582%25E8%25BF%25B0%2f">
           <i class="fa fa-google-plus"></i>
         </a>
       </li>
       <li class="post-action hide-xs">
-        <a class="post-action-btn btn btn--default" target="new" href="https://www.facebook.com/sharer/sharer.php?u=https%3a%2f%2fLinkRober.github.io%2fbookshelf%2f2017%2f10%2fruntime%25E4%25B8%2589-%25E6%25B6%2588%25E6%2581%25AF%25E8%25BD%25AC%25E5%258F%2591%2f">
+        <a class="post-action-btn btn btn--default" target="new" href="https://www.facebook.com/sharer/sharer.php?u=https%3a%2f%2fLinkRober.github.io%2fbookshelf%2f2017%2f12%2fnative%25E5%2592%258Cjs%25E9%2580%259A%25E4%25BF%25A1%25E6%25A6%2582%25E8%25BF%25B0%2f">
           <i class="fa fa-facebook-official"></i>
         </a>
       </li>
       <li class="post-action hide-xs">
-        <a class="post-action-btn btn btn--default" target="new" href="https://twitter.com/intent/tweet?text=https%3a%2f%2fLinkRober.github.io%2fbookshelf%2f2017%2f10%2fruntime%25E4%25B8%2589-%25E6%25B6%2588%25E6%2581%25AF%25E8%25BD%25AC%25E5%258F%2591%2f">
+        <a class="post-action-btn btn btn--default" target="new" href="https://twitter.com/intent/tweet?text=https%3a%2f%2fLinkRober.github.io%2fbookshelf%2f2017%2f12%2fnative%25E5%2592%258Cjs%25E9%2580%259A%25E4%25BF%25A1%25E6%25A6%2582%25E8%25BF%25B0%2f">
           <i class="fa fa-twitter"></i>
         </a>
       </li>
@@ -498,17 +541,17 @@
       <div id="share-options-bar" class="share-options-bar" data-behavior="4">
   <ul class="share-options">
     <li class="share-option">
-      <a class="share-option-btn" target="new" href="https://plus.google.com/share?url=https%3a%2f%2fLinkRober.github.io%2fbookshelf%2f2017%2f10%2fruntime%25E4%25B8%2589-%25E6%25B6%2588%25E6%2581%25AF%25E8%25BD%25AC%25E5%258F%2591%2f">
+      <a class="share-option-btn" target="new" href="https://plus.google.com/share?url=https%3a%2f%2fLinkRober.github.io%2fbookshelf%2f2017%2f12%2fnative%25E5%2592%258Cjs%25E9%2580%259A%25E4%25BF%25A1%25E6%25A6%2582%25E8%25BF%25B0%2f">
         <i class="fa fa-google-plus"></i><span>分享到 Google&#43;</span>
       </a>
     </li>
     <li class="share-option">
-      <a class="share-option-btn" target="new" href="https://www.facebook.com/sharer/sharer.php?u=https%3a%2f%2fLinkRober.github.io%2fbookshelf%2f2017%2f10%2fruntime%25E4%25B8%2589-%25E6%25B6%2588%25E6%2581%25AF%25E8%25BD%25AC%25E5%258F%2591%2f">
+      <a class="share-option-btn" target="new" href="https://www.facebook.com/sharer/sharer.php?u=https%3a%2f%2fLinkRober.github.io%2fbookshelf%2f2017%2f12%2fnative%25E5%2592%258Cjs%25E9%2580%259A%25E4%25BF%25A1%25E6%25A6%2582%25E8%25BF%25B0%2f">
         <i class="fa fa-facebook-official"></i><span>分享到 Facebook</span>
       </a>
     </li>
     <li class="share-option">
-      <a class="share-option-btn" target="new" href="https://twitter.com/intent/tweet?text=https%3a%2f%2fLinkRober.github.io%2fbookshelf%2f2017%2f10%2fruntime%25E4%25B8%2589-%25E6%25B6%2588%25E6%2581%25AF%25E8%25BD%25AC%25E5%258F%2591%2f">
+      <a class="share-option-btn" target="new" href="https://twitter.com/intent/tweet?text=https%3a%2f%2fLinkRober.github.io%2fbookshelf%2f2017%2f12%2fnative%25E5%2592%258Cjs%25E9%2580%259A%25E4%25BF%25A1%25E6%25A6%2582%25E8%25BF%25B0%2f">
         <i class="fa fa-twitter"></i><span>分享到 Twitter</span>
       </a>
     </li>
@@ -856,9 +899,9 @@ $(document).ready(function() {
     
       <script>
         var disqus_config = function () {
-          this.page.url = 'https:\/\/LinkRober.github.io\/bookshelf\/2017\/10\/runtime%E4%B8%89-%E6%B6%88%E6%81%AF%E8%BD%AC%E5%8F%91\/';
+          this.page.url = 'https:\/\/LinkRober.github.io\/bookshelf\/2017\/12\/native%E5%92%8Cjs%E9%80%9A%E4%BF%A1%E6%A6%82%E8%BF%B0\/';
           
-            this.page.identifier = '\/2017\/10\/runtime%E4%B8%89-%E6%B6%88%E6%81%AF%E8%BD%AC%E5%8F%91\/'
+            this.page.identifier = '\/2017\/12\/native%E5%92%8Cjs%E9%80%9A%E4%BF%A1%E6%A6%82%E8%BF%B0\/'
           
         };
         (function() {
