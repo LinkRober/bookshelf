@@ -3,6 +3,11 @@
   xmlns:xhtml="http://www.w3.org/1999/xhtml">
   
   <url>
+    <loc>https://LinkRober.github.io/bookshelf/2018/01/%E5%86%8D%E8%A7%812017%E4%BD%A0%E5%A5%BD2018/</loc>
+    <lastmod>2018-01-02T00:00:00+00:00</lastmod>
+  </url>
+  
+  <url>
     <loc>https://LinkRober.github.io/bookshelf/2017/12/object-c%E5%92%8Cjs%E9%80%9A%E4%BF%A1%E6%A6%82%E8%BF%B0/</loc>
     <lastmod>2017-12-25T00:00:00+00:00</lastmod>
   </url>
@@ -73,6 +78,12 @@
   </url>
   
   <url>
+    <loc>https://LinkRober.github.io/bookshelf/tags/2017/</loc>
+    <lastmod>2018-01-02T00:00:00+00:00</lastmod>
+    <priority>0</priority>
+  </url>
+  
+  <url>
     <loc>https://LinkRober.github.io/bookshelf/archives/</loc>
     <priority>0</priority>
   </url>
@@ -120,6 +131,12 @@
   </url>
   
   <url>
+    <loc>https://LinkRober.github.io/bookshelf/categories/life/</loc>
+    <lastmod>2018-01-02T00:00:00+00:00</lastmod>
+    <priority>0</priority>
+  </url>
+  
+  <url>
     <loc>https://LinkRober.github.io/bookshelf/tags/objectc/</loc>
     <lastmod>2017-12-25T00:00:00+00:00</lastmod>
     <priority>0</priority>
@@ -127,7 +144,7 @@
   
   <url>
     <loc>https://LinkRober.github.io/bookshelf/post/</loc>
-    <lastmod>2017-12-25T00:00:00+00:00</lastmod>
+    <lastmod>2018-01-02T00:00:00+00:00</lastmod>
     <priority>0</priority>
   </url>
   
@@ -157,7 +174,7 @@
   
   <url>
     <loc>https://LinkRober.github.io/bookshelf/tags/</loc>
-    <lastmod>2017-12-01T00:00:00+00:00</lastmod>
+    <lastmod>2018-01-02T00:00:00+00:00</lastmod>
     <priority>0</priority>
   </url>
   
@@ -193,7 +210,7 @@
   
   <url>
     <loc>https://LinkRober.github.io/bookshelf/</loc>
-    <lastmod>2017-12-25T00:00:00+00:00</lastmod>
+    <lastmod>2018-01-02T00:00:00+00:00</lastmod>
     <priority>0</priority>
   </url>
   
