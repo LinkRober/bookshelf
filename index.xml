@@ -6,10 +6,26 @@
     <description>Recent content on 董二千</description>
     <generator>Hugo -- gohugo.io</generator>
     <language>zh-cn</language>
-    <lastBuildDate>Tue, 02 Jan 2018 00:00:00 +0000</lastBuildDate>
+    <lastBuildDate>Fri, 02 Feb 2018 00:00:00 +0000</lastBuildDate>
     
 	<atom:link href="https://LinkRober.github.io/bookshelf/index.xml" rel="self" type="application/rss+xml" />
     
+    
+    <item>
+      <title>递归</title>
+      <link>https://LinkRober.github.io/bookshelf/2018/02/%E9%80%92%E5%BD%92/</link>
+      <pubDate>Fri, 02 Feb 2018 00:00:00 +0000</pubDate>
+      
+      <guid>https://LinkRober.github.io/bookshelf/2018/02/%E9%80%92%E5%BD%92/</guid>
+      <description>&lt;p&gt;&lt;/b&gt;
+&lt;span class=&#34;highlight-text primary&#34;&gt;
+基本思想
+&lt;/span&gt;&lt;/p&gt;
+
+&lt;p&gt;递归是一种直接或者间接调用自身函数或者方法的算法。递归的实质是把问题分解成规模缩小的同类问题的子问题，然后递归调用方法来表示问题的解。递归算法，其实就是程序的自身调用。在一段程序中往往会遇到调用自身的那样一种coding策略。递归往往能带来非常简洁非常直观的代码形式，从而使我们的编码大大简化，但是递归的思想确实和我们的常规思维相逆。我们通常是从上而下的思考问题，而递归是从下往上进行思考。这样我们就能看到我们会用很少的语句解决很大的问题，所以递归策略最主要的体现就是较少的代码量解决复杂的问题。&lt;/p&gt;
+
+&lt;p&gt;&lt;/p&gt;</description>
+    </item>
     
     <item>
       <title>再见2017，你好2018</title>
