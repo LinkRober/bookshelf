@@ -1,0 +1,1071 @@
+
+
+  
+    
+  
+
+
+  
+
+
+
+
+
+  
+
+<!DOCTYPE html>
+<html lang="zh-cn">
+  <head>
+    
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="generator" content="Hugo 0.17 with theme Tranquilpeak 0.4.1-BETA">
+    <title>iOS多线程中的锁</title>
+    <meta name="author" content="董二千">
+    <meta name="keywords" content="多线程, 锁">
+
+    <link rel="icon" href="https://LinkRober.github.io/bookshelf/favicon.png">
+    
+
+    
+    <meta name="description" content="涉及到多线程共享资源的情况下就避免不了资源竞争的问题，这时候就会用到各种锁，例如，@synchronized、NSLock、OSSpinLock等等，虽然都是锁，但是锁的底层实现也不尽相同。大概可以分为：互斥锁、自旋锁、递归锁、
+读写锁。
+
+{
+	lock()//加锁
+		doSomeThing()//临界区
+	unlock()//解锁
+}
+
+
+我们锁的目的是在任何时刻最多只能有一个线程在修改资源，即在任何时刻只能有一个操作者保持锁。
+
+">
+    <meta property="og:description" content="涉及到多线程共享资源的情况下就避免不了资源竞争的问题，这时候就会用到各种锁，例如，@synchronized、NSLock、OSSpinLock等等，虽然都是锁，但是锁的底层实现也不尽相同。大概可以分为：互斥锁、自旋锁、递归锁、
+读写锁。
+
+{
+	lock()//加锁
+		doSomeThing()//临界区
+	unlock()//解锁
+}
+
+
+我们锁的目的是在任何时刻最多只能有一个线程在修改资源，即在任何时刻只能有一个操作者保持锁。
+
+">
+    <meta property="og:type" content="blog">
+    <meta property="og:title" content="iOS多线程中的锁">
+    <meta property="og:url" content="/2017/12/ios%E5%A4%9A%E7%BA%BF%E7%A8%8B%E4%B8%AD%E7%9A%84%E9%94%81/">
+    <meta property="og:site_name" content="董二千">
+    <meta name="twitter:card" content="summary">
+    <meta name="twitter:title" content="董二千">
+    <meta name="twitter:description" content="涉及到多线程共享资源的情况下就避免不了资源竞争的问题，这时候就会用到各种锁，例如，@synchronized、NSLock、OSSpinLock等等，虽然都是锁，但是锁的底层实现也不尽相同。大概可以分为：互斥锁、自旋锁、递归锁、
+读写锁。
+
+{
+	lock()//加锁
+		doSomeThing()//临界区
+	unlock()//解锁
+}
+
+
+我们锁的目的是在任何时刻最多只能有一个线程在修改资源，即在任何时刻只能有一个操作者保持锁。
+
+">
+    
+    
+
+    
+    
+
+    
+      <meta property="og:image" content="https://avatars1.githubusercontent.com/u/7357189?v=3&s=460.png">
+    
+
+    
+    
+    
+
+    
+
+    
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css" integrity="sha256-eZrrJcwDc/3uDhsdt61sL2oOBY362qM3lon1gyExkL0=" crossorigin="anonymous" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/fancybox/2.1.4/jquery.fancybox.min.css" integrity="sha256-vuXZ9LGmmwtjqFX1F+EKin1ThZMub58gKULUyf0qECk=" crossorigin="anonymous" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/fancybox/2.1.4/helpers/jquery.fancybox-thumbs.min.css" integrity="sha256-SEa4XYAHihTcEP1f5gARTB2K26Uk8PsndQYHQC1f4jU=" crossorigin="anonymous" />
+    
+    
+    <link rel="stylesheet" href="https://LinkRober.github.io/bookshelf/css/style-fpbzgxsy0kgmdvyrj5ykkg6ratccrk3gocmaqn4xpcjywmv5dteilzucro4f.min.css" />
+    
+    
+
+    
+      
+    
+    
+  </head>
+
+  <body>
+    <div id="blog">
+      <header id="header" data-behavior="4">
+  <i id="btn-open-sidebar" class="fa fa-lg fa-bars"></i>
+  <div class="header-title">
+    <a class="header-title-link" href="https://LinkRober.github.io/bookshelf/">董二千</a>
+  </div>
+  
+    
+      <a class="header-right-picture "
+         href="https://LinkRober.github.io/bookshelf/#about">
+    
+    
+    
+      
+        <img class="header-picture" src="https://avatars1.githubusercontent.com/u/7357189?v=3&amp;s=460.png" alt="作者的图片" />
+      
+    
+    </a>
+  
+</header>
+
+      <nav id="sidebar" data-behavior="4">
+  <div class="sidebar-container">
+    
+      <div class="sidebar-profile">
+        <a href="https://LinkRober.github.io/bookshelf/#about">
+          <img class="sidebar-profile-picture" src="https://avatars1.githubusercontent.com/u/7357189?v=3&amp;s=460.png" alt="作者的图片" />
+        </a>
+        <h4 class="sidebar-profile-name">董二千</h4>
+        
+          <h5 class="sidebar-profile-bio">愿你走出半生 归来仍是少年</h5>
+        
+      </div>
+    
+    <ul class="sidebar-buttons">
+      
+  <li class="sidebar-button">
+    
+      <a class="sidebar-button-link " href="https://LinkRober.github.io/bookshelf/categories">
+    
+      <i class="sidebar-button-icon fa fa-lg fa-bookmark"></i>
+      
+      <span class="sidebar-button-desc">分类</span>
+    </a>
+  </li>
+
+  <li class="sidebar-button">
+    
+      <a class="sidebar-button-link " href="https://LinkRober.github.io/bookshelf/">
+    
+      <i class="sidebar-button-icon fa fa-lg fa-home"></i>
+      
+      <span class="sidebar-button-desc">首页</span>
+    </a>
+  </li>
+
+  <li class="sidebar-button">
+    
+      <a class="sidebar-button-link " href="https://LinkRober.github.io/bookshelf/tags">
+    
+      <i class="sidebar-button-icon fa fa-lg fa-tags"></i>
+      
+      <span class="sidebar-button-desc">标签</span>
+    </a>
+  </li>
+
+  <li class="sidebar-button">
+    
+      <a class="sidebar-button-link " href="https://LinkRober.github.io/bookshelf/#about">
+    
+      <i class="sidebar-button-icon fa fa-lg fa-question"></i>
+      
+      <span class="sidebar-button-desc">关于</span>
+    </a>
+  </li>
+
+  <li class="sidebar-button">
+    
+      <a class="sidebar-button-link " href="https://LinkRober.github.io/bookshelf/archives">
+    
+      <i class="sidebar-button-icon fa fa-lg fa-archive"></i>
+      
+      <span class="sidebar-button-desc">归档</span>
+    </a>
+  </li>
+
+
+    </ul>
+    <ul class="sidebar-buttons">
+      
+  <li class="sidebar-button">
+    
+      <a class="sidebar-button-link " href="https://github.com/LinkRober" target="_blank" rel="noopener">
+    
+      <i class="sidebar-button-icon fa fa-lg fa-github"></i>
+      
+      <span class="sidebar-button-desc">GitHub</span>
+    </a>
+  </li>
+
+  <li class="sidebar-button">
+    
+      <a class="sidebar-button-link " href="https://stackoverflow.com/users/4878280/buer" target="_blank" rel="noopener">
+    
+      <i class="sidebar-button-icon fa fa-lg fa-stack-overflow"></i>
+      
+      <span class="sidebar-button-desc">Stack Overflow</span>
+    </a>
+  </li>
+
+
+    </ul>
+    <ul class="sidebar-buttons">
+      
+
+    </ul>
+  </div>
+</nav>
+
+      
+
+      <div id="main" data-behavior="4"
+        class="
+               hasCoverMetaIn
+               ">
+        <article class="post" itemscope itemType="http://schema.org/BlogPosting">
+          
+          
+            <div class="post-header main-content-wrap text-left">
+  
+    <h1 class="post-title" itemprop="headline">
+      iOS多线程中的锁
+    </h1>
+  
+  
+  <div class="postShorten-meta post-meta">
+    
+      <time itemprop="datePublished" datetime="2017-12-01T00:00:00Z">
+        
+  十二月 1, 2017
+
+      </time>
+    
+    
+  
+  
+    <span>发布在</span>
+    
+      <a class="category-link" href="https://LinkRober.github.io/bookshelf/categories/ios">iOS</a>
+    
+  
+
+
+  </div>
+
+</div>
+          
+          <div class="post-content markdown" itemprop="articleBody">
+            <div class="main-content-wrap">
+              <p>涉及到多线程共享资源的情况下就避免不了资源竞争的问题，这时候就会用到各种锁，例如，<code>@synchronized</code>、<code>NSLock</code>、<code>OSSpinLock</code>等等，虽然都是锁，但是锁的底层实现也不尽相同。大概可以分为：<span class="highlight-text blue">互斥锁</span>、<span class="highlight-text blue">自旋锁</span>、<span class="highlight-text blue">递归锁</span>、
+<span class="highlight-text blue">读写锁</span>。</p>
+
+<pre><code>{
+	lock()//加锁
+		doSomeThing()//临界区
+	unlock()//解锁
+}
+</code></pre>
+
+<p>我们锁的目的是在任何时刻最多只能有一个线程在修改资源，即在任何时刻只能有一个操作者保持锁。</p>
+
+<p></p>
+
+<h4 id="互斥锁">互斥锁</h4>
+
+<p>通过一个全局变量来控制某个线程是否可以在某个时刻访问资源，该变量值大于0说明锁正在被使用。如果某个线程在尝试获得锁的是否发现已经被占用，线程挂起，等待锁的释放。</p>
+
+<h4 id="自旋锁">自旋锁</h4>
+
+<p>通过一个全局变量来控制某个线程是否可以在某个时刻访问资源，该变量值大于0说明锁正在被使用。如果某个线程在尝试获得锁的是否发现已经被占用，进入忙等状态，直到获得锁。</p>
+
+<blockquote>
+<p>以上可以看出，互斥锁和自旋锁很类似，稍有不同的地方在于当处于等待状态的时候各自的线程是怎么调度的。互斥锁即使时间片还未用尽，互斥锁也会直接挂起，这样就减少了CPU的开销。但是这时候会进行上下文（线程）的切换，也会带来一定的开销，适合I/O密集型操作。自旋锁，顾名思义，即使处于等待状态线程也不会挂起，一直处于忙等状态，类似于一直在进行一个whilte循环。这样增加了CPU的开销，所以对于需要保持上下文的任务必须要使用自旋锁，同时它是不能被抢占的（高优先级会抢占低优先级的进程），适用于CPU密集型的任务。</p>
+</blockquote>
+
+<h4 id="递归锁">递归锁</h4>
+
+<p>对于递归调的时候我们不能简单的使用某个锁来锁住临界区，这样就会造成死锁，必须要使用递归锁。当加锁的时候，变量就会加1，解锁的时候开始减1，直到值为0的时候释放锁。</p>
+
+<h4 id="读写锁">读写锁</h4>
+
+<p>在上面提到的几种锁同一时刻只允许一个线程访问资源，在操作资源的时候，往往会出现一个线程在写操作，一个线程在读操作，这时候我们就会用到读写锁。
+读写锁，它分为两种锁，读锁和写锁。当一个线程在读资源的时候，我们为其加上读锁，有另一个线程也要访问资源的时候我们需要再加一个读锁。当第三个线程需要进行写操作的时候我们就要加上一个写锁，但是这个写锁只有当读锁的使用者为0的时候才有效。也就是说我们必须等另外两个线程的读操作结束之后才能为其加上写锁。虽然互斥锁和自旋锁也能达到要求，但是读写锁无疑让控制更加精细，节省了CPU。</p>
+
+<h4 id="ios中的锁">iOS中的锁</h4>
+
+<p>大神ibireme的一篇博客<a href="https://blog.ibireme.com/2016/01/16/spinlock_is_unsafe_in_ios/">不再安全的 OSSpinLock</a>对锁的性能做了简单的比较，大家可以看下。
+<img src="../../../来自ibireme的博客.png" alt="来自ibireme的博客" /></p>
+
+<h6 id="osspinlock">OSSpinLock</h6>
+
+<span class="highlight-text blue">自旋锁</span>
+
+<p>在此之前OSSpinLock是无疑性能最好的锁，在2015年的时候苹果工程师透露出了自旋锁的bug。具体问题大概如下：
+系统维护了不同等级优先级的线程，高优先级的线程更容易获得系统资源。当一个低优先级的线程先获得锁之后，高优先级线程这时候也试图获取锁。这时候高优先级占据了大量的CPU，一直处于忙等状态。而低优先级的线程因为没有分配到足够的CPU一直无法完成任务，也就无法释放锁。这时候线程的调度就产生了优先级翻转。</b></p>
+
+<p></b>
+<span class="highlight-text success">
+Example
+</span></p>
+
+<pre><code>//定义OSSpinLock锁
+__block OSSpinLock theLock = OS_SPINLOCK_INIT;
+//线程1
+dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
+    OSSpinLockLock(&amp;theLock); 
+    NSLog(@&quot;需要线程同步的操作1 开始&quot;); 
+    sleep(3); 
+    NSLog(@&quot;需要线程同步的操作1 结束&quot;);
+    OSSpinLockUnlock(&amp;theLock);
+});
+//线程2
+dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
+     OSSpinLockLock(&amp;theLock); 
+     sleep(1); 
+     NSLog(@&quot;需要线程同步的操作2&quot;); 
+     OSSpinLockUnlock(&amp;theLock);
+});
+
+</code></pre>
+
+<h6 id="sychronized">sychronized</h6>
+
+<p><span class="highlight-text blue">互斥锁</span> <span class="highlight-text blue">递归锁</span></p>
+
+<p>iOS中性能最差的锁，但是写起来很开心，用起来简单，无论普通的锁还是递归锁都能应对。它牺牲了性能，保证了接口得友好。它会把每个传入的对象当作锁（这要求我们要保证对象的唯一性）并把他们放在一个哈希表中存储，通过这张表来管理锁。要注意的是，对象不能为<strong>nil</strong>，这会让临界区不再是线程安全的。</b></p>
+
+<p></b></p>
+
+<span class="highlight-text success">
+Example
+</span>
+
+<pre><code>//需要加锁的对象
+NSObject *obj = [[NSObject alloc] init];
+//线程1
+dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
+    @synchronized(obj) {
+         NSLog(@&quot;需要线程同步的操作1 开始&quot;);
+         sleep(3); 
+         NSLog(@&quot;需要线程同步的操作1 结束&quot;);
+     } 
+  }); 
+//线程2
+dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{ 
+    sleep(1); 
+    @synchronized(obj) { 
+         NSLog(@&quot;需要线程同步的操作2&quot;); 
+     } 
+});
+
+</code></pre>
+
+<p><strong>Result</strong></p>
+
+<pre><code>ThreadTest[13438:385647] 需要线程同步的操作1 开始
+ThreadTest[13438:385647] 需要线程同步的操作1 结束
+ThreadTest[13438:385646] 需要线程同步的操作2
+</code></pre>
+
+<h6 id="nslock">NSLock</h6>
+
+<span class="highlight-text blue">互斥锁</span>
+
+<p>将C语言的pthread_mutex锁进行了一次封装，更加的OC。<code>NSLock</code>提供了<code>tryLock</code>和<code>lockBeforeDate:</code>方法。在加锁前尝试加锁，如果返回无法获得锁，并不会阻塞线程会继续往下走，返回<code>NO</code>,<code>lockBeforeDate:</code>让你控制加锁的时间，在规定时间未获得锁返回<code>NO</code>
+</b></p>
+
+<p></b>
+<span class="highlight-text success">
+Example
+</span></p>
+
+<pre><code>//创建锁
+NSLock *lock = [[NSLock alloc] init];
+//线程1
+dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{ 
+    //[lock lock]; 
+    //立即加锁
+    [lock lockBeforeDate:[NSDate date]];
+    NSLog(@&quot;需要线程同步的操作1 开始&quot;); 
+    sleep(2); 
+    NSLog(@&quot;需要线程同步的操作1 结束&quot;); 
+    [lock unlock];
+});
+//线程2
+dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
+    sleep(1);
+    //尝试加锁
+    if ([lock tryLock]) {
+        //尝试获取锁，如果获取不到返回NO，不会阻塞该线程 
+        NSLog(@&quot;锁可用的操作&quot;); 
+        [lock unlock]; 
+    }else{
+        NSLog(@&quot;锁不可用的操作&quot;); 
+    } 
+    
+    NSDate *date = [[NSDate alloc] initWithTimeIntervalSinceNow:3]; 
+    if ([lock lockBeforeDate:date]) {
+          //尝试在未来的3s内获取锁，并阻塞该线程，如果3s内获取不到恢复线程, 返回NO,不会阻塞该线程
+          NSLog(@&quot;没有超时，获得锁&quot;); 
+          [lock unlock]; 
+     }else{ 
+          NSLog(@&quot;超时，没有获得锁&quot;); 
+     } 
+});
+
+</code></pre>
+
+<p><strong>Result</strong></p>
+
+<pre><code>ThreadTest[13541:394814] 需要线程同步的操作 1 开始
+ThreadTest[13541:394804] 锁不可用的操作
+ThreadTest[13541:394814] 需要线程同步的操作 1 结束
+ThreadTest[13541:394804] 没有超时，获得锁
+</code></pre>
+
+<h6 id="nsrecursivelock">NSRecursiveLock</h6>
+
+<p><span class="highlight-text blue">互斥锁</span> <span class="highlight-text blue">递归锁</span></p>
+
+<p>实现和<code>NSLock</code>差不多，只不过在底层NSLock使用的C的<code>pthread_mutex_lock</code>,而<code>NSRecursiveLock</code>使用的是<code>pthread_mutex_recursive</code>。
+它也同样提供了<code>- (BOOL)tryLock</code>和<code>- (BOOL)lockBeforeDate:(NSDate *)limit</code>方法</b></p>
+
+<p></b>
+<span class="highlight-text success">
+Example
+</span></p>
+
+<pre><code>//NSLock *lock = [[NSLock alloc] init];
+NSRecursiveLock *lock = [[NSRecursiveLock alloc] init];
+dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{ 
+    static void (^RecursiveMethod)(int); 
+    RecursiveMethod = ^(int value) { 
+        [lock lock]; 
+        if (value &gt; 0) { 
+            NSLog(@&quot;value = %d&quot;, value); 
+            sleep(1); 
+            RecursiveMethod(value - 1); 
+      } 
+        [lock unlock]; 
+    };
+     RecursiveMethod(5); 
+});
+
+</code></pre>
+
+<p>如果使用<code>NSLock</code>就会直接死锁。</p>
+
+<p><strong>Result</strong></p>
+
+<pre><code>ThreadTest[13593:400360] value = 5
+ThreadTest[13593:400360] value = 4
+ThreadTest[13593:400360] value = 4
+ThreadTest[13593:400360] value = 2
+ThreadTest[13593:400360] value = 1
+</code></pre>
+
+<h6 id="nscondition">NSCondition</h6>
+
+<p><span class="highlight-text blue">互斥锁</span> <span class="highlight-text blue">条件变量</span></p>
+
+<p>条件变量和信号量很类似，提供了阻塞、等待就绪、唤醒线程的方法。比如，生产-消费者模式。
+在单线程执行中，我们经常会通过一个布尔值来控制某个方法或者值是否需要被执行和修改。在多线程的环境下，需要互斥锁来配合保证线程安全。</b></p>
+
+<p></b>
+<span class="highlight-text success">
+Example
+</span></p>
+
+<pre><code>NSConditionLock *lock = [[NSConditionLock alloc] init];
+NSMutableArray *products = [NSMutableArray array]; 
+NSInteger HAS_DATA = 1; 
+NSInteger NO_DATA = 0;
+
+dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{ 
+    while (1) { 
+        [lock lockWhenCondition:NO_DATA]; 
+        [products addObject:[[NSObject alloc] init]]; 
+        NSLog(@&quot;produce a product,总量:%zi&quot;,products.count); 
+        [lock unlockWithCondition:HAS_DATA]; 
+        sleep(1); 
+   } 
+}); 
+
+dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{ 
+    while (1) { 
+         NSLog(@&quot;wait for product&quot;); 
+         [lock lockWhenCondition:HAS_DATA]; 
+         [products removeObjectAtIndex:0]; 
+         NSLog(@&quot;custome a product&quot;); 
+         [lock unlockWithCondition:NO_DATA]; 
+    } 
+});
+
+</code></pre>
+
+<p><strong>Result</strong></p>
+
+<pre><code>ThreadTest[13645:406942] wait for product
+ThreadTest[13645:406951] produce a product, 总量 :1
+ThreadTest[13645:406942] custome a product
+ThreadTest[13645:406942] wait for product
+ThreadTest[13645:406951] produce a product, 总量:1
+ThreadTest[13645:406942] custome a product
+</code></pre>
+
+<p>只有当<code>unlock</code>和<code>lock</code>的值一一对应才能唤醒线程，执行后续操作。</p>
+
+<h4 id="参考资料">参考资料</h4>
+
+<p><a href="https://blog.ibireme.com/2016/01/16/spinlock_is_unsafe_in_ios/">不再安全的 OSSpinLock</a></p>
+
+<p><a href="https://casatwy.com/pthreadde-ge-chong-tong-bu-ji-zhi.html">pthread的各种同步机制</a></p>
+
+<p><a href="https://bestswifter.com/ios-lock/">深入理解 iOS 开发中的锁</a></p>
+
+<p><a href="http://www.jianshu.com/p/4edf98a61483">IOS 保证线程同步方式&amp;性能对比</a></p>
+
+<p><a href="https://github.com/lattera/glibc/blob/master/nptl/pthread_mutex_lock.c">pthreadmutexlock.c 源码</a></p>
+
+<p><a href="http://yulingtianxia.com/blog/2015/11/01/More-than-you-want-to-know-about-synchronized/">关于 @synchronized，这儿比你想知道的还要多</a></p>
+
+<p><a href="http://pubs.opengroup.org/onlinepubs/7908799/xsh/pthread_mutex_lock.html">pthreadmutexlock</a>
+<a href="https://developer.apple.
+com/library/content/documentation/Cocoa/Conceptual/Multithreading/ThreadSafety/ThreadSafety.html">ThreadSafety</a></p>
+
+<p><a href="https://stackoverflow.com/questions/62814/difference-between-binary-semaphore-and-mutex">Difference between binary semaphore and mutex</a></p>
+
+<p><a href="http://blog.csdn.net/Javadino/article/details/2891388">[Pthread] Linux中的线程同步机制(二)&ndash;In Glibc</a></p>
+
+<p><a href="https://android.googlesource.com/platform/external/pthreads/+/master/pthread_cond_wait.
+c">pthreadcondwait</a></p>
+
+<p><a href="https://stackoverflow.com/questions/3513045/conditional-variable-vs-semaphore">Conditional Variable vs Semaphore</a></p>
+              
+            </div>
+          </div>
+          <div id="post-footer" class="post-footer main-content-wrap">
+            
+              
+                
+                
+                  <div class="post-footer-tags">
+                    <span class="text-color-light text-small">标签</span><br/>
+                    
+  <a class="tag tag--primary tag--small" href="https://linkrober.github.io/bookshelf//tags/%E5%A4%9A%E7%BA%BF%E7%A8%8B/">多线程</a>
+
+  <a class="tag tag--primary tag--small" href="https://linkrober.github.io/bookshelf//tags/%E9%94%81/">锁</a>
+
+  <a class="tag tag--primary tag--small" href="https://linkrober.github.io/bookshelf//tags/objectc/">ObjectC</a>
+
+  <a class="tag tag--primary tag--small" href="https://linkrober.github.io/bookshelf//tags/c/">C</a>
+
+                  </div>
+                
+              
+            
+            
+  <div class="post-actions-wrap">
+      <nav >
+        <ul class="post-actions post-action-nav">
+            <li class="post-action">
+              
+                <a class="post-action-btn btn btn--default tooltip--top" href="https://LinkRober.github.io/bookshelf/2017/12/object-c%E5%92%8Cjs%E9%80%9A%E4%BF%A1%E6%A6%82%E8%BF%B0/" data-tooltip="Object-C和JS通信概述">
+              
+                <i class="fa fa-angle-left"></i>
+                <span class="hide-xs hide-sm text-small icon-ml">下一篇</span>
+              </a>
+            </li>
+            <li class="post-action">
+              
+                <a class="post-action-btn btn btn--default tooltip--top" href="https://LinkRober.github.io/bookshelf/2017/12/%E5%BF%AB%E9%80%9F%E6%8E%92%E5%BA%8F/" data-tooltip="快速排序">
+              
+                <span class="hide-xs hide-sm text-small icon-mr">上一篇</span>
+                <i class="fa fa-angle-right"></i>
+              </a>
+            </li>
+        </ul>
+      </nav>
+    <ul class="post-actions post-action-share" >
+      
+        <li class="post-action hide-lg hide-md hide-sm">
+          <a class="post-action-btn btn btn--default btn-open-shareoptions" href="#btn-open-shareoptions">
+            <i class="fa fa-share-alt"></i>
+          </a>
+        </li>
+        
+      
+      
+        <li class="post-action">
+          <a class="post-action-btn btn btn--default" href="#disqus_thread">
+            <i class="fa fa-comment-o"></i>
+          </a>
+        </li>
+      
+      <li class="post-action">
+        
+          <a class="post-action-btn btn btn--default" href="#">
+        
+          <i class="fa fa-list"></i>
+        </a>
+      </li>
+    </ul>
+  </div>
+
+
+            
+              
+                <div id="disqus_thread">
+  <noscript>Please enable JavaScript to view the <a href="//disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
+</div>
+              
+            
+          </div>
+        </article>
+        
+      </div>
+      <div id="bottom-bar" class="post-bottom-bar" data-behavior="4">
+        
+  <div class="post-actions-wrap">
+      <nav >
+        <ul class="post-actions post-action-nav">
+            <li class="post-action">
+              
+                <a class="post-action-btn btn btn--default tooltip--top" href="https://LinkRober.github.io/bookshelf/2017/12/object-c%E5%92%8Cjs%E9%80%9A%E4%BF%A1%E6%A6%82%E8%BF%B0/" data-tooltip="Object-C和JS通信概述">
+              
+                <i class="fa fa-angle-left"></i>
+                <span class="hide-xs hide-sm text-small icon-ml">下一篇</span>
+              </a>
+            </li>
+            <li class="post-action">
+              
+                <a class="post-action-btn btn btn--default tooltip--top" href="https://LinkRober.github.io/bookshelf/2017/12/%E5%BF%AB%E9%80%9F%E6%8E%92%E5%BA%8F/" data-tooltip="快速排序">
+              
+                <span class="hide-xs hide-sm text-small icon-mr">上一篇</span>
+                <i class="fa fa-angle-right"></i>
+              </a>
+            </li>
+        </ul>
+      </nav>
+    <ul class="post-actions post-action-share" >
+      
+        <li class="post-action hide-lg hide-md hide-sm">
+          <a class="post-action-btn btn btn--default btn-open-shareoptions" href="#btn-open-shareoptions">
+            <i class="fa fa-share-alt"></i>
+          </a>
+        </li>
+        
+      
+      
+        <li class="post-action">
+          <a class="post-action-btn btn btn--default" href="#disqus_thread">
+            <i class="fa fa-comment-o"></i>
+          </a>
+        </li>
+      
+      <li class="post-action">
+        
+          <a class="post-action-btn btn btn--default" href="#">
+        
+          <i class="fa fa-list"></i>
+        </a>
+      </li>
+    </ul>
+  </div>
+
+
+      </div>
+      <div id="share-options-bar" class="share-options-bar" data-behavior="4">
+  <i id="btn-close-shareoptions" class="fa fa-close"></i>
+  <ul class="share-options">
+    
+  </ul>
+</div>
+<div id="share-options-mask" class="share-options-mask"></div>
+    </div>
+    
+    <div id="about">
+  <div id="about-card">
+    <div id="about-btn-close">
+      <i class="fa fa-remove"></i>
+    </div>
+    
+      <img id="about-card-picture" src="https://avatars1.githubusercontent.com/u/7357189?v=3&amp;s=460.png" alt="作者的图片" />
+    
+    <h4 id="about-card-name">董二千</h4>
+    
+      <div id="about-card-bio">愿你走出半生 归来仍是少年</div>
+    
+    
+      <div id="about-card-job">
+        <i class="fa fa-briefcase"></i>
+        <br/>
+        iOS Developer
+      </div>
+    
+    
+      <div id="about-card-location">
+        <i class="fa fa-map-marker"></i>
+        <br/>
+        China
+      </div>
+    
+  </div>
+</div>
+
+    <div id="algolia-search-modal" class="modal-container">
+  <div class="modal">
+    <div class="modal-header">
+      <span class="close-button"><i class="fa fa-close"></i></span>
+      <a href="https://algolia.com" target="_blank" rel="noopener" class="searchby-algolia text-color-light link-unstyled">
+        <span class="searchby-algolia-text text-color-light text-small">by</span>
+        <img class="searchby-algolia-logo" src="https://www.algolia.com/static_assets/images/press/downloads/algolia-light.svg">
+      </a>
+      <i class="search-icon fa fa-search"></i>
+      <form id="algolia-search-form">
+        <input type="text" id="algolia-search-input" name="search"
+          class="form-control input--large search-input" placeholder="搜索" />
+      </form>
+    </div>
+    <div class="modal-body">
+      <div class="no-result text-color-light text-center"></div>
+      <div class="results">
+        
+        
+          <div class="media">
+            
+            <div class="media-body">
+              <a class="link-unstyled" href="https://linkrober.github.io/bookshelf/2018/03/%E5%85%A5%E5%9D%91%E5%B0%8F%E7%A8%8B%E5%BA%8F/">
+                <h3 class="media-heading">入坑小程序</h3>
+              </a>
+              <span class="media-meta">
+                <span class="media-date text-small">
+                  Mar 3, 2018
+                </span>
+              </span>
+              <div class="media-content hide-xs font-merryweather">描述 去年各大平台纷纷开始占领微信上的又一流量入口——小程序。因为小程序的门槛低，这里指，技术上和前端大同小异，审核刚开始也比较松。除了大厂，很多个人开发这都投入进去。想在小程序上打响自己的个人品牌。在筹备了三个月之久，我的第一款小程序，终于快要完成了。在这里我会总结一下整体的过程，从idea到一个完整的小程序、期间遇到的坑、和觉得挺有意思的地方。
+流程 
+1. 购买服务器 本人购买的服务器是阿里云服务器，因为经历的几家公司都是用的它，感觉还是比较靠谱的（我一同事也用过腾讯的服务，一直在吐槽不稳定，后来也换到阿里云了)
+ 2. 购买域名 小程序的是无法直接通过IP访问，必须申请一个域名，同样的阿里云上买就行了。这里要提醒大家的是，因为国家政策原因域名需要备案，整个过程大概需要一个月时间。阿里云还是比较良心的，备案成功之后会再赠送你一个月的服务器时间。因为整个备案时间大概是一个月。所有绑定域名一定要提前。
+ 3. 申请CA证书绑定到域名。在小程序里的API都需要Htps服务，如果你有CA证书可以直接使用，我也是通过阿里云申请的免费CA证书，时间是一年，到期看可以续的。
+ 4. 根据idea设计产品
+ 5. 开发小程序和server
+ 6.发布
+小程序 因为是我的第一个小程序，先试试手，所以选了一个比较简单的东西，音乐欣赏。数据是从其他网站爬过来插到数据库的。 本人是移动端出生，对前端和后端的东西都不是很熟，不过刚好去年写了不少RN的东西，前端的东西也算是半只脚入门了。在小程序里面文件分为下面几种
+ js文件，和前端的一样， wxml文件，类似于html文件 wxss文件，类似于css文件 wxs文件，这是小程序的一套脚本语言，语法看似和JavaScript语法一样，其实他们是不同的语言，有自己的语法，并不和 javascript 一致 。我们可以把它当做方法类在wxml中来使用。在wxml中是无法调用js中的非事件方法的，如果从js文件里拿到的数据你希望再做一步处理然后展示，这样的处理需要放到wxs文件里。  开发前花半天浏览下微信小程序的API差不多就可以了，套路都差不多MVC。
+数据库 服务器是用Node.js+MongoDB+Express搭建的，全套搭建起来还是很快的。Node.js是一个基于事件驱动I/O的服务端JavaScript环境，它在高并发的服务上有很好的体验。同样是js所以语法基本没门槛了。 MongoDB数据库和一般的关系型数据库不同，它是非关系型数据库。关系型数据库对数据操作都是:SELECT、FROM、WHERE、BY等。来感受一下MongoDB怎么操作数据：
+//插入一个数据 var user = { &quot;name&quot;:&quot;小芳&quot;， &quot;age&quot;:18, &quot;gender&quot;:1, &quot;country&quot;:&quot;中国&quot; }; db.user.insert(user)  //查询姓名是：张三、李四、王五的信息 db.user.find({&quot;name&quot;: {&quot;\$in&quot; : [&quot;张三&quot;,&quot;李四&quot;,&quot;王五&quot;] }})  给我最大的感觉，它是一个面向对象面向集合的存储过程，对于经常做面向对象开发人来说是比较容易入手的。
+Express 基于Node.js的极其简洁灵活的web应用开发框架，它有丰富的HTTP快捷方法，非常快捷的创建node服务.
+首页模块入口设置
+... ... ... var home = require('./routes/home');//首页接口 ... .</div>
+            </div>
+            <div style="clear:both;"></div>
+            <hr>
+          </div>
+        
+          <div class="media">
+            
+            <div class="media-body">
+              <a class="link-unstyled" href="https://linkrober.github.io/bookshelf/2018/02/%E9%80%92%E5%BD%92/">
+                <h3 class="media-heading">递归</h3>
+              </a>
+              <span class="media-meta">
+                <span class="media-date text-small">
+                  Feb 2, 2018
+                </span>
+              </span>
+              <div class="media-content hide-xs font-merryweather"><p></b>
+<span class="highlight-text primary">
+基本思想
+</span></p>
+
+<p>递归是一种直接或者间接调用自身函数或者方法的算法。递归的实质是把问题分解成规模缩小的同类问题的子问题，然后递归调用方法来表示问题的解。递归算法，其实就是程序的自身调用。在一段程序中往往会遇到调用自身的那样一种coding策略。递归往往能带来非常简洁非常直观的代码形式，从而使我们的编码大大简化，但是递归的思想确实和我们的常规思维相逆。我们通常是从上而下的思考问题，而递归是从下往上进行思考。这样我们就能看到我们会用很少的语句解决很大的问题，所以递归策略最主要的体现就是较少的代码量解决复杂的问题。</p>
+
+<p></p></div>
+            </div>
+            <div style="clear:both;"></div>
+            <hr>
+          </div>
+        
+          <div class="media">
+            
+            <div class="media-body">
+              <a class="link-unstyled" href="https://linkrober.github.io/bookshelf/2018/01/%E5%86%8D%E8%A7%812017%E4%BD%A0%E5%A5%BD2018/">
+                <h3 class="media-heading">再见2017，你好2018</h3>
+              </a>
+              <span class="media-meta">
+                <span class="media-date text-small">
+                  Jan 1, 2018
+                </span>
+              </span>
+              <div class="media-content hide-xs font-merryweather"><p>不知不觉工作已有三个年头，在iOS这条路上，从当年战战兢兢的新人变成一个熟练的开发者，这一路走来真不容易。不仅仅是身体上的负荷，个人对于技术的追求也使自己或迷惘或奋起。</p>
+
+<p></p></div>
+            </div>
+            <div style="clear:both;"></div>
+            <hr>
+          </div>
+        
+          <div class="media">
+            
+            <div class="media-body">
+              <a class="link-unstyled" href="https://linkrober.github.io/bookshelf/2017/12/object-c%E5%92%8Cjs%E9%80%9A%E4%BF%A1%E6%A6%82%E8%BF%B0/">
+                <h3 class="media-heading">Object-C和JS通信概述</h3>
+              </a>
+              <span class="media-meta">
+                <span class="media-date text-small">
+                  Dec 12, 2017
+                </span>
+              </span>
+              <div class="media-content hide-xs font-merryweather"><p>本系列文章作为学习RN期间的总结</p>
+
+<ul>
+<li><a href="https://linkrober.github.io/bookshelf/2017/10/react-native%E5%A6%82%E4%BD%95%E9%9B%86%E6%88%90%E5%88%B0%E7%8E%B0%E6%9C%89%E9%A1%B9%E7%9B%AE%E4%B8%AD/">React Native如何集成到现有项目中</a></li>
+<li><a href="https://linkrober.github.io/bookshelf/2017/10/react-native%E5%92%8Cnative%E9%97%B4%E7%9A%84%E9%80%9A%E4%BF%A1/">React Native和Native间的通信实践</a></li>
+<li><a href="https://linkrober.github.io/bookshelf/2017/10/rctrootviewrctbridge%E5%81%9A%E4%BA%86%E4%BB%80%E4%B9%88/">RCTRootView、RCTBridge做了什么</a></li>
+<li>Object-C和JS通信概述</li>
+</ul>
+
+<p></p></div>
+            </div>
+            <div style="clear:both;"></div>
+            <hr>
+          </div>
+        
+          <div class="media">
+            
+            <div class="media-body">
+              <a class="link-unstyled" href="https://linkrober.github.io/bookshelf/2017/12/ios%E5%A4%9A%E7%BA%BF%E7%A8%8B%E4%B8%AD%E7%9A%84%E9%94%81/">
+                <h3 class="media-heading">iOS多线程中的锁</h3>
+              </a>
+              <span class="media-meta">
+                <span class="media-date text-small">
+                  Dec 12, 2017
+                </span>
+              </span>
+              <div class="media-content hide-xs font-merryweather"><p>涉及到多线程共享资源的情况下就避免不了资源竞争的问题，这时候就会用到各种锁，例如，<code>@synchronized</code>、<code>NSLock</code>、<code>OSSpinLock</code>等等，虽然都是锁，但是锁的底层实现也不尽相同。大概可以分为：<span class="highlight-text blue">互斥锁</span>、<span class="highlight-text blue">自旋锁</span>、<span class="highlight-text blue">递归锁</span>、
+<span class="highlight-text blue">读写锁</span>。</p>
+
+<pre><code>{
+	lock()//加锁
+		doSomeThing()//临界区
+	unlock()//解锁
+}
+</code></pre>
+
+<p>我们锁的目的是在任何时刻最多只能有一个线程在修改资源，即在任何时刻只能有一个操作者保持锁。</p>
+
+<p></p></div>
+            </div>
+            <div style="clear:both;"></div>
+            <hr>
+          </div>
+        
+          <div class="media">
+            
+            <div class="media-body">
+              <a class="link-unstyled" href="https://linkrober.github.io/bookshelf/2017/12/%E5%BF%AB%E9%80%9F%E6%8E%92%E5%BA%8F/">
+                <h3 class="media-heading">快速排序</h3>
+              </a>
+              <span class="media-meta">
+                <span class="media-date text-small">
+                  Dec 12, 2017
+                </span>
+              </span>
+              <div class="media-content hide-xs font-merryweather"><span class="highlight-text primary">
+故事
+</span>
+
+<p>快速排序由<strong>C.A.R.Hoare（东尼霍尔）</strong>在1960年提出。之后又有许多人对此进行改进。如果你对快速排序感兴趣可以去看看东尼霍尔1962年在Computer Journal发表的论文“Quicksort”以及《算法导论》的第七章。</p></div>
+            </div>
+            <div style="clear:both;"></div>
+            <hr>
+          </div>
+        
+          <div class="media">
+            
+            <div class="media-body">
+              <a class="link-unstyled" href="https://linkrober.github.io/bookshelf/2017/11/%E4%B8%80%E4%B8%AA%E9%9F%B3%E8%A7%86%E9%A2%91%E5%8E%82%E7%9A%84%E5%9B%BE%E5%83%8F%E5%A4%84%E7%90%86%E6%B5%81%E7%A8%8B%E6%A6%82%E8%BF%B0/">
+                <h3 class="media-heading">一个音视频厂的图像处理流程概述</h3>
+              </a>
+              <span class="media-meta">
+                <span class="media-date text-small">
+                  Nov 11, 2017
+                </span>
+              </span>
+              <div class="media-content hide-xs font-merryweather"><p><img src="http://upload-images.jianshu.io/upload_images/1086250-3eac00965effbe70?imageMogr2/auto-orient/strip%7CimageView2/2/w/320" alt="" /></p>
+
+<p>视频编辑分为两部分：<strong>Camrea Engine（视频资源采集）</strong>和<strong>Video Edit Engine（后期视频编辑）</strong>。在Camrea Engine采集的时候我们也可以做一些编辑操作，这叫预处理，比如说加滤镜。等到把采集到的资源交给Video Edit Engine时就是后处理。</p>
+
+<p></p></div>
+            </div>
+            <div style="clear:both;"></div>
+            <hr>
+          </div>
+        
+          <div class="media">
+            
+            <div class="media-body">
+              <a class="link-unstyled" href="https://linkrober.github.io/bookshelf/2017/10/rctrootviewrctbridge%E5%81%9A%E4%BA%86%E4%BB%80%E4%B9%88/">
+                <h3 class="media-heading">RCTRootView、RCTBridge做了什么</h3>
+              </a>
+              <span class="media-meta">
+                <span class="media-date text-small">
+                  Oct 10, 2017
+                </span>
+              </span>
+              <div class="media-content hide-xs font-merryweather"><p>本系列文章作为学习RN期间的总结</p>
+
+<ul>
+<li><a href="https://linkrober.github.io/bookshelf/2017/10/react-native%E5%A6%82%E4%BD%95%E9%9B%86%E6%88%90%E5%88%B0%E7%8E%B0%E6%9C%89%E9%A1%B9%E7%9B%AE%E4%B8%AD/">React Native如何集成到现有项目中</a></li>
+<li><a href="https://linkrober.github.io/bookshelf/2017/10/react-native%E5%92%8Cnative%E9%97%B4%E7%9A%84%E9%80%9A%E4%BF%A1/">React Native和Native间的通信实践</a></li>
+<li>RCTRootView、RCTBridge做了什么</li>
+<li><a href="https://linkrober.github.io/bookshelf/2017/12/native%E5%92%8Cjs%E9%80%9A%E4%BF%A1%E6%A6%82%E8%BF%B0/">Object-C和JS通信概述</a></li>
+</ul>
+
+<p></p></div>
+            </div>
+            <div style="clear:both;"></div>
+            <hr>
+          </div>
+        
+          <div class="media">
+            
+            <div class="media-body">
+              <a class="link-unstyled" href="https://linkrober.github.io/bookshelf/2017/10/react-native%E5%92%8Cnative%E9%97%B4%E7%9A%84%E9%80%9A%E4%BF%A1%E5%AE%9E%E8%B7%B5/">
+                <h3 class="media-heading">React Native和Native间的通信实践</h3>
+              </a>
+              <span class="media-meta">
+                <span class="media-date text-small">
+                  Oct 10, 2017
+                </span>
+              </span>
+              <div class="media-content hide-xs font-merryweather"><!-- thumbnailImage = 'rn_image.jpeg'
+thumbnailImagePosition = 'bottom' -->
+
+<p>本系列文章作为学习RN期间的总结</p>
+
+<ul>
+<li><a href="https://linkrober.github.io/bookshelf/2017/10/react-native%E5%A6%82%E4%BD%95%E9%9B%86%E6%88%90%E5%88%B0%E7%8E%B0%E6%9C%89%E9%A1%B9%E7%9B%AE%E4%B8%AD/">React Native如何集成到现有项目中</a></li>
+<li>React Native和Native间的通信实践</li>
+<li><a href="https://linkrober.github.io/bookshelf/2017/10/rctrootviewrctbridge%E5%81%9A%E4%BA%86%E4%BB%80%E4%B9%88/">RCTRootView、RCTBridge做了什么</a></li>
+<li><a href="https://linkrober.github.io/bookshelf/2017/12/native%E5%92%8Cjs%E9%80%9A%E4%BF%A1%E6%A6%82%E8%BF%B0/">Object-C和JS通信概述</a></li>
+</ul>
+
+<p></p></div>
+            </div>
+            <div style="clear:both;"></div>
+            <hr>
+          </div>
+        
+          <div class="media">
+            
+            <div class="media-body">
+              <a class="link-unstyled" href="https://linkrober.github.io/bookshelf/2017/10/react-native%E5%A6%82%E4%BD%95%E9%9B%86%E6%88%90%E5%88%B0%E7%8E%B0%E6%9C%89%E9%A1%B9%E7%9B%AE%E4%B8%AD/">
+                <h3 class="media-heading">React Native如何集成到现有项目中</h3>
+              </a>
+              <span class="media-meta">
+                <span class="media-date text-small">
+                  Oct 10, 2017
+                </span>
+              </span>
+              <div class="media-content hide-xs font-merryweather"><!-- thumbnailImage = 'rn_thumbnailImage.jpeg'
+thumbnailImagePosition = 'bottom' -->
+
+<p>本系列文章作为学习RN期间的总结</p>
+
+<ul>
+<li>React Native如何集成到现有项目中</li>
+<li><a href="https://linkrober.github.io/bookshelf/2017/10/react-native%E5%92%8Cnative%E9%97%B4%E7%9A%84%E9%80%9A%E4%BF%A1/">React Native和Native间的通信实践</a></li>
+<li><a href="https://linkrober.github.io/bookshelf/2017/10/rctrootviewrctbridge%E5%81%9A%E4%BA%86%E4%BB%80%E4%B9%88/">RCTRootView、RCTBridge做了什么</a></li>
+<li><a href="https://linkrober.github.io/bookshelf/2017/12/native%E5%92%8Cjs%E9%80%9A%E4%BF%A1%E6%A6%82%E8%BF%B0/">Object-C和JS通信概述</a></li>
+</ul>
+
+<p></p></div>
+            </div>
+            <div style="clear:both;"></div>
+            <hr>
+          </div>
+        
+      </div>
+    </div>
+    <div class="modal-footer">
+      <p class="results-count text-medium"
+         data-message-zero=""
+         data-message-one=""
+         data-message-other="">
+         17 posts found
+      </p>
+    </div>
+  </div>
+</div>
+    
+  
+    
+    <div id="cover" style="background-image:url('https://LinkRober.github.io/bookshelf/images/cover.jpg');"></div>
+  
+
+
+    
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/2.1.3/jquery.min.js" integrity="sha256-IFHWFEbU2/+wNycDECKgjIRSirRNIDp2acEB5fvdVRU=" crossorigin="anonymous"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.8.0/highlight.min.js" integrity="sha256-+mpyNVJsNt4rVXCw0F+pAOiB3YxmHgrbJsx4ecPuUaI=" crossorigin="anonymous"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/fancybox/2.1.4/jquery.fancybox.min.js" integrity="sha256-vMxgR/7FtLovVA+IPrR7+xTgIgARH7y9VZQnmmi0HDI=" crossorigin="anonymous"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/fancybox/2.1.4/helpers/jquery.fancybox-thumbs.min.js" integrity="sha256-N0qFUh7/9vLvia87dDndewmsgsyYoNkdA212tPc+2NI=" crossorigin="anonymous"></script>
+
+
+<script src="https://LinkRober.github.io/bookshelf/js/script-qi9wbxp2ya2j6p7wx1i6tgavftewndznf4v0hy2gvivk1rxgc3lm7njqb6bz.min.js"></script>
+
+
+<script>
+$(document).ready(function() {
+  hljs.configure({ classPrefix: '', useBR: false });
+  $('pre.code-highlight, pre > code').each(function(i, block) {
+    if (!$(this).hasClass('codeblock')) {
+      $(this).addClass('codeblock');
+    }
+    hljs.highlightBlock(block);
+  });
+});
+</script>
+
+  
+    
+      <script>
+        var disqus_config = function () {
+          this.page.url = 'https:\/\/linkrober.github.io\/bookshelf\/2017\/12\/ios%E5%A4%9A%E7%BA%BF%E7%A8%8B%E4%B8%AD%E7%9A%84%E9%94%81\/';
+          
+            this.page.identifier = '\/2017\/12\/ios%E5%A4%9A%E7%BA%BF%E7%A8%8B%E4%B8%AD%E7%9A%84%E9%94%81\/'
+          
+        };
+        (function() {
+          
+          
+          if (window.location.hostname == "localhost") {
+            return;
+          }
+          var d = document, s = d.createElement('script');
+          var disqus_shortname = 'dongerqian';
+          s.src = '//' + disqus_shortname + '.disqus.com/embed.js';
+
+          s.setAttribute('data-timestamp', +new Date());
+          (d.head || d.body).appendChild(s);
+        })();
+      </script>
+    
+  
+
+
+
+    
+  </body>
+</html>
+

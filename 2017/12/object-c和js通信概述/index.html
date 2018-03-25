@@ -1,0 +1,1140 @@
+
+
+  
+    
+  
+
+
+  
+
+
+
+
+
+  
+
+<!DOCTYPE html>
+<html lang="zh-cn">
+  <head>
+    
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="generator" content="Hugo 0.17 with theme Tranquilpeak 0.4.1-BETA">
+    <title>Object-C和JS通信概述</title>
+    <meta name="author" content="董二千">
+    <meta name="keywords" content="React Native">
+
+    <link rel="icon" href="https://LinkRober.github.io/bookshelf/favicon.png">
+    
+
+    
+    <meta name="description" content="本系列文章作为学习RN期间的总结
+
+
+React Native如何集成到现有项目中
+React Native和Native间的通信实践
+RCTRootView、RCTBridge做了什么
+Object-C和JS通信概述
+
+
+">
+    <meta property="og:description" content="本系列文章作为学习RN期间的总结
+
+
+React Native如何集成到现有项目中
+React Native和Native间的通信实践
+RCTRootView、RCTBridge做了什么
+Object-C和JS通信概述
+
+
+">
+    <meta property="og:type" content="blog">
+    <meta property="og:title" content="Object-C和JS通信概述">
+    <meta property="og:url" content="/2017/12/object-c%E5%92%8Cjs%E9%80%9A%E4%BF%A1%E6%A6%82%E8%BF%B0/">
+    <meta property="og:site_name" content="董二千">
+    <meta name="twitter:card" content="summary">
+    <meta name="twitter:title" content="董二千">
+    <meta name="twitter:description" content="本系列文章作为学习RN期间的总结
+
+
+React Native如何集成到现有项目中
+React Native和Native间的通信实践
+RCTRootView、RCTBridge做了什么
+Object-C和JS通信概述
+
+
+">
+    
+    
+
+    
+    
+
+    
+      <meta property="og:image" content="https://avatars1.githubusercontent.com/u/7357189?v=3&s=460.png">
+    
+
+    
+    
+    
+
+    
+
+    
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css" integrity="sha256-eZrrJcwDc/3uDhsdt61sL2oOBY362qM3lon1gyExkL0=" crossorigin="anonymous" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/fancybox/2.1.4/jquery.fancybox.min.css" integrity="sha256-vuXZ9LGmmwtjqFX1F+EKin1ThZMub58gKULUyf0qECk=" crossorigin="anonymous" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/fancybox/2.1.4/helpers/jquery.fancybox-thumbs.min.css" integrity="sha256-SEa4XYAHihTcEP1f5gARTB2K26Uk8PsndQYHQC1f4jU=" crossorigin="anonymous" />
+    
+    
+    <link rel="stylesheet" href="https://LinkRober.github.io/bookshelf/css/style-fpbzgxsy0kgmdvyrj5ykkg6ratccrk3gocmaqn4xpcjywmv5dteilzucro4f.min.css" />
+    
+    
+
+    
+      
+    
+    
+  </head>
+
+  <body>
+    <div id="blog">
+      <header id="header" data-behavior="4">
+  <i id="btn-open-sidebar" class="fa fa-lg fa-bars"></i>
+  <div class="header-title">
+    <a class="header-title-link" href="https://LinkRober.github.io/bookshelf/">董二千</a>
+  </div>
+  
+    
+      <a class="header-right-picture "
+         href="https://LinkRober.github.io/bookshelf/#about">
+    
+    
+    
+      
+        <img class="header-picture" src="https://avatars1.githubusercontent.com/u/7357189?v=3&amp;s=460.png" alt="作者的图片" />
+      
+    
+    </a>
+  
+</header>
+
+      <nav id="sidebar" data-behavior="4">
+  <div class="sidebar-container">
+    
+      <div class="sidebar-profile">
+        <a href="https://LinkRober.github.io/bookshelf/#about">
+          <img class="sidebar-profile-picture" src="https://avatars1.githubusercontent.com/u/7357189?v=3&amp;s=460.png" alt="作者的图片" />
+        </a>
+        <h4 class="sidebar-profile-name">董二千</h4>
+        
+          <h5 class="sidebar-profile-bio">愿你走出半生 归来仍是少年</h5>
+        
+      </div>
+    
+    <ul class="sidebar-buttons">
+      
+  <li class="sidebar-button">
+    
+      <a class="sidebar-button-link " href="https://LinkRober.github.io/bookshelf/categories">
+    
+      <i class="sidebar-button-icon fa fa-lg fa-bookmark"></i>
+      
+      <span class="sidebar-button-desc">分类</span>
+    </a>
+  </li>
+
+  <li class="sidebar-button">
+    
+      <a class="sidebar-button-link " href="https://LinkRober.github.io/bookshelf/">
+    
+      <i class="sidebar-button-icon fa fa-lg fa-home"></i>
+      
+      <span class="sidebar-button-desc">首页</span>
+    </a>
+  </li>
+
+  <li class="sidebar-button">
+    
+      <a class="sidebar-button-link " href="https://LinkRober.github.io/bookshelf/tags">
+    
+      <i class="sidebar-button-icon fa fa-lg fa-tags"></i>
+      
+      <span class="sidebar-button-desc">标签</span>
+    </a>
+  </li>
+
+  <li class="sidebar-button">
+    
+      <a class="sidebar-button-link " href="https://LinkRober.github.io/bookshelf/#about">
+    
+      <i class="sidebar-button-icon fa fa-lg fa-question"></i>
+      
+      <span class="sidebar-button-desc">关于</span>
+    </a>
+  </li>
+
+  <li class="sidebar-button">
+    
+      <a class="sidebar-button-link " href="https://LinkRober.github.io/bookshelf/archives">
+    
+      <i class="sidebar-button-icon fa fa-lg fa-archive"></i>
+      
+      <span class="sidebar-button-desc">归档</span>
+    </a>
+  </li>
+
+
+    </ul>
+    <ul class="sidebar-buttons">
+      
+  <li class="sidebar-button">
+    
+      <a class="sidebar-button-link " href="https://github.com/LinkRober" target="_blank" rel="noopener">
+    
+      <i class="sidebar-button-icon fa fa-lg fa-github"></i>
+      
+      <span class="sidebar-button-desc">GitHub</span>
+    </a>
+  </li>
+
+  <li class="sidebar-button">
+    
+      <a class="sidebar-button-link " href="https://stackoverflow.com/users/4878280/buer" target="_blank" rel="noopener">
+    
+      <i class="sidebar-button-icon fa fa-lg fa-stack-overflow"></i>
+      
+      <span class="sidebar-button-desc">Stack Overflow</span>
+    </a>
+  </li>
+
+
+    </ul>
+    <ul class="sidebar-buttons">
+      
+
+    </ul>
+  </div>
+</nav>
+
+      
+  <div class="post-header-cover
+              text-left
+              "
+       style="background-image:url('../../../Merry-Christmas-Wallpapers.jpg')"
+       data-behavior="4">
+    
+      <div class="post-header main-content-wrap text-left">
+  
+    <h1 class="post-title" itemprop="headline">
+      Object-C和JS通信概述
+    </h1>
+  
+  
+  <div class="postShorten-meta post-meta">
+    
+      <time itemprop="datePublished" datetime="2017-12-25T00:00:00Z">
+        
+  十二月 25, 2017
+
+      </time>
+    
+    
+  
+  
+    <span>发布在</span>
+    
+      <a class="category-link" href="https://LinkRober.github.io/bookshelf/categories/reactnative">ReactNative</a>
+    
+  
+
+
+  </div>
+
+</div>
+    
+  </div>
+
+
+      <div id="main" data-behavior="4"
+        class="hasCover
+               hasCoverMetaIn
+               ">
+        <article class="post" itemscope itemType="http://schema.org/BlogPosting">
+          
+          
+          <div class="post-content markdown" itemprop="articleBody">
+            <div class="main-content-wrap">
+              <p>本系列文章作为学习RN期间的总结</p>
+
+<ul>
+<li><a href="https://linkrober.github.io/bookshelf/2017/10/react-native%E5%A6%82%E4%BD%95%E9%9B%86%E6%88%90%E5%88%B0%E7%8E%B0%E6%9C%89%E9%A1%B9%E7%9B%AE%E4%B8%AD/">React Native如何集成到现有项目中</a></li>
+<li><a href="https://linkrober.github.io/bookshelf/2017/10/react-native%E5%92%8Cnative%E9%97%B4%E7%9A%84%E9%80%9A%E4%BF%A1/">React Native和Native间的通信实践</a></li>
+<li><a href="https://linkrober.github.io/bookshelf/2017/10/rctrootviewrctbridge%E5%81%9A%E4%BA%86%E4%BB%80%E4%B9%88/">RCTRootView、RCTBridge做了什么</a></li>
+<li>Object-C和JS通信概述</li>
+</ul>
+
+<p></p>
+
+<h4 id="流程梳理">流程梳理</h4>
+
+<p><img src="../../../来自JSPath作者Bang的一张流程图.png" alt="来自JSPath作者Bang的一张流程图" />
+首先，无论是RN端还是Native端都会持有一个bridge负责对来自不同端的模块进行桥街，再做消息处理。现附上一张来自JSPath作者Bang的图。
+RN调用某个方法向Native发送消息，方法首先会被分解成ModuleId、MethodId和参数，发送到OCBridge。那么OCBridge是如何接受的呢？（因为对JS代码不熟悉这里只讨论OC部分）</p>
+
+<p>在第一次初始化ReactNative的时候模块信息会被初始化，包括模块名称、方法名。在注册模块的时候我们会用到<code>RCT_EXPORT_MODULE();</code>这个宏，宏展开</p>
+
+<pre><code>#define RCT_EXPORT_MODULE(js_name) \
+RCT_EXTERN void RCTRegisterModule(Class); \
++ (NSString *)moduleName { return @#js_name; } \
++ (void)load { RCTRegisterModule(self); }
+</code></pre>
+
+<p>方法1:如果自定义了模块的名称就使用自定义的名称而不是原类的名称</p>
+
+<p>方法2:在+(void)load方法里对类进行一次注册，注册代码如下</p>
+
+<pre><code>void RCTRegisterModule(Class moduleClass)
+{
+  static dispatch_once_t onceToken;
+  dispatch_once(&amp;onceToken, ^{
+    RCTModuleClasses = [NSMutableArray new];
+  });
+
+  RCTAssert([moduleClass conformsToProtocol:@protocol(RCTBridgeModule)],
+            @&quot;%@ does not conform to the RCTBridgeModule protocol&quot;,
+            moduleClass);
+
+  // Register module
+  [RCTModuleClasses addObject:moduleClass];
+}
+</code></pre>
+
+<p>如果当前类遵循协议<code>RCTBridgeModule</code>,就把它放到一个静态变量数组<code>RCTModuleClasses</code>中。所以启动之后，所有RN需要的模块都会被动态载入。
+这些模块会被存储在三张表中<code>_moduleDataByName</code>、<code>_moduleDataByID</code>、<code>_moduleClassesByID</code>,在初始化的时候通过遍历该数组来初始化。</p>
+
+<pre><code>NSDictionary&lt;NSString *, RCTModuleData *&gt; *_moduleDataByName;
+NSArray&lt;RCTModuleData *&gt; *_moduleDataByID;
+NSArray&lt;Class&gt; *_moduleClassesByID;
+</code></pre>
+
+<pre><code>for (Class moduleClass in RCTGetModuleClasses()) {
+    NSString *moduleName = RCTBridgeModuleNameForClass(moduleClass);
+
+    // Check for module name collisions
+    RCTModuleData *moduleData = moduleDataByName[moduleName];
+    if (moduleData) {
+      if (moduleData.hasInstance) {
+        // Existing module was preregistered, so it takes precedence
+        continue;
+      } else if ([moduleClass new] == nil) {
+        // The new module returned nil from init, so use the old module
+        continue;
+      } else if ([moduleData.moduleClass new] != nil) {
+        // Both modules were non-nil, so it's unclear which should take precedence
+        RCTLogError(@&quot;Attempted to register RCTBridgeModule class %@ for the &quot;
+                    &quot;name '%@', but name was already registered by class %@&quot;,
+                    moduleClass, moduleName, moduleData.moduleClass);
+      }
+    }
+
+    // Instantiate moduleData (TODO: can we defer this until config generation?)
+    moduleData = [[RCTModuleData alloc] initWithModuleClass:moduleClass
+                                                     bridge:self];
+    moduleDataByName[moduleName] = moduleData;
+    [moduleClassesByID addObject:moduleClass];
+    [moduleDataByID addObject:moduleData];
+  }
+</code></pre>
+
+<p>分别是模块名称、模块名称对应的对象<code>RCTModuleData</code>、模块名称和模块对象的映射字典，方便后续使用。</p>
+
+<p>这时候还有一个重要的东西需要处理就是callback，JSBridge在传递消息的时候会把callback缓存起来，仅仅把callbackId传递到OCBridge。
+这时候OCBridge拿到了传过来的ModuleId、MethodId、callbackId，再通过Native端的配置表分别取出模块和方法。模块会被转化为<code>RCTModuleData</code>对象，方法都会被转化为一个<code>RCTModuleMethod</code>对象，看一下这个对象</p>
+
+<pre><code>{
+  Class _moduleClass;
+  const RCTMethodInfo *_methodInfo;
+  NSString *_JSMethodName;
+
+  SEL _selector;
+  NSInvocation *_invocation;
+  NSArray&lt;RCTArgumentBlock&gt; *_argumentBlocks;
+}
+</code></pre>
+
+<p>发现了<code>_moduleClass</code>、<code>_argumentBlocks</code>、<code>_invocation</code>、<code>_selector</code>这时候就很容易想到消息转发的最后一个阶段，将消息的目标、selector、参数封装到NSInvocation中进行消息转发。</p>
+
+<p>刚才上面讲到模块的注册，那么方法是如何筛选的呢？注意下面的3个宏</p>
+
+<pre><code>#define RCT_EXPORT_METHOD(method) \
+  RCT_REMAP_METHOD(, method)
+</code></pre>
+
+<pre><code>#define RCT_REMAP_METHOD(js_name, method) \
+  _RCT_EXTERN_REMAP_METHOD(js_name, method, NO) \
+  - (void)method;
+</code></pre>
+
+<pre><code>#define _RCT_EXTERN_REMAP_METHOD(js_name, method, is_blocking_synchronous_method) \
+  + (const RCTMethodInfo *)RCT_CONCAT(__rct_export__, RCT_CONCAT(js_name, RCT_CONCAT(__LINE__, __COUNTER__))) { \
+    static RCTMethodInfo config = {#js_name, #method, is_blocking_synchronous_method}; \
+    return &amp;config; \
+  }
+</code></pre>
+
+<p>在我们具体定义方法的时候并没有<code>-(void)</code>字符串前缀，因为在预编译的时候，宏会帮我们加上这段字符（看第二个宏）。
+第三个宏主要实现了字符串的拼接，<code>(__LINE__, __COUNTER__)</code>的意思是为当前的宏生成一个唯一的tag（行数+一个数字），再和前面的<code>js_name</code>连接，最后再和<code>__rct_export__</code>连接，大概像这样</p>
+
+<pre><code>-(void)__rct_export__8976699MethodName{
+	//
+}
+</code></pre>
+
+<blockquote>
+<p>其实<strong>COUNTER</strong>是一个预定义的宏，这个值在编译过程中将从0开始计数，每次被调用时加1。</p>
+</blockquote>
+
+<p>所有JSBridge传过来的参数都是<code>NSNumber</code>,OCBridge会把它们转化成基本类型和字符串。上面在提到JSBridge传参数的时候会带一个callbackId，这时候OCBridge会根据这个Id生成一个callback，保存在内存中。</p>
+
+<p>这时候OC执行方法的调用，执行block。将参数和callbackId传到JSBridge，JSBridge根据Id找到之前缓存的JSCallback，进行调用。到这里就完成RN-Native-RN的一个闭环。</p>
+
+<blockquote>
+<p>JS是怎么调用OC的呢？</p>
+</blockquote>
+
+<p>其实并不是JS调用OC，而是JS将消息放到一个消息队列里面MessageQueue，等OC来取，这里面还有很多问题值得讨论多长时间取一次；不来取怎么办。有待我们继续研究</p>
+
+<hr />
+
+<blockquote>
+<p>为什么OC和JS可以实现这种框架？</p>
+</blockquote>
+
+<p>要实现这个机制需要语言有动态反射的特性(OC是一门动态语言，消息和消息的target等都是在运行时决定)，即可以通过类/方法名字符串找到对应的类/方法进行调用，没有这特性就做不了。</p>
+
+<blockquote>
+<p>知识点</p>
+</blockquote>
+
+<ul>
+<li>使用<a href="https://linkrober.github.io/bookshelf/2017/09/run-loops-%E4%B8%80/">RunLoop</a>让JS线程常驻内存</li>
+</ul>
+
+<pre><code>//RCTJSCExecutor
+
++ (void)runRunLoopThread
+{
+  @autoreleasepool {
+    // copy thread name to pthread name
+    pthread_setname_np([NSThread currentThread].name.UTF8String);
+
+    // Set up a dummy runloop source to avoid spinning
+    CFRunLoopSourceContext noSpinCtx = {0, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL};
+    CFRunLoopSourceRef noSpinSource = CFRunLoopSourceCreate(NULL, 0, &amp;noSpinCtx);
+    CFRunLoopAddSource(CFRunLoopGetCurrent(), noSpinSource, kCFRunLoopDefaultMode);
+    CFRelease(noSpinSource);
+
+    // run the run loop
+    while (kCFRunLoopRunStopped != CFRunLoopRunInMode(kCFRunLoopDefaultMode, ((NSDate *)[NSDate distantFuture]).timeIntervalSinceReferenceDate, NO)) {
+      RCTAssert(NO, @&quot;not reached assertion&quot;); // runloop spun. that's bad.
+    }
+  }
+}
+
+static NSThread *newJavaScriptThread(void)
+{
+  NSThread *javaScriptThread = [[NSThread alloc] initWithTarget:[RCTJSCExecutor class]
+                                                       selector:@selector(runRunLoopThread)
+                                                         object:nil];
+  javaScriptThread.name = RCTJSCThreadName;
+  javaScriptThread.qualityOfService = NSOperationQualityOfServiceUserInteractive;
+  [javaScriptThread start];
+  return javaScriptThread;
+}
+</code></pre>
+
+<ul>
+<li>通过动态<a href="https://linkrober.github.io/bookshelf/2017/10/runtime%E4%B8%89-%E6%B6%88%E6%81%AF%E8%BD%AC%E5%8F%91/">消息转发</a>发送来自RN的消息,RCTModuleMethod</li>
+</ul>
+
+<pre><code>//RCTModuleMethod
+
+NSMethodSignature *typeSignature = [RCTConvert methodSignatureForSelector:selector];
+NSInvocation *typeInvocation = [NSInvocation invocationWithMethodSignature:typeSignature];
+typeInvocation.selector = selector;
+typeInvocation.target = [RCTConvert class];
+
+[argumentBlocks addObject:^(__unused RCTBridge *bridge, NSUInteger index, id json) {
+void *returnValue = malloc(typeSignature.methodReturnLength);
+[typeInvocation setArgument:&amp;json atIndex:2];
+[typeInvocation invoke];
+[typeInvocation getReturnValue:returnValue];
+[invocation setArgument:returnValue atIndex:index + 2];
+free(returnValue);
+</code></pre>
+
+<ul>
+<li>用Runtime拿到所有的类信息和方法</li>
+</ul>
+
+<pre><code>//RCTBridge
+
+void RCTVerifyAllModulesExported(NSArray *extraModules)
+{
+  // Check for unexported modules
+  unsigned int classCount;
+  Class *classes = objc_copyClassList(&amp;classCount);
+
+  NSMutableSet *moduleClasses = [NSMutableSet new];
+  [moduleClasses addObjectsFromArray:RCTGetModuleClasses()];
+  [moduleClasses addObjectsFromArray:[extraModules valueForKeyPath:@&quot;class&quot;]];
+
+  for (unsigned int i = 0; i &lt; classCount; i++) {
+    Class cls = classes[i];
+    Class superclass = cls;
+    while (superclass) {
+      if (class_conformsToProtocol(superclass, @protocol(RCTBridgeModule))) {
+        if ([moduleClasses containsObject:cls]) {
+          break;
+        }
+
+        // Verify it's not a super-class of one of our moduleClasses
+        BOOL isModuleSuperClass = NO;
+        for (Class moduleClass in moduleClasses) {
+          if ([moduleClass isSubclassOfClass:cls]) {
+            isModuleSuperClass = YES;
+            break;
+          }
+        }
+        if (isModuleSuperClass) {
+          break;
+        }
+
+        RCTLogWarn(@&quot;Class %@ was not exported. Did you forget to use RCT_EXPORT_MODULE()?&quot;, cls);
+        break;
+      }
+      superclass = class_getSuperclass(superclass);
+    }
+  }
+
+  free(classes);
+}
+</code></pre>
+
+<ul>
+<li>GCD的大量使用，在初始化各个模块时(initModulesAndLoadSource和setupJSExecutorAndModuleConfig这两个group)对于线程依赖的控制<code>dispatch_group_enter();</code><code>dispatch_group_leave()</code></li>
+</ul>
+
+<pre><code>//RCTBatchedBridge
+
+- (void)start
+{
+  [[NSNotificationCenter defaultCenter]
+    postNotificationName:RCTJavaScriptWillStartLoadingNotification
+    object:_parentBridge userInfo:@{@&quot;bridge&quot;: self}];
+
+  RCT_PROFILE_BEGIN_EVENT(0, @&quot;-[RCTBatchedBridge setUp]&quot;, nil);
+
+  dispatch_queue_t bridgeQueue = dispatch_queue_create(&quot;com.facebook.react.RCTBridgeQueue&quot;, DISPATCH_QUEUE_CONCURRENT);
+
+  dispatch_group_t initModulesAndLoadSource = dispatch_group_create();
+
+  // Asynchronously load source code
+  dispatch_group_enter(initModulesAndLoadSource);
+  __weak RCTBatchedBridge *weakSelf = self;
+  __block NSData *sourceCode;
+  [self loadSource:^(NSError *error, NSData *source, __unused int64_t sourceLength) {
+    if (error) {
+      RCTLogWarn(@&quot;Failed to load source: %@&quot;, error);
+      dispatch_async(dispatch_get_main_queue(), ^{
+        [weakSelf stopLoadingWithError:error];
+      });
+    }
+
+    sourceCode = source;
+    dispatch_group_leave(initModulesAndLoadSource);
+  } onProgress:^(RCTLoadingProgress *progressData) {
+#if RCT_DEV &amp;&amp; __has_include(&quot;RCTDevLoadingView.h&quot;)
+    RCTDevLoadingView *loadingView = [weakSelf moduleForClass:[RCTDevLoadingView class]];
+    [loadingView updateProgress:progressData];
+#endif
+  }];
+
+  // Synchronously initialize all native modules that cannot be loaded lazily
+  [self initModulesWithDispatchGroup:initModulesAndLoadSource];
+
+  RCTPerformanceLogger *performanceLogger = self-&gt;_performanceLogger;
+  __block NSString *config;
+  dispatch_group_enter(initModulesAndLoadSource);
+  dispatch_async(bridgeQueue, ^{
+    dispatch_group_t setupJSExecutorAndModuleConfig = dispatch_group_create();
+
+    // Asynchronously initialize the JS executor
+    dispatch_group_async(setupJSExecutorAndModuleConfig, bridgeQueue, ^{
+      [performanceLogger markStartForTag:RCTPLJSCExecutorSetup];
+      [weakSelf setUpExecutor];
+      [performanceLogger markStopForTag:RCTPLJSCExecutorSetup];
+    });
+
+    // Asynchronously gather the module config
+    dispatch_group_async(setupJSExecutorAndModuleConfig, bridgeQueue, ^{
+      if (weakSelf.valid) {
+        RCT_PROFILE_BEGIN_EVENT(0, @&quot;-[RCTBatchedBridge moduleConfig&quot;, nil);
+        [performanceLogger markStartForTag:RCTPLNativeModulePrepareConfig];
+        config = [weakSelf moduleConfig];
+        [performanceLogger markStopForTag:RCTPLNativeModulePrepareConfig];
+        RCT_PROFILE_END_EVENT(RCTProfileTagAlways, @&quot;&quot;);
+      }
+    });
+
+    dispatch_group_notify(setupJSExecutorAndModuleConfig, bridgeQueue, ^{
+      // We're not waiting for this to complete to leave dispatch group, since
+      // injectJSONConfiguration and executeSourceCode will schedule operations
+      // on the same queue anyway.
+      [performanceLogger markStartForTag:RCTPLNativeModuleInjectConfig];
+      [weakSelf injectJSONConfiguration:config onComplete:^(NSError *error) {
+        [performanceLogger markStopForTag:RCTPLNativeModuleInjectConfig];
+        if (error) {
+          RCTLogWarn(@&quot;Failed to inject config: %@&quot;, error);
+          dispatch_async(dispatch_get_main_queue(), ^{
+            [weakSelf stopLoadingWithError:error];
+          });
+        }
+      }];
+      dispatch_group_leave(initModulesAndLoadSource);
+    });
+  });
+
+  dispatch_group_notify(initModulesAndLoadSource, bridgeQueue, ^{
+    RCTBatchedBridge *strongSelf = weakSelf;
+    if (sourceCode &amp;&amp; strongSelf.loading) {
+      [strongSelf executeSourceCode:sourceCode];
+    }
+  });
+
+  RCT_PROFILE_END_EVENT(RCTProfileTagAlways, @&quot;&quot;);
+}
+</code></pre>
+
+<h4 id="参考文档">参考文档</h4>
+
+<p><a href="http://blog.cnbang.net/tech/2698/">React Native通信机制详解</a></p>
+
+<p><a href="http://awhisper.github.io/2016/06/24/ReactNative%E6%B5%81%E7%A8%8B%E6%BA%90%E7%A0%81%E5%88%86%E6%9E%90/">ReactNative iOS源码解析</a></p>
+              
+            </div>
+          </div>
+          <div id="post-footer" class="post-footer main-content-wrap">
+            
+              
+                
+                
+                  <div class="post-footer-tags">
+                    <span class="text-color-light text-small">标签</span><br/>
+                    
+  <a class="tag tag--primary tag--small" href="https://linkrober.github.io/bookshelf//tags/reactnative/">ReactNative</a>
+
+  <a class="tag tag--primary tag--small" href="https://linkrober.github.io/bookshelf//tags/javsscript/">JavsScript</a>
+
+  <a class="tag tag--primary tag--small" href="https://linkrober.github.io/bookshelf//tags/objectc/">ObjectC</a>
+
+                  </div>
+                
+              
+            
+            
+  <div class="post-actions-wrap">
+      <nav >
+        <ul class="post-actions post-action-nav">
+            <li class="post-action">
+              
+                <a class="post-action-btn btn btn--default tooltip--top" href="https://LinkRober.github.io/bookshelf/2018/01/%E5%86%8D%E8%A7%812017%E4%BD%A0%E5%A5%BD2018/" data-tooltip="再见2017，你好2018">
+              
+                <i class="fa fa-angle-left"></i>
+                <span class="hide-xs hide-sm text-small icon-ml">下一篇</span>
+              </a>
+            </li>
+            <li class="post-action">
+              
+                <a class="post-action-btn btn btn--default tooltip--top" href="https://LinkRober.github.io/bookshelf/2017/12/ios%E5%A4%9A%E7%BA%BF%E7%A8%8B%E4%B8%AD%E7%9A%84%E9%94%81/" data-tooltip="iOS多线程中的锁">
+              
+                <span class="hide-xs hide-sm text-small icon-mr">上一篇</span>
+                <i class="fa fa-angle-right"></i>
+              </a>
+            </li>
+        </ul>
+      </nav>
+    <ul class="post-actions post-action-share" >
+      
+        <li class="post-action hide-lg hide-md hide-sm">
+          <a class="post-action-btn btn btn--default btn-open-shareoptions" href="#btn-open-shareoptions">
+            <i class="fa fa-share-alt"></i>
+          </a>
+        </li>
+        
+      
+      
+        <li class="post-action">
+          <a class="post-action-btn btn btn--default" href="#disqus_thread">
+            <i class="fa fa-comment-o"></i>
+          </a>
+        </li>
+      
+      <li class="post-action">
+        
+          <a class="post-action-btn btn btn--default" href="#">
+        
+          <i class="fa fa-list"></i>
+        </a>
+      </li>
+    </ul>
+  </div>
+
+
+            
+              
+                <div id="disqus_thread">
+  <noscript>Please enable JavaScript to view the <a href="//disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
+</div>
+              
+            
+          </div>
+        </article>
+        
+      </div>
+      <div id="bottom-bar" class="post-bottom-bar" data-behavior="4">
+        
+  <div class="post-actions-wrap">
+      <nav >
+        <ul class="post-actions post-action-nav">
+            <li class="post-action">
+              
+                <a class="post-action-btn btn btn--default tooltip--top" href="https://LinkRober.github.io/bookshelf/2018/01/%E5%86%8D%E8%A7%812017%E4%BD%A0%E5%A5%BD2018/" data-tooltip="再见2017，你好2018">
+              
+                <i class="fa fa-angle-left"></i>
+                <span class="hide-xs hide-sm text-small icon-ml">下一篇</span>
+              </a>
+            </li>
+            <li class="post-action">
+              
+                <a class="post-action-btn btn btn--default tooltip--top" href="https://LinkRober.github.io/bookshelf/2017/12/ios%E5%A4%9A%E7%BA%BF%E7%A8%8B%E4%B8%AD%E7%9A%84%E9%94%81/" data-tooltip="iOS多线程中的锁">
+              
+                <span class="hide-xs hide-sm text-small icon-mr">上一篇</span>
+                <i class="fa fa-angle-right"></i>
+              </a>
+            </li>
+        </ul>
+      </nav>
+    <ul class="post-actions post-action-share" >
+      
+        <li class="post-action hide-lg hide-md hide-sm">
+          <a class="post-action-btn btn btn--default btn-open-shareoptions" href="#btn-open-shareoptions">
+            <i class="fa fa-share-alt"></i>
+          </a>
+        </li>
+        
+      
+      
+        <li class="post-action">
+          <a class="post-action-btn btn btn--default" href="#disqus_thread">
+            <i class="fa fa-comment-o"></i>
+          </a>
+        </li>
+      
+      <li class="post-action">
+        
+          <a class="post-action-btn btn btn--default" href="#">
+        
+          <i class="fa fa-list"></i>
+        </a>
+      </li>
+    </ul>
+  </div>
+
+
+      </div>
+      <div id="share-options-bar" class="share-options-bar" data-behavior="4">
+  <i id="btn-close-shareoptions" class="fa fa-close"></i>
+  <ul class="share-options">
+    
+  </ul>
+</div>
+<div id="share-options-mask" class="share-options-mask"></div>
+    </div>
+    
+    <div id="about">
+  <div id="about-card">
+    <div id="about-btn-close">
+      <i class="fa fa-remove"></i>
+    </div>
+    
+      <img id="about-card-picture" src="https://avatars1.githubusercontent.com/u/7357189?v=3&amp;s=460.png" alt="作者的图片" />
+    
+    <h4 id="about-card-name">董二千</h4>
+    
+      <div id="about-card-bio">愿你走出半生 归来仍是少年</div>
+    
+    
+      <div id="about-card-job">
+        <i class="fa fa-briefcase"></i>
+        <br/>
+        iOS Developer
+      </div>
+    
+    
+      <div id="about-card-location">
+        <i class="fa fa-map-marker"></i>
+        <br/>
+        China
+      </div>
+    
+  </div>
+</div>
+
+    <div id="algolia-search-modal" class="modal-container">
+  <div class="modal">
+    <div class="modal-header">
+      <span class="close-button"><i class="fa fa-close"></i></span>
+      <a href="https://algolia.com" target="_blank" rel="noopener" class="searchby-algolia text-color-light link-unstyled">
+        <span class="searchby-algolia-text text-color-light text-small">by</span>
+        <img class="searchby-algolia-logo" src="https://www.algolia.com/static_assets/images/press/downloads/algolia-light.svg">
+      </a>
+      <i class="search-icon fa fa-search"></i>
+      <form id="algolia-search-form">
+        <input type="text" id="algolia-search-input" name="search"
+          class="form-control input--large search-input" placeholder="搜索" />
+      </form>
+    </div>
+    <div class="modal-body">
+      <div class="no-result text-color-light text-center"></div>
+      <div class="results">
+        
+        
+          <div class="media">
+            
+            <div class="media-body">
+              <a class="link-unstyled" href="https://linkrober.github.io/bookshelf/2018/03/%E5%85%A5%E5%9D%91%E5%B0%8F%E7%A8%8B%E5%BA%8F/">
+                <h3 class="media-heading">入坑小程序</h3>
+              </a>
+              <span class="media-meta">
+                <span class="media-date text-small">
+                  Mar 3, 2018
+                </span>
+              </span>
+              <div class="media-content hide-xs font-merryweather">描述 去年各大平台纷纷开始占领微信上的又一流量入口——小程序。因为小程序的门槛低，这里指，技术上和前端大同小异，审核刚开始也比较松。除了大厂，很多个人开发这都投入进去。想在小程序上打响自己的个人品牌。在筹备了三个月之久，我的第一款小程序，终于快要完成了。在这里我会总结一下整体的过程，从idea到一个完整的小程序、期间遇到的坑、和觉得挺有意思的地方。
+流程 
+1. 购买服务器 本人购买的服务器是阿里云服务器，因为经历的几家公司都是用的它，感觉还是比较靠谱的（我一同事也用过腾讯的服务，一直在吐槽不稳定，后来也换到阿里云了)
+ 2. 购买域名 小程序的是无法直接通过IP访问，必须申请一个域名，同样的阿里云上买就行了。这里要提醒大家的是，因为国家政策原因域名需要备案，整个过程大概需要一个月时间。阿里云还是比较良心的，备案成功之后会再赠送你一个月的服务器时间。因为整个备案时间大概是一个月。所有绑定域名一定要提前。
+ 3. 申请CA证书绑定到域名。在小程序里的API都需要Htps服务，如果你有CA证书可以直接使用，我也是通过阿里云申请的免费CA证书，时间是一年，到期看可以续的。
+ 4. 根据idea设计产品
+ 5. 开发小程序和server
+ 6.发布
+小程序 因为是我的第一个小程序，先试试手，所以选了一个比较简单的东西，音乐欣赏。数据是从其他网站爬过来插到数据库的。 本人是移动端出生，对前端和后端的东西都不是很熟，不过刚好去年写了不少RN的东西，前端的东西也算是半只脚入门了。在小程序里面文件分为下面几种
+ js文件，和前端的一样， wxml文件，类似于html文件 wxss文件，类似于css文件 wxs文件，这是小程序的一套脚本语言，语法看似和JavaScript语法一样，其实他们是不同的语言，有自己的语法，并不和 javascript 一致 。我们可以把它当做方法类在wxml中来使用。在wxml中是无法调用js中的非事件方法的，如果从js文件里拿到的数据你希望再做一步处理然后展示，这样的处理需要放到wxs文件里。  开发前花半天浏览下微信小程序的API差不多就可以了，套路都差不多MVC。
+数据库 服务器是用Node.js+MongoDB+Express搭建的，全套搭建起来还是很快的。Node.js是一个基于事件驱动I/O的服务端JavaScript环境，它在高并发的服务上有很好的体验。同样是js所以语法基本没门槛了。 MongoDB数据库和一般的关系型数据库不同，它是非关系型数据库。关系型数据库对数据操作都是:SELECT、FROM、WHERE、BY等。来感受一下MongoDB怎么操作数据：
+//插入一个数据 var user = { &quot;name&quot;:&quot;小芳&quot;， &quot;age&quot;:18, &quot;gender&quot;:1, &quot;country&quot;:&quot;中国&quot; }; db.user.insert(user)  //查询姓名是：张三、李四、王五的信息 db.user.find({&quot;name&quot;: {&quot;\$in&quot; : [&quot;张三&quot;,&quot;李四&quot;,&quot;王五&quot;] }})  给我最大的感觉，它是一个面向对象面向集合的存储过程，对于经常做面向对象开发人来说是比较容易入手的。
+Express 基于Node.js的极其简洁灵活的web应用开发框架，它有丰富的HTTP快捷方法，非常快捷的创建node服务.
+首页模块入口设置
+... ... ... var home = require('./routes/home');//首页接口 ... .</div>
+            </div>
+            <div style="clear:both;"></div>
+            <hr>
+          </div>
+        
+          <div class="media">
+            
+            <div class="media-body">
+              <a class="link-unstyled" href="https://linkrober.github.io/bookshelf/2018/02/%E9%80%92%E5%BD%92/">
+                <h3 class="media-heading">递归</h3>
+              </a>
+              <span class="media-meta">
+                <span class="media-date text-small">
+                  Feb 2, 2018
+                </span>
+              </span>
+              <div class="media-content hide-xs font-merryweather"><p></b>
+<span class="highlight-text primary">
+基本思想
+</span></p>
+
+<p>递归是一种直接或者间接调用自身函数或者方法的算法。递归的实质是把问题分解成规模缩小的同类问题的子问题，然后递归调用方法来表示问题的解。递归算法，其实就是程序的自身调用。在一段程序中往往会遇到调用自身的那样一种coding策略。递归往往能带来非常简洁非常直观的代码形式，从而使我们的编码大大简化，但是递归的思想确实和我们的常规思维相逆。我们通常是从上而下的思考问题，而递归是从下往上进行思考。这样我们就能看到我们会用很少的语句解决很大的问题，所以递归策略最主要的体现就是较少的代码量解决复杂的问题。</p>
+
+<p></p></div>
+            </div>
+            <div style="clear:both;"></div>
+            <hr>
+          </div>
+        
+          <div class="media">
+            
+            <div class="media-body">
+              <a class="link-unstyled" href="https://linkrober.github.io/bookshelf/2018/01/%E5%86%8D%E8%A7%812017%E4%BD%A0%E5%A5%BD2018/">
+                <h3 class="media-heading">再见2017，你好2018</h3>
+              </a>
+              <span class="media-meta">
+                <span class="media-date text-small">
+                  Jan 1, 2018
+                </span>
+              </span>
+              <div class="media-content hide-xs font-merryweather"><p>不知不觉工作已有三个年头，在iOS这条路上，从当年战战兢兢的新人变成一个熟练的开发者，这一路走来真不容易。不仅仅是身体上的负荷，个人对于技术的追求也使自己或迷惘或奋起。</p>
+
+<p></p></div>
+            </div>
+            <div style="clear:both;"></div>
+            <hr>
+          </div>
+        
+          <div class="media">
+            
+            <div class="media-body">
+              <a class="link-unstyled" href="https://linkrober.github.io/bookshelf/2017/12/object-c%E5%92%8Cjs%E9%80%9A%E4%BF%A1%E6%A6%82%E8%BF%B0/">
+                <h3 class="media-heading">Object-C和JS通信概述</h3>
+              </a>
+              <span class="media-meta">
+                <span class="media-date text-small">
+                  Dec 12, 2017
+                </span>
+              </span>
+              <div class="media-content hide-xs font-merryweather"><p>本系列文章作为学习RN期间的总结</p>
+
+<ul>
+<li><a href="https://linkrober.github.io/bookshelf/2017/10/react-native%E5%A6%82%E4%BD%95%E9%9B%86%E6%88%90%E5%88%B0%E7%8E%B0%E6%9C%89%E9%A1%B9%E7%9B%AE%E4%B8%AD/">React Native如何集成到现有项目中</a></li>
+<li><a href="https://linkrober.github.io/bookshelf/2017/10/react-native%E5%92%8Cnative%E9%97%B4%E7%9A%84%E9%80%9A%E4%BF%A1/">React Native和Native间的通信实践</a></li>
+<li><a href="https://linkrober.github.io/bookshelf/2017/10/rctrootviewrctbridge%E5%81%9A%E4%BA%86%E4%BB%80%E4%B9%88/">RCTRootView、RCTBridge做了什么</a></li>
+<li>Object-C和JS通信概述</li>
+</ul>
+
+<p></p></div>
+            </div>
+            <div style="clear:both;"></div>
+            <hr>
+          </div>
+        
+          <div class="media">
+            
+            <div class="media-body">
+              <a class="link-unstyled" href="https://linkrober.github.io/bookshelf/2017/12/ios%E5%A4%9A%E7%BA%BF%E7%A8%8B%E4%B8%AD%E7%9A%84%E9%94%81/">
+                <h3 class="media-heading">iOS多线程中的锁</h3>
+              </a>
+              <span class="media-meta">
+                <span class="media-date text-small">
+                  Dec 12, 2017
+                </span>
+              </span>
+              <div class="media-content hide-xs font-merryweather"><p>涉及到多线程共享资源的情况下就避免不了资源竞争的问题，这时候就会用到各种锁，例如，<code>@synchronized</code>、<code>NSLock</code>、<code>OSSpinLock</code>等等，虽然都是锁，但是锁的底层实现也不尽相同。大概可以分为：<span class="highlight-text blue">互斥锁</span>、<span class="highlight-text blue">自旋锁</span>、<span class="highlight-text blue">递归锁</span>、
+<span class="highlight-text blue">读写锁</span>。</p>
+
+<pre><code>{
+	lock()//加锁
+		doSomeThing()//临界区
+	unlock()//解锁
+}
+</code></pre>
+
+<p>我们锁的目的是在任何时刻最多只能有一个线程在修改资源，即在任何时刻只能有一个操作者保持锁。</p>
+
+<p></p></div>
+            </div>
+            <div style="clear:both;"></div>
+            <hr>
+          </div>
+        
+          <div class="media">
+            
+            <div class="media-body">
+              <a class="link-unstyled" href="https://linkrober.github.io/bookshelf/2017/12/%E5%BF%AB%E9%80%9F%E6%8E%92%E5%BA%8F/">
+                <h3 class="media-heading">快速排序</h3>
+              </a>
+              <span class="media-meta">
+                <span class="media-date text-small">
+                  Dec 12, 2017
+                </span>
+              </span>
+              <div class="media-content hide-xs font-merryweather"><span class="highlight-text primary">
+故事
+</span>
+
+<p>快速排序由<strong>C.A.R.Hoare（东尼霍尔）</strong>在1960年提出。之后又有许多人对此进行改进。如果你对快速排序感兴趣可以去看看东尼霍尔1962年在Computer Journal发表的论文“Quicksort”以及《算法导论》的第七章。</p></div>
+            </div>
+            <div style="clear:both;"></div>
+            <hr>
+          </div>
+        
+          <div class="media">
+            
+            <div class="media-body">
+              <a class="link-unstyled" href="https://linkrober.github.io/bookshelf/2017/11/%E4%B8%80%E4%B8%AA%E9%9F%B3%E8%A7%86%E9%A2%91%E5%8E%82%E7%9A%84%E5%9B%BE%E5%83%8F%E5%A4%84%E7%90%86%E6%B5%81%E7%A8%8B%E6%A6%82%E8%BF%B0/">
+                <h3 class="media-heading">一个音视频厂的图像处理流程概述</h3>
+              </a>
+              <span class="media-meta">
+                <span class="media-date text-small">
+                  Nov 11, 2017
+                </span>
+              </span>
+              <div class="media-content hide-xs font-merryweather"><p><img src="http://upload-images.jianshu.io/upload_images/1086250-3eac00965effbe70?imageMogr2/auto-orient/strip%7CimageView2/2/w/320" alt="" /></p>
+
+<p>视频编辑分为两部分：<strong>Camrea Engine（视频资源采集）</strong>和<strong>Video Edit Engine（后期视频编辑）</strong>。在Camrea Engine采集的时候我们也可以做一些编辑操作，这叫预处理，比如说加滤镜。等到把采集到的资源交给Video Edit Engine时就是后处理。</p>
+
+<p></p></div>
+            </div>
+            <div style="clear:both;"></div>
+            <hr>
+          </div>
+        
+          <div class="media">
+            
+            <div class="media-body">
+              <a class="link-unstyled" href="https://linkrober.github.io/bookshelf/2017/10/rctrootviewrctbridge%E5%81%9A%E4%BA%86%E4%BB%80%E4%B9%88/">
+                <h3 class="media-heading">RCTRootView、RCTBridge做了什么</h3>
+              </a>
+              <span class="media-meta">
+                <span class="media-date text-small">
+                  Oct 10, 2017
+                </span>
+              </span>
+              <div class="media-content hide-xs font-merryweather"><p>本系列文章作为学习RN期间的总结</p>
+
+<ul>
+<li><a href="https://linkrober.github.io/bookshelf/2017/10/react-native%E5%A6%82%E4%BD%95%E9%9B%86%E6%88%90%E5%88%B0%E7%8E%B0%E6%9C%89%E9%A1%B9%E7%9B%AE%E4%B8%AD/">React Native如何集成到现有项目中</a></li>
+<li><a href="https://linkrober.github.io/bookshelf/2017/10/react-native%E5%92%8Cnative%E9%97%B4%E7%9A%84%E9%80%9A%E4%BF%A1/">React Native和Native间的通信实践</a></li>
+<li>RCTRootView、RCTBridge做了什么</li>
+<li><a href="https://linkrober.github.io/bookshelf/2017/12/native%E5%92%8Cjs%E9%80%9A%E4%BF%A1%E6%A6%82%E8%BF%B0/">Object-C和JS通信概述</a></li>
+</ul>
+
+<p></p></div>
+            </div>
+            <div style="clear:both;"></div>
+            <hr>
+          </div>
+        
+          <div class="media">
+            
+            <div class="media-body">
+              <a class="link-unstyled" href="https://linkrober.github.io/bookshelf/2017/10/react-native%E5%92%8Cnative%E9%97%B4%E7%9A%84%E9%80%9A%E4%BF%A1%E5%AE%9E%E8%B7%B5/">
+                <h3 class="media-heading">React Native和Native间的通信实践</h3>
+              </a>
+              <span class="media-meta">
+                <span class="media-date text-small">
+                  Oct 10, 2017
+                </span>
+              </span>
+              <div class="media-content hide-xs font-merryweather"><!-- thumbnailImage = 'rn_image.jpeg'
+thumbnailImagePosition = 'bottom' -->
+
+<p>本系列文章作为学习RN期间的总结</p>
+
+<ul>
+<li><a href="https://linkrober.github.io/bookshelf/2017/10/react-native%E5%A6%82%E4%BD%95%E9%9B%86%E6%88%90%E5%88%B0%E7%8E%B0%E6%9C%89%E9%A1%B9%E7%9B%AE%E4%B8%AD/">React Native如何集成到现有项目中</a></li>
+<li>React Native和Native间的通信实践</li>
+<li><a href="https://linkrober.github.io/bookshelf/2017/10/rctrootviewrctbridge%E5%81%9A%E4%BA%86%E4%BB%80%E4%B9%88/">RCTRootView、RCTBridge做了什么</a></li>
+<li><a href="https://linkrober.github.io/bookshelf/2017/12/native%E5%92%8Cjs%E9%80%9A%E4%BF%A1%E6%A6%82%E8%BF%B0/">Object-C和JS通信概述</a></li>
+</ul>
+
+<p></p></div>
+            </div>
+            <div style="clear:both;"></div>
+            <hr>
+          </div>
+        
+          <div class="media">
+            
+            <div class="media-body">
+              <a class="link-unstyled" href="https://linkrober.github.io/bookshelf/2017/10/react-native%E5%A6%82%E4%BD%95%E9%9B%86%E6%88%90%E5%88%B0%E7%8E%B0%E6%9C%89%E9%A1%B9%E7%9B%AE%E4%B8%AD/">
+                <h3 class="media-heading">React Native如何集成到现有项目中</h3>
+              </a>
+              <span class="media-meta">
+                <span class="media-date text-small">
+                  Oct 10, 2017
+                </span>
+              </span>
+              <div class="media-content hide-xs font-merryweather"><!-- thumbnailImage = 'rn_thumbnailImage.jpeg'
+thumbnailImagePosition = 'bottom' -->
+
+<p>本系列文章作为学习RN期间的总结</p>
+
+<ul>
+<li>React Native如何集成到现有项目中</li>
+<li><a href="https://linkrober.github.io/bookshelf/2017/10/react-native%E5%92%8Cnative%E9%97%B4%E7%9A%84%E9%80%9A%E4%BF%A1/">React Native和Native间的通信实践</a></li>
+<li><a href="https://linkrober.github.io/bookshelf/2017/10/rctrootviewrctbridge%E5%81%9A%E4%BA%86%E4%BB%80%E4%B9%88/">RCTRootView、RCTBridge做了什么</a></li>
+<li><a href="https://linkrober.github.io/bookshelf/2017/12/native%E5%92%8Cjs%E9%80%9A%E4%BF%A1%E6%A6%82%E8%BF%B0/">Object-C和JS通信概述</a></li>
+</ul>
+
+<p></p></div>
+            </div>
+            <div style="clear:both;"></div>
+            <hr>
+          </div>
+        
+      </div>
+    </div>
+    <div class="modal-footer">
+      <p class="results-count text-medium"
+         data-message-zero=""
+         data-message-one=""
+         data-message-other="">
+         17 posts found
+      </p>
+    </div>
+  </div>
+</div>
+    
+  
+    
+    <div id="cover" style="background-image:url('https://LinkRober.github.io/bookshelf/images/cover.jpg');"></div>
+  
+
+
+    
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/2.1.3/jquery.min.js" integrity="sha256-IFHWFEbU2/+wNycDECKgjIRSirRNIDp2acEB5fvdVRU=" crossorigin="anonymous"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.8.0/highlight.min.js" integrity="sha256-+mpyNVJsNt4rVXCw0F+pAOiB3YxmHgrbJsx4ecPuUaI=" crossorigin="anonymous"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/fancybox/2.1.4/jquery.fancybox.min.js" integrity="sha256-vMxgR/7FtLovVA+IPrR7+xTgIgARH7y9VZQnmmi0HDI=" crossorigin="anonymous"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/fancybox/2.1.4/helpers/jquery.fancybox-thumbs.min.js" integrity="sha256-N0qFUh7/9vLvia87dDndewmsgsyYoNkdA212tPc+2NI=" crossorigin="anonymous"></script>
+
+
+<script src="https://LinkRober.github.io/bookshelf/js/script-qi9wbxp2ya2j6p7wx1i6tgavftewndznf4v0hy2gvivk1rxgc3lm7njqb6bz.min.js"></script>
+
+
+<script>
+$(document).ready(function() {
+  hljs.configure({ classPrefix: '', useBR: false });
+  $('pre.code-highlight, pre > code').each(function(i, block) {
+    if (!$(this).hasClass('codeblock')) {
+      $(this).addClass('codeblock');
+    }
+    hljs.highlightBlock(block);
+  });
+});
+</script>
+
+  
+    
+      <script>
+        var disqus_config = function () {
+          this.page.url = 'https:\/\/linkrober.github.io\/bookshelf\/2017\/12\/object-c%E5%92%8Cjs%E9%80%9A%E4%BF%A1%E6%A6%82%E8%BF%B0\/';
+          
+            this.page.identifier = '\/2017\/12\/object-c%E5%92%8Cjs%E9%80%9A%E4%BF%A1%E6%A6%82%E8%BF%B0\/'
+          
+        };
+        (function() {
+          
+          
+          if (window.location.hostname == "localhost") {
+            return;
+          }
+          var d = document, s = d.createElement('script');
+          var disqus_shortname = 'dongerqian';
+          s.src = '//' + disqus_shortname + '.disqus.com/embed.js';
+
+          s.setAttribute('data-timestamp', +new Date());
+          (d.head || d.body).appendChild(s);
+        })();
+      </script>
+    
+  
+
+
+
+    
+  </body>
+</html>
+

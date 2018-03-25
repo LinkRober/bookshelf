@@ -1,0 +1,84 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes" ?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>董二千</title>
+    <link>https://LinkRober.github.io/bookshelf/tags/%E9%80%92%E5%BD%92/index.xml</link>
+    <description>Recent content on 董二千</description>
+    <generator>Hugo -- gohugo.io</generator>
+    <language>zh-cn</language>
+    <atom:link href="https://LinkRober.github.io/bookshelf/tags/%E9%80%92%E5%BD%92/index.xml" rel="self" type="application/rss+xml" />
+    
+    <item>
+      <title>递归</title>
+      <link>https://linkrober.github.io/bookshelf/2018/02/%E9%80%92%E5%BD%92/</link>
+      <pubDate>Fri, 02 Feb 2018 00:00:00 +0000</pubDate>
+      
+      <guid>https://linkrober.github.io/bookshelf/2018/02/%E9%80%92%E5%BD%92/</guid>
+      <description>&lt;p&gt;&lt;/b&gt;
+&lt;span class=&#34;highlight-text primary&#34;&gt;
+基本思想
+&lt;/span&gt;&lt;/p&gt;
+
+&lt;p&gt;递归是一种直接或者间接调用自身函数或者方法的算法。递归的实质是把问题分解成规模缩小的同类问题的子问题，然后递归调用方法来表示问题的解。递归算法，其实就是程序的自身调用。在一段程序中往往会遇到调用自身的那样一种coding策略。递归往往能带来非常简洁非常直观的代码形式，从而使我们的编码大大简化，但是递归的思想确实和我们的常规思维相逆。我们通常是从上而下的思考问题，而递归是从下往上进行思考。这样我们就能看到我们会用很少的语句解决很大的问题，所以递归策略最主要的体现就是较少的代码量解决复杂的问题。&lt;/p&gt;
+
+&lt;p&gt;&lt;/p&gt;
+
+&lt;p&gt;&lt;/b&gt;
+&lt;span class=&#34;highlight-text primary&#34;&gt;
+Example：计算阶乘
+&lt;/span&gt;
+计算阶乘是递归程序的经典示例。计算某个数的阶乘就是用那个数乘以包含1在内的比它小的所有数。例如，&lt;code&gt;factorial(6)&lt;/code&gt;等价于&lt;code&gt;6*5*4*3*2*1&lt;/code&gt;,阶乘的特性是，某个数的阶乘等于起始数乘以比它小的数的阶乘。阶乘函数：&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;int factorial(int n) {
+	return n * factorial(n-1);
+}
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;但是这个函数会永远执行下去，因为它没有终止条件。所以我们需要一个条件告诉它何时停止。我们这里给出的条件就是&lt;code&gt;n == 1&lt;/code&gt;停止&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;int factorial(int n){
+	if(n == 1){
+		return 1;
+	}
+	else {
+		return n * factorial(n - 1);
+	}
+}
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;流程示意图：&lt;/p&gt;
+
+&lt;p&gt;&lt;img src=&#34;../../../fact-shape.jpg&#34; alt=&#34;fact-shape&#34; /&gt;&lt;/p&gt;
+
+&lt;p&gt;&lt;/b&gt;
+&lt;span class=&#34;highlight-text primary&#34;&gt;
+Example：斐波纳契数列
+&lt;/span&gt;&lt;/p&gt;
+
+&lt;p&gt;数学上&lt;a href=&#34;https://zh.wikipedia.org/wiki/%E6%96%90%E6%B3%A2%E9%82%A3%E5%A5%91%E6%95%B0%E5%88%97&#34;&gt;斐波纳契数列&lt;/a&gt;是以递归的方式来定义的：
+&lt;img src=&#34;../../../Fibonacci Sequence.png&#34; alt=&#34;Fibonacci Sequence&#34; /&gt;&lt;/p&gt;
+
+&lt;p&gt;写成递归程序：&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;int Fibonacci(int n){
+    if (n &amp;lt;= 1)  
+        return n;  
+    else  
+        return Fibonacci(n-1) + Fibonacci(n-2);  
+}
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;&lt;/b&gt;
+&lt;span class=&#34;highlight-text primary&#34;&gt;
+递归条件
+&lt;/span&gt;&lt;/p&gt;
+
+&lt;ul&gt;
+&lt;li&gt;递归开始时需要一个种子值&lt;/li&gt;
+&lt;li&gt;不断的调用自身&lt;/li&gt;
+&lt;li&gt;检查当前值是否已经匹配基本条件。如果匹配，则进行处理并返回值&lt;/li&gt;
+&lt;/ul&gt;</description>
+    </item>
+    
+  </channel>
+</rss>

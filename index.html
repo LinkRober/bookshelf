@@ -144,6 +144,16 @@
     </a>
   </li>
 
+  <li class="sidebar-button">
+    
+      <a class="sidebar-button-link " href="https://LinkRober.github.io/bookshelf/archives">
+    
+      <i class="sidebar-button-icon fa fa-lg fa-archive"></i>
+      
+      <span class="sidebar-button-desc">归档</span>
+    </a>
+  </li>
+
 
     </ul>
     <ul class="sidebar-buttons">
@@ -191,6 +201,8 @@
     
       
         
+          
+        
       
     
   
@@ -203,16 +215,16 @@
     
     <div class="postShorten-header">
       <h1 class="postShorten-title" itemprop="headline">
-        <a class="link-unstyled" href="https://linkrober.github.io/bookshelf/2017/09/run-loops-%E4%BA%8C/">
-          Run Loops (二)
+        <a class="link-unstyled" href="https://linkrober.github.io/bookshelf/2018/03/%E5%85%A5%E5%9D%91%E5%B0%8F%E7%A8%8B%E5%BA%8F/">
+          入坑小程序
         </a>
       </h1>
       
   <div class="postShorten-meta post-meta">
     
-      <time itemprop="datePublished" datetime="2017-09-26T00:00:00Z">
+      <time itemprop="datePublished" datetime="2018-03-25T00:00:00Z">
         
-  九月 26, 2017
+  三月 25, 2018
 
       </time>
     
@@ -221,7 +233,7 @@
   
     <span>发布在</span>
     
-      <a class="category-link" href="https://LinkRober.github.io/bookshelf/categories/development">Development</a>
+      <a class="category-link" href="https://LinkRober.github.io/bookshelf/categories/mini-program">Mini Program</a>
     
   
 
@@ -230,15 +242,33 @@
 
     </div>
     <div class="postShorten-excerpt" itemprop="articleBody">
-      <h3 id="when-would-you-use-a-run-loop">When Would You Use a Run Loop?</h3>
-
-<p>你唯一要使用run loop，就是当你要在application中创建线程的时候。你Application的主线程是架构很重要的一部分。所以，iOS系统为app的提供了<i>runloop</i>代码，并自动开始。在iOS中运行Main loop作为app启动步骤的一部分。</p>
+      描述 去年各大平台纷纷开始占领微信上的又一流量入口——小程序。因为小程序的门槛低，这里指，技术上和前端大同小异，审核刚开始也比较松。除了大厂，很多个人开发这都投入进去。想在小程序上打响自己的个人品牌。在筹备了三个月之久，我的第一款小程序，终于快要完成了。在这里我会总结一下整体的过程，从idea到一个完整的小程序、期间遇到的坑、和觉得挺有意思的地方。
+流程 
+1. 购买服务器 本人购买的服务器是阿里云服务器，因为经历的几家公司都是用的它，感觉还是比较靠谱的（我一同事也用过腾讯的服务，一直在吐槽不稳定，后来也换到阿里云了)
+ 2. 购买域名 小程序的是无法直接通过IP访问，必须申请一个域名，同样的阿里云上买就行了。这里要提醒大家的是，因为国家政策原因域名需要备案，整个过程大概需要一个月时间。阿里云还是比较良心的，备案成功之后会再赠送你一个月的服务器时间。因为整个备案时间大概是一个月。所有绑定域名一定要提前。
+ 3. 申请CA证书绑定到域名。在小程序里的API都需要Htps服务，如果你有CA证书可以直接使用，我也是通过阿里云申请的免费CA证书，时间是一年，到期看可以续的。
+ 4. 根据idea设计产品
+ 5. 开发小程序和server
+ 6.发布
+小程序 因为是我的第一个小程序，先试试手，所以选了一个比较简单的东西，音乐欣赏。数据是从其他网站爬过来插到数据库的。 本人是移动端出生，对前端和后端的东西都不是很熟，不过刚好去年写了不少RN的东西，前端的东西也算是半只脚入门了。在小程序里面文件分为下面几种
+ js文件，和前端的一样， wxml文件，类似于html文件 wxss文件，类似于css文件 wxs文件，这是小程序的一套脚本语言，语法看似和JavaScript语法一样，其实他们是不同的语言，有自己的语法，并不和 javascript 一致 。我们可以把它当做方法类在wxml中来使用。在wxml中是无法调用js中的非事件方法的，如果从js文件里拿到的数据你希望再做一步处理然后展示，这样的处理需要放到wxs文件里。  开发前花半天浏览下微信小程序的API差不多就可以了，套路都差不多MVC。
+数据库 服务器是用Node.js+MongoDB+Express搭建的，全套搭建起来还是很快的。Node.js是一个基于事件驱动I/O的服务端JavaScript环境，它在高并发的服务上有很好的体验。同样是js所以语法基本没门槛了。 MongoDB数据库和一般的关系型数据库不同，它是非关系型数据库。关系型数据库对数据操作都是:SELECT、FROM、WHERE、BY等。来感受一下MongoDB怎么操作数据：
+//插入一个数据 var user = { &quot;name&quot;:&quot;小芳&quot;， &quot;age&quot;:18, &quot;gender&quot;:1, &quot;country&quot;:&quot;中国&quot; }; db.user.insert(user)  //查询姓名是：张三、李四、王五的信息 db.user.find({&quot;name&quot;: {&quot;\$in&quot; : [&quot;张三&quot;,&quot;李四&quot;,&quot;王五&quot;] }})  给我最大的感觉，它是一个面向对象面向集合的存储过程，对于经常做面向对象开发人来说是比较容易入手的。
+Express 基于Node.js的极其简洁灵活的web应用开发框架，它有丰富的HTTP快捷方法，非常快捷的创建node服务.
+首页模块入口设置
+... ... ... var home = require('./routes/home');//首页接口 ... .
       <p>
-        <a href="https://linkrober.github.io/bookshelf/2017/09/run-loops-%E4%BA%8C/" class="postShorten-excerpt_link link">阅读全文</a>
+        <a href="https://linkrober.github.io/bookshelf/2018/03/%E5%85%A5%E5%9D%91%E5%B0%8F%E7%A8%8B%E5%BA%8F/" class="postShorten-excerpt_link link">阅读全文</a>
         
       </p>
     </div>
   </div>
+  
+    <a href="https://linkrober.github.io/bookshelf/2018/03/%E5%85%A5%E5%9D%91%E5%B0%8F%E7%A8%8B%E5%BA%8F/">
+      <div class="postShorten-thumbnailimg">
+        <img alt="" itemprop="image" src="https://LinkRober.github.io/min_program.png"/>
+      </div>
+    </a>
   
 </article>
 
@@ -260,16 +290,16 @@
     
     <div class="postShorten-header">
       <h1 class="postShorten-title" itemprop="headline">
-        <a class="link-unstyled" href="https://linkrober.github.io/bookshelf/2017/09/run-loops-%E4%B8%80/">
-          Run Loops (一)
+        <a class="link-unstyled" href="https://linkrober.github.io/bookshelf/2018/02/%E9%80%92%E5%BD%92/">
+          递归
         </a>
       </h1>
       
   <div class="postShorten-meta post-meta">
     
-      <time itemprop="datePublished" datetime="2017-09-25T00:00:00Z">
+      <time itemprop="datePublished" datetime="2018-02-02T00:00:00Z">
         
-  九月 25, 2017
+  二月 2, 2018
 
       </time>
     
@@ -278,7 +308,7 @@
   
     <span>发布在</span>
     
-      <a class="category-link" href="https://LinkRober.github.io/bookshelf/categories/development">Development</a>
+      <a class="category-link" href="https://LinkRober.github.io/bookshelf/categories/arithmetic">Arithmetic</a>
     
   
 
@@ -287,98 +317,220 @@
 
     </div>
     <div class="postShorten-excerpt" itemprop="articleBody">
-      <h3 id="run-loops">Run Loops</h3>
+      <p></b>
+<span class="highlight-text primary">
+基本思想
+</span></p>
 
-<blockquote>
-<p>下面会用一些陌生的或者容易让人混淆的字符，我们先来统一概念再继续，这样能够让你更加愉快的阅读：</p>
-
-<p><strong>runloop:</strong>iOS一个底层机制的专业术语。</p>
-
-<p><strong>run loop:</strong>一种运行的循环。</p>
-
-<p><strong>Handler:</strong>指<code>handlePort:</code>、<code>customSrc:</code>、<code>mySelector:</code>、<code>timerFired:</code>，指开发者希望当进入run loop的时候要执行的操作</p>
-
-<p><strong>run-loop observer：</strong>观察runloop行为的观察者</p>
-
-<p><strong>run-loop mode：</strong>每个runloop都要指定一种mode，一种mode可以对应多个input source</p>
-
-<p><strong>runloop object：</strong>runloop相关的对象，这里分Cocoa和CoreFoundation中的</p>
-</blockquote>
-
-<p><i>Runloop</i>是线程架构相关的一部分，是事件处理的循环。你可以用它来安排循环执行任务，协调相关的事件（kCFRunLoopEntry、kCFRunLoopExit等）。
-用几行示意代码来展示：</p>
-
-<pre><code>function loop() {
-    initialize();
-    do {
-        var message = get_next_message();
-        process_message(message);
-    } while (message != quit);
-}
-</code></pre>
-
-<p><i>Runloop</i>实际上是一个管理要处理的事件和消息的对象，并为开发者提供了一个入口来执行run loop的逻辑部分。一直处于类似于“接受消息&ndash;&gt;等待&ndash;&gt;处理”这样的一个循环汇总
-
-&gt;<i>Runloop</i>的目的：一般我们自己写的线程在执行完相应的任务就会退出，而runloop<strong>让你的线程在有事干的时候干活，没事干的时候休息，节省系统资源</strong>。</p>
-      <p>
-        <a href="https://linkrober.github.io/bookshelf/2017/09/run-loops-%E4%B8%80/" class="postShorten-excerpt_link link">阅读全文</a>
-        
-      </p>
-    </div>
-  </div>
-  
-</article>
-
-          
-            
-  
-    
-      
-        
-      
-    
-  
-
-
-  
-
-<article class="postShorten postShorten--thumbnailimg-bottom" itemscope itemType="http://schema.org/BlogPosting">
-  <div class="postShorten-wrap">
-    
-    <div class="postShorten-header">
-      <h1 class="postShorten-title" itemprop="headline">
-        <a class="link-unstyled" href="https://linkrober.github.io/bookshelf/2017/04/git-order/">
-          git order
-        </a>
-      </h1>
-      
-  <div class="postShorten-meta post-meta">
-    
-      <time itemprop="datePublished" datetime="2017-04-03T17:06:19&#43;08:00">
-        
-  四月 3, 2017
-
-      </time>
-    
-    
-  
-  
-    <span>发布在</span>
-    
-      <a class="category-link" href="https://LinkRober.github.io/bookshelf/categories/tool">tool</a>
-    
-  
-
-
-  </div>
-
-    </div>
-    <div class="postShorten-excerpt" itemprop="articleBody">
-      <h3 id="常用命令">常用命令</h3>
+<p>递归是一种直接或者间接调用自身函数或者方法的算法。递归的实质是把问题分解成规模缩小的同类问题的子问题，然后递归调用方法来表示问题的解。递归算法，其实就是程序的自身调用。在一段程序中往往会遇到调用自身的那样一种coding策略。递归往往能带来非常简洁非常直观的代码形式，从而使我们的编码大大简化，但是递归的思想确实和我们的常规思维相逆。我们通常是从上而下的思考问题，而递归是从下往上进行思考。这样我们就能看到我们会用很少的语句解决很大的问题，所以递归策略最主要的体现就是较少的代码量解决复杂的问题。</p>
 
 <p></p>
       <p>
-        <a href="https://linkrober.github.io/bookshelf/2017/04/git-order/" class="postShorten-excerpt_link link">阅读全文</a>
+        <a href="https://linkrober.github.io/bookshelf/2018/02/%E9%80%92%E5%BD%92/" class="postShorten-excerpt_link link">阅读全文</a>
+        
+      </p>
+    </div>
+  </div>
+  
+</article>
+
+          
+            
+  
+    
+      
+        
+          
+        
+      
+    
+  
+
+
+  
+
+<article class="postShorten postShorten--thumbnailimg-bottom" itemscope itemType="http://schema.org/BlogPosting">
+  <div class="postShorten-wrap">
+    
+    <div class="postShorten-header">
+      <h1 class="postShorten-title" itemprop="headline">
+        <a class="link-unstyled" href="https://linkrober.github.io/bookshelf/2018/01/%E5%86%8D%E8%A7%812017%E4%BD%A0%E5%A5%BD2018/">
+          再见2017，你好2018
+        </a>
+      </h1>
+      
+  <div class="postShorten-meta post-meta">
+    
+      <time itemprop="datePublished" datetime="2018-01-02T00:00:00Z">
+        
+  一月 2, 2018
+
+      </time>
+    
+    
+  
+  
+    <span>发布在</span>
+    
+      <a class="category-link" href="https://LinkRober.github.io/bookshelf/categories/life">Life</a>
+    
+  
+
+
+  </div>
+
+    </div>
+    <div class="postShorten-excerpt" itemprop="articleBody">
+      <p>不知不觉工作已有三个年头，在iOS这条路上，从当年战战兢兢的新人变成一个熟练的开发者，这一路走来真不容易。不仅仅是身体上的负荷，个人对于技术的追求也使自己或迷惘或奋起。</p>
+
+<p></p>
+      <p>
+        <a href="https://linkrober.github.io/bookshelf/2018/01/%E5%86%8D%E8%A7%812017%E4%BD%A0%E5%A5%BD2018/" class="postShorten-excerpt_link link">阅读全文</a>
+        
+      </p>
+    </div>
+  </div>
+  
+    <a href="https://linkrober.github.io/bookshelf/2018/01/%E5%86%8D%E8%A7%812017%E4%BD%A0%E5%A5%BD2018/">
+      <div class="postShorten-thumbnailimg">
+        <img alt="" itemprop="image" src="https://LinkRober.github.io/goodbye2017.jpg"/>
+      </div>
+    </a>
+  
+</article>
+
+          
+            
+  
+    
+      
+        
+          
+        
+      
+    
+  
+
+
+  
+
+<article class="postShorten postShorten--thumbnailimg-bottom" itemscope itemType="http://schema.org/BlogPosting">
+  <div class="postShorten-wrap">
+    
+    <div class="postShorten-header">
+      <h1 class="postShorten-title" itemprop="headline">
+        <a class="link-unstyled" href="https://linkrober.github.io/bookshelf/2017/12/object-c%E5%92%8Cjs%E9%80%9A%E4%BF%A1%E6%A6%82%E8%BF%B0/">
+          Object-C和JS通信概述
+        </a>
+      </h1>
+      
+  <div class="postShorten-meta post-meta">
+    
+      <time itemprop="datePublished" datetime="2017-12-25T00:00:00Z">
+        
+  十二月 25, 2017
+
+      </time>
+    
+    
+  
+  
+    <span>发布在</span>
+    
+      <a class="category-link" href="https://LinkRober.github.io/bookshelf/categories/reactnative">ReactNative</a>
+    
+  
+
+
+  </div>
+
+    </div>
+    <div class="postShorten-excerpt" itemprop="articleBody">
+      <p>本系列文章作为学习RN期间的总结</p>
+
+<ul>
+<li><a href="https://linkrober.github.io/bookshelf/2017/10/react-native%E5%A6%82%E4%BD%95%E9%9B%86%E6%88%90%E5%88%B0%E7%8E%B0%E6%9C%89%E9%A1%B9%E7%9B%AE%E4%B8%AD/">React Native如何集成到现有项目中</a></li>
+<li><a href="https://linkrober.github.io/bookshelf/2017/10/react-native%E5%92%8Cnative%E9%97%B4%E7%9A%84%E9%80%9A%E4%BF%A1/">React Native和Native间的通信实践</a></li>
+<li><a href="https://linkrober.github.io/bookshelf/2017/10/rctrootviewrctbridge%E5%81%9A%E4%BA%86%E4%BB%80%E4%B9%88/">RCTRootView、RCTBridge做了什么</a></li>
+<li>Object-C和JS通信概述</li>
+</ul>
+
+<p></p>
+      <p>
+        <a href="https://linkrober.github.io/bookshelf/2017/12/object-c%E5%92%8Cjs%E9%80%9A%E4%BF%A1%E6%A6%82%E8%BF%B0/" class="postShorten-excerpt_link link">阅读全文</a>
+        
+      </p>
+    </div>
+  </div>
+  
+    <a href="https://linkrober.github.io/bookshelf/2017/12/object-c%E5%92%8Cjs%E9%80%9A%E4%BF%A1%E6%A6%82%E8%BF%B0/">
+      <div class="postShorten-thumbnailimg">
+        <img alt="" itemprop="image" src="https://LinkRober.github.io/Merry-Christmas-Wallpapers.jpg"/>
+      </div>
+    </a>
+  
+</article>
+
+          
+            
+  
+    
+      
+        
+      
+    
+  
+
+
+  
+
+<article class="postShorten postShorten--thumbnailimg-bottom" itemscope itemType="http://schema.org/BlogPosting">
+  <div class="postShorten-wrap">
+    
+    <div class="postShorten-header">
+      <h1 class="postShorten-title" itemprop="headline">
+        <a class="link-unstyled" href="https://linkrober.github.io/bookshelf/2017/12/ios%E5%A4%9A%E7%BA%BF%E7%A8%8B%E4%B8%AD%E7%9A%84%E9%94%81/">
+          iOS多线程中的锁
+        </a>
+      </h1>
+      
+  <div class="postShorten-meta post-meta">
+    
+      <time itemprop="datePublished" datetime="2017-12-01T00:00:00Z">
+        
+  十二月 1, 2017
+
+      </time>
+    
+    
+  
+  
+    <span>发布在</span>
+    
+      <a class="category-link" href="https://LinkRober.github.io/bookshelf/categories/ios">iOS</a>
+    
+  
+
+
+  </div>
+
+    </div>
+    <div class="postShorten-excerpt" itemprop="articleBody">
+      <p>涉及到多线程共享资源的情况下就避免不了资源竞争的问题，这时候就会用到各种锁，例如，<code>@synchronized</code>、<code>NSLock</code>、<code>OSSpinLock</code>等等，虽然都是锁，但是锁的底层实现也不尽相同。大概可以分为：<span class="highlight-text blue">互斥锁</span>、<span class="highlight-text blue">自旋锁</span>、<span class="highlight-text blue">递归锁</span>、
+<span class="highlight-text blue">读写锁</span>。</p>
+
+<pre><code>{
+	lock()//加锁
+		doSomeThing()//临界区
+	unlock()//解锁
+}
+</code></pre>
+
+<p>我们锁的目的是在任何时刻最多只能有一个线程在修改资源，即在任何时刻只能有一个操作者保持锁。</p>
+
+<p></p>
+      <p>
+        <a href="https://linkrober.github.io/bookshelf/2017/12/ios%E5%A4%9A%E7%BA%BF%E7%A8%8B%E4%B8%AD%E7%9A%84%E9%94%81/" class="postShorten-excerpt_link link">阅读全文</a>
         
       </p>
     </div>
@@ -404,16 +556,16 @@
     
     <div class="postShorten-header">
       <h1 class="postShorten-title" itemprop="headline">
-        <a class="link-unstyled" href="https://linkrober.github.io/bookshelf/2017/04/%E6%B6%88%E6%81%AF%E8%BD%AC%E5%8F%91/">
-          消息转发
+        <a class="link-unstyled" href="https://linkrober.github.io/bookshelf/2017/12/%E5%BF%AB%E9%80%9F%E6%8E%92%E5%BA%8F/">
+          快速排序
         </a>
       </h1>
       
   <div class="postShorten-meta post-meta">
     
-      <time itemprop="datePublished" datetime="2017-04-03T03:05:31&#43;08:00">
+      <time itemprop="datePublished" datetime="2017-12-01T00:00:00Z">
         
-  四月 3, 2017
+  十二月 1, 2017
 
       </time>
     
@@ -422,7 +574,7 @@
   
     <span>发布在</span>
     
-      <a class="category-link" href="https://LinkRober.github.io/bookshelf/categories/development">Development</a>
+      <a class="category-link" href="https://LinkRober.github.io/bookshelf/categories/arithmetic">Arithmetic</a>
     
   
 
@@ -431,16 +583,72 @@
 
     </div>
     <div class="postShorten-excerpt" itemprop="articleBody">
-      <blockquote>
-<p>描述：如果类不能执行这个方法，会执行动态<strong>消息转发</strong>，如果该类还是不能动态的添加方法，则走<strong>完整的消息转发</strong>。分两步，第一步<strong>看看有没有其他类可以执行该方法</strong>，如果没有走第二步，<strong>将所有的细节封装到NSInvocation中，给接受者最后一次机会</strong>。</p>
-</blockquote>
+      <span class="highlight-text primary">
+故事
+</span>
 
-<p>演示：
-动态消息转发
-&gt;在一个类<code>MessageObj</code>中定义两个方法，<code>testDynamicMethodForward</code>一个有实现方法，<code>start</code>一个没有实现的方法，调用没有实现的方法，在动态消息转发的时候将这个方法hook到已经实现的方法上：
-</p>
+<p>快速排序由<strong>C.A.R.Hoare（东尼霍尔）</strong>在1960年提出。之后又有许多人对此进行改进。如果你对快速排序感兴趣可以去看看东尼霍尔1962年在Computer Journal发表的论文“Quicksort”以及《算法导论》的第七章。</p>
       <p>
-        <a href="https://linkrober.github.io/bookshelf/2017/04/%E6%B6%88%E6%81%AF%E8%BD%AC%E5%8F%91/" class="postShorten-excerpt_link link">阅读全文</a>
+        <a href="https://linkrober.github.io/bookshelf/2017/12/%E5%BF%AB%E9%80%9F%E6%8E%92%E5%BA%8F/" class="postShorten-excerpt_link link">阅读全文</a>
+        
+      </p>
+    </div>
+  </div>
+  
+</article>
+
+          
+            
+  
+    
+      
+        
+      
+    
+  
+
+
+  
+
+<article class="postShorten postShorten--thumbnailimg-bottom" itemscope itemType="http://schema.org/BlogPosting">
+  <div class="postShorten-wrap">
+    
+    <div class="postShorten-header">
+      <h1 class="postShorten-title" itemprop="headline">
+        <a class="link-unstyled" href="https://linkrober.github.io/bookshelf/2017/11/%E4%B8%80%E4%B8%AA%E9%9F%B3%E8%A7%86%E9%A2%91%E5%8E%82%E7%9A%84%E5%9B%BE%E5%83%8F%E5%A4%84%E7%90%86%E6%B5%81%E7%A8%8B%E6%A6%82%E8%BF%B0/">
+          一个音视频厂的图像处理流程概述
+        </a>
+      </h1>
+      
+  <div class="postShorten-meta post-meta">
+    
+      <time itemprop="datePublished" datetime="2017-11-27T00:00:00Z">
+        
+  十一月 27, 2017
+
+      </time>
+    
+    
+  
+  
+    <span>发布在</span>
+    
+      <a class="category-link" href="https://LinkRober.github.io/bookshelf/categories/graphics">Graphics</a>
+    
+  
+
+
+  </div>
+
+    </div>
+    <div class="postShorten-excerpt" itemprop="articleBody">
+      <p><img src="http://upload-images.jianshu.io/upload_images/1086250-3eac00965effbe70?imageMogr2/auto-orient/strip%7CimageView2/2/w/320" alt="" /></p>
+
+<p>视频编辑分为两部分：<strong>Camrea Engine（视频资源采集）</strong>和<strong>Video Edit Engine（后期视频编辑）</strong>。在Camrea Engine采集的时候我们也可以做一些编辑操作，这叫预处理，比如说加滤镜。等到把采集到的资源交给Video Edit Engine时就是后处理。</p>
+
+<p></p>
+      <p>
+        <a href="https://linkrober.github.io/bookshelf/2017/11/%E4%B8%80%E4%B8%AA%E9%9F%B3%E8%A7%86%E9%A2%91%E5%8E%82%E7%9A%84%E5%9B%BE%E5%83%8F%E5%A4%84%E7%90%86%E6%B5%81%E7%A8%8B%E6%A6%82%E8%BF%B0/" class="postShorten-excerpt_link link">阅读全文</a>
         
       </p>
     </div>
@@ -450,6 +658,21 @@
 
           
           
+  <div class="pagination-bar">
+    <ul class="pagination">
+      
+      
+        <li class="pagination-next">
+          <a class="btn btn--default btn--small" href="https://LinkRober.github.io/bookshelf/page/2/">
+            <span>下一页</span>
+            <i class="fa fa-angle-right text-base icon-ml"></i>
+          </a>
+        </li>
+      
+      <li class="pagination-number">第 1 页 共 3 页</li>
+    </ul>
+  </div>
+
 
         </section>
         
@@ -507,17 +730,29 @@
           <div class="media">
             
             <div class="media-body">
-              <a class="link-unstyled" href="https://linkrober.github.io/bookshelf/2017/09/run-loops-%E4%BA%8C/">
-                <h3 class="media-heading">Run Loops (二)</h3>
+              <a class="link-unstyled" href="https://linkrober.github.io/bookshelf/2018/03/%E5%85%A5%E5%9D%91%E5%B0%8F%E7%A8%8B%E5%BA%8F/">
+                <h3 class="media-heading">入坑小程序</h3>
               </a>
               <span class="media-meta">
                 <span class="media-date text-small">
-                  Sep 9, 2017
+                  Mar 3, 2018
                 </span>
               </span>
-              <div class="media-content hide-xs font-merryweather"><h3 id="when-would-you-use-a-run-loop">When Would You Use a Run Loop?</h3>
-
-<p>你唯一要使用run loop，就是当你要在application中创建线程的时候。你Application的主线程是架构很重要的一部分。所以，iOS系统为app的提供了<i>runloop</i>代码，并自动开始。在iOS中运行Main loop作为app启动步骤的一部分。</p></div>
+              <div class="media-content hide-xs font-merryweather">描述 去年各大平台纷纷开始占领微信上的又一流量入口——小程序。因为小程序的门槛低，这里指，技术上和前端大同小异，审核刚开始也比较松。除了大厂，很多个人开发这都投入进去。想在小程序上打响自己的个人品牌。在筹备了三个月之久，我的第一款小程序，终于快要完成了。在这里我会总结一下整体的过程，从idea到一个完整的小程序、期间遇到的坑、和觉得挺有意思的地方。
+流程 
+1. 购买服务器 本人购买的服务器是阿里云服务器，因为经历的几家公司都是用的它，感觉还是比较靠谱的（我一同事也用过腾讯的服务，一直在吐槽不稳定，后来也换到阿里云了)
+ 2. 购买域名 小程序的是无法直接通过IP访问，必须申请一个域名，同样的阿里云上买就行了。这里要提醒大家的是，因为国家政策原因域名需要备案，整个过程大概需要一个月时间。阿里云还是比较良心的，备案成功之后会再赠送你一个月的服务器时间。因为整个备案时间大概是一个月。所有绑定域名一定要提前。
+ 3. 申请CA证书绑定到域名。在小程序里的API都需要Htps服务，如果你有CA证书可以直接使用，我也是通过阿里云申请的免费CA证书，时间是一年，到期看可以续的。
+ 4. 根据idea设计产品
+ 5. 开发小程序和server
+ 6.发布
+小程序 因为是我的第一个小程序，先试试手，所以选了一个比较简单的东西，音乐欣赏。数据是从其他网站爬过来插到数据库的。 本人是移动端出生，对前端和后端的东西都不是很熟，不过刚好去年写了不少RN的东西，前端的东西也算是半只脚入门了。在小程序里面文件分为下面几种
+ js文件，和前端的一样， wxml文件，类似于html文件 wxss文件，类似于css文件 wxs文件，这是小程序的一套脚本语言，语法看似和JavaScript语法一样，其实他们是不同的语言，有自己的语法，并不和 javascript 一致 。我们可以把它当做方法类在wxml中来使用。在wxml中是无法调用js中的非事件方法的，如果从js文件里拿到的数据你希望再做一步处理然后展示，这样的处理需要放到wxs文件里。  开发前花半天浏览下微信小程序的API差不多就可以了，套路都差不多MVC。
+数据库 服务器是用Node.js+MongoDB+Express搭建的，全套搭建起来还是很快的。Node.js是一个基于事件驱动I/O的服务端JavaScript环境，它在高并发的服务上有很好的体验。同样是js所以语法基本没门槛了。 MongoDB数据库和一般的关系型数据库不同，它是非关系型数据库。关系型数据库对数据操作都是:SELECT、FROM、WHERE、BY等。来感受一下MongoDB怎么操作数据：
+//插入一个数据 var user = { &quot;name&quot;:&quot;小芳&quot;， &quot;age&quot;:18, &quot;gender&quot;:1, &quot;country&quot;:&quot;中国&quot; }; db.user.insert(user)  //查询姓名是：张三、李四、王五的信息 db.user.find({&quot;name&quot;: {&quot;\$in&quot; : [&quot;张三&quot;,&quot;李四&quot;,&quot;王五&quot;] }})  给我最大的感觉，它是一个面向对象面向集合的存储过程，对于经常做面向对象开发人来说是比较容易入手的。
+Express 基于Node.js的极其简洁灵活的web应用开发框架，它有丰富的HTTP快捷方法，非常快捷的创建node服务.
+首页模块入口设置
+... ... ... var home = require('./routes/home');//首页接口 ... .</div>
             </div>
             <div style="clear:both;"></div>
             <hr>
@@ -526,64 +761,20 @@
           <div class="media">
             
             <div class="media-body">
-              <a class="link-unstyled" href="https://linkrober.github.io/bookshelf/2017/09/run-loops-%E4%B8%80/">
-                <h3 class="media-heading">Run Loops (一)</h3>
+              <a class="link-unstyled" href="https://linkrober.github.io/bookshelf/2018/02/%E9%80%92%E5%BD%92/">
+                <h3 class="media-heading">递归</h3>
               </a>
               <span class="media-meta">
                 <span class="media-date text-small">
-                  Sep 9, 2017
+                  Feb 2, 2018
                 </span>
               </span>
-              <div class="media-content hide-xs font-merryweather"><h3 id="run-loops">Run Loops</h3>
+              <div class="media-content hide-xs font-merryweather"><p></b>
+<span class="highlight-text primary">
+基本思想
+</span></p>
 
-<blockquote>
-<p>下面会用一些陌生的或者容易让人混淆的字符，我们先来统一概念再继续，这样能够让你更加愉快的阅读：</p>
-
-<p><strong>runloop:</strong>iOS一个底层机制的专业术语。</p>
-
-<p><strong>run loop:</strong>一种运行的循环。</p>
-
-<p><strong>Handler:</strong>指<code>handlePort:</code>、<code>customSrc:</code>、<code>mySelector:</code>、<code>timerFired:</code>，指开发者希望当进入run loop的时候要执行的操作</p>
-
-<p><strong>run-loop observer：</strong>观察runloop行为的观察者</p>
-
-<p><strong>run-loop mode：</strong>每个runloop都要指定一种mode，一种mode可以对应多个input source</p>
-
-<p><strong>runloop object：</strong>runloop相关的对象，这里分Cocoa和CoreFoundation中的</p>
-</blockquote>
-
-<p><i>Runloop</i>是线程架构相关的一部分，是事件处理的循环。你可以用它来安排循环执行任务，协调相关的事件（kCFRunLoopEntry、kCFRunLoopExit等）。
-用几行示意代码来展示：</p>
-
-<pre><code>function loop() {
-    initialize();
-    do {
-        var message = get_next_message();
-        process_message(message);
-    } while (message != quit);
-}
-</code></pre>
-
-<p><i>Runloop</i>实际上是一个管理要处理的事件和消息的对象，并为开发者提供了一个入口来执行run loop的逻辑部分。一直处于类似于“接受消息&ndash;&gt;等待&ndash;&gt;处理”这样的一个循环汇总
-
-&gt;<i>Runloop</i>的目的：一般我们自己写的线程在执行完相应的任务就会退出，而runloop<strong>让你的线程在有事干的时候干活，没事干的时候休息，节省系统资源</strong>。</p></div>
-            </div>
-            <div style="clear:both;"></div>
-            <hr>
-          </div>
-        
-          <div class="media">
-            
-            <div class="media-body">
-              <a class="link-unstyled" href="https://linkrober.github.io/bookshelf/2017/04/git-order/">
-                <h3 class="media-heading">git order</h3>
-              </a>
-              <span class="media-meta">
-                <span class="media-date text-small">
-                  Apr 4, 2017
-                </span>
-              </span>
-              <div class="media-content hide-xs font-merryweather"><h3 id="常用命令">常用命令</h3>
+<p>递归是一种直接或者间接调用自身函数或者方法的算法。递归的实质是把问题分解成规模缩小的同类问题的子问题，然后递归调用方法来表示问题的解。递归算法，其实就是程序的自身调用。在一段程序中往往会遇到调用自身的那样一种coding策略。递归往往能带来非常简洁非常直观的代码形式，从而使我们的编码大大简化，但是递归的思想确实和我们的常规思维相逆。我们通常是从上而下的思考问题，而递归是从下往上进行思考。这样我们就能看到我们会用很少的语句解决很大的问题，所以递归策略最主要的体现就是较少的代码量解决复杂的问题。</p>
 
 <p></p></div>
             </div>
@@ -594,22 +785,198 @@
           <div class="media">
             
             <div class="media-body">
-              <a class="link-unstyled" href="https://linkrober.github.io/bookshelf/2017/04/%E6%B6%88%E6%81%AF%E8%BD%AC%E5%8F%91/">
-                <h3 class="media-heading">消息转发</h3>
+              <a class="link-unstyled" href="https://linkrober.github.io/bookshelf/2018/01/%E5%86%8D%E8%A7%812017%E4%BD%A0%E5%A5%BD2018/">
+                <h3 class="media-heading">再见2017，你好2018</h3>
               </a>
               <span class="media-meta">
                 <span class="media-date text-small">
-                  Apr 4, 2017
+                  Jan 1, 2018
                 </span>
               </span>
-              <div class="media-content hide-xs font-merryweather"><blockquote>
-<p>描述：如果类不能执行这个方法，会执行动态<strong>消息转发</strong>，如果该类还是不能动态的添加方法，则走<strong>完整的消息转发</strong>。分两步，第一步<strong>看看有没有其他类可以执行该方法</strong>，如果没有走第二步，<strong>将所有的细节封装到NSInvocation中，给接受者最后一次机会</strong>。</p>
-</blockquote>
+              <div class="media-content hide-xs font-merryweather"><p>不知不觉工作已有三个年头，在iOS这条路上，从当年战战兢兢的新人变成一个熟练的开发者，这一路走来真不容易。不仅仅是身体上的负荷，个人对于技术的追求也使自己或迷惘或奋起。</p>
 
-<p>演示：
-动态消息转发
-&gt;在一个类<code>MessageObj</code>中定义两个方法，<code>testDynamicMethodForward</code>一个有实现方法，<code>start</code>一个没有实现的方法，调用没有实现的方法，在动态消息转发的时候将这个方法hook到已经实现的方法上：
-</p></div>
+<p></p></div>
+            </div>
+            <div style="clear:both;"></div>
+            <hr>
+          </div>
+        
+          <div class="media">
+            
+            <div class="media-body">
+              <a class="link-unstyled" href="https://linkrober.github.io/bookshelf/2017/12/object-c%E5%92%8Cjs%E9%80%9A%E4%BF%A1%E6%A6%82%E8%BF%B0/">
+                <h3 class="media-heading">Object-C和JS通信概述</h3>
+              </a>
+              <span class="media-meta">
+                <span class="media-date text-small">
+                  Dec 12, 2017
+                </span>
+              </span>
+              <div class="media-content hide-xs font-merryweather"><p>本系列文章作为学习RN期间的总结</p>
+
+<ul>
+<li><a href="https://linkrober.github.io/bookshelf/2017/10/react-native%E5%A6%82%E4%BD%95%E9%9B%86%E6%88%90%E5%88%B0%E7%8E%B0%E6%9C%89%E9%A1%B9%E7%9B%AE%E4%B8%AD/">React Native如何集成到现有项目中</a></li>
+<li><a href="https://linkrober.github.io/bookshelf/2017/10/react-native%E5%92%8Cnative%E9%97%B4%E7%9A%84%E9%80%9A%E4%BF%A1/">React Native和Native间的通信实践</a></li>
+<li><a href="https://linkrober.github.io/bookshelf/2017/10/rctrootviewrctbridge%E5%81%9A%E4%BA%86%E4%BB%80%E4%B9%88/">RCTRootView、RCTBridge做了什么</a></li>
+<li>Object-C和JS通信概述</li>
+</ul>
+
+<p></p></div>
+            </div>
+            <div style="clear:both;"></div>
+            <hr>
+          </div>
+        
+          <div class="media">
+            
+            <div class="media-body">
+              <a class="link-unstyled" href="https://linkrober.github.io/bookshelf/2017/12/ios%E5%A4%9A%E7%BA%BF%E7%A8%8B%E4%B8%AD%E7%9A%84%E9%94%81/">
+                <h3 class="media-heading">iOS多线程中的锁</h3>
+              </a>
+              <span class="media-meta">
+                <span class="media-date text-small">
+                  Dec 12, 2017
+                </span>
+              </span>
+              <div class="media-content hide-xs font-merryweather"><p>涉及到多线程共享资源的情况下就避免不了资源竞争的问题，这时候就会用到各种锁，例如，<code>@synchronized</code>、<code>NSLock</code>、<code>OSSpinLock</code>等等，虽然都是锁，但是锁的底层实现也不尽相同。大概可以分为：<span class="highlight-text blue">互斥锁</span>、<span class="highlight-text blue">自旋锁</span>、<span class="highlight-text blue">递归锁</span>、
+<span class="highlight-text blue">读写锁</span>。</p>
+
+<pre><code>{
+	lock()//加锁
+		doSomeThing()//临界区
+	unlock()//解锁
+}
+</code></pre>
+
+<p>我们锁的目的是在任何时刻最多只能有一个线程在修改资源，即在任何时刻只能有一个操作者保持锁。</p>
+
+<p></p></div>
+            </div>
+            <div style="clear:both;"></div>
+            <hr>
+          </div>
+        
+          <div class="media">
+            
+            <div class="media-body">
+              <a class="link-unstyled" href="https://linkrober.github.io/bookshelf/2017/12/%E5%BF%AB%E9%80%9F%E6%8E%92%E5%BA%8F/">
+                <h3 class="media-heading">快速排序</h3>
+              </a>
+              <span class="media-meta">
+                <span class="media-date text-small">
+                  Dec 12, 2017
+                </span>
+              </span>
+              <div class="media-content hide-xs font-merryweather"><span class="highlight-text primary">
+故事
+</span>
+
+<p>快速排序由<strong>C.A.R.Hoare（东尼霍尔）</strong>在1960年提出。之后又有许多人对此进行改进。如果你对快速排序感兴趣可以去看看东尼霍尔1962年在Computer Journal发表的论文“Quicksort”以及《算法导论》的第七章。</p></div>
+            </div>
+            <div style="clear:both;"></div>
+            <hr>
+          </div>
+        
+          <div class="media">
+            
+            <div class="media-body">
+              <a class="link-unstyled" href="https://linkrober.github.io/bookshelf/2017/11/%E4%B8%80%E4%B8%AA%E9%9F%B3%E8%A7%86%E9%A2%91%E5%8E%82%E7%9A%84%E5%9B%BE%E5%83%8F%E5%A4%84%E7%90%86%E6%B5%81%E7%A8%8B%E6%A6%82%E8%BF%B0/">
+                <h3 class="media-heading">一个音视频厂的图像处理流程概述</h3>
+              </a>
+              <span class="media-meta">
+                <span class="media-date text-small">
+                  Nov 11, 2017
+                </span>
+              </span>
+              <div class="media-content hide-xs font-merryweather"><p><img src="http://upload-images.jianshu.io/upload_images/1086250-3eac00965effbe70?imageMogr2/auto-orient/strip%7CimageView2/2/w/320" alt="" /></p>
+
+<p>视频编辑分为两部分：<strong>Camrea Engine（视频资源采集）</strong>和<strong>Video Edit Engine（后期视频编辑）</strong>。在Camrea Engine采集的时候我们也可以做一些编辑操作，这叫预处理，比如说加滤镜。等到把采集到的资源交给Video Edit Engine时就是后处理。</p>
+
+<p></p></div>
+            </div>
+            <div style="clear:both;"></div>
+            <hr>
+          </div>
+        
+          <div class="media">
+            
+            <div class="media-body">
+              <a class="link-unstyled" href="https://linkrober.github.io/bookshelf/2017/10/rctrootviewrctbridge%E5%81%9A%E4%BA%86%E4%BB%80%E4%B9%88/">
+                <h3 class="media-heading">RCTRootView、RCTBridge做了什么</h3>
+              </a>
+              <span class="media-meta">
+                <span class="media-date text-small">
+                  Oct 10, 2017
+                </span>
+              </span>
+              <div class="media-content hide-xs font-merryweather"><p>本系列文章作为学习RN期间的总结</p>
+
+<ul>
+<li><a href="https://linkrober.github.io/bookshelf/2017/10/react-native%E5%A6%82%E4%BD%95%E9%9B%86%E6%88%90%E5%88%B0%E7%8E%B0%E6%9C%89%E9%A1%B9%E7%9B%AE%E4%B8%AD/">React Native如何集成到现有项目中</a></li>
+<li><a href="https://linkrober.github.io/bookshelf/2017/10/react-native%E5%92%8Cnative%E9%97%B4%E7%9A%84%E9%80%9A%E4%BF%A1/">React Native和Native间的通信实践</a></li>
+<li>RCTRootView、RCTBridge做了什么</li>
+<li><a href="https://linkrober.github.io/bookshelf/2017/12/native%E5%92%8Cjs%E9%80%9A%E4%BF%A1%E6%A6%82%E8%BF%B0/">Object-C和JS通信概述</a></li>
+</ul>
+
+<p></p></div>
+            </div>
+            <div style="clear:both;"></div>
+            <hr>
+          </div>
+        
+          <div class="media">
+            
+            <div class="media-body">
+              <a class="link-unstyled" href="https://linkrober.github.io/bookshelf/2017/10/react-native%E5%92%8Cnative%E9%97%B4%E7%9A%84%E9%80%9A%E4%BF%A1%E5%AE%9E%E8%B7%B5/">
+                <h3 class="media-heading">React Native和Native间的通信实践</h3>
+              </a>
+              <span class="media-meta">
+                <span class="media-date text-small">
+                  Oct 10, 2017
+                </span>
+              </span>
+              <div class="media-content hide-xs font-merryweather"><!-- thumbnailImage = 'rn_image.jpeg'
+thumbnailImagePosition = 'bottom' -->
+
+<p>本系列文章作为学习RN期间的总结</p>
+
+<ul>
+<li><a href="https://linkrober.github.io/bookshelf/2017/10/react-native%E5%A6%82%E4%BD%95%E9%9B%86%E6%88%90%E5%88%B0%E7%8E%B0%E6%9C%89%E9%A1%B9%E7%9B%AE%E4%B8%AD/">React Native如何集成到现有项目中</a></li>
+<li>React Native和Native间的通信实践</li>
+<li><a href="https://linkrober.github.io/bookshelf/2017/10/rctrootviewrctbridge%E5%81%9A%E4%BA%86%E4%BB%80%E4%B9%88/">RCTRootView、RCTBridge做了什么</a></li>
+<li><a href="https://linkrober.github.io/bookshelf/2017/12/native%E5%92%8Cjs%E9%80%9A%E4%BF%A1%E6%A6%82%E8%BF%B0/">Object-C和JS通信概述</a></li>
+</ul>
+
+<p></p></div>
+            </div>
+            <div style="clear:both;"></div>
+            <hr>
+          </div>
+        
+          <div class="media">
+            
+            <div class="media-body">
+              <a class="link-unstyled" href="https://linkrober.github.io/bookshelf/2017/10/react-native%E5%A6%82%E4%BD%95%E9%9B%86%E6%88%90%E5%88%B0%E7%8E%B0%E6%9C%89%E9%A1%B9%E7%9B%AE%E4%B8%AD/">
+                <h3 class="media-heading">React Native如何集成到现有项目中</h3>
+              </a>
+              <span class="media-meta">
+                <span class="media-date text-small">
+                  Oct 10, 2017
+                </span>
+              </span>
+              <div class="media-content hide-xs font-merryweather"><!-- thumbnailImage = 'rn_thumbnailImage.jpeg'
+thumbnailImagePosition = 'bottom' -->
+
+<p>本系列文章作为学习RN期间的总结</p>
+
+<ul>
+<li>React Native如何集成到现有项目中</li>
+<li><a href="https://linkrober.github.io/bookshelf/2017/10/react-native%E5%92%8Cnative%E9%97%B4%E7%9A%84%E9%80%9A%E4%BF%A1/">React Native和Native间的通信实践</a></li>
+<li><a href="https://linkrober.github.io/bookshelf/2017/10/rctrootviewrctbridge%E5%81%9A%E4%BA%86%E4%BB%80%E4%B9%88/">RCTRootView、RCTBridge做了什么</a></li>
+<li><a href="https://linkrober.github.io/bookshelf/2017/12/native%E5%92%8Cjs%E9%80%9A%E4%BF%A1%E6%A6%82%E8%BF%B0/">Object-C和JS通信概述</a></li>
+</ul>
+
+<p></p></div>
             </div>
             <div style="clear:both;"></div>
             <hr>
@@ -622,7 +989,7 @@
          data-message-zero=""
          data-message-one=""
          data-message-other="">
-         4 posts found
+         17 posts found
       </p>
     </div>
   </div>
