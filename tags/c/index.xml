@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="utf-8" standalone="yes" ?>
 <rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
   <channel>
+<<<<<<< HEAD
     <title>董二千</title>
     <link>https://LinkRober.github.io/bookshelf/tags/c/index.xml</link>
     <description>Recent content on 董二千</description>
@@ -14,6 +15,24 @@
       <pubDate>Fri, 01 Dec 2017 00:00:00 +0000</pubDate>
       
       <guid>https://linkrober.github.io/bookshelf/2017/12/ios%E5%A4%9A%E7%BA%BF%E7%A8%8B%E4%B8%AD%E7%9A%84%E9%94%81/</guid>
+=======
+    <title>C on 董二千</title>
+    <link>https://LinkRober.github.io/bookshelf/tags/c/</link>
+    <description>Recent content in C on 董二千</description>
+    <generator>Hugo -- gohugo.io</generator>
+    <language>zh-cn</language>
+    <lastBuildDate>Fri, 01 Dec 2017 00:00:00 +0000</lastBuildDate>
+    
+	<atom:link href="https://LinkRober.github.io/bookshelf/tags/c/index.xml" rel="self" type="application/rss+xml" />
+    
+    
+    <item>
+      <title>iOS多线程中的锁</title>
+      <link>https://LinkRober.github.io/bookshelf/2017/12/ios%E5%A4%9A%E7%BA%BF%E7%A8%8B%E4%B8%AD%E7%9A%84%E9%94%81/</link>
+      <pubDate>Fri, 01 Dec 2017 00:00:00 +0000</pubDate>
+      
+      <guid>https://LinkRober.github.io/bookshelf/2017/12/ios%E5%A4%9A%E7%BA%BF%E7%A8%8B%E4%B8%AD%E7%9A%84%E9%94%81/</guid>
+>>>>>>> e5d3b4cdd690c0207a157fcf508e2f39bea06a82
       <description>&lt;p&gt;涉及到多线程共享资源的情况下就避免不了资源竞争的问题，这时候就会用到各种锁，例如，&lt;code&gt;@synchronized&lt;/code&gt;、&lt;code&gt;NSLock&lt;/code&gt;、&lt;code&gt;OSSpinLock&lt;/code&gt;等等，虽然都是锁，但是锁的底层实现也不尽相同。大概可以分为：&lt;span class=&#34;highlight-text blue&#34;&gt;互斥锁&lt;/span&gt;、&lt;span class=&#34;highlight-text blue&#34;&gt;自旋锁&lt;/span&gt;、&lt;span class=&#34;highlight-text blue&#34;&gt;递归锁&lt;/span&gt;、
 &lt;span class=&#34;highlight-text blue&#34;&gt;读写锁&lt;/span&gt;。&lt;/p&gt;
 
@@ -26,6 +45,7 @@
 
 &lt;p&gt;我们锁的目的是在任何时刻最多只能有一个线程在修改资源，即在任何时刻只能有一个操作者保持锁。&lt;/p&gt;
 
+<<<<<<< HEAD
 &lt;p&gt;&lt;/p&gt;
 
 &lt;h4 id=&#34;互斥锁&#34;&gt;互斥锁&lt;/h4&gt;
@@ -299,6 +319,9 @@ com/library/content/documentation/Cocoa/Conceptual/Multithreading/ThreadSafety/T
 c&#34;&gt;pthreadcondwait&lt;/a&gt;&lt;/p&gt;
 
 &lt;p&gt;&lt;a href=&#34;https://stackoverflow.com/questions/3513045/conditional-variable-vs-semaphore&#34;&gt;Conditional Variable vs Semaphore&lt;/a&gt;&lt;/p&gt;</description>
+=======
+&lt;p&gt;&lt;/p&gt;</description>
+>>>>>>> e5d3b4cdd690c0207a157fcf508e2f39bea06a82
     </item>
     
   </channel>

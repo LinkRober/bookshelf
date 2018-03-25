@@ -15,7 +15,7 @@
     
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <meta name="generator" content="Hugo 0.17 with theme Tranquilpeak 0.4.1-BETA">
+    <meta name="generator" content="Hugo 0.30.2">
     <title>Development</title>
     <meta name="author" content="董二千">
     <meta name="keywords" content="">
@@ -52,15 +52,14 @@
     
 
     
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css" integrity="sha256-eZrrJcwDc/3uDhsdt61sL2oOBY362qM3lon1gyExkL0=" crossorigin="anonymous" />
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/fancybox/2.1.4/jquery.fancybox.min.css" integrity="sha256-vuXZ9LGmmwtjqFX1F+EKin1ThZMub58gKULUyf0qECk=" crossorigin="anonymous" />
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/fancybox/2.1.4/helpers/jquery.fancybox-thumbs.min.css" integrity="sha256-SEa4XYAHihTcEP1f5gARTB2K26Uk8PsndQYHQC1f4jU=" crossorigin="anonymous" />
+    <link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css" />
+    <link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/fancybox/2.1.4/jquery.fancybox.css" />
+    <link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/fancybox/2.1.4/helpers/jquery.fancybox-thumbs.min.css" />
     
     
-    <link rel="stylesheet" href="https://LinkRober.github.io/bookshelf/css/style-fpbzgxsy0kgmdvyrj5ykkg6ratccrk3gocmaqn4xpcjywmv5dteilzucro4f.min.css" />
+    <link rel="stylesheet" href="https://LinkRober.github.io/bookshelf/css/style-gwlo24d2hxipxk8bi1sxik0zhlpn9t7ebcmgp9kubmmcjfzlavuyhvbqumhn.min.css" />
     
     
-
     
       
     
@@ -106,16 +105,6 @@
       
   <li class="sidebar-button">
     
-      <a class="sidebar-button-link " href="https://LinkRober.github.io/bookshelf/categories">
-    
-      <i class="sidebar-button-icon fa fa-lg fa-bookmark"></i>
-      
-      <span class="sidebar-button-desc">分类</span>
-    </a>
-  </li>
-
-  <li class="sidebar-button">
-    
       <a class="sidebar-button-link " href="https://LinkRober.github.io/bookshelf/">
     
       <i class="sidebar-button-icon fa fa-lg fa-home"></i>
@@ -144,13 +133,32 @@
     </a>
   </li>
 
+  <li class="sidebar-button">
+    
+      <a class="sidebar-button-link " href="https://LinkRober.github.io/bookshelf/archives">
+    
+      <i class="sidebar-button-icon fa fa-lg fa-archive"></i>
+      
+      <span class="sidebar-button-desc">归档</span>
+    </a>
+  </li>
+
+  <li class="sidebar-button">
+    
+      <a class="sidebar-button-link " href="https://LinkRober.github.io/bookshelf/categories">
+    
+      <i class="sidebar-button-icon fa fa-lg fa-bookmark"></i>
+      
+      <span class="sidebar-button-desc">分类</span>
+    </a>
+  </li>
 
     </ul>
     <ul class="sidebar-buttons">
       
   <li class="sidebar-button">
     
-      <a class="sidebar-button-link " href="https://github.com/LinkRober" target="_blank" rel="noopener">
+      <a class="sidebar-button-link " href="https://github.com/LinkRober" target="_blank">
     
       <i class="sidebar-button-icon fa fa-lg fa-github"></i>
       
@@ -160,7 +168,7 @@
 
   <li class="sidebar-button">
     
-      <a class="sidebar-button-link " href="https://stackoverflow.com/users/4878280/buer" target="_blank" rel="noopener">
+      <a class="sidebar-button-link " href="https://stackoverflow.com/users/4878280/buer" target="_blank">
     
       <i class="sidebar-button-icon fa fa-lg fa-stack-overflow"></i>
       
@@ -168,11 +176,9 @@
     </a>
   </li>
 
-
     </ul>
     <ul class="sidebar-buttons">
       
-
     </ul>
   </div>
 </nav>
@@ -194,6 +200,8 @@
     
       
         
+          
+        
       
     
   
@@ -206,20 +214,416 @@
     
     <div class="postShorten-header">
       <h1 class="postShorten-title" itemprop="headline">
-        <a class="link-unstyled" href="https://linkrober.github.io/bookshelf/2017/09/run-loops-%E4%BA%8C/">
+        <a class="link-unstyled" href="https://LinkRober.github.io/bookshelf/2017/10/rctrootviewrctbridge%E5%81%9A%E4%BA%86%E4%BB%80%E4%B9%88/">
+          RCTRootView、RCTBridge做了什么
+        </a>
+      </h1>
+      <div class="postShorten-meta post-meta">
+  
+    <time itemprop="datePublished" datetime="2017-10-28T00:00:00Z">
+      
+  十月 28, 2017
+
+    </time>
+  
+  
+  
+  
+    <span>发布在</span>
+    
+      <a class="category-link" href="https://LinkRober.github.io/bookshelf/categories/development">development</a>
+    
+  
+
+
+</div>
+
+    </div>
+    <div class="postShorten-excerpt" itemprop="articleBody">
+      <p>
+        <p>本系列文章作为学习RN期间的总结</p>
+
+<ul>
+<li><a href="https://linkrober.github.io/bookshelf/2017/10/react-native%E5%A6%82%E4%BD%95%E9%9B%86%E6%88%90%E5%88%B0%E7%8E%B0%E6%9C%89%E9%A1%B9%E7%9B%AE%E4%B8%AD/">React Native如何集成到现有项目中</a></li>
+<li><a href="https://linkrober.github.io/bookshelf/2017/10/react-native%E5%92%8Cnative%E9%97%B4%E7%9A%84%E9%80%9A%E4%BF%A1/">React Native和Native间的通信</a></li>
+<li>RCTRootView、RCTBridge做了什么</li>
+</ul>
+
+<p></p>
+
+        <br>
+        <a href="https://LinkRober.github.io/bookshelf/2017/10/rctrootviewrctbridge%E5%81%9A%E4%BA%86%E4%BB%80%E4%B9%88/" class="postShorten-excerpt_link link">阅读全文</a>
+        
+      </p>
+    </div>
+  </div>
+  
+    <a href="https://LinkRober.github.io/bookshelf/2017/10/rctrootviewrctbridge%E5%81%9A%E4%BA%86%E4%BB%80%E4%B9%88/">
+      <div class="postShorten-thumbnailimg">
+        <img alt="" itemprop="image" src="https://LinkRober.github.io/rn_image.jpg"/>
+      </div>
+    </a>
+  
+</article>
+
+            
+              
+  
+    
+      
+        
+          
+        
+      
+    
+  
+
+
+  
+
+<article class="postShorten postShorten--thumbnailimg-bottom" itemscope itemType="http://schema.org/BlogPosting">
+  <div class="postShorten-wrap">
+    
+    <div class="postShorten-header">
+      <h1 class="postShorten-title" itemprop="headline">
+        <a class="link-unstyled" href="https://LinkRober.github.io/bookshelf/2017/10/react-native%E5%92%8Cnative%E9%97%B4%E7%9A%84%E9%80%9A%E4%BF%A1/">
+          React Native和Native间的通信
+        </a>
+      </h1>
+      <div class="postShorten-meta post-meta">
+  
+    <time itemprop="datePublished" datetime="2017-10-25T00:00:00Z">
+      
+  十月 25, 2017
+
+    </time>
+  
+  
+  
+  
+    <span>发布在</span>
+    
+      <a class="category-link" href="https://LinkRober.github.io/bookshelf/categories/development">development</a>
+    
+  
+
+
+</div>
+
+    </div>
+    <div class="postShorten-excerpt" itemprop="articleBody">
+      <p>
+        <!-- thumbnailImage = 'rn_image.jpeg'
+thumbnailImagePosition = 'bottom' -->
+
+<p>本系列文章作为学习RN期间的总结</p>
+
+<ul>
+<li><a href="https://linkrober.github.io/bookshelf/2017/10/react-native%E5%A6%82%E4%BD%95%E9%9B%86%E6%88%90%E5%88%B0%E7%8E%B0%E6%9C%89%E9%A1%B9%E7%9B%AE%E4%B8%AD/">React Native如何集成到现有项目中</a></li>
+<li>React Native和Native间的通信</li>
+<li><a href="https://linkrober.github.io/bookshelf/2017/10/rctrootviewrctbridge%E5%81%9A%E4%BA%86%E4%BB%80%E4%B9%88/">RCTRootView、RCTBridge做了什么</a></li>
+</ul>
+
+<p></p>
+
+        <br>
+        <a href="https://LinkRober.github.io/bookshelf/2017/10/react-native%E5%92%8Cnative%E9%97%B4%E7%9A%84%E9%80%9A%E4%BF%A1/" class="postShorten-excerpt_link link">阅读全文</a>
+        
+      </p>
+    </div>
+  </div>
+  
+    <a href="https://LinkRober.github.io/bookshelf/2017/10/react-native%E5%92%8Cnative%E9%97%B4%E7%9A%84%E9%80%9A%E4%BF%A1/">
+      <div class="postShorten-thumbnailimg">
+        <img alt="" itemprop="image" src="https://LinkRober.github.io/rn_image.jpg"/>
+      </div>
+    </a>
+  
+</article>
+
+            
+              
+  
+    
+      
+        
+          
+        
+      
+    
+  
+
+
+  
+
+<article class="postShorten postShorten--thumbnailimg-bottom" itemscope itemType="http://schema.org/BlogPosting">
+  <div class="postShorten-wrap">
+    
+    <div class="postShorten-header">
+      <h1 class="postShorten-title" itemprop="headline">
+        <a class="link-unstyled" href="https://LinkRober.github.io/bookshelf/2017/10/react-native%E5%A6%82%E4%BD%95%E9%9B%86%E6%88%90%E5%88%B0%E7%8E%B0%E6%9C%89%E9%A1%B9%E7%9B%AE%E4%B8%AD/">
+          React Native如何集成到现有项目中
+        </a>
+      </h1>
+      <div class="postShorten-meta post-meta">
+  
+    <time itemprop="datePublished" datetime="2017-10-23T00:00:00Z">
+      
+  十月 23, 2017
+
+    </time>
+  
+  
+  
+  
+    <span>发布在</span>
+    
+      <a class="category-link" href="https://LinkRober.github.io/bookshelf/categories/development">development</a>
+    
+  
+
+
+</div>
+
+    </div>
+    <div class="postShorten-excerpt" itemprop="articleBody">
+      <p>
+        <!-- thumbnailImage = 'rn_thumbnailImage.jpeg'
+thumbnailImagePosition = 'bottom' -->
+
+<p>本系列文章作为学习RN期间的总结</p>
+
+<ul>
+<li>React Native如何集成到现有项目中</li>
+<li><a href="https://linkrober.github.io/bookshelf/2017/10/react-native%E5%92%8Cnative%E9%97%B4%E7%9A%84%E9%80%9A%E4%BF%A1/">React Native和Native间的通信</a></li>
+<li><a href="https://linkrober.github.io/bookshelf/2017/10/rctrootviewrctbridge%E5%81%9A%E4%BA%86%E4%BB%80%E4%B9%88/">RCTRootView、RCTBridge做了什么</a></li>
+</ul>
+
+<p></p>
+
+        <br>
+        <a href="https://LinkRober.github.io/bookshelf/2017/10/react-native%E5%A6%82%E4%BD%95%E9%9B%86%E6%88%90%E5%88%B0%E7%8E%B0%E6%9C%89%E9%A1%B9%E7%9B%AE%E4%B8%AD/" class="postShorten-excerpt_link link">阅读全文</a>
+        
+      </p>
+    </div>
+  </div>
+  
+    <a href="https://LinkRober.github.io/bookshelf/2017/10/react-native%E5%A6%82%E4%BD%95%E9%9B%86%E6%88%90%E5%88%B0%E7%8E%B0%E6%9C%89%E9%A1%B9%E7%9B%AE%E4%B8%AD/">
+      <div class="postShorten-thumbnailimg">
+        <img alt="" itemprop="image" src="https://LinkRober.github.io/rn_image.jpg"/>
+      </div>
+    </a>
+  
+</article>
+
+            
+              
+  
+    
+      
+        
+      
+    
+  
+
+
+  
+
+<article class="postShorten postShorten--thumbnailimg-bottom" itemscope itemType="http://schema.org/BlogPosting">
+  <div class="postShorten-wrap">
+    
+    <div class="postShorten-header">
+      <h1 class="postShorten-title" itemprop="headline">
+        <a class="link-unstyled" href="https://LinkRober.github.io/bookshelf/2017/10/runtime%E4%B8%89-%E6%B6%88%E6%81%AF%E8%BD%AC%E5%8F%91/">
+          Runtime(三) 消息转发
+        </a>
+      </h1>
+      <div class="postShorten-meta post-meta">
+  
+    <time itemprop="datePublished" datetime="2017-10-16T00:00:00Z">
+      
+  十月 16, 2017
+
+    </time>
+  
+  
+  
+  
+    <span>发布在</span>
+    
+      <a class="category-link" href="https://LinkRober.github.io/bookshelf/categories/development">development</a>
+    
+  
+
+
+</div>
+
+    </div>
+    <div class="postShorten-excerpt" itemprop="articleBody">
+      <p>
+        向对象发送一个消息，如果没有处理就会发生错误。但是在产生错误之前，runtime会给接受对象第二次机会来处理消息。
+
+        <br>
+        <a href="https://LinkRober.github.io/bookshelf/2017/10/runtime%E4%B8%89-%E6%B6%88%E6%81%AF%E8%BD%AC%E5%8F%91/" class="postShorten-excerpt_link link">阅读全文</a>
+        
+      </p>
+    </div>
+  </div>
+  
+</article>
+
+            
+              
+  
+    
+      
+        
+      
+    
+  
+
+
+  
+
+<article class="postShorten postShorten--thumbnailimg-bottom" itemscope itemType="http://schema.org/BlogPosting">
+  <div class="postShorten-wrap">
+    
+    <div class="postShorten-header">
+      <h1 class="postShorten-title" itemprop="headline">
+        <a class="link-unstyled" href="https://LinkRober.github.io/bookshelf/2017/10/runtime-%E4%BA%8C--%E5%8A%A8%E6%80%81%E6%96%B9%E6%B3%95%E5%AE%9E%E7%8E%B0/">
+          Runtime (二)  动态方法实现
+        </a>
+      </h1>
+      <div class="postShorten-meta post-meta">
+  
+    <time itemprop="datePublished" datetime="2017-10-09T18:06:28&#43;08:00">
+      
+  十月 9, 2017
+
+    </time>
+  
+  
+  
+  
+    <span>发布在</span>
+    
+      <a class="category-link" href="https://LinkRober.github.io/bookshelf/categories/development">development</a>
+    
+  
+
+
+</div>
+
+    </div>
+    <div class="postShorten-excerpt" itemprop="articleBody">
+      <p>
+        <h3 id="dynamic-method-resolution">Dynamic Method Resolution</h3>
+
+<p>有的时候，你可能想要提供方法的动态实现。例如，Object-C 属性特征包含了<code>@dynamic</code>
+
+        <br>
+        <a href="https://LinkRober.github.io/bookshelf/2017/10/runtime-%E4%BA%8C--%E5%8A%A8%E6%80%81%E6%96%B9%E6%B3%95%E5%AE%9E%E7%8E%B0/" class="postShorten-excerpt_link link">阅读全文</a>
+        
+      </p>
+    </div>
+  </div>
+  
+</article>
+
+            
+              
+  
+    
+      
+        
+      
+    
+  
+
+
+  
+
+<article class="postShorten postShorten--thumbnailimg-bottom" itemscope itemType="http://schema.org/BlogPosting">
+  <div class="postShorten-wrap">
+    
+    <div class="postShorten-header">
+      <h1 class="postShorten-title" itemprop="headline">
+        <a class="link-unstyled" href="https://LinkRober.github.io/bookshelf/2017/09/runtime-%E4%B8%80-%E6%B6%88%E6%81%AF/">
+          Runtime (一) 消息
+        </a>
+      </h1>
+      <div class="postShorten-meta post-meta">
+  
+    <time itemprop="datePublished" datetime="2017-09-29T00:00:00Z">
+      
+  九月 29, 2017
+
+    </time>
+  
+  
+  
+  
+    <span>发布在</span>
+    
+      <a class="category-link" href="https://LinkRober.github.io/bookshelf/categories/development">development</a>
+    
+  
+
+
+</div>
+
+    </div>
+    <div class="postShorten-excerpt" itemprop="articleBody">
+      <p>
+        <h3 id="message">Message</h3>
+
+<p>这篇文章描述了消息如何通过使用<code>objc_msgSend</code>发送，如何通过方法名称找到对应方法的reference</p>
+
+<h4 id="the-objc-msgsend-function">The objc_msgSend Function</h4>
+
+<p>在Object-C中，发送的消息直到运行时才绑定到正真的方式实现。
+</p>
+
+        <br>
+        <a href="https://LinkRober.github.io/bookshelf/2017/09/runtime-%E4%B8%80-%E6%B6%88%E6%81%AF/" class="postShorten-excerpt_link link">阅读全文</a>
+        
+      </p>
+    </div>
+  </div>
+  
+</article>
+
+            
+              
+  
+    
+      
+        
+      
+    
+  
+
+
+  
+
+<article class="postShorten postShorten--thumbnailimg-bottom" itemscope itemType="http://schema.org/BlogPosting">
+  <div class="postShorten-wrap">
+    
+    <div class="postShorten-header">
+      <h1 class="postShorten-title" itemprop="headline">
+        <a class="link-unstyled" href="https://LinkRober.github.io/bookshelf/2017/09/run-loops-%E4%BA%8C/">
           Run Loops (二)
         </a>
       </h1>
+      <div class="postShorten-meta post-meta">
+  
+    <time itemprop="datePublished" datetime="2017-09-26T00:00:00Z">
       
-  <div class="postShorten-meta post-meta">
-    
-      <time itemprop="datePublished" datetime="2017-09-26T00:00:00Z">
-        
   九月 26, 2017
 
-      </time>
-    
-    
+    </time>
+  
+  
   
   
     <span>发布在</span>
@@ -229,164 +633,17 @@
   
 
 
-  </div>
+</div>
 
     </div>
     <div class="postShorten-excerpt" itemprop="articleBody">
-      <h3 id="when-would-you-use-a-run-loop">When Would You Use a Run Loop?</h3>
-
-<p>你唯一要使用run loop，就是当你要在application中创建线程的时候。你Application的主线程是架构很重要的一部分。所以，iOS系统为app的提供了<i>runloop</i>代码，并自动开始。在iOS中运行Main loop作为app启动步骤的一部分。</p>
       <p>
-        <a href="https://linkrober.github.io/bookshelf/2017/09/run-loops-%E4%BA%8C/" class="postShorten-excerpt_link link">阅读全文</a>
-        
-      </p>
-    </div>
-  </div>
-  
-</article>
+        <h3 id="when-would-you-use-a-run-loop">When Would You Use a Run Loop?</h3>
 
-            
-              
-  
-    
-      
-        
-      
-    
-  
+<p>你唯一要使用run loop，就是当你要在application中创建线程的时候。你Application的主线程是架构很重要的一部分。所以，iOS系统为app的提供了<i>runloop</i>代码，并自动开始。在iOS中运行Main loop作为app启动步骤的一部分。
 
-
-  
-
-<article class="postShorten postShorten--thumbnailimg-bottom" itemscope itemType="http://schema.org/BlogPosting">
-  <div class="postShorten-wrap">
-    
-    <div class="postShorten-header">
-      <h1 class="postShorten-title" itemprop="headline">
-        <a class="link-unstyled" href="https://linkrober.github.io/bookshelf/2017/09/run-loops-%E4%B8%80/">
-          Run Loops (一)
-        </a>
-      </h1>
-      
-  <div class="postShorten-meta post-meta">
-    
-      <time itemprop="datePublished" datetime="2017-09-25T00:00:00Z">
-        
-  九月 25, 2017
-
-      </time>
-    
-    
-  
-  
-    <span>发布在</span>
-    
-      <a class="category-link" href="https://LinkRober.github.io/bookshelf/categories/development">Development</a>
-    
-  
-
-
-  </div>
-
-    </div>
-    <div class="postShorten-excerpt" itemprop="articleBody">
-      <h3 id="run-loops">Run Loops</h3>
-
-<blockquote>
-<p>下面会用一些陌生的或者容易让人混淆的字符，我们先来统一概念再继续，这样能够让你更加愉快的阅读：</p>
-
-<p><strong>runloop:</strong>iOS一个底层机制的专业术语。</p>
-
-<p><strong>run loop:</strong>一种运行的循环。</p>
-
-<p><strong>Handler:</strong>指<code>handlePort:</code>、<code>customSrc:</code>、<code>mySelector:</code>、<code>timerFired:</code>，指开发者希望当进入run loop的时候要执行的操作</p>
-
-<p><strong>run-loop observer：</strong>观察runloop行为的观察者</p>
-
-<p><strong>run-loop mode：</strong>每个runloop都要指定一种mode，一种mode可以对应多个input source</p>
-
-<p><strong>runloop object：</strong>runloop相关的对象，这里分Cocoa和CoreFoundation中的</p>
-</blockquote>
-
-<p><i>Runloop</i>是线程架构相关的一部分，是事件处理的循环。你可以用它来安排循环执行任务，协调相关的事件（kCFRunLoopEntry、kCFRunLoopExit等）。
-用几行示意代码来展示：</p>
-
-<pre><code>function loop() {
-    initialize();
-    do {
-        var message = get_next_message();
-        process_message(message);
-    } while (message != quit);
-}
-</code></pre>
-
-<p><i>Runloop</i>实际上是一个管理要处理的事件和消息的对象，并为开发者提供了一个入口来执行run loop的逻辑部分。一直处于类似于“接受消息&ndash;&gt;等待&ndash;&gt;处理”这样的一个循环汇总
-
-&gt;<i>Runloop</i>的目的：一般我们自己写的线程在执行完相应的任务就会退出，而runloop<strong>让你的线程在有事干的时候干活，没事干的时候休息，节省系统资源</strong>。</p>
-      <p>
-        <a href="https://linkrober.github.io/bookshelf/2017/09/run-loops-%E4%B8%80/" class="postShorten-excerpt_link link">阅读全文</a>
-        
-      </p>
-    </div>
-  </div>
-  
-</article>
-
-            
-              
-  
-    
-      
-        
-      
-    
-  
-
-
-  
-
-<article class="postShorten postShorten--thumbnailimg-bottom" itemscope itemType="http://schema.org/BlogPosting">
-  <div class="postShorten-wrap">
-    
-    <div class="postShorten-header">
-      <h1 class="postShorten-title" itemprop="headline">
-        <a class="link-unstyled" href="https://linkrober.github.io/bookshelf/2017/04/%E6%B6%88%E6%81%AF%E8%BD%AC%E5%8F%91/">
-          消息转发
-        </a>
-      </h1>
-      
-  <div class="postShorten-meta post-meta">
-    
-      <time itemprop="datePublished" datetime="2017-04-03T03:05:31&#43;08:00">
-        
-  四月 3, 2017
-
-      </time>
-    
-    
-  
-  
-    <span>发布在</span>
-    
-      <a class="category-link" href="https://LinkRober.github.io/bookshelf/categories/development">Development</a>
-    
-  
-
-
-  </div>
-
-    </div>
-    <div class="postShorten-excerpt" itemprop="articleBody">
-      <blockquote>
-<p>描述：如果类不能执行这个方法，会执行动态<strong>消息转发</strong>，如果该类还是不能动态的添加方法，则走<strong>完整的消息转发</strong>。分两步，第一步<strong>看看有没有其他类可以执行该方法</strong>，如果没有走第二步，<strong>将所有的细节封装到NSInvocation中，给接受者最后一次机会</strong>。</p>
-</blockquote>
-
-<p>演示：
-动态消息转发
-&gt;在一个类<code>MessageObj</code>中定义两个方法，<code>testDynamicMethodForward</code>一个有实现方法，<code>start</code>一个没有实现的方法，调用没有实现的方法，在动态消息转发的时候将这个方法hook到已经实现的方法上：
-</p>
-      <p>
-        <a href="https://linkrober.github.io/bookshelf/2017/04/%E6%B6%88%E6%81%AF%E8%BD%AC%E5%8F%91/" class="postShorten-excerpt_link link">阅读全文</a>
+        <br>
+        <a href="https://LinkRober.github.io/bookshelf/2017/09/run-loops-%E4%BA%8C/" class="postShorten-excerpt_link link">阅读全文</a>
         
       </p>
     </div>
@@ -396,10 +653,30 @@
 
             
             
+  <div class="pagination-bar">
+    <ul class="pagination">
+      
+      
+        <li class="pagination-next">
+          <a class="btn btn--default btn--small" href="https://LinkRober.github.io/bookshelf/categories/development/page/2/">
+            <span>下一页</span>
+            <i class="fa fa-angle-right text-base icon-ml"></i>
+          </a>
+        </li>
+      
+      <li class="pagination-number">第 1 页 共 2 页</li>
+    </ul>
+  </div>
+
 
           </section>
         
-        
+        <footer id="footer" class="main-content-wrap">
+  <span class="copyrights">
+    &copy; 2017 董二千. All Rights Reserved
+  </span>
+</footer>
+
       </div>
     </div>
     
@@ -436,7 +713,7 @@
   <div class="modal">
     <div class="modal-header">
       <span class="close-button"><i class="fa fa-close"></i></span>
-      <a href="https://algolia.com" target="_blank" rel="noopener" class="searchby-algolia text-color-light link-unstyled">
+      <a href="https://algolia.com" target="_blank" class="searchby-algolia text-color-light link-unstyled">
         <span class="searchby-algolia-text text-color-light text-small">by</span>
         <img class="searchby-algolia-logo" src="https://www.algolia.com/static_assets/images/press/downloads/algolia-light.svg">
       </a>
@@ -454,17 +731,19 @@
           <div class="media">
             
             <div class="media-body">
-              <a class="link-unstyled" href="https://linkrober.github.io/bookshelf/2017/09/run-loops-%E4%BA%8C/">
-                <h3 class="media-heading">Run Loops (二)</h3>
+              <a class="link-unstyled" href="https://LinkRober.github.io/bookshelf/2017/12/%E5%BF%AB%E9%80%9F%E6%8E%92%E5%BA%8F/">
+                <h3 class="media-heading">快速排序</h3>
               </a>
               <span class="media-meta">
                 <span class="media-date text-small">
-                  Sep 9, 2017
+                  Dec 12, 2017
                 </span>
               </span>
-              <div class="media-content hide-xs font-merryweather"><h3 id="when-would-you-use-a-run-loop">When Would You Use a Run Loop?</h3>
+              <div class="media-content hide-xs font-merryweather"><span class="highlight-text primary">
+故事
+</span>
 
-<p>你唯一要使用run loop，就是当你要在application中创建线程的时候。你Application的主线程是架构很重要的一部分。所以，iOS系统为app的提供了<i>runloop</i>代码，并自动开始。在iOS中运行Main loop作为app启动步骤的一部分。</p></div>
+<p>快速排序由<strong>C.A.R.Hoare（东尼霍尔）</strong>在1960年提出。之后又有许多人对此进行改进。如果你对快速排序感兴趣可以去看看东尼霍尔1962年在Computer Journal发表的论文“Quicksort”以及《算法导论》的第七章。</p></div>
             </div>
             <div style="clear:both;"></div>
             <hr>
@@ -473,64 +752,17 @@
           <div class="media">
             
             <div class="media-body">
-              <a class="link-unstyled" href="https://linkrober.github.io/bookshelf/2017/09/run-loops-%E4%B8%80/">
-                <h3 class="media-heading">Run Loops (一)</h3>
+              <a class="link-unstyled" href="https://LinkRober.github.io/bookshelf/2017/11/%E5%9B%BE%E5%83%8F%E5%A4%84%E7%90%86%E6%B5%81%E7%A8%8B%E6%A6%82%E8%BF%B0/">
+                <h3 class="media-heading">图像处理流程概述</h3>
               </a>
               <span class="media-meta">
                 <span class="media-date text-small">
-                  Sep 9, 2017
+                  Nov 11, 2017
                 </span>
               </span>
-              <div class="media-content hide-xs font-merryweather"><h3 id="run-loops">Run Loops</h3>
+              <div class="media-content hide-xs font-merryweather"><p><img src="http://upload-images.jianshu.io/upload_images/1086250-3eac00965effbe70?imageMogr2/auto-orient/strip%7CimageView2/2/w/320" alt="" /></p>
 
-<blockquote>
-<p>下面会用一些陌生的或者容易让人混淆的字符，我们先来统一概念再继续，这样能够让你更加愉快的阅读：</p>
-
-<p><strong>runloop:</strong>iOS一个底层机制的专业术语。</p>
-
-<p><strong>run loop:</strong>一种运行的循环。</p>
-
-<p><strong>Handler:</strong>指<code>handlePort:</code>、<code>customSrc:</code>、<code>mySelector:</code>、<code>timerFired:</code>，指开发者希望当进入run loop的时候要执行的操作</p>
-
-<p><strong>run-loop observer：</strong>观察runloop行为的观察者</p>
-
-<p><strong>run-loop mode：</strong>每个runloop都要指定一种mode，一种mode可以对应多个input source</p>
-
-<p><strong>runloop object：</strong>runloop相关的对象，这里分Cocoa和CoreFoundation中的</p>
-</blockquote>
-
-<p><i>Runloop</i>是线程架构相关的一部分，是事件处理的循环。你可以用它来安排循环执行任务，协调相关的事件（kCFRunLoopEntry、kCFRunLoopExit等）。
-用几行示意代码来展示：</p>
-
-<pre><code>function loop() {
-    initialize();
-    do {
-        var message = get_next_message();
-        process_message(message);
-    } while (message != quit);
-}
-</code></pre>
-
-<p><i>Runloop</i>实际上是一个管理要处理的事件和消息的对象，并为开发者提供了一个入口来执行run loop的逻辑部分。一直处于类似于“接受消息&ndash;&gt;等待&ndash;&gt;处理”这样的一个循环汇总
-
-&gt;<i>Runloop</i>的目的：一般我们自己写的线程在执行完相应的任务就会退出，而runloop<strong>让你的线程在有事干的时候干活，没事干的时候休息，节省系统资源</strong>。</p></div>
-            </div>
-            <div style="clear:both;"></div>
-            <hr>
-          </div>
-        
-          <div class="media">
-            
-            <div class="media-body">
-              <a class="link-unstyled" href="https://linkrober.github.io/bookshelf/2017/04/git-order/">
-                <h3 class="media-heading">git order</h3>
-              </a>
-              <span class="media-meta">
-                <span class="media-date text-small">
-                  Apr 4, 2017
-                </span>
-              </span>
-              <div class="media-content hide-xs font-merryweather"><h3 id="常用命令">常用命令</h3>
+<p>视频编辑分为两部分：<strong>Camrea Engine（视频资源采集）</strong>和<strong>Video Edit Engine（后期视频编辑）</strong>。在Camrea Engine采集的时候我们也可以做一些编辑操作，这叫预处理，比如说加滤镜。等到把采集到的资源交给Video Edit Engine时就是后处理。</p>
 
 <p></p></div>
             </div>
@@ -541,22 +773,178 @@
           <div class="media">
             
             <div class="media-body">
-              <a class="link-unstyled" href="https://linkrober.github.io/bookshelf/2017/04/%E6%B6%88%E6%81%AF%E8%BD%AC%E5%8F%91/">
-                <h3 class="media-heading">消息转发</h3>
+              <a class="link-unstyled" href="https://LinkRober.github.io/bookshelf/2017/10/rctrootviewrctbridge%E5%81%9A%E4%BA%86%E4%BB%80%E4%B9%88/">
+                <h3 class="media-heading">RCTRootView、RCTBridge做了什么</h3>
               </a>
               <span class="media-meta">
                 <span class="media-date text-small">
-                  Apr 4, 2017
+                  Oct 10, 2017
                 </span>
               </span>
-              <div class="media-content hide-xs font-merryweather"><blockquote>
-<p>描述：如果类不能执行这个方法，会执行动态<strong>消息转发</strong>，如果该类还是不能动态的添加方法，则走<strong>完整的消息转发</strong>。分两步，第一步<strong>看看有没有其他类可以执行该方法</strong>，如果没有走第二步，<strong>将所有的细节封装到NSInvocation中，给接受者最后一次机会</strong>。</p>
-</blockquote>
+              <div class="media-content hide-xs font-merryweather"><p>本系列文章作为学习RN期间的总结</p>
 
-<p>演示：
-动态消息转发
-&gt;在一个类<code>MessageObj</code>中定义两个方法，<code>testDynamicMethodForward</code>一个有实现方法，<code>start</code>一个没有实现的方法，调用没有实现的方法，在动态消息转发的时候将这个方法hook到已经实现的方法上：
+<ul>
+<li><a href="https://linkrober.github.io/bookshelf/2017/10/react-native%E5%A6%82%E4%BD%95%E9%9B%86%E6%88%90%E5%88%B0%E7%8E%B0%E6%9C%89%E9%A1%B9%E7%9B%AE%E4%B8%AD/">React Native如何集成到现有项目中</a></li>
+<li><a href="https://linkrober.github.io/bookshelf/2017/10/react-native%E5%92%8Cnative%E9%97%B4%E7%9A%84%E9%80%9A%E4%BF%A1/">React Native和Native间的通信</a></li>
+<li>RCTRootView、RCTBridge做了什么</li>
+</ul>
+
+<p></p></div>
+            </div>
+            <div style="clear:both;"></div>
+            <hr>
+          </div>
+        
+          <div class="media">
+            
+            <div class="media-body">
+              <a class="link-unstyled" href="https://LinkRober.github.io/bookshelf/2017/10/react-native%E5%92%8Cnative%E9%97%B4%E7%9A%84%E9%80%9A%E4%BF%A1/">
+                <h3 class="media-heading">React Native和Native间的通信</h3>
+              </a>
+              <span class="media-meta">
+                <span class="media-date text-small">
+                  Oct 10, 2017
+                </span>
+              </span>
+              <div class="media-content hide-xs font-merryweather"><!-- thumbnailImage = 'rn_image.jpeg'
+thumbnailImagePosition = 'bottom' -->
+
+<p>本系列文章作为学习RN期间的总结</p>
+
+<ul>
+<li><a href="https://linkrober.github.io/bookshelf/2017/10/react-native%E5%A6%82%E4%BD%95%E9%9B%86%E6%88%90%E5%88%B0%E7%8E%B0%E6%9C%89%E9%A1%B9%E7%9B%AE%E4%B8%AD/">React Native如何集成到现有项目中</a></li>
+<li>React Native和Native间的通信</li>
+<li><a href="https://linkrober.github.io/bookshelf/2017/10/rctrootviewrctbridge%E5%81%9A%E4%BA%86%E4%BB%80%E4%B9%88/">RCTRootView、RCTBridge做了什么</a></li>
+</ul>
+
+<p></p></div>
+            </div>
+            <div style="clear:both;"></div>
+            <hr>
+          </div>
+        
+          <div class="media">
+            
+            <div class="media-body">
+              <a class="link-unstyled" href="https://LinkRober.github.io/bookshelf/2017/10/react-native%E5%A6%82%E4%BD%95%E9%9B%86%E6%88%90%E5%88%B0%E7%8E%B0%E6%9C%89%E9%A1%B9%E7%9B%AE%E4%B8%AD/">
+                <h3 class="media-heading">React Native如何集成到现有项目中</h3>
+              </a>
+              <span class="media-meta">
+                <span class="media-date text-small">
+                  Oct 10, 2017
+                </span>
+              </span>
+              <div class="media-content hide-xs font-merryweather"><!-- thumbnailImage = 'rn_thumbnailImage.jpeg'
+thumbnailImagePosition = 'bottom' -->
+
+<p>本系列文章作为学习RN期间的总结</p>
+
+<ul>
+<li>React Native如何集成到现有项目中</li>
+<li><a href="https://linkrober.github.io/bookshelf/2017/10/react-native%E5%92%8Cnative%E9%97%B4%E7%9A%84%E9%80%9A%E4%BF%A1/">React Native和Native间的通信</a></li>
+<li><a href="https://linkrober.github.io/bookshelf/2017/10/rctrootviewrctbridge%E5%81%9A%E4%BA%86%E4%BB%80%E4%B9%88/">RCTRootView、RCTBridge做了什么</a></li>
+</ul>
+
+<p></p></div>
+            </div>
+            <div style="clear:both;"></div>
+            <hr>
+          </div>
+        
+          <div class="media">
+            
+            <div class="media-body">
+              <a class="link-unstyled" href="https://LinkRober.github.io/bookshelf/2017/10/runtime%E4%B8%89-%E6%B6%88%E6%81%AF%E8%BD%AC%E5%8F%91/">
+                <h3 class="media-heading">Runtime(三) 消息转发</h3>
+              </a>
+              <span class="media-meta">
+                <span class="media-date text-small">
+                  Oct 10, 2017
+                </span>
+              </span>
+              <div class="media-content hide-xs font-merryweather"><p>向对象发送一个消息，如果没有处理就会发生错误。但是在产生错误之前，runtime会给接受对象第二次机会来处理消息。
 </p></div>
+            </div>
+            <div style="clear:both;"></div>
+            <hr>
+          </div>
+        
+          <div class="media">
+            
+            <div class="media-body">
+              <a class="link-unstyled" href="https://LinkRober.github.io/bookshelf/2017/10/runtime-%E4%BA%8C--%E5%8A%A8%E6%80%81%E6%96%B9%E6%B3%95%E5%AE%9E%E7%8E%B0/">
+                <h3 class="media-heading">Runtime (二)  动态方法实现</h3>
+              </a>
+              <span class="media-meta">
+                <span class="media-date text-small">
+                  Oct 10, 2017
+                </span>
+              </span>
+              <div class="media-content hide-xs font-merryweather"><h3 id="dynamic-method-resolution">Dynamic Method Resolution</h3>
+
+<p>有的时候，你可能想要提供方法的动态实现。例如，Object-C 属性特征包含了<code>@dynamic</code>
+</p></div>
+            </div>
+            <div style="clear:both;"></div>
+            <hr>
+          </div>
+        
+          <div class="media">
+            
+            <div class="media-body">
+              <a class="link-unstyled" href="https://LinkRober.github.io/bookshelf/2017/09/runtime-%E4%B8%80-%E6%B6%88%E6%81%AF/">
+                <h3 class="media-heading">Runtime (一) 消息</h3>
+              </a>
+              <span class="media-meta">
+                <span class="media-date text-small">
+                  Sep 9, 2017
+                </span>
+              </span>
+              <div class="media-content hide-xs font-merryweather"><h3 id="message">Message</h3>
+
+<p>这篇文章描述了消息如何通过使用<code>objc_msgSend</code>发送，如何通过方法名称找到对应方法的reference</p>
+
+<h4 id="the-objc-msgsend-function">The objc_msgSend Function</h4>
+
+<p>在Object-C中，发送的消息直到运行时才绑定到正真的方式实现。
+</p></div>
+            </div>
+            <div style="clear:both;"></div>
+            <hr>
+          </div>
+        
+          <div class="media">
+            
+            <div class="media-body">
+              <a class="link-unstyled" href="https://LinkRober.github.io/bookshelf/2017/09/run-loops-%E4%BA%8C/">
+                <h3 class="media-heading">Run Loops (二)</h3>
+              </a>
+              <span class="media-meta">
+                <span class="media-date text-small">
+                  Sep 9, 2017
+                </span>
+              </span>
+              <div class="media-content hide-xs font-merryweather"><h3 id="when-would-you-use-a-run-loop">When Would You Use a Run Loop?</h3>
+
+<p>你唯一要使用run loop，就是当你要在application中创建线程的时候。你Application的主线程是架构很重要的一部分。所以，iOS系统为app的提供了<i>runloop</i>代码，并自动开始。在iOS中运行Main loop作为app启动步骤的一部分。
+</p></div>
+            </div>
+            <div style="clear:both;"></div>
+            <hr>
+          </div>
+        
+          <div class="media">
+            
+            <div class="media-body">
+              <a class="link-unstyled" href="https://LinkRober.github.io/bookshelf/2017/09/run-loops-%E4%B8%80/">
+                <h3 class="media-heading">Run Loops (一)</h3>
+              </a>
+              <span class="media-meta">
+                <span class="media-date text-small">
+                  Sep 9, 2017
+                </span>
+              </span>
+              <div class="media-content hide-xs font-merryweather"></div>
             </div>
             <div style="clear:both;"></div>
             <hr>
@@ -569,7 +957,7 @@
          data-message-zero=""
          data-message-one=""
          data-message-other="">
-         4 posts found
+         13 posts found
       </p>
     </div>
   </div>
@@ -582,27 +970,32 @@
 
 
     
-<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/2.1.3/jquery.min.js" integrity="sha256-IFHWFEbU2/+wNycDECKgjIRSirRNIDp2acEB5fvdVRU=" crossorigin="anonymous"></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.8.0/highlight.min.js" integrity="sha256-+mpyNVJsNt4rVXCw0F+pAOiB3YxmHgrbJsx4ecPuUaI=" crossorigin="anonymous"></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/fancybox/2.1.4/jquery.fancybox.min.js" integrity="sha256-vMxgR/7FtLovVA+IPrR7+xTgIgARH7y9VZQnmmi0HDI=" crossorigin="anonymous"></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/fancybox/2.1.4/helpers/jquery.fancybox-thumbs.min.js" integrity="sha256-N0qFUh7/9vLvia87dDndewmsgsyYoNkdA212tPc+2NI=" crossorigin="anonymous"></script>
+<script src="//cdnjs.cloudflare.com/ajax/libs/jquery/2.1.3/jquery.min.js"></script>
+<script src="//cdnjs.cloudflare.com/ajax/libs/highlight.js/9.8.0/highlight.min.js"></script>
+<script src="//cdnjs.cloudflare.com/ajax/libs/fancybox/2.1.4/jquery.fancybox.min.js"></script>
+<script src="//cdnjs.cloudflare.com/ajax/libs/fancybox/2.1.4/helpers/jquery.fancybox-thumbs.min.js"></script>
 
 
-<script src="https://LinkRober.github.io/bookshelf/js/script-qi9wbxp2ya2j6p7wx1i6tgavftewndznf4v0hy2gvivk1rxgc3lm7njqb6bz.min.js"></script>
-
+<script src="https://LinkRober.github.io/bookshelf/js/script-wl33z0n6ocaypepiqrazthtivfrliqijej4rq8ek8gvrv1awftmgjuv8k4zc.min.js"></script>
 
 <script>
 $(document).ready(function() {
   hljs.configure({ classPrefix: '', useBR: false });
-  $('pre.code-highlight, pre > code').each(function(i, block) {
-    if (!$(this).hasClass('codeblock')) {
-      $(this).addClass('codeblock');
+  $('pre.code-highlight').each(function(i, block) {
+    var code = "";
+    hljs.highlightAuto(block.innerText).value.split(/\r\n|\r|\n/).forEach(function(line) {
+      code += "<span class=\"line\">" + line + "</span><br>";
+    });
+    if (code.length > 0) {
+      block.innerHTML = code;  
     }
+  });
+  $('pre > code').each(function(i, block) {
+    $(this).addClass('codeblock');
     hljs.highlightBlock(block);
   });
 });
 </script>
-
 
 
     

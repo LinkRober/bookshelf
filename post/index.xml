@@ -1,11 +1,12 @@
 <?xml version="1.0" encoding="utf-8" standalone="yes" ?>
 <rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
   <channel>
-    <title>Post-rsses on 董二千</title>
-    <link>https://LinkRober.github.io/bookshelf/post/index.xml</link>
-    <description>Recent content in Post-rsses on 董二千</description>
+    <title>Posts on 董二千</title>
+    <link>https://LinkRober.github.io/bookshelf/post/</link>
+    <description>Recent content in Posts on 董二千</description>
     <generator>Hugo -- gohugo.io</generator>
     <language>zh-cn</language>
+<<<<<<< HEAD
     <lastBuildDate>Sun, 25 Mar 2018 00:00:00 +0000</lastBuildDate>
     <atom:link href="https://LinkRober.github.io/bookshelf/post/index.xml" rel="self" type="application/rss+xml" />
     
@@ -2225,36 +2226,64 @@ for(i = 0;i &amp;lt; 100;i++){
 	//Clean up code here. Be sure to release any allocated autorelease pools.
 }
 &lt;/code&gt;&lt;/pre&gt;
+=======
+    <lastBuildDate>Fri, 02 Feb 2018 00:00:00 +0000</lastBuildDate>
+    
+	<atom:link href="https://LinkRober.github.io/bookshelf/post/index.xml" rel="self" type="application/rss+xml" />
+    
+    
+    <item>
+      <title>递归</title>
+      <link>https://LinkRober.github.io/bookshelf/2018/02/%E9%80%92%E5%BD%92/</link>
+      <pubDate>Fri, 02 Feb 2018 00:00:00 +0000</pubDate>
+      
+      <guid>https://LinkRober.github.io/bookshelf/2018/02/%E9%80%92%E5%BD%92/</guid>
+      <description>&lt;p&gt;&lt;/b&gt;
+&lt;span class=&#34;highlight-text primary&#34;&gt;
+基本思想
+&lt;/span&gt;&lt;/p&gt;
+>>>>>>> e5d3b4cdd690c0207a157fcf508e2f39bea06a82
 
-&lt;p&gt;递归运行run loop也是可能的。换句话说，你能够调用&lt;a href=&#34;https://developer.apple.com/documentation/corefoundation/1542011-cfrunlooprun&#34;&gt;CFRunLoopRun&lt;/a&gt;、&lt;a href=&#34;https://developer.apple.com/documentation/corefoundation/1541988-cfrunloopruninmode&#34;&gt;CFRunLoopRunInMode&lt;/a&gt;,任何&lt;code&gt;NSRunLoop&lt;/code&gt;的方法，从input source 或者 timer的handler routine开始runloop。当这样做的时候，你可以使用你想要的mode来运行内嵌的runloop。包括被outer run loop正在使用的mode。&lt;/p&gt;
+&lt;p&gt;递归是一种直接或者间接调用自身函数或者方法的算法。递归的实质是把问题分解成规模缩小的同类问题的子问题，然后递归调用方法来表示问题的解。递归算法，其实就是程序的自身调用。在一段程序中往往会遇到调用自身的那样一种coding策略。递归往往能带来非常简洁非常直观的代码形式，从而使我们的编码大大简化，但是递归的思想确实和我们的常规思维相逆。我们通常是从上而下的思考问题，而递归是从下往上进行思考。这样我们就能看到我们会用很少的语句解决很大的问题，所以递归策略最主要的体现就是较少的代码量解决复杂的问题。&lt;/p&gt;
 
-&lt;h3 id=&#34;exiting-the-run-loop&#34;&gt;Exiting the Run Loop&lt;/h3&gt;
-
-&lt;p&gt;有两种办法使runloop在处理事件之前退出。&lt;/p&gt;
-
-&lt;ul&gt;
-&lt;li&gt;为&lt;i&gt;Runloop&lt;/i&gt;配置一个time out时间&lt;/li&gt;
-&lt;li&gt;主动告诉&lt;i&gt;Runloop&lt;/i&gt;停止&lt;/li&gt;
-&lt;/ul&gt;
-
-&lt;p&gt;使用time out时间是一种比较好的选择。在退出之前，指定一个time out时间让runloop完成所有的任务，包括向&lt;i&gt;runloop observer&lt;/i&gt;发送通知。&lt;/p&gt;
-
-&lt;p&gt;使用&lt;a href=&#34;https://developer.apple.com/documentation/corefoundation/1541796-cfrunloopstop&#34;&gt;CFRunLoopStop&lt;/a&gt;方法停止一个&lt;i&gt;runloop&lt;/i&gt;，产生一个类似于超时的结果。使用runloop发送完剩下的runloop通知然后退出。唯一不同的就是只有当你无条件的启动&lt;i&gt;Runloop&lt;/i&gt;的时候才能使用这种方式退出。&lt;/p&gt;
-
-&lt;p&gt;尽管移除runloop的input source和timers可以引起runloop的退出，但是这不是一种稳定的方式。一些系统一般添加input source到run loop来处理需要的事件。因为你的code不需要关心这些input source。所以你不能移除input sources，让&lt;i&gt;run loop&lt;/i&gt;退出。&lt;/p&gt;
-
-&lt;h3 id=&#34;thread-safety-and-run-loop-objects&#34;&gt;Thread Safety and Run Loop Objects&lt;/h3&gt;
-
-&lt;p&gt;线程安全取决于你使用操作&lt;i&gt;runloop&lt;/i&gt;的API。在Core Foundation中的方法一般是线程安全的，可以被任何其他线程调用。如果你正在执行操作，这些操作改变了runloop的配置。无论什么时候，这样做任然是一个很好的实践。&lt;/p&gt;
-
-&lt;p&gt;Cocoa的&lt;a href=&#34;https://developer.apple.com/documentation/foundation/runloop&#34;&gt;NSRunLoop&lt;/a&gt;类。Cocoa的NSRunLoop和Core Foundation不一样，不是线程安全的。如果你使用&lt;code&gt;NSRunLoop&lt;/code&gt;类来修改你的runloop，你应该在原来的线程中做这些操作。在其他线程添加一个input source或者timer到原来runloop可能引起crash，或者一个意想不到的行为。&lt;/p&gt;</description>
+&lt;p&gt;&lt;/p&gt;</description>
     </item>
     
     <item>
-      <title>Run Loops (一)</title>
-      <link>https://linkrober.github.io/bookshelf/2017/09/run-loops-%E4%B8%80/</link>
-      <pubDate>Mon, 25 Sep 2017 00:00:00 +0000</pubDate>
+      <title>再见2017，你好2018</title>
+      <link>https://LinkRober.github.io/bookshelf/2018/01/%E5%86%8D%E8%A7%812017%E4%BD%A0%E5%A5%BD2018/</link>
+      <pubDate>Tue, 02 Jan 2018 00:00:00 +0000</pubDate>
       
+      <guid>https://LinkRober.github.io/bookshelf/2018/01/%E5%86%8D%E8%A7%812017%E4%BD%A0%E5%A5%BD2018/</guid>
+      <description>&lt;p&gt;不知不觉工作已有三个年头，在iOS这条路上，从当年战战兢兢的新人变成一个熟练的开发者，这一路走来真不容易。不仅仅是身体上的负荷，个人对于技术的追求也使自己或迷惘或奋起。&lt;/p&gt;
+
+&lt;p&gt;&lt;/p&gt;</description>
+    </item>
+    
+    <item>
+      <title>Object-C和JS通信概述</title>
+      <link>https://LinkRober.github.io/bookshelf/2017/12/object-c%E5%92%8Cjs%E9%80%9A%E4%BF%A1%E6%A6%82%E8%BF%B0/</link>
+      <pubDate>Mon, 25 Dec 2017 00:00:00 +0000</pubDate>
+      
+      <guid>https://LinkRober.github.io/bookshelf/2017/12/object-c%E5%92%8Cjs%E9%80%9A%E4%BF%A1%E6%A6%82%E8%BF%B0/</guid>
+      <description>&lt;p&gt;本系列文章作为学习RN期间的总结&lt;/p&gt;
+
+&lt;ul&gt;
+&lt;li&gt;&lt;a href=&#34;https://linkrober.github.io/bookshelf/2017/10/react-native%E5%A6%82%E4%BD%95%E9%9B%86%E6%88%90%E5%88%B0%E7%8E%B0%E6%9C%89%E9%A1%B9%E7%9B%AE%E4%B8%AD/&#34;&gt;React Native如何集成到现有项目中&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;&lt;a href=&#34;https://linkrober.github.io/bookshelf/2017/10/react-native%E5%92%8Cnative%E9%97%B4%E7%9A%84%E9%80%9A%E4%BF%A1/&#34;&gt;React Native和Native间的通信实践&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;&lt;a href=&#34;https://linkrober.github.io/bookshelf/2017/10/rctrootviewrctbridge%E5%81%9A%E4%BA%86%E4%BB%80%E4%B9%88/&#34;&gt;RCTRootView、RCTBridge做了什么&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;Object-C和JS通信概述&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;p&gt;&lt;/p&gt;</description>
+    </item>
+    
+    <item>
+      <title>iOS多线程中的锁</title>
+      <link>https://LinkRober.github.io/bookshelf/2017/12/ios%E5%A4%9A%E7%BA%BF%E7%A8%8B%E4%B8%AD%E7%9A%84%E9%94%81/</link>
+      <pubDate>Fri, 01 Dec 2017 00:00:00 +0000</pubDate>
+      
+<<<<<<< HEAD
       <guid>https://linkrober.github.io/bookshelf/2017/09/run-loops-%E4%B8%80/</guid>
       <description>&lt;p&gt;
 &amp;gt;下面会用一些陌生的或者容易让人混淆的字符，我们先来统一概念再继续，这样能够让你更加愉快的阅读：&lt;/p&gt;
@@ -2320,289 +2349,195 @@ CFRunLoopRef _CFRunLoopGet(pthread_t thread) {
         /// 注册一个回调，当线程销毁时，顺便也销毁其对应的 RunLoop。
         _CFSetTSD(..., thread, loop, __CFFinalizeRunLoop);
     }
+=======
+      <guid>https://LinkRober.github.io/bookshelf/2017/12/ios%E5%A4%9A%E7%BA%BF%E7%A8%8B%E4%B8%AD%E7%9A%84%E9%94%81/</guid>
+      <description>&lt;p&gt;涉及到多线程共享资源的情况下就避免不了资源竞争的问题，这时候就会用到各种锁，例如，&lt;code&gt;@synchronized&lt;/code&gt;、&lt;code&gt;NSLock&lt;/code&gt;、&lt;code&gt;OSSpinLock&lt;/code&gt;等等，虽然都是锁，但是锁的底层实现也不尽相同。大概可以分为：&lt;span class=&#34;highlight-text blue&#34;&gt;互斥锁&lt;/span&gt;、&lt;span class=&#34;highlight-text blue&#34;&gt;自旋锁&lt;/span&gt;、&lt;span class=&#34;highlight-text blue&#34;&gt;递归锁&lt;/span&gt;、
+&lt;span class=&#34;highlight-text blue&#34;&gt;读写锁&lt;/span&gt;。&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;{
+	lock()//加锁
+		doSomeThing()//临界区
+	unlock()//解锁
+}
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;我们锁的目的是在任何时刻最多只能有一个线程在修改资源，即在任何时刻只能有一个操作者保持锁。&lt;/p&gt;
+
+&lt;p&gt;&lt;/p&gt;</description>
+    </item>
+>>>>>>> e5d3b4cdd690c0207a157fcf508e2f39bea06a82
     
-    OSSpinLockUnLock(&amp;amp;loopsLock);
-    return loop;
-}
- 
-CFRunLoopRef CFRunLoopGetMain() {
-    return _CFRunLoopGet(pthread_main_thread_np());
-}
- 
-CFRunLoopRef CFRunLoopGetCurrent() {
-    return _CFRunLoopGet(pthread_self());
-}
-&lt;/code&gt;&lt;/pre&gt;
-
-&lt;p&gt;苹果提供了&lt;code&gt;CFRunLoopGetMain&lt;/code&gt; 、&lt;code&gt;CFRunLoopGetMain&lt;/code&gt;这两个方法来创建&lt;i&gt;runloop&lt;/i&gt;，如果它不被调用，线程中就不会有runloop。&lt;/p&gt;
-
-&lt;blockquote&gt;
-&lt;p&gt;Cocoa中的&lt;code&gt;NSRunLoop&lt;/code&gt;,和Core Foundation中的&lt;code&gt;CFRunLoopRef&lt;/code&gt;等Run loop相关的类。它们的方法一般也是一一对应的。&lt;/p&gt;
-&lt;/blockquote&gt;
-
-&lt;p&gt;唯一不同的是：你自己创建的线程需要明确的代码来让runloop跑起来，比如&lt;code&gt;[runLoop run]&lt;/code&gt;这样的方法。但是对于主线程的&lt;i&gt;runloop&lt;/i&gt;，系统会在App起来的时候自动设置并跑主线程里面的&lt;i&gt;runloop&lt;/i&gt;，这是Application运行起来的一部分。&lt;/p&gt;
-
-&lt;h3 id=&#34;anatomy-of-run-loop-剖析runloop&#34;&gt;Anatomy of Run Loop（剖析runloop）&lt;/h3&gt;
-
-&lt;p&gt;“一个运行的循环”，看它名字的意思就能猜得到。它会循环不断的进入线程，在&lt;i&gt;runloop&lt;/i&gt;进入之后做一些自己的事情。你的code提供了状态的控制用来实现&lt;i&gt;runloop&lt;/i&gt;真正的循环部分。—— 换句话说，你的code提供&lt;code&gt;while&lt;/code&gt;或&lt;code&gt;for&lt;/code&gt;循环来驱动run loop。在你的循环中，你使用一个&lt;i&gt;runloop object&lt;/i&gt;来运行事件处理的code，&lt;i&gt;runloop&lt;/i&gt;接受事件并调用你已经准备好的方法。&lt;/p&gt;
-
-&lt;pre&gt;&lt;code&gt;/*
- 这里doFireTimer方法就是你要处理的事件的code，&amp;lt;i&amp;gt;runloop&amp;lt;/i&amp;gt;在从sleep状态被wakeup之后会执行改方法。
-*/
-[NSTimer scheduledTimerWithTimeInterval:0.016
-                                     target:self
-                                   selector:@selector(doFireTimer:)
-                                   userInfo:nil
-                                    repeats:YES];
-&lt;/code&gt;&lt;/pre&gt;
-
-&lt;p&gt;上面我们提到&lt;strong&gt;“你使用一个runloop object来运行事件处理的code”&lt;/strong&gt;，这里的事件是从哪里来呢？即事件源是什么？&lt;/p&gt;
-
-&lt;p&gt;事件源分两类：&lt;/p&gt;
-
-&lt;ul&gt;
-&lt;li&gt;&lt;i&gt;Input source&lt;/i&gt;所驱动的异步事件，一般它用来从一个线程向另一个线程发送事件或者从一个Application向另一个Application。&lt;/li&gt;
-&lt;li&gt;&lt;i&gt;Timer sources&lt;/i&gt;所驱动的同步事件，事件发生在一个已经预先设定好的时间，或者在重复的事件间隔发生。&lt;/li&gt;
-&lt;/ul&gt;
-
-&lt;p&gt;当事件到达的时候，这两种source会按照系统指定的步骤来处理事件。&lt;/p&gt;
-
-&lt;p&gt;下图展示了一个&lt;i&gt;runloop&lt;/i&gt;的概念结构和各种不同的sources。Input sources发送一个异步的事件来执行相对应的handler（例如，图中的&lt;code&gt;hanlePort&lt;/code&gt;、&lt;code&gt;mySelector&lt;/code&gt;等），并通过&lt;code&gt;runUntilDate:&lt;/code&gt;方法（调用thread相关的&lt;a href=&#34;https://developer.apple.com/documentation/foundation/runloop&#34;&gt;NSRunLoop&lt;/a&gt;对象）来退出。Timer sources发送事件到runloop的handler，但不会引起runloop的退出。&lt;/p&gt;
-
-&lt;p&gt;&lt;img src=&#34;http://upload-images.jianshu.io/upload_images/1086250-2f8e40f8ce0f82c0.jpg?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240&#34; alt=&#34;runloop-1.jpg&#34; /&gt;&lt;/p&gt;
-
-&lt;p&gt;除了处理输入源对应的handler，&lt;i&gt;Runloop&lt;/i&gt;生成关于run loop行为的通知。注册&lt;i&gt;run-loop&lt;/i&gt; 的observer接受这些通知。使用它们在thread上做一些其他的操作。你可以在你的线程中使用Core Foundation里面的类来创建&lt;i&gt;run-loop observer&lt;/i&gt;。&lt;/p&gt;
-
-&lt;h3 id=&#34;run-loop-modes&#34;&gt;Run Loop Modes&lt;/h3&gt;
-
-&lt;p&gt;&lt;i&gt;run-loop mode&lt;/i&gt;是被监听的&lt;i&gt;Input sources&lt;/i&gt;和&lt;i&gt;Timers&lt;/i&gt;的集合，同时还是被通知的&lt;i&gt;run-loop observer&lt;/i&gt;的集合，大家可能比较疑惑怎么是两种东西的集合（source和obaserver），下面是我的理解，从代码出发：
-&lt;code&gt;[runLoop addPort:[NSMachPort port] forMode:NSDefaultRunLoopMode];&lt;/code&gt;
-&lt;strong&gt;线程的每个Source都要指定一个Mode，这里是NSDefaultRunLoopMode&lt;/strong&gt;
-&lt;code&gt;CFRunLoopAddObserver(cfLoop, observer, kCFRunLoopCommonModes);&lt;/code&gt;
-&lt;strong&gt;观察者是观察该Runloop的某些Modes，kCFRunLoopCommonModes是mode的集合，每种mode都可以添加到Common中&lt;/strong&gt;&lt;/p&gt;
-
-&lt;p&gt;每次你运行你的&lt;i&gt;runloop&lt;/i&gt;的时候，要指定一个具体的mode在&lt;i&gt;runloop&lt;/i&gt;里面跑。在进入&lt;i&gt;runloop&lt;/i&gt;的时候，只有和这个mode相关联的source能被对应的&lt;i&gt;run-loop observer&lt;/i&gt;监听到，被允许向它们传递事件。而其他mode相关的source会一直等待，直到&lt;i&gt;run-loop mode&lt;/i&gt;和source指定的mode相对应的时候才开始传递事件。&lt;/p&gt;
-
-&lt;p&gt;在你的代码中，你通过具体的名称来定义mode(&lt;code&gt;kCFRunLoopDefaultMode&lt;/code&gt;、&lt;code&gt;kCFRunLoopCommonModes&lt;/code&gt;等)。Cocoa和Core Foundation都定义了默认的mode和一些经常使用的mode。&lt;/p&gt;
-
-&lt;p&gt;你也能通过简单的字符串来自定义自己的mode。尽管custom mode定义起来好像很随意，但使用起来可不能随意啊。对于任何mode，你必须要确保添加一个或者更多的&lt;i&gt;sources&lt;/i&gt;，&lt;i&gt;timers&lt;/i&gt;或者&lt;i&gt;run-loop observer&lt;/i&gt;，如果你没有做到，&lt;i&gt;run loop&lt;/i&gt;就会直接退出。&lt;/p&gt;
-
-&lt;pre&gt;&lt;code&gt;//如果没有第二行代码，runloop会自动退出
-NSRunLoop *runLoop = [NSRunLoop currentRunLoop];
-[runLoop addPort:[NSMachPort port] forMode:NSDefaultRunLoopMode];
-[runLoop run];
-
-&lt;/code&gt;&lt;/pre&gt;
-
-&lt;p&gt;你可以使用mode过滤掉不想要的source。大多数情况下，你只需要用系统定义的“default”mode来运行你的runloop。&lt;/p&gt;
-
-&lt;blockquote&gt;
-&lt;p&gt;Note:Mode是根据事件source来匹配的而不是根据事件的type。例如，你不可以使用鼠标的按下事件或者键盘按下事件来匹配mode。&lt;/p&gt;
-&lt;/blockquote&gt;
-
-&lt;p&gt;下面是一些系统定义好的Modes&lt;/p&gt;
-
-&lt;table&gt;
-&lt;thead&gt;
-&lt;tr&gt;
-&lt;th align=&#34;center&#34;&gt;Mode&lt;/th&gt;
-&lt;th align=&#34;center&#34;&gt;Name&lt;/th&gt;
-&lt;/tr&gt;
-&lt;/thead&gt;
-
-&lt;tbody&gt;
-&lt;tr&gt;
-&lt;td align=&#34;center&#34;&gt;Default&lt;/td&gt;
-&lt;td align=&#34;center&#34;&gt;&lt;a href=&#34;https://developer.apple.com/documentation/foundation/nsdefaultrunloopmode&#34;&gt;NSDefaultRunLoopMode&lt;/a&gt;(Cocoa)&lt;a href=&#34;https://developer.apple.com/documentation/corefoundation/kcfrunloopdefaultmode&#34;&gt;kCFRunLoopDefaultMode&lt;/a&gt;(Core Foundation)&lt;/td&gt;
-&lt;/tr&gt;
-
-&lt;tr&gt;
-&lt;td align=&#34;center&#34;&gt;Connection&lt;/td&gt;
-&lt;td align=&#34;center&#34;&gt;&lt;a href=&#34;https://developer.apple.com/documentation/foundation/nsconnectionreplymode&#34;&gt;NSConnectionReplyMode&lt;/a&gt;(Cocoa)&lt;/td&gt;
-&lt;/tr&gt;
-
-&lt;tr&gt;
-&lt;td align=&#34;center&#34;&gt;Modal&lt;/td&gt;
-&lt;td align=&#34;center&#34;&gt;&lt;a href=&#34;https://developer.apple.com/documentation/appkit/nsmodalpanelrunloopmode&#34;&gt;NSModalPanelRunLoopMode&lt;/a&gt;(Cocoa)&lt;/td&gt;
-&lt;/tr&gt;
-
-&lt;tr&gt;
-&lt;td align=&#34;center&#34;&gt;Event tracking&lt;/td&gt;
-&lt;td align=&#34;center&#34;&gt;&lt;a href=&#34;https://developer.apple.com/documentation/foundation/runloopmode/1428765-eventtrackingrunloopmode&#34;&gt;NSEventTrackingRunLoopMode&lt;/a&gt;(Cocoa)&lt;/td&gt;
-&lt;/tr&gt;
-
-&lt;tr&gt;
-&lt;td align=&#34;center&#34;&gt;Common modes&lt;/td&gt;
-&lt;td align=&#34;center&#34;&gt;&lt;a href=&#34;https://developer.apple.com/documentation/foundation/runloopmode/1408609-commonmodes&#34;&gt;NSRunLoopCommonModes&lt;/a&gt;(Cocoa)&lt;a href=&#34;https://developer.apple.com/documentation/corefoundation/kcfrunloopcommonmodes&#34;&gt;kCFRunLoopCommonModes&lt;/a&gt;(Core Foundation)&lt;/td&gt;
-&lt;/tr&gt;
-&lt;/tbody&gt;
-&lt;/table&gt;
-
-&lt;h3 id=&#34;input-sources&#34;&gt;Input Sources&lt;/h3&gt;
-
-&lt;p&gt;&lt;i&gt;Input source&lt;/i&gt;通过异步的方式向你的线程传递事件。事件的源取决于&lt;i&gt;input source&lt;/i&gt;的类型。&lt;i&gt;input source&lt;/i&gt;大概分为两类：&lt;/p&gt;
-
-&lt;ul&gt;
-&lt;li&gt;&lt;p&gt;&lt;strong&gt;Port-based port&lt;/strong&gt;
-&lt;i&gt;Port-based port&lt;/i&gt;监控你application的Mach port。&lt;/p&gt;&lt;/li&gt;
-
-&lt;li&gt;&lt;p&gt;&lt;strong&gt;Custom input source&lt;/strong&gt;
-&lt;i&gt;Custom input source&lt;/i&gt;监控自定义的事件source。&lt;/p&gt;&lt;/li&gt;
-&lt;/ul&gt;
-
-&lt;p&gt;&lt;i&gt;runloop&lt;/i&gt;不关心是哪种&lt;i&gt;input source&lt;/i&gt;，这两种*input sources*系统都有实现。这两个&lt;i&gt;input source&lt;/i&gt;唯一的不同就是它们如何发送信号。&lt;i&gt;Port-based port&lt;/i&gt;通过内核自动发送信号。&lt;i&gt;Custom input source&lt;/i&gt;只能从其他线程接受手动发送的信号。&lt;/p&gt;
-
-&lt;p&gt;当你创建一个&lt;i&gt;input source&lt;/i&gt;，你把它赋值到&lt;i&gt;runloop&lt;/i&gt;的mode。mode会影响被监控的input source。大多数情况，你在&lt;code&gt;NSDefaultRunLoopMode&lt;/code&gt;下运行&lt;i&gt;runloop&lt;/i&gt;，但是你也可以指定自定义的mode。如果一个&lt;i&gt;input source&lt;/i&gt;不在当前被监控的mode中，它产生的一些事件将会被暂时的放在一边，直到下一个run loop的mode和input source的mode相同才开始处理这个input source产生的事件。&lt;/p&gt;
-
-&lt;p&gt;接下去的部分描述了一些input source&lt;/p&gt;
-
-&lt;h5 id=&#34;port-based-sources&#34;&gt;Port-Based Sources&lt;/h5&gt;
-
-&lt;p&gt;Cocoa和Core Foundation通过提供端口相关的对象和方法来创建&lt;i&gt;Port-Based Source&lt;/i&gt;。例如，在Cocoa中，你没必要直接创建input source。你使用&lt;code&gt;NSPort&lt;/code&gt;的方法&lt;code&gt;[NSPort port]&lt;/code&gt;，添加port到run loop中。Port object会为你创建和配置所需的&lt;i&gt;Port-Based Sources&lt;/i&gt;。&lt;/p&gt;
-
-&lt;p&gt;在 Core Foundation中，你必须要自己创建port和它的run loop source。用 &lt;a href=&#34;https://developer.apple.com/documentation/corefoundation/cfmachport&#34;&gt;CFMachPortRef&lt;/a&gt;, &lt;a href=&#34;https://developer.apple.com/documentation/corefoundation/cfmessageportref&#34;&gt;CFMessagePortRef&lt;/a&gt;,  &lt;a href=&#34;https://developer.apple.com/documentation/corefoundation/cfsockeref&#34;&gt;CFSocketRef&lt;/a&gt;这些不透明指针创建相应的对象。&lt;/p&gt;
-
-&lt;p&gt;如何配置和设置自定义的&lt;i&gt;Port-Based Sources&lt;/i&gt;，请看&lt;a href=&#34;https://developer.apple.com/library/content/documentation/Cocoa/Conceptual/Multithreading/RunLoopManagement/RunLoopManagement.html#//apple_ref/doc/uid/10000057i-CH16-131281&#34;&gt; Configuring a Port-Based Input Source&lt;/a&gt;&lt;/p&gt;
-
-&lt;h5 id=&#34;custom-input-sources-core-foundation&#34;&gt;Custom Input Sources（Core Foundation）&lt;/h5&gt;
-
-&lt;p&gt;为了创建自定义的input source，你必须使用Core Foundation中的&lt;a href=&#34;https://developer.apple.com/documentation/corefoundation/cfrunloopsource&#34;&gt;CFRunLoopSourceRef&lt;/a&gt;不透明类相关的方法。你需要在回调方法中配置这个Custom Input Sources。Core Foundation会在配置Custom Input Sources、处理输入事件和当source要从runloop中移除的时候调用这几个回调。&lt;/p&gt;
-
-&lt;p&gt;对于如何创建一个custom input source请看这里&lt;a href=&#34;https://developer.apple.com/library/content/documentation/Cocoa/Conceptual/Multithreading/RunLoopManagement/RunLoopManagement.html#//apple_ref/doc/uid/10000057i-CH16-SW3&#34;&gt;Defining a Custom Input Source&lt;/a&gt;&lt;/p&gt;
-
-&lt;h5 id=&#34;cocoa-perform-selector-sources-cocoa&#34;&gt;Cocoa Perform Selector Sources（Cocoa）&lt;/h5&gt;
-
-&lt;p&gt;除了&lt;i&gt;Port-Based Sources&lt;/i&gt;，Cocoa定义了一个&lt;i&gt;custom input source&lt;/i&gt;，这允许你向任何线程中发送选择子。和&lt;i&gt;Port-Based Sources&lt;/i&gt;一样，执行选择子selector的请求在同一个线程上是连续的，当多个方法同时向线程发送请求的时候可能会导致同步的问题。和&lt;i&gt;Port-Based Sources&lt;/i&gt;不同的是：一个&lt;i&gt;perform selector source&lt;/i&gt;执行完它的selector，它自己会从runloop中移除。&lt;/p&gt;
-
-&lt;p&gt;当向另一个线程发送selector请求时，目标线程必须有一个active的&lt;i&gt;runloop&lt;/i&gt;。这意味着你必须等待，直到该线程中runloop的状态变成 active。因为主线程会自己开始一个&lt;i&gt;runloop&lt;/i&gt;，只要系统一调用Application delegate的&lt;code&gt;applicationDidFinishLaunching:&lt;/code&gt;（这时候系统的runloop就创建出来了），你就可以向主线程发送selector请求。每次&lt;i&gt;Runloop&lt;/i&gt;会处理所有队列的selector请求，而不是只处理一个队列的请求。下面列出了一些perform方法&lt;/p&gt;
-
-&lt;table&gt;
-&lt;thead&gt;
-&lt;tr&gt;
-&lt;th align=&#34;center&#34;&gt;Methods&lt;/th&gt;
-&lt;/tr&gt;
-&lt;/thead&gt;
-
-&lt;tbody&gt;
-&lt;tr&gt;
-&lt;td align=&#34;center&#34;&gt;&lt;a href=&#34;https://developer.apple.com/documentation/objectivec/nsobject/1414900-performselector&#34;&gt;performSelectorOnMainThread:withObject:waitUntilDone:&lt;/a&gt;、&lt;a href=&#34;https://developer.apple.com/documentation/objectivec/nsobject/1411637-performselector&#34;&gt;performSelectorOnMainThread:withObject:waitUntilDone:modes:&lt;/a&gt;&lt;/td&gt;
-&lt;/tr&gt;
-
-&lt;tr&gt;
-&lt;td align=&#34;center&#34;&gt;&lt;a href=&#34;https://developer.apple.com/documentation/objectivec/nsobject/1414476-perform&#34;&gt;performSelector:onThread:withObject:waitUntilDone:&lt;/a&gt;、&lt;a href=&#34;https://developer.apple.com/documentation/objectivec/nsobject/1417922-perform&#34;&gt;performSelector:onThread:withObject:waitUntilDone:modes:&lt;/a&gt;&lt;/td&gt;
-&lt;/tr&gt;
-
-&lt;tr&gt;
-&lt;td align=&#34;center&#34;&gt;&lt;a href=&#34;https://developer.apple.com/documentation/objectivec/nsobject/1416176-perform&#34;&gt;performSelector:withObject:afterDelay:&lt;/a&gt;、&lt;a href=&#34;https://developer.apple.com/documentation/objectivec/nsobject/1415652-perform&#34;&gt;performSelector:withObject:afterDelay:inModes:&lt;/a&gt;&lt;/td&gt;
-&lt;/tr&gt;
-
-&lt;tr&gt;
-&lt;td align=&#34;center&#34;&gt;&lt;a href=&#34;https://developer.apple.com/documentation/objectivec/nsobject/1417611-cancelpreviousperformrequests&#34;&gt;cancelPreviousPerformRequestsWithTarget:&lt;/a&gt;、&lt;a href=&#34;https://developer.apple.com/documentation/objectivec/nsobject/1410849-cancelpreviousperformrequests&#34;&gt;cancelPreviousPerformRequestsWithTarget:selector:object:&lt;/a&gt;&lt;/td&gt;
-&lt;/tr&gt;
-&lt;/tbody&gt;
-&lt;/table&gt;
-
-&lt;h5 id=&#34;timer-sources&#34;&gt;Timer Sources&lt;/h5&gt;
-
-&lt;p&gt;&lt;i&gt;Timer sources&lt;/i&gt;会在将来的某个时间，发送同步事件到你的当前的线程。Timer是线程用来通知它自己的一种方式。
-尽管它是基于时间的通知，一个timer并不能保证在准确的时间点执行事件。和其他的&lt;i&gt;Input source&lt;/i&gt;一样，Timer和你&lt;i&gt;run loop&lt;/i&gt;指定的mode有关系。如果Timer的mode不是你当前runloop正在跑的mode，它是不会被触发的，直到你的&lt;i&gt;runloop&lt;/i&gt;运行的的mode是你的Timer所支持的。类似的，如果一个Timer被触发，但是当runloop在执行Handler，Timer将会一直等待，直到下次再次进入runloop的时候才会执行。如果这个&lt;i&gt;runloop&lt;/i&gt;不再跑了，这个Timer将永远不会被触发。&lt;/p&gt;
-
-&lt;p&gt;你可以配置Timer来运行事件，一次或者不停重复。一个重复的Timer会基于设定好的触发时间，自动重新安排它自己到run loop中，但这个时间间隔并不一定准确。例如，如果一个Timer在一个特定时间被触发，每5秒重复一次。即使实际的触发时间被延迟了，被安排的触发时间总落在5秒的延迟时间间隔之内。如果触发时间被延迟太多，会导致它错过了一次或者更多被安排到run loop的机会。在一个不恰当的时机被触发之后，Timer则会被安排到下一次run loop。
-关于配置timer sources的更多信息，请看&lt;a href=&#34;https://developer.apple.com/library/content/documentation/Cocoa/Conceptual/Multithreading/RunLoopManagement/RunLoopManagement.html#//apple_ref/doc/uid/10000057i-CH16-SW6&#34;&gt;Configuring Timer Sources&lt;/a&gt;。更多相关信息&lt;a href=&#34;https://developer.apple.com/documentation/foundation/timer&#34;&gt;NSTimer Class Reference&lt;/a&gt;或&lt;a href=&#34;https://developer.apple.com/documentation/corefoundation/cfrunlooptimer-rhk&#34;&gt;CFRunLoopTimer Reference&lt;/a&gt;。&lt;/p&gt;
-
-&lt;h5 id=&#34;run-loop-observers&#34;&gt;Run Loop Observers&lt;/h5&gt;
-
-&lt;p&gt;一般的source是在一个异步或者同步的事件发生的时候被触发的，而&lt;i&gt;run-loop observer&lt;/i&gt;是在&lt;i&gt;runloop&lt;/i&gt;它执行的时候触发的。你可以通过&lt;i&gt;run-loop observer&lt;/i&gt;来准备一些线程待处理的事件，或者在线程sleep之前，在线程中做一些事。&lt;i&gt;run-loop observers&lt;/i&gt;可以观察到下面的一些事件：&lt;/p&gt;
-
-&lt;ul&gt;
-&lt;li&gt;进入&lt;i&gt;runloop&lt;/i&gt;的时候&lt;/li&gt;
-&lt;li&gt;当&lt;i&gt;runloop&lt;/i&gt;将要处理timer的时候&lt;/li&gt;
-&lt;li&gt;当&lt;i&gt;runloop&lt;/i&gt;将要处理input source的时候&lt;/li&gt;
-&lt;li&gt;当&lt;i&gt;runloop&lt;/i&gt;将要sleep的时候&lt;/li&gt;
-&lt;li&gt;当&lt;i&gt;runloop&lt;/i&gt;已经醒来，还没有开始处理event的时候&lt;/li&gt;
-&lt;li&gt;当&lt;i&gt;runloop&lt;/i&gt;退出的时候&lt;/li&gt;
-&lt;/ul&gt;
-
-&lt;p&gt;你可以使用Core Foundation向Application添加&lt;i&gt;run-loop observer&lt;/i&gt;。为了创建一个&lt;i&gt;run_loop observer&lt;/i&gt;，你需要使用&lt;a href=&#34;https://developer.apple.com/documentation/corefoundation/cfrunloopobserver&#34;&gt;CFRunLoopObserverRef&lt;/a&gt;类。这个类会追踪你自定义callback函数、你感兴趣的&lt;code&gt;CFRunLoopActivity&lt;/code&gt;。&lt;/p&gt;
-
-&lt;p&gt;和Timer相似，&lt;i&gt;run-loop observer&lt;/i&gt;可以只运行一次，或者不停重复。只运行一次的&lt;i&gt;run-loop observer&lt;/i&gt;在一次run loop之后就会从&lt;i&gt;runloop&lt;/i&gt;中移除。当你创建&lt;i&gt;run-loop observer&lt;/i&gt;的时候，你要决定r是一次还是不停重复。&lt;/p&gt;
-
-&lt;p&gt;对于如何创建一个&lt;i&gt;run-loop observer&lt;/i&gt;的例子，看&lt;a href=&#34;https://developer.apple.com/library/content/documentation/Cocoa/Conceptual/Multithreading/RunLoopManagement/RunLoopManagement.html#//apple_ref/doc/uid/10000057i-CH16-SW18&#34;&gt; Configuring the Run Loop&lt;/a&gt;,更多相关信息&lt;a href=&#34;https://developer.apple.com/documentation/corefoundation/cfrunloopobserver-ri3&#34;&gt;CFRunLoopObserver Reference&lt;/a&gt;&lt;/p&gt;
-
-&lt;h5 id=&#34;the-run-loop-sequence-of-events&#34;&gt;The Run Loop Sequence of Events&lt;/h5&gt;
-
-&lt;p&gt;每次你运行&lt;i&gt;runloop&lt;/i&gt;，你线程的&lt;i&gt;runloop&lt;/i&gt;会处理之前挂起的事件，并且向*run-loop observer*发送通知。&lt;i&gt;runloop&lt;/i&gt;执行的顺序如下面所列出的：&lt;/p&gt;
-
-&lt;ol&gt;
-&lt;li&gt;通知&lt;i&gt;run-loop observer&lt;/i&gt;，进入&lt;i&gt;runloop&lt;/i&gt;&lt;/li&gt;
-&lt;li&gt;通知&lt;i&gt;run-loop observer&lt;/i&gt;，已经准备好的Timer将要触发&lt;/li&gt;
-&lt;li&gt;通知&lt;i&gt;run-loop observer&lt;/i&gt;，以及准备好的*no-port-based input source*将要被触发&lt;/li&gt;
-&lt;li&gt;触发&lt;i&gt;no-port-based input source&lt;/i&gt;&lt;/li&gt;
-&lt;li&gt;如果一个&lt;i&gt;port-based input source&lt;/i&gt;准备好等待触发，立即处理该事件，再从第九步开始执行&lt;/li&gt;
-&lt;li&gt;通知&lt;i&gt;run-loop observer&lt;/i&gt;，线程将要sleep&lt;/li&gt;
-&lt;li&gt;线程sleep直到下面的事件发生：
-
-&lt;ul&gt;
-&lt;li&gt;&lt;i&gt;port-based input source&lt;/i&gt;事件到达&lt;/li&gt;
-&lt;li&gt;一个Timer触发了&lt;/li&gt;
-&lt;li&gt;&lt;i&gt;runloop&lt;/i&gt;超时了&lt;/li&gt;
-&lt;li&gt;&lt;i&gt;runloop&lt;/i&gt;被手动唤醒&lt;/li&gt;
-&lt;/ul&gt;&lt;/li&gt;
-&lt;li&gt;通知&lt;i&gt;run-loop observer&lt;/i&gt;，线程将要被唤醒&lt;/li&gt;
-
-&lt;li&gt;&lt;p&gt;处理挂起的事件&lt;/p&gt;
-
-&lt;ul&gt;
-&lt;li&gt;如果一个用户定义的timer触发了，处理相关事件，重新开始循环，回到第二步继续执行&lt;/li&gt;
-&lt;li&gt;如果&lt;i&gt;input source&lt;/i&gt;触发，传递相应的事件&lt;/li&gt;
-&lt;li&gt;如果&lt;i&gt;runloop*&lt;/i&gt;明确的被唤醒，但是还没有超时，重新开始循环，回到第二步继续执行&lt;/li&gt;
-&lt;/ul&gt;&lt;/li&gt;
-
-&lt;li&gt;&lt;p&gt;通知&lt;i&gt;run_loop observer&lt;/i&gt;，&lt;i&gt;runloop&lt;/i&gt;已经退出&lt;/p&gt;&lt;/li&gt;
-&lt;/ol&gt;
-
-&lt;blockquote&gt;
-&lt;p&gt;&lt;strong&gt;Tip:&lt;/strong&gt;no-port-based input source就是我们常说的&lt;strong&gt;source0&lt;/strong&gt;，port-based input source就是&lt;strong&gt;source1&lt;/strong&gt;&lt;/p&gt;
-&lt;/blockquote&gt;
-
-&lt;p&gt;因为Timer和input source的通知是在事件被触发之前，所以这之间有一个过渡时间。如果你要在这个时间做一些事情，你可以使用&lt;strong&gt;sleep&lt;/strong&gt;和 &lt;strong&gt;awake-from-sleep&lt;/strong&gt; 通知来帮助你获得这段时间的控制权。&lt;/p&gt;
-
-&lt;p&gt;一个&lt;i&gt;runloop&lt;em&gt;&lt;/i&gt;可以通过使用&lt;i&gt;run loop object&lt;/i&gt;被唤醒。其他的事件也可能引起&lt;i&gt;runloop&lt;/em&gt;&lt;/i&gt;被唤醒。例如，添加&lt;i&gt;no-port-based input source&lt;/i&gt;来唤醒&lt;i&gt;runloop*&lt;/i&gt;以至于input source可以被立即处理，而不是等待其他的事件发生。&lt;/p&gt;
-
-&lt;hr /&gt;
-
-&lt;blockquote&gt;
-&lt;p&gt;iOS系统中有很多用到了RunLoop的地方：&lt;/p&gt;
-
-&lt;ul&gt;
-&lt;li&gt;AutoreleasePool：监听&lt;code&gt;kCFRunLoopEntry&lt;/code&gt;事件，保证在所以回调之前创建自动释放池；监听&lt;code&gt;BeforeWaiting&lt;/code&gt;事件，释放旧的线程池，创建新的线程池；监听&lt;code&gt;kCFRunLoopExit&lt;/code&gt;事件，保证线程池最后被释放。&lt;/li&gt;
-&lt;li&gt;事件响应：通过port-based input source监听用户的事件，并转发给App进程，如用UIControl的事件。&lt;/li&gt;
-&lt;li&gt;手势识别：监听&lt;code&gt;kCFRunLoopBeforeWaiting&lt;/code&gt;事件在事件的回调函数中标记待处理的手势，并处理手势。&lt;/li&gt;
-&lt;li&gt;界面更新：&lt;code&gt;setNeedsLayout&lt;/code&gt;、&lt;code&gt;setNeedsDisplay&lt;/code&gt;都会将该view标记为待处理，等到下一个runloop的时候会布局UI。&lt;/li&gt;
-&lt;li&gt;定时器：就是一个CFRunLoopTimerRef&lt;/li&gt;
-&lt;li&gt;PerformSelecter：将方法扔到某个线程中，在下一个run loop的时候执行。&lt;/li&gt;
-&lt;li&gt;关于GCD：dispatch_async(dispatch_get_main_queue(), block)向主线程的run loop发送消息，唤醒run loop。并执行block中的内容。&lt;/li&gt;
-&lt;/ul&gt;
-&lt;/blockquote&gt;
-
-&lt;p&gt;PPT总结一下：&lt;/p&gt;
-
-&lt;p&gt;&lt;img src=&#34;http://upload-images.jianshu.io/upload_images/1086250-cb2c4b4a6d0973e7.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240&#34; alt=&#34;Screen Shot 2017-09-05 at 10.12.16 AM.png&#34; /&gt;&lt;/p&gt;
-
-&lt;p&gt;&lt;img src=&#34;http://upload-images.jianshu.io/upload_images/1086250-fb6430f46efe4735.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240&#34; alt=&#34;Screen Shot 2017-09-05 at 10.12.37 AM.png&#34; /&gt;&lt;/p&gt;
-
-&lt;p&gt;&lt;img src=&#34;http://upload-images.jianshu.io/upload_images/1086250-7118fdeabb5ffe76.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240&#34; alt=&#34;Screen Shot 2017-09-05 at 10.12.53 AM.png&#34; /&gt;&lt;/p&gt;
-
-&lt;p&gt;&lt;img src=&#34;http://upload-images.jianshu.io/upload_images/1086250-e7ae08b4d61ec9e6.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240&#34; alt=&#34;Screen Shot 2017-09-05 at 10.13.01 AM.png&#34; /&gt;&lt;/p&gt;
-
-&lt;p&gt;&lt;img src=&#34;http://upload-images.jianshu.io/upload_images/1086250-073579ed39612c1d.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240&#34; alt=&#34;Screen Shot 2017-09-05 at 10.12.47 AM.png&#34; /&gt;&lt;/p&gt;
-
-&lt;p&gt;&lt;img src=&#34;http://upload-images.jianshu.io/upload_images/1086250-cae92bc60b877b48.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240&#34; alt=&#34;Screen Shot 2017-09-05 at 10.13.12 AM.png&#34; /&gt;&lt;/p&gt;
-
-&lt;p&gt;&lt;img src=&#34;http://upload-images.jianshu.io/upload_images/1086250-fae8de2bdb8232aa.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240&#34; alt=&#34;Screen Shot 2017-09-05 at 10.13.21 AM.png&#34; /&gt;&lt;/p&gt;
-
-&lt;p&gt;&lt;img src=&#34;http://upload-images.jianshu.io/upload_images/1086250-ac972598a07a90bc.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240&#34; alt=&#34;Screen Shot 2017-09-05 at 10.13.27 AM.png&#34; /&gt;&lt;/p&gt;</description>
+    <item>
+      <title>快速排序</title>
+      <link>https://LinkRober.github.io/bookshelf/2017/12/%E5%BF%AB%E9%80%9F%E6%8E%92%E5%BA%8F/</link>
+      <pubDate>Fri, 01 Dec 2017 00:00:00 +0000</pubDate>
+      
+      <guid>https://LinkRober.github.io/bookshelf/2017/12/%E5%BF%AB%E9%80%9F%E6%8E%92%E5%BA%8F/</guid>
+      <description>&lt;span class=&#34;highlight-text primary&#34;&gt;
+故事
+&lt;/span&gt;
+
+&lt;p&gt;快速排序由&lt;strong&gt;C.A.R.Hoare（东尼霍尔）&lt;/strong&gt;在1960年提出。之后又有许多人对此进行改进。如果你对快速排序感兴趣可以去看看东尼霍尔1962年在Computer Journal发表的论文“Quicksort”以及《算法导论》的第七章。&lt;/p&gt;</description>
     </item>
     
+    <item>
+      <title>一个音视频厂的图像处理流程概述</title>
+      <link>https://LinkRober.github.io/bookshelf/2017/11/%E4%B8%80%E4%B8%AA%E9%9F%B3%E8%A7%86%E9%A2%91%E5%8E%82%E7%9A%84%E5%9B%BE%E5%83%8F%E5%A4%84%E7%90%86%E6%B5%81%E7%A8%8B%E6%A6%82%E8%BF%B0/</link>
+      <pubDate>Mon, 27 Nov 2017 00:00:00 +0000</pubDate>
+      
+      <guid>https://LinkRober.github.io/bookshelf/2017/11/%E4%B8%80%E4%B8%AA%E9%9F%B3%E8%A7%86%E9%A2%91%E5%8E%82%E7%9A%84%E5%9B%BE%E5%83%8F%E5%A4%84%E7%90%86%E6%B5%81%E7%A8%8B%E6%A6%82%E8%BF%B0/</guid>
+      <description>&lt;p&gt;&lt;img src=&#34;http://upload-images.jianshu.io/upload_images/1086250-3eac00965effbe70?imageMogr2/auto-orient/strip%7CimageView2/2/w/320&#34; alt=&#34;&#34; /&gt;&lt;/p&gt;
+
+&lt;p&gt;视频编辑分为两部分：&lt;strong&gt;Camrea Engine（视频资源采集）&lt;/strong&gt;和&lt;strong&gt;Video Edit Engine（后期视频编辑）&lt;/strong&gt;。在Camrea Engine采集的时候我们也可以做一些编辑操作，这叫预处理，比如说加滤镜。等到把采集到的资源交给Video Edit Engine时就是后处理。&lt;/p&gt;
+
+&lt;p&gt;&lt;/p&gt;</description>
+    </item>
+    
+    <item>
+      <title>RCTRootView、RCTBridge做了什么</title>
+      <link>https://LinkRober.github.io/bookshelf/2017/10/rctrootviewrctbridge%E5%81%9A%E4%BA%86%E4%BB%80%E4%B9%88/</link>
+      <pubDate>Sat, 28 Oct 2017 00:00:00 +0000</pubDate>
+      
+      <guid>https://LinkRober.github.io/bookshelf/2017/10/rctrootviewrctbridge%E5%81%9A%E4%BA%86%E4%BB%80%E4%B9%88/</guid>
+      <description>&lt;p&gt;本系列文章作为学习RN期间的总结&lt;/p&gt;
+
+&lt;ul&gt;
+&lt;li&gt;&lt;a href=&#34;https://linkrober.github.io/bookshelf/2017/10/react-native%E5%A6%82%E4%BD%95%E9%9B%86%E6%88%90%E5%88%B0%E7%8E%B0%E6%9C%89%E9%A1%B9%E7%9B%AE%E4%B8%AD/&#34;&gt;React Native如何集成到现有项目中&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;&lt;a href=&#34;https://linkrober.github.io/bookshelf/2017/10/react-native%E5%92%8Cnative%E9%97%B4%E7%9A%84%E9%80%9A%E4%BF%A1/&#34;&gt;React Native和Native间的通信实践&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;RCTRootView、RCTBridge做了什么&lt;/li&gt;
+&lt;li&gt;&lt;a href=&#34;https://linkrober.github.io/bookshelf/2017/12/native%E5%92%8Cjs%E9%80%9A%E4%BF%A1%E6%A6%82%E8%BF%B0/&#34;&gt;Object-C和JS通信概述&lt;/a&gt;&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;p&gt;&lt;/p&gt;</description>
+    </item>
+    
+    <item>
+      <title>React Native和Native间的通信实践</title>
+      <link>https://LinkRober.github.io/bookshelf/2017/10/react-native%E5%92%8Cnative%E9%97%B4%E7%9A%84%E9%80%9A%E4%BF%A1%E5%AE%9E%E8%B7%B5/</link>
+      <pubDate>Wed, 25 Oct 2017 00:00:00 +0000</pubDate>
+      
+      <guid>https://LinkRober.github.io/bookshelf/2017/10/react-native%E5%92%8Cnative%E9%97%B4%E7%9A%84%E9%80%9A%E4%BF%A1%E5%AE%9E%E8%B7%B5/</guid>
+      <description>&lt;!-- thumbnailImage = &#39;rn_image.jpeg&#39;
+thumbnailImagePosition = &#39;bottom&#39; --&gt;
+
+&lt;p&gt;本系列文章作为学习RN期间的总结&lt;/p&gt;
+
+&lt;ul&gt;
+&lt;li&gt;&lt;a href=&#34;https://linkrober.github.io/bookshelf/2017/10/react-native%E5%A6%82%E4%BD%95%E9%9B%86%E6%88%90%E5%88%B0%E7%8E%B0%E6%9C%89%E9%A1%B9%E7%9B%AE%E4%B8%AD/&#34;&gt;React Native如何集成到现有项目中&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;React Native和Native间的通信实践&lt;/li&gt;
+&lt;li&gt;&lt;a href=&#34;https://linkrober.github.io/bookshelf/2017/10/rctrootviewrctbridge%E5%81%9A%E4%BA%86%E4%BB%80%E4%B9%88/&#34;&gt;RCTRootView、RCTBridge做了什么&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;&lt;a href=&#34;https://linkrober.github.io/bookshelf/2017/12/native%E5%92%8Cjs%E9%80%9A%E4%BF%A1%E6%A6%82%E8%BF%B0/&#34;&gt;Object-C和JS通信概述&lt;/a&gt;&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;p&gt;&lt;/p&gt;</description>
+    </item>
+    
+    <item>
+      <title>React Native如何集成到现有项目中</title>
+      <link>https://LinkRober.github.io/bookshelf/2017/10/react-native%E5%A6%82%E4%BD%95%E9%9B%86%E6%88%90%E5%88%B0%E7%8E%B0%E6%9C%89%E9%A1%B9%E7%9B%AE%E4%B8%AD/</link>
+      <pubDate>Mon, 23 Oct 2017 00:00:00 +0000</pubDate>
+      
+      <guid>https://LinkRober.github.io/bookshelf/2017/10/react-native%E5%A6%82%E4%BD%95%E9%9B%86%E6%88%90%E5%88%B0%E7%8E%B0%E6%9C%89%E9%A1%B9%E7%9B%AE%E4%B8%AD/</guid>
+      <description>&lt;!-- thumbnailImage = &#39;rn_thumbnailImage.jpeg&#39;
+thumbnailImagePosition = &#39;bottom&#39; --&gt;
+
+&lt;p&gt;本系列文章作为学习RN期间的总结&lt;/p&gt;
+
+&lt;ul&gt;
+&lt;li&gt;React Native如何集成到现有项目中&lt;/li&gt;
+&lt;li&gt;&lt;a href=&#34;https://linkrober.github.io/bookshelf/2017/10/react-native%E5%92%8Cnative%E9%97%B4%E7%9A%84%E9%80%9A%E4%BF%A1/&#34;&gt;React Native和Native间的通信实践&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;&lt;a href=&#34;https://linkrober.github.io/bookshelf/2017/10/rctrootviewrctbridge%E5%81%9A%E4%BA%86%E4%BB%80%E4%B9%88/&#34;&gt;RCTRootView、RCTBridge做了什么&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;&lt;a href=&#34;https://linkrober.github.io/bookshelf/2017/12/native%E5%92%8Cjs%E9%80%9A%E4%BF%A1%E6%A6%82%E8%BF%B0/&#34;&gt;Object-C和JS通信概述&lt;/a&gt;&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;p&gt;&lt;/p&gt;</description>
+    </item>
+    
+    <item>
+      <title>Runtime(三) 消息转发</title>
+      <link>https://LinkRober.github.io/bookshelf/2017/10/runtime%E4%B8%89-%E6%B6%88%E6%81%AF%E8%BD%AC%E5%8F%91/</link>
+      <pubDate>Mon, 16 Oct 2017 00:00:00 +0000</pubDate>
+      
+      <guid>https://LinkRober.github.io/bookshelf/2017/10/runtime%E4%B8%89-%E6%B6%88%E6%81%AF%E8%BD%AC%E5%8F%91/</guid>
+      <description>&lt;p&gt;向对象发送一个消息，如果没有处理就会发生错误。但是在产生错误之前，runtime会给接受对象第二次机会来处理消息。
+&lt;/p&gt;</description>
+    </item>
+    
+    <item>
+      <title>Runtime (二)  动态方法实现</title>
+      <link>https://LinkRober.github.io/bookshelf/2017/10/runtime-%E4%BA%8C--%E5%8A%A8%E6%80%81%E6%96%B9%E6%B3%95%E5%AE%9E%E7%8E%B0/</link>
+      <pubDate>Mon, 09 Oct 2017 18:06:28 +0800</pubDate>
+      
+      <guid>https://LinkRober.github.io/bookshelf/2017/10/runtime-%E4%BA%8C--%E5%8A%A8%E6%80%81%E6%96%B9%E6%B3%95%E5%AE%9E%E7%8E%B0/</guid>
+      <description>&lt;h3 id=&#34;dynamic-method-resolution&#34;&gt;Dynamic Method Resolution&lt;/h3&gt;
+
+&lt;p&gt;有的时候，你可能想要提供方法的动态实现。例如，Object-C 属性特征包含了&lt;code&gt;@dynamic&lt;/code&gt;
+&lt;/p&gt;</description>
+    </item>
+    
+    <item>
+      <title>Runtime (一) 消息</title>
+      <link>https://LinkRober.github.io/bookshelf/2017/09/runtime-%E4%B8%80-%E6%B6%88%E6%81%AF/</link>
+      <pubDate>Fri, 29 Sep 2017 00:00:00 +0000</pubDate>
+      
+      <guid>https://LinkRober.github.io/bookshelf/2017/09/runtime-%E4%B8%80-%E6%B6%88%E6%81%AF/</guid>
+      <description>&lt;h3 id=&#34;message&#34;&gt;Message&lt;/h3&gt;
+
+&lt;p&gt;这篇文章描述了消息如何通过使用&lt;code&gt;objc_msgSend&lt;/code&gt;发送，如何通过方法名称找到对应方法的reference&lt;/p&gt;
+
+&lt;h4 id=&#34;the-objc-msgsend-function&#34;&gt;The objc_msgSend Function&lt;/h4&gt;
+
+&lt;p&gt;在Object-C中，发送的消息直到运行时才绑定到正真的方式实现。
+&lt;/p&gt;</description>
+    </item>
+    
+    <item>
+      <title>Run Loops (二)</title>
+      <link>https://LinkRober.github.io/bookshelf/2017/09/run-loops-%E4%BA%8C/</link>
+      <pubDate>Tue, 26 Sep 2017 00:00:00 +0000</pubDate>
+      
+      <guid>https://LinkRober.github.io/bookshelf/2017/09/run-loops-%E4%BA%8C/</guid>
+      <description>&lt;h3 id=&#34;when-would-you-use-a-run-loop&#34;&gt;When Would You Use a Run Loop?&lt;/h3&gt;
+
+&lt;p&gt;你唯一要使用run loop，就是当你要在application中创建线程的时候。你Application的主线程是架构很重要的一部分。所以，iOS系统为app的提供了&lt;i&gt;runloop&lt;/i&gt;代码，并自动开始。在iOS中运行Main loop作为app启动步骤的一部分。
+&lt;/p&gt;</description>
+    </item>
+    
+    <item>
+      <title>Run Loops (一)</title>
+      <link>https://LinkRober.github.io/bookshelf/2017/09/run-loops-%E4%B8%80/</link>
+      <pubDate>Mon, 25 Sep 2017 00:00:00 +0000</pubDate>
+      
+      <guid>https://LinkRober.github.io/bookshelf/2017/09/run-loops-%E4%B8%80/</guid>
+      <description></description>
+    </item>
+    
+<<<<<<< HEAD
+=======
+    <item>
+      <title>git order</title>
+      <link>https://LinkRober.github.io/bookshelf/2017/04/git-order/</link>
+      <pubDate>Mon, 03 Apr 2017 17:06:19 +0800</pubDate>
+      
+      <guid>https://LinkRober.github.io/bookshelf/2017/04/git-order/</guid>
+      <description>&lt;h3 id=&#34;常用命令&#34;&gt;常用命令&lt;/h3&gt;
+
+&lt;p&gt;&lt;/p&gt;</description>
+    </item>
+    
+    <item>
+      <title>消息转发</title>
+      <link>https://LinkRober.github.io/bookshelf/2017/04/%E6%B6%88%E6%81%AF%E8%BD%AC%E5%8F%91/</link>
+      <pubDate>Mon, 03 Apr 2017 03:05:31 +0800</pubDate>
+      
+      <guid>https://LinkRober.github.io/bookshelf/2017/04/%E6%B6%88%E6%81%AF%E8%BD%AC%E5%8F%91/</guid>
+      <description>&lt;blockquote&gt;
+&lt;p&gt;描述：如果类不能执行这个方法，会执行动态&lt;strong&gt;消息转发&lt;/strong&gt;，如果该类还是不能动态的添加方法，则走&lt;strong&gt;完整的消息转发&lt;/strong&gt;。分两步，第一步&lt;strong&gt;看看有没有其他类可以执行该方法&lt;/strong&gt;，如果没有走第二步，&lt;strong&gt;将所有的细节封装到NSInvocation中，给接受者最后一次机会&lt;/strong&gt;。&lt;/p&gt;
+&lt;/blockquote&gt;
+
+&lt;p&gt;&lt;/p&gt;</description>
+    </item>
+    
+>>>>>>> e5d3b4cdd690c0207a157fcf508e2f39bea06a82
   </channel>
 </rss>

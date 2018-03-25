@@ -9,11 +9,11 @@
     <atom:link href="https://linkrober.github.io/bookshelf/categories/runtime/index.xml" rel="self" type="application/rss+xml" />
     
     <item>
-      <title>Runtime (一)</title>
-      <link>https://linkrober.github.io/bookshelf/2017/09/runtime-%E4%B8%80/</link>
+      <title>Runtime (一) 消息</title>
+      <link>https://linkrober.github.io/bookshelf/2017/09/runtime-%E4%B8%80-%E6%B6%88%E6%81%AF/</link>
       <pubDate>Fri, 29 Sep 2017 00:00:00 +0000</pubDate>
       
-      <guid>https://linkrober.github.io/bookshelf/2017/09/runtime-%E4%B8%80/</guid>
+      <guid>https://linkrober.github.io/bookshelf/2017/09/runtime-%E4%B8%80-%E6%B6%88%E6%81%AF/</guid>
       <description>&lt;h3 id=&#34;message&#34;&gt;Message&lt;/h3&gt;
 
 &lt;p&gt;这篇文章描述了消息如何通过使用&lt;code&gt;objc_msgSend&lt;/code&gt;发送，如何通过方法名称找到对应方法的reference&lt;/p&gt;

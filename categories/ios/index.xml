@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="utf-8" standalone="yes" ?>
 <rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
   <channel>
+<<<<<<< HEAD
     <title>董二千</title>
     <link>https://LinkRober.github.io/bookshelf/categories/ios/index.xml</link>
     <description>Recent content on 董二千</description>
@@ -14,6 +15,24 @@
       <pubDate>Fri, 01 Dec 2017 00:00:00 +0000</pubDate>
       
       <guid>https://linkrober.github.io/bookshelf/2017/12/ios%E5%A4%9A%E7%BA%BF%E7%A8%8B%E4%B8%AD%E7%9A%84%E9%94%81/</guid>
+=======
+    <title>Ios on 董二千</title>
+    <link>https://LinkRober.github.io/bookshelf/categories/ios/</link>
+    <description>Recent content in Ios on 董二千</description>
+    <generator>Hugo -- gohugo.io</generator>
+    <language>zh-cn</language>
+    <lastBuildDate>Fri, 01 Dec 2017 00:00:00 +0000</lastBuildDate>
+    
+	<atom:link href="https://LinkRober.github.io/bookshelf/categories/ios/index.xml" rel="self" type="application/rss+xml" />
+    
+    
+    <item>
+      <title>iOS多线程中的锁</title>
+      <link>https://LinkRober.github.io/bookshelf/2017/12/ios%E5%A4%9A%E7%BA%BF%E7%A8%8B%E4%B8%AD%E7%9A%84%E9%94%81/</link>
+      <pubDate>Fri, 01 Dec 2017 00:00:00 +0000</pubDate>
+      
+      <guid>https://LinkRober.github.io/bookshelf/2017/12/ios%E5%A4%9A%E7%BA%BF%E7%A8%8B%E4%B8%AD%E7%9A%84%E9%94%81/</guid>
+>>>>>>> e5d3b4cdd690c0207a157fcf508e2f39bea06a82
       <description>&lt;p&gt;涉及到多线程共享资源的情况下就避免不了资源竞争的问题，这时候就会用到各种锁，例如，&lt;code&gt;@synchronized&lt;/code&gt;、&lt;code&gt;NSLock&lt;/code&gt;、&lt;code&gt;OSSpinLock&lt;/code&gt;等等，虽然都是锁，但是锁的底层实现也不尽相同。大概可以分为：&lt;span class=&#34;highlight-text blue&#34;&gt;互斥锁&lt;/span&gt;、&lt;span class=&#34;highlight-text blue&#34;&gt;自旋锁&lt;/span&gt;、&lt;span class=&#34;highlight-text blue&#34;&gt;递归锁&lt;/span&gt;、
 &lt;span class=&#34;highlight-text blue&#34;&gt;读写锁&lt;/span&gt;。&lt;/p&gt;
 
@@ -26,6 +45,7 @@
 
 &lt;p&gt;我们锁的目的是在任何时刻最多只能有一个线程在修改资源，即在任何时刻只能有一个操作者保持锁。&lt;/p&gt;
 
+<<<<<<< HEAD
 &lt;p&gt;&lt;/p&gt;
 
 &lt;h4 id=&#34;互斥锁&#34;&gt;互斥锁&lt;/h4&gt;
@@ -299,10 +319,14 @@ com/library/content/documentation/Cocoa/Conceptual/Multithreading/ThreadSafety/T
 c&#34;&gt;pthreadcondwait&lt;/a&gt;&lt;/p&gt;
 
 &lt;p&gt;&lt;a href=&#34;https://stackoverflow.com/questions/3513045/conditional-variable-vs-semaphore&#34;&gt;Conditional Variable vs Semaphore&lt;/a&gt;&lt;/p&gt;</description>
+=======
+&lt;p&gt;&lt;/p&gt;</description>
+>>>>>>> e5d3b4cdd690c0207a157fcf508e2f39bea06a82
     </item>
     
     <item>
       <title>Runtime(三) 消息转发</title>
+<<<<<<< HEAD
       <link>https://linkrober.github.io/bookshelf/2017/10/runtime%E4%B8%89-%E6%B6%88%E6%81%AF%E8%BD%AC%E5%8F%91/</link>
       <pubDate>Mon, 16 Oct 2017 00:00:00 +0000</pubDate>
       
@@ -410,10 +434,19 @@ c&#34;&gt;pthreadcondwait&lt;/a&gt;&lt;/p&gt;
 &lt;/blockquote&gt;
 
 &lt;p&gt;在这部分提到的方法被描述在&lt;code&gt;NSObject&lt;/code&gt;类的说明中。更多的关于&lt;code&gt;invokeWithTarget:&lt;/code&gt;请看&lt;a href=&#34;https://developer.apple.com/documentation/foundation/nsinvocation&#34;&gt;NSInvocation&lt;/a&gt;类的说明。&lt;/p&gt;</description>
+=======
+      <link>https://LinkRober.github.io/bookshelf/2017/10/runtime%E4%B8%89-%E6%B6%88%E6%81%AF%E8%BD%AC%E5%8F%91/</link>
+      <pubDate>Mon, 16 Oct 2017 00:00:00 +0000</pubDate>
+      
+      <guid>https://LinkRober.github.io/bookshelf/2017/10/runtime%E4%B8%89-%E6%B6%88%E6%81%AF%E8%BD%AC%E5%8F%91/</guid>
+      <description>&lt;p&gt;向对象发送一个消息，如果没有处理就会发生错误。但是在产生错误之前，runtime会给接受对象第二次机会来处理消息。
+&lt;/p&gt;</description>
+>>>>>>> e5d3b4cdd690c0207a157fcf508e2f39bea06a82
     </item>
     
     <item>
       <title>Runtime (二)  动态方法实现</title>
+<<<<<<< HEAD
       <link>https://linkrober.github.io/bookshelf/2017/10/runtime-%E4%BA%8C--%E5%8A%A8%E6%80%81%E6%96%B9%E6%B3%95%E5%AE%9E%E7%8E%B0/</link>
       <pubDate>Mon, 09 Oct 2017 18:06:28 +0800</pubDate>
       
@@ -458,14 +491,31 @@ c&#34;&gt;pthreadcondwait&lt;/a&gt;&lt;/p&gt;
 &lt;p&gt;一个Object-C程序可以在运行的时候加载和链接新的类。动态加载可以用来做很多不同的事情。例如，系统偏好中的不同模块是通过动态加载的方式实现的。
 在Cocoa的环境中，动态加载一般被用来让应用更具灵活性。在编写自己的模块的时候，可以在runtime的时候被加载。更多的是用接口加载自定义的模版。OS X的系统设置中加载自定义的偏好模块。你应用程序的模块扩展等。
 因此在Mach-O文件中有一个runtime函数执行Object-C的动态加载(objc_loadModules,定义在objc/objc-load.h中)，Cocoa的&lt;code&gt;NSBundle&lt;/code&gt;类为动态加载提供了一个更方便的接口&amp;ndash;面向对象的聚合相关服务的接口。&lt;/p&gt;</description>
+=======
+      <link>https://LinkRober.github.io/bookshelf/2017/10/runtime-%E4%BA%8C--%E5%8A%A8%E6%80%81%E6%96%B9%E6%B3%95%E5%AE%9E%E7%8E%B0/</link>
+      <pubDate>Mon, 09 Oct 2017 18:06:28 +0800</pubDate>
+      
+      <guid>https://LinkRober.github.io/bookshelf/2017/10/runtime-%E4%BA%8C--%E5%8A%A8%E6%80%81%E6%96%B9%E6%B3%95%E5%AE%9E%E7%8E%B0/</guid>
+      <description>&lt;h3 id=&#34;dynamic-method-resolution&#34;&gt;Dynamic Method Resolution&lt;/h3&gt;
+
+&lt;p&gt;有的时候，你可能想要提供方法的动态实现。例如，Object-C 属性特征包含了&lt;code&gt;@dynamic&lt;/code&gt;
+&lt;/p&gt;</description>
+>>>>>>> e5d3b4cdd690c0207a157fcf508e2f39bea06a82
     </item>
     
     <item>
       <title>Runtime (一) 消息</title>
+<<<<<<< HEAD
       <link>https://linkrober.github.io/bookshelf/2017/09/runtime-%E4%B8%80-%E6%B6%88%E6%81%AF/</link>
       <pubDate>Fri, 29 Sep 2017 00:00:00 +0000</pubDate>
       
       <guid>https://linkrober.github.io/bookshelf/2017/09/runtime-%E4%B8%80-%E6%B6%88%E6%81%AF/</guid>
+=======
+      <link>https://LinkRober.github.io/bookshelf/2017/09/runtime-%E4%B8%80-%E6%B6%88%E6%81%AF/</link>
+      <pubDate>Fri, 29 Sep 2017 00:00:00 +0000</pubDate>
+      
+      <guid>https://LinkRober.github.io/bookshelf/2017/09/runtime-%E4%B8%80-%E6%B6%88%E6%81%AF/</guid>
+>>>>>>> e5d3b4cdd690c0207a157fcf508e2f39bea06a82
       <description>&lt;h3 id=&#34;message&#34;&gt;Message&lt;/h3&gt;
 
 &lt;p&gt;这篇文章描述了消息如何通过使用&lt;code&gt;objc_msgSend&lt;/code&gt;发送，如何通过方法名称找到对应方法的reference&lt;/p&gt;
@@ -473,6 +523,7 @@ c&#34;&gt;pthreadcondwait&lt;/a&gt;&lt;/p&gt;
 &lt;h4 id=&#34;the-objc-msgsend-function&#34;&gt;The objc_msgSend Function&lt;/h4&gt;
 
 &lt;p&gt;在Object-C中，发送的消息直到运行时才绑定到正真的方式实现。
+<<<<<<< HEAD
 &lt;/p&gt;
 
 &lt;pre&gt;&lt;code&gt;[receiver message]
@@ -566,10 +617,14 @@ for(i = 0;i &amp;lt; 100;i++){
 &lt;p&gt;首先&lt;code&gt;self&lt;/code&gt;和&lt;code&gt;_cmd&lt;/code&gt;被传递到具体的实现，在两个参数在方法中通过语法的方式被隐藏，但是当这些参数在被作为一个funcation被调用的时候必须要明确。
 使用&lt;code&gt;methodForSelector:&lt;/code&gt;来避免动态绑定可以节省大部分时间。但是如果同一个消息被多次调用，动态绑定的缓存机制可能更优雅点，因为上面的&lt;code&gt;for&lt;/code&gt;循环会遍历所有tartet。
 记住，&lt;code&gt;methodForSelector:&lt;/code&gt;是Cocoa的运行时系统提供的，它不是OC语言自己的特性。&lt;/p&gt;</description>
+=======
+&lt;/p&gt;</description>
+>>>>>>> e5d3b4cdd690c0207a157fcf508e2f39bea06a82
     </item>
     
     <item>
       <title>Run Loops (二)</title>
+<<<<<<< HEAD
       <link>https://linkrober.github.io/bookshelf/2017/09/run-loops-%E4%BA%8C/</link>
       <pubDate>Tue, 26 Sep 2017 00:00:00 +0000</pubDate>
       
@@ -701,10 +756,21 @@ for(i = 0;i &amp;lt; 100;i++){
 &lt;p&gt;线程安全取决于你使用操作&lt;i&gt;runloop&lt;/i&gt;的API。在Core Foundation中的方法一般是线程安全的，可以被任何其他线程调用。如果你正在执行操作，这些操作改变了runloop的配置。无论什么时候，这样做任然是一个很好的实践。&lt;/p&gt;
 
 &lt;p&gt;Cocoa的&lt;a href=&#34;https://developer.apple.com/documentation/foundation/runloop&#34;&gt;NSRunLoop&lt;/a&gt;类。Cocoa的NSRunLoop和Core Foundation不一样，不是线程安全的。如果你使用&lt;code&gt;NSRunLoop&lt;/code&gt;类来修改你的runloop，你应该在原来的线程中做这些操作。在其他线程添加一个input source或者timer到原来runloop可能引起crash，或者一个意想不到的行为。&lt;/p&gt;</description>
+=======
+      <link>https://LinkRober.github.io/bookshelf/2017/09/run-loops-%E4%BA%8C/</link>
+      <pubDate>Tue, 26 Sep 2017 00:00:00 +0000</pubDate>
+      
+      <guid>https://LinkRober.github.io/bookshelf/2017/09/run-loops-%E4%BA%8C/</guid>
+      <description>&lt;h3 id=&#34;when-would-you-use-a-run-loop&#34;&gt;When Would You Use a Run Loop?&lt;/h3&gt;
+
+&lt;p&gt;你唯一要使用run loop，就是当你要在application中创建线程的时候。你Application的主线程是架构很重要的一部分。所以，iOS系统为app的提供了&lt;i&gt;runloop&lt;/i&gt;代码，并自动开始。在iOS中运行Main loop作为app启动步骤的一部分。
+&lt;/p&gt;</description>
+>>>>>>> e5d3b4cdd690c0207a157fcf508e2f39bea06a82
     </item>
     
     <item>
       <title>Run Loops (一)</title>
+<<<<<<< HEAD
       <link>https://linkrober.github.io/bookshelf/2017/09/run-loops-%E4%B8%80/</link>
       <pubDate>Mon, 25 Sep 2017 00:00:00 +0000</pubDate>
       
@@ -1055,18 +1121,33 @@ NSRunLoop *runLoop = [NSRunLoop currentRunLoop];
 &lt;p&gt;&lt;img src=&#34;http://upload-images.jianshu.io/upload_images/1086250-fae8de2bdb8232aa.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240&#34; alt=&#34;Screen Shot 2017-09-05 at 10.13.21 AM.png&#34; /&gt;&lt;/p&gt;
 
 &lt;p&gt;&lt;img src=&#34;http://upload-images.jianshu.io/upload_images/1086250-ac972598a07a90bc.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240&#34; alt=&#34;Screen Shot 2017-09-05 at 10.13.27 AM.png&#34; /&gt;&lt;/p&gt;</description>
+=======
+      <link>https://LinkRober.github.io/bookshelf/2017/09/run-loops-%E4%B8%80/</link>
+      <pubDate>Mon, 25 Sep 2017 00:00:00 +0000</pubDate>
+      
+      <guid>https://LinkRober.github.io/bookshelf/2017/09/run-loops-%E4%B8%80/</guid>
+      <description></description>
+>>>>>>> e5d3b4cdd690c0207a157fcf508e2f39bea06a82
     </item>
     
     <item>
       <title>消息转发</title>
+<<<<<<< HEAD
       <link>https://linkrober.github.io/bookshelf/2017/04/%E6%B6%88%E6%81%AF%E8%BD%AC%E5%8F%91/</link>
       <pubDate>Mon, 03 Apr 2017 03:05:31 +0800</pubDate>
       
       <guid>https://linkrober.github.io/bookshelf/2017/04/%E6%B6%88%E6%81%AF%E8%BD%AC%E5%8F%91/</guid>
+=======
+      <link>https://LinkRober.github.io/bookshelf/2017/04/%E6%B6%88%E6%81%AF%E8%BD%AC%E5%8F%91/</link>
+      <pubDate>Mon, 03 Apr 2017 03:05:31 +0800</pubDate>
+      
+      <guid>https://LinkRober.github.io/bookshelf/2017/04/%E6%B6%88%E6%81%AF%E8%BD%AC%E5%8F%91/</guid>
+>>>>>>> e5d3b4cdd690c0207a157fcf508e2f39bea06a82
       <description>&lt;blockquote&gt;
 &lt;p&gt;描述：如果类不能执行这个方法，会执行动态&lt;strong&gt;消息转发&lt;/strong&gt;，如果该类还是不能动态的添加方法，则走&lt;strong&gt;完整的消息转发&lt;/strong&gt;。分两步，第一步&lt;strong&gt;看看有没有其他类可以执行该方法&lt;/strong&gt;，如果没有走第二步，&lt;strong&gt;将所有的细节封装到NSInvocation中，给接受者最后一次机会&lt;/strong&gt;。&lt;/p&gt;
 &lt;/blockquote&gt;
 
+<<<<<<< HEAD
 &lt;p&gt;&lt;/p&gt;
 
 &lt;p&gt;演示：
@@ -1186,6 +1267,9 @@ void testDynamicMethodForward(){
 - 在方法不能识别的时候做一些保护，防止crash
 - 调试的时候打印一些感兴趣的日志
 - 也可以hook系统的方法玩玩呀&lt;/p&gt;</description>
+=======
+&lt;p&gt;&lt;/p&gt;</description>
+>>>>>>> e5d3b4cdd690c0207a157fcf508e2f39bea06a82
     </item>
     
   </channel>

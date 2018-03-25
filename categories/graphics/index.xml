@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="utf-8" standalone="yes" ?>
 <rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
   <channel>
+<<<<<<< HEAD
     <title>董二千</title>
     <link>https://LinkRober.github.io/bookshelf/categories/graphics/index.xml</link>
     <description>Recent content on 董二千</description>
@@ -14,10 +15,29 @@
       <pubDate>Mon, 27 Nov 2017 00:00:00 +0000</pubDate>
       
       <guid>https://linkrober.github.io/bookshelf/2017/11/%E4%B8%80%E4%B8%AA%E9%9F%B3%E8%A7%86%E9%A2%91%E5%8E%82%E7%9A%84%E5%9B%BE%E5%83%8F%E5%A4%84%E7%90%86%E6%B5%81%E7%A8%8B%E6%A6%82%E8%BF%B0/</guid>
+=======
+    <title>Graphics on 董二千</title>
+    <link>https://LinkRober.github.io/bookshelf/categories/graphics/</link>
+    <description>Recent content in Graphics on 董二千</description>
+    <generator>Hugo -- gohugo.io</generator>
+    <language>zh-cn</language>
+    <lastBuildDate>Mon, 27 Nov 2017 00:00:00 +0000</lastBuildDate>
+    
+	<atom:link href="https://LinkRober.github.io/bookshelf/categories/graphics/index.xml" rel="self" type="application/rss+xml" />
+    
+    
+    <item>
+      <title>一个音视频厂的图像处理流程概述</title>
+      <link>https://LinkRober.github.io/bookshelf/2017/11/%E4%B8%80%E4%B8%AA%E9%9F%B3%E8%A7%86%E9%A2%91%E5%8E%82%E7%9A%84%E5%9B%BE%E5%83%8F%E5%A4%84%E7%90%86%E6%B5%81%E7%A8%8B%E6%A6%82%E8%BF%B0/</link>
+      <pubDate>Mon, 27 Nov 2017 00:00:00 +0000</pubDate>
+      
+      <guid>https://LinkRober.github.io/bookshelf/2017/11/%E4%B8%80%E4%B8%AA%E9%9F%B3%E8%A7%86%E9%A2%91%E5%8E%82%E7%9A%84%E5%9B%BE%E5%83%8F%E5%A4%84%E7%90%86%E6%B5%81%E7%A8%8B%E6%A6%82%E8%BF%B0/</guid>
+>>>>>>> e5d3b4cdd690c0207a157fcf508e2f39bea06a82
       <description>&lt;p&gt;&lt;img src=&#34;http://upload-images.jianshu.io/upload_images/1086250-3eac00965effbe70?imageMogr2/auto-orient/strip%7CimageView2/2/w/320&#34; alt=&#34;&#34; /&gt;&lt;/p&gt;
 
 &lt;p&gt;视频编辑分为两部分：&lt;strong&gt;Camrea Engine（视频资源采集）&lt;/strong&gt;和&lt;strong&gt;Video Edit Engine（后期视频编辑）&lt;/strong&gt;。在Camrea Engine采集的时候我们也可以做一些编辑操作，这叫预处理，比如说加滤镜。等到把采集到的资源交给Video Edit Engine时就是后处理。&lt;/p&gt;
 
+<<<<<<< HEAD
 &lt;p&gt;&lt;/p&gt;
 
 &lt;p&gt;Camera Engine是通过把被摄对象的光信号转变成相应的电信号，这时候还是模拟信号，经过采样、量化、编码，形成数字信号，计算机就可以用0和1来记录它，最终保存到磁盘上。&lt;/p&gt;
@@ -42,6 +62,9 @@
 &lt;p&gt;在导出的时候需要经过进一步封装，把storyboard封装成stream，它会将文件进行解码，根据effect对clip的描述，通过producer生成一个用户想要的视频。只有通过stream才能压缩编码成本地的文件或者解码成比特流让播放器player来使用。所以stream起到了一个对VF（视频）和AF（音频）编解码的作用。这里就是视频的后处理。&lt;/p&gt;
 
 &lt;p&gt;到这里就是一些视频相关的厂视频图片编辑的大概思路。&lt;/p&gt;</description>
+=======
+&lt;p&gt;&lt;/p&gt;</description>
+>>>>>>> e5d3b4cdd690c0207a157fcf508e2f39bea06a82
     </item>
     
   </channel>

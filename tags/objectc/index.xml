@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="utf-8" standalone="yes" ?>
 <rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
   <channel>
+<<<<<<< HEAD
     <title>董二千</title>
     <link>https://LinkRober.github.io/bookshelf/tags/objectc/index.xml</link>
     <description>Recent content on 董二千</description>
@@ -14,6 +15,24 @@
       <pubDate>Mon, 25 Dec 2017 00:00:00 +0000</pubDate>
       
       <guid>https://linkrober.github.io/bookshelf/2017/12/object-c%E5%92%8Cjs%E9%80%9A%E4%BF%A1%E6%A6%82%E8%BF%B0/</guid>
+=======
+    <title>Objectc on 董二千</title>
+    <link>https://LinkRober.github.io/bookshelf/tags/objectc/</link>
+    <description>Recent content in Objectc on 董二千</description>
+    <generator>Hugo -- gohugo.io</generator>
+    <language>zh-cn</language>
+    <lastBuildDate>Mon, 25 Dec 2017 00:00:00 +0000</lastBuildDate>
+    
+	<atom:link href="https://LinkRober.github.io/bookshelf/tags/objectc/index.xml" rel="self" type="application/rss+xml" />
+    
+    
+    <item>
+      <title>Object-C和JS通信概述</title>
+      <link>https://LinkRober.github.io/bookshelf/2017/12/object-c%E5%92%8Cjs%E9%80%9A%E4%BF%A1%E6%A6%82%E8%BF%B0/</link>
+      <pubDate>Mon, 25 Dec 2017 00:00:00 +0000</pubDate>
+      
+      <guid>https://LinkRober.github.io/bookshelf/2017/12/object-c%E5%92%8Cjs%E9%80%9A%E4%BF%A1%E6%A6%82%E8%BF%B0/</guid>
+>>>>>>> e5d3b4cdd690c0207a157fcf508e2f39bea06a82
       <description>&lt;p&gt;本系列文章作为学习RN期间的总结&lt;/p&gt;
 
 &lt;ul&gt;
@@ -23,6 +42,7 @@
 &lt;li&gt;Object-C和JS通信概述&lt;/li&gt;
 &lt;/ul&gt;
 
+<<<<<<< HEAD
 &lt;p&gt;&lt;/p&gt;
 
 &lt;h4 id=&#34;流程梳理&#34;&gt;流程梳理&lt;/h4&gt;
@@ -371,14 +391,24 @@ void RCTVerifyAllModulesExported(NSArray *extraModules)
 &lt;p&gt;&lt;a href=&#34;http://blog.cnbang.net/tech/2698/&#34;&gt;React Native通信机制详解&lt;/a&gt;&lt;/p&gt;
 
 &lt;p&gt;&lt;a href=&#34;http://awhisper.github.io/2016/06/24/ReactNative%E6%B5%81%E7%A8%8B%E6%BA%90%E7%A0%81%E5%88%86%E6%9E%90/&#34;&gt;ReactNative iOS源码解析&lt;/a&gt;&lt;/p&gt;</description>
+=======
+&lt;p&gt;&lt;/p&gt;</description>
+>>>>>>> e5d3b4cdd690c0207a157fcf508e2f39bea06a82
     </item>
     
     <item>
       <title>iOS多线程中的锁</title>
+<<<<<<< HEAD
       <link>https://linkrober.github.io/bookshelf/2017/12/ios%E5%A4%9A%E7%BA%BF%E7%A8%8B%E4%B8%AD%E7%9A%84%E9%94%81/</link>
       <pubDate>Fri, 01 Dec 2017 00:00:00 +0000</pubDate>
       
       <guid>https://linkrober.github.io/bookshelf/2017/12/ios%E5%A4%9A%E7%BA%BF%E7%A8%8B%E4%B8%AD%E7%9A%84%E9%94%81/</guid>
+=======
+      <link>https://LinkRober.github.io/bookshelf/2017/12/ios%E5%A4%9A%E7%BA%BF%E7%A8%8B%E4%B8%AD%E7%9A%84%E9%94%81/</link>
+      <pubDate>Fri, 01 Dec 2017 00:00:00 +0000</pubDate>
+      
+      <guid>https://LinkRober.github.io/bookshelf/2017/12/ios%E5%A4%9A%E7%BA%BF%E7%A8%8B%E4%B8%AD%E7%9A%84%E9%94%81/</guid>
+>>>>>>> e5d3b4cdd690c0207a157fcf508e2f39bea06a82
       <description>&lt;p&gt;涉及到多线程共享资源的情况下就避免不了资源竞争的问题，这时候就会用到各种锁，例如，&lt;code&gt;@synchronized&lt;/code&gt;、&lt;code&gt;NSLock&lt;/code&gt;、&lt;code&gt;OSSpinLock&lt;/code&gt;等等，虽然都是锁，但是锁的底层实现也不尽相同。大概可以分为：&lt;span class=&#34;highlight-text blue&#34;&gt;互斥锁&lt;/span&gt;、&lt;span class=&#34;highlight-text blue&#34;&gt;自旋锁&lt;/span&gt;、&lt;span class=&#34;highlight-text blue&#34;&gt;递归锁&lt;/span&gt;、
 &lt;span class=&#34;highlight-text blue&#34;&gt;读写锁&lt;/span&gt;。&lt;/p&gt;
 
@@ -391,6 +421,7 @@ void RCTVerifyAllModulesExported(NSArray *extraModules)
 
 &lt;p&gt;我们锁的目的是在任何时刻最多只能有一个线程在修改资源，即在任何时刻只能有一个操作者保持锁。&lt;/p&gt;
 
+<<<<<<< HEAD
 &lt;p&gt;&lt;/p&gt;
 
 &lt;h4 id=&#34;互斥锁&#34;&gt;互斥锁&lt;/h4&gt;
@@ -664,14 +695,24 @@ com/library/content/documentation/Cocoa/Conceptual/Multithreading/ThreadSafety/T
 c&#34;&gt;pthreadcondwait&lt;/a&gt;&lt;/p&gt;
 
 &lt;p&gt;&lt;a href=&#34;https://stackoverflow.com/questions/3513045/conditional-variable-vs-semaphore&#34;&gt;Conditional Variable vs Semaphore&lt;/a&gt;&lt;/p&gt;</description>
+=======
+&lt;p&gt;&lt;/p&gt;</description>
+>>>>>>> e5d3b4cdd690c0207a157fcf508e2f39bea06a82
     </item>
     
     <item>
       <title>RCTRootView、RCTBridge做了什么</title>
+<<<<<<< HEAD
       <link>https://linkrober.github.io/bookshelf/2017/10/rctrootviewrctbridge%E5%81%9A%E4%BA%86%E4%BB%80%E4%B9%88/</link>
       <pubDate>Sat, 28 Oct 2017 00:00:00 +0000</pubDate>
       
       <guid>https://linkrober.github.io/bookshelf/2017/10/rctrootviewrctbridge%E5%81%9A%E4%BA%86%E4%BB%80%E4%B9%88/</guid>
+=======
+      <link>https://LinkRober.github.io/bookshelf/2017/10/rctrootviewrctbridge%E5%81%9A%E4%BA%86%E4%BB%80%E4%B9%88/</link>
+      <pubDate>Sat, 28 Oct 2017 00:00:00 +0000</pubDate>
+      
+      <guid>https://LinkRober.github.io/bookshelf/2017/10/rctrootviewrctbridge%E5%81%9A%E4%BA%86%E4%BB%80%E4%B9%88/</guid>
+>>>>>>> e5d3b4cdd690c0207a157fcf508e2f39bea06a82
       <description>&lt;p&gt;本系列文章作为学习RN期间的总结&lt;/p&gt;
 
 &lt;ul&gt;
@@ -681,6 +722,7 @@ c&#34;&gt;pthreadcondwait&lt;/a&gt;&lt;/p&gt;
 &lt;li&gt;&lt;a href=&#34;https://linkrober.github.io/bookshelf/2017/12/native%E5%92%8Cjs%E9%80%9A%E4%BF%A1%E6%A6%82%E8%BF%B0/&#34;&gt;Object-C和JS通信概述&lt;/a&gt;&lt;/li&gt;
 &lt;/ul&gt;
 
+<<<<<<< HEAD
 &lt;p&gt;&lt;/p&gt;
 
 &lt;p&gt;本章主要讨论，RCTRootView、RCTBridge彼此之间的关系，以及它们做了什么。先放上类图&lt;/p&gt;
@@ -865,14 +907,24 @@ c&#34;&gt;pthreadcondwait&lt;/a&gt;&lt;/p&gt;
 &lt;li&gt;负责&lt;code&gt;RCTBatchedBridge&lt;/code&gt;的初始化，调用子类bridge，开始执行加载js的一系列操作&lt;/li&gt;
 &lt;li&gt;负责在view消失或者重新加载的时候释放之前的一些对象（eg. currentbridge,遵循&lt;code&gt;RCTBridgeModule&lt;/code&gt;协议的对象）。&lt;/li&gt;
 &lt;/ul&gt;</description>
+=======
+&lt;p&gt;&lt;/p&gt;</description>
+>>>>>>> e5d3b4cdd690c0207a157fcf508e2f39bea06a82
     </item>
     
     <item>
       <title>React Native和Native间的通信实践</title>
+<<<<<<< HEAD
       <link>https://linkrober.github.io/bookshelf/2017/10/react-native%E5%92%8Cnative%E9%97%B4%E7%9A%84%E9%80%9A%E4%BF%A1%E5%AE%9E%E8%B7%B5/</link>
       <pubDate>Wed, 25 Oct 2017 00:00:00 +0000</pubDate>
       
       <guid>https://linkrober.github.io/bookshelf/2017/10/react-native%E5%92%8Cnative%E9%97%B4%E7%9A%84%E9%80%9A%E4%BF%A1%E5%AE%9E%E8%B7%B5/</guid>
+=======
+      <link>https://LinkRober.github.io/bookshelf/2017/10/react-native%E5%92%8Cnative%E9%97%B4%E7%9A%84%E9%80%9A%E4%BF%A1%E5%AE%9E%E8%B7%B5/</link>
+      <pubDate>Wed, 25 Oct 2017 00:00:00 +0000</pubDate>
+      
+      <guid>https://LinkRober.github.io/bookshelf/2017/10/react-native%E5%92%8Cnative%E9%97%B4%E7%9A%84%E9%80%9A%E4%BF%A1%E5%AE%9E%E8%B7%B5/</guid>
+>>>>>>> e5d3b4cdd690c0207a157fcf508e2f39bea06a82
       <description>&lt;!-- thumbnailImage = &#39;rn_image.jpeg&#39;
 thumbnailImagePosition = &#39;bottom&#39; --&gt;
 
@@ -885,6 +937,7 @@ thumbnailImagePosition = &#39;bottom&#39; --&gt;
 &lt;li&gt;&lt;a href=&#34;https://linkrober.github.io/bookshelf/2017/12/native%E5%92%8Cjs%E9%80%9A%E4%BF%A1%E6%A6%82%E8%BF%B0/&#34;&gt;Object-C和JS通信概述&lt;/a&gt;&lt;/li&gt;
 &lt;/ul&gt;
 
+<<<<<<< HEAD
 &lt;p&gt;&lt;/p&gt;
 
 &lt;p&gt;刚开始接触RN，有几点大家都想弄清楚：&lt;/p&gt;
@@ -1084,6 +1137,21 @@ thumbnailImagePosition = &#39;bottom&#39; --&gt;
 thumbnailImagePosition = &#39;bottom&#39; --&gt;
 
 &lt;p&gt;本系列文章作为学习RN期间的总结&lt;/p&gt;
+=======
+&lt;p&gt;&lt;/p&gt;</description>
+    </item>
+    
+    <item>
+      <title>React Native如何集成到现有项目中</title>
+      <link>https://LinkRober.github.io/bookshelf/2017/10/react-native%E5%A6%82%E4%BD%95%E9%9B%86%E6%88%90%E5%88%B0%E7%8E%B0%E6%9C%89%E9%A1%B9%E7%9B%AE%E4%B8%AD/</link>
+      <pubDate>Mon, 23 Oct 2017 00:00:00 +0000</pubDate>
+      
+      <guid>https://LinkRober.github.io/bookshelf/2017/10/react-native%E5%A6%82%E4%BD%95%E9%9B%86%E6%88%90%E5%88%B0%E7%8E%B0%E6%9C%89%E9%A1%B9%E7%9B%AE%E4%B8%AD/</guid>
+      <description>&lt;!-- thumbnailImage = &#39;rn_thumbnailImage.jpeg&#39;
+thumbnailImagePosition = &#39;bottom&#39; --&gt;
+
+&lt;p&gt;本系列文章作为学习RN期间的总结&lt;/p&gt;
+>>>>>>> e5d3b4cdd690c0207a157fcf508e2f39bea06a82
 
 &lt;ul&gt;
 &lt;li&gt;React Native如何集成到现有项目中&lt;/li&gt;
@@ -1092,6 +1160,7 @@ thumbnailImagePosition = &#39;bottom&#39; --&gt;
 &lt;li&gt;&lt;a href=&#34;https://linkrober.github.io/bookshelf/2017/12/native%E5%92%8Cjs%E9%80%9A%E4%BF%A1%E6%A6%82%E8%BF%B0/&#34;&gt;Object-C和JS通信概述&lt;/a&gt;&lt;/li&gt;
 &lt;/ul&gt;
 
+<<<<<<< HEAD
 &lt;p&gt;&lt;/p&gt;
 
 &lt;p&gt;虽然ReactNative能做到iOS和Android的大部分逻辑共享一套代码，节约开发成本；拥有像JSPatch那样的热修复功能，为线上问题提供非常灵活的解决方案。但是为什么大部分公司还是持观望态度，或者只在产品的某些部分用RN进行开发呢？&lt;/p&gt;
@@ -1277,10 +1346,14 @@ class SettingsView extends React.PureComponent{
 &lt;h4 id=&#34;相关链接&#34;&gt;相关链接&lt;/h4&gt;
 
 &lt;p&gt;&lt;a href=&#34;https://facebook.github.io/react-native/docs/integration-with-existing-apps.html&#34;&gt;Integration with Existing Apps&lt;/a&gt;&lt;/p&gt;</description>
+=======
+&lt;p&gt;&lt;/p&gt;</description>
+>>>>>>> e5d3b4cdd690c0207a157fcf508e2f39bea06a82
     </item>
     
     <item>
       <title>Runtime(三) 消息转发</title>
+<<<<<<< HEAD
       <link>https://linkrober.github.io/bookshelf/2017/10/runtime%E4%B8%89-%E6%B6%88%E6%81%AF%E8%BD%AC%E5%8F%91/</link>
       <pubDate>Mon, 16 Oct 2017 00:00:00 +0000</pubDate>
       
@@ -1388,14 +1461,29 @@ class SettingsView extends React.PureComponent{
 &lt;/blockquote&gt;
 
 &lt;p&gt;在这部分提到的方法被描述在&lt;code&gt;NSObject&lt;/code&gt;类的说明中。更多的关于&lt;code&gt;invokeWithTarget:&lt;/code&gt;请看&lt;a href=&#34;https://developer.apple.com/documentation/foundation/nsinvocation&#34;&gt;NSInvocation&lt;/a&gt;类的说明。&lt;/p&gt;</description>
+=======
+      <link>https://LinkRober.github.io/bookshelf/2017/10/runtime%E4%B8%89-%E6%B6%88%E6%81%AF%E8%BD%AC%E5%8F%91/</link>
+      <pubDate>Mon, 16 Oct 2017 00:00:00 +0000</pubDate>
+      
+      <guid>https://LinkRober.github.io/bookshelf/2017/10/runtime%E4%B8%89-%E6%B6%88%E6%81%AF%E8%BD%AC%E5%8F%91/</guid>
+      <description>&lt;p&gt;向对象发送一个消息，如果没有处理就会发生错误。但是在产生错误之前，runtime会给接受对象第二次机会来处理消息。
+&lt;/p&gt;</description>
+>>>>>>> e5d3b4cdd690c0207a157fcf508e2f39bea06a82
     </item>
     
     <item>
       <title>Runtime (一) 消息</title>
+<<<<<<< HEAD
       <link>https://linkrober.github.io/bookshelf/2017/09/runtime-%E4%B8%80-%E6%B6%88%E6%81%AF/</link>
       <pubDate>Fri, 29 Sep 2017 00:00:00 +0000</pubDate>
       
       <guid>https://linkrober.github.io/bookshelf/2017/09/runtime-%E4%B8%80-%E6%B6%88%E6%81%AF/</guid>
+=======
+      <link>https://LinkRober.github.io/bookshelf/2017/09/runtime-%E4%B8%80-%E6%B6%88%E6%81%AF/</link>
+      <pubDate>Fri, 29 Sep 2017 00:00:00 +0000</pubDate>
+      
+      <guid>https://LinkRober.github.io/bookshelf/2017/09/runtime-%E4%B8%80-%E6%B6%88%E6%81%AF/</guid>
+>>>>>>> e5d3b4cdd690c0207a157fcf508e2f39bea06a82
       <description>&lt;h3 id=&#34;message&#34;&gt;Message&lt;/h3&gt;
 
 &lt;p&gt;这篇文章描述了消息如何通过使用&lt;code&gt;objc_msgSend&lt;/code&gt;发送，如何通过方法名称找到对应方法的reference&lt;/p&gt;
@@ -1403,6 +1491,7 @@ class SettingsView extends React.PureComponent{
 &lt;h4 id=&#34;the-objc-msgsend-function&#34;&gt;The objc_msgSend Function&lt;/h4&gt;
 
 &lt;p&gt;在Object-C中，发送的消息直到运行时才绑定到正真的方式实现。
+<<<<<<< HEAD
 &lt;/p&gt;
 
 &lt;pre&gt;&lt;code&gt;[receiver message]
@@ -1496,10 +1585,14 @@ for(i = 0;i &amp;lt; 100;i++){
 &lt;p&gt;首先&lt;code&gt;self&lt;/code&gt;和&lt;code&gt;_cmd&lt;/code&gt;被传递到具体的实现，在两个参数在方法中通过语法的方式被隐藏，但是当这些参数在被作为一个funcation被调用的时候必须要明确。
 使用&lt;code&gt;methodForSelector:&lt;/code&gt;来避免动态绑定可以节省大部分时间。但是如果同一个消息被多次调用，动态绑定的缓存机制可能更优雅点，因为上面的&lt;code&gt;for&lt;/code&gt;循环会遍历所有tartet。
 记住，&lt;code&gt;methodForSelector:&lt;/code&gt;是Cocoa的运行时系统提供的，它不是OC语言自己的特性。&lt;/p&gt;</description>
+=======
+&lt;/p&gt;</description>
+>>>>>>> e5d3b4cdd690c0207a157fcf508e2f39bea06a82
     </item>
     
     <item>
       <title>Run Loops (二)</title>
+<<<<<<< HEAD
       <link>https://linkrober.github.io/bookshelf/2017/09/run-loops-%E4%BA%8C/</link>
       <pubDate>Tue, 26 Sep 2017 00:00:00 +0000</pubDate>
       
@@ -1631,10 +1724,21 @@ for(i = 0;i &amp;lt; 100;i++){
 &lt;p&gt;线程安全取决于你使用操作&lt;i&gt;runloop&lt;/i&gt;的API。在Core Foundation中的方法一般是线程安全的，可以被任何其他线程调用。如果你正在执行操作，这些操作改变了runloop的配置。无论什么时候，这样做任然是一个很好的实践。&lt;/p&gt;
 
 &lt;p&gt;Cocoa的&lt;a href=&#34;https://developer.apple.com/documentation/foundation/runloop&#34;&gt;NSRunLoop&lt;/a&gt;类。Cocoa的NSRunLoop和Core Foundation不一样，不是线程安全的。如果你使用&lt;code&gt;NSRunLoop&lt;/code&gt;类来修改你的runloop，你应该在原来的线程中做这些操作。在其他线程添加一个input source或者timer到原来runloop可能引起crash，或者一个意想不到的行为。&lt;/p&gt;</description>
+=======
+      <link>https://LinkRober.github.io/bookshelf/2017/09/run-loops-%E4%BA%8C/</link>
+      <pubDate>Tue, 26 Sep 2017 00:00:00 +0000</pubDate>
+      
+      <guid>https://LinkRober.github.io/bookshelf/2017/09/run-loops-%E4%BA%8C/</guid>
+      <description>&lt;h3 id=&#34;when-would-you-use-a-run-loop&#34;&gt;When Would You Use a Run Loop?&lt;/h3&gt;
+
+&lt;p&gt;你唯一要使用run loop，就是当你要在application中创建线程的时候。你Application的主线程是架构很重要的一部分。所以，iOS系统为app的提供了&lt;i&gt;runloop&lt;/i&gt;代码，并自动开始。在iOS中运行Main loop作为app启动步骤的一部分。
+&lt;/p&gt;</description>
+>>>>>>> e5d3b4cdd690c0207a157fcf508e2f39bea06a82
     </item>
     
     <item>
       <title>Run Loops (一)</title>
+<<<<<<< HEAD
       <link>https://linkrober.github.io/bookshelf/2017/09/run-loops-%E4%B8%80/</link>
       <pubDate>Mon, 25 Sep 2017 00:00:00 +0000</pubDate>
       
@@ -1985,18 +2089,33 @@ NSRunLoop *runLoop = [NSRunLoop currentRunLoop];
 &lt;p&gt;&lt;img src=&#34;http://upload-images.jianshu.io/upload_images/1086250-fae8de2bdb8232aa.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240&#34; alt=&#34;Screen Shot 2017-09-05 at 10.13.21 AM.png&#34; /&gt;&lt;/p&gt;
 
 &lt;p&gt;&lt;img src=&#34;http://upload-images.jianshu.io/upload_images/1086250-ac972598a07a90bc.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240&#34; alt=&#34;Screen Shot 2017-09-05 at 10.13.27 AM.png&#34; /&gt;&lt;/p&gt;</description>
+=======
+      <link>https://LinkRober.github.io/bookshelf/2017/09/run-loops-%E4%B8%80/</link>
+      <pubDate>Mon, 25 Sep 2017 00:00:00 +0000</pubDate>
+      
+      <guid>https://LinkRober.github.io/bookshelf/2017/09/run-loops-%E4%B8%80/</guid>
+      <description></description>
+>>>>>>> e5d3b4cdd690c0207a157fcf508e2f39bea06a82
     </item>
     
     <item>
       <title>消息转发</title>
+<<<<<<< HEAD
       <link>https://linkrober.github.io/bookshelf/2017/04/%E6%B6%88%E6%81%AF%E8%BD%AC%E5%8F%91/</link>
       <pubDate>Mon, 03 Apr 2017 03:05:31 +0800</pubDate>
       
       <guid>https://linkrober.github.io/bookshelf/2017/04/%E6%B6%88%E6%81%AF%E8%BD%AC%E5%8F%91/</guid>
+=======
+      <link>https://LinkRober.github.io/bookshelf/2017/04/%E6%B6%88%E6%81%AF%E8%BD%AC%E5%8F%91/</link>
+      <pubDate>Mon, 03 Apr 2017 03:05:31 +0800</pubDate>
+      
+      <guid>https://LinkRober.github.io/bookshelf/2017/04/%E6%B6%88%E6%81%AF%E8%BD%AC%E5%8F%91/</guid>
+>>>>>>> e5d3b4cdd690c0207a157fcf508e2f39bea06a82
       <description>&lt;blockquote&gt;
 &lt;p&gt;描述：如果类不能执行这个方法，会执行动态&lt;strong&gt;消息转发&lt;/strong&gt;，如果该类还是不能动态的添加方法，则走&lt;strong&gt;完整的消息转发&lt;/strong&gt;。分两步，第一步&lt;strong&gt;看看有没有其他类可以执行该方法&lt;/strong&gt;，如果没有走第二步，&lt;strong&gt;将所有的细节封装到NSInvocation中，给接受者最后一次机会&lt;/strong&gt;。&lt;/p&gt;
 &lt;/blockquote&gt;
 
+<<<<<<< HEAD
 &lt;p&gt;&lt;/p&gt;
 
 &lt;p&gt;演示：
@@ -2116,6 +2235,9 @@ void testDynamicMethodForward(){
 - 在方法不能识别的时候做一些保护，防止crash
 - 调试的时候打印一些感兴趣的日志
 - 也可以hook系统的方法玩玩呀&lt;/p&gt;</description>
+=======
+&lt;p&gt;&lt;/p&gt;</description>
+>>>>>>> e5d3b4cdd690c0207a157fcf508e2f39bea06a82
     </item>
     
   </channel>
