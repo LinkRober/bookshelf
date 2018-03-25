@@ -14,11 +14,11 @@
       <pubDate>Sun, 25 Mar 2018 00:00:00 +0000</pubDate>
       
       <guid>https://linkrober.github.io/bookshelf/2018/03/%E5%85%A5%E5%9D%91%E5%B0%8F%E7%A8%8B%E5%BA%8F/</guid>
-      <description>
-
-&lt;h3 id=&#34;描述&#34;&gt;描述&lt;/h3&gt;
+      <description>&lt;h3 id=&#34;描述&#34;&gt;描述&lt;/h3&gt;
 
 &lt;p&gt;去年各大平台纷纷开始占领微信上的又一流量入口——小程序。因为小程序的门槛低，这里指，技术上和前端大同小异，审核刚开始也比较松。除了大厂，很多个人开发这都投入进去。想在小程序上打响自己的个人品牌。在筹备了三个月之久，我的第一款小程序，终于快要完成了。在这里我会总结一下整体的过程，从idea到一个完整的小程序、期间遇到的坑、和觉得挺有意思的地方。&lt;/p&gt;
+
+&lt;p&gt;&lt;/p&gt;
 
 &lt;h3 id=&#34;流程&#34;&gt;流程&lt;/h3&gt;
 
@@ -273,8 +273,7 @@ module.exports = router;
 
 &lt;p&gt;使用它可以很方便的启动、停止和监控进程。刚开始重新发布接口的时候，都需要停止服务，kill进程，再次启动服务，有了pm2只要&lt;code&gt;pm2 restart 进程名&lt;/code&gt;&lt;/p&gt;
 
-&lt;p&gt;以上是我最近一段时间小程序之旅的总结，希望对你有所帮助。&lt;/p&gt;
-</description>
+&lt;p&gt;以上是我最近一段时间小程序之旅的总结，希望对你有所帮助。&lt;/p&gt;</description>
     </item>
     
   </channel>

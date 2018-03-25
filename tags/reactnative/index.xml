@@ -1,7 +1,6 @@
 <?xml version="1.0" encoding="utf-8" standalone="yes" ?>
 <rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
   <channel>
-<<<<<<< HEAD
     <title>董二千</title>
     <link>https://LinkRober.github.io/bookshelf/tags/reactnative/index.xml</link>
     <description>Recent content on 董二千</description>
@@ -15,24 +14,6 @@
       <pubDate>Mon, 25 Dec 2017 00:00:00 +0000</pubDate>
       
       <guid>https://linkrober.github.io/bookshelf/2017/12/object-c%E5%92%8Cjs%E9%80%9A%E4%BF%A1%E6%A6%82%E8%BF%B0/</guid>
-=======
-    <title>Reactnative on 董二千</title>
-    <link>https://LinkRober.github.io/bookshelf/tags/reactnative/</link>
-    <description>Recent content in Reactnative on 董二千</description>
-    <generator>Hugo -- gohugo.io</generator>
-    <language>zh-cn</language>
-    <lastBuildDate>Mon, 25 Dec 2017 00:00:00 +0000</lastBuildDate>
-    
-	<atom:link href="https://LinkRober.github.io/bookshelf/tags/reactnative/index.xml" rel="self" type="application/rss+xml" />
-    
-    
-    <item>
-      <title>Object-C和JS通信概述</title>
-      <link>https://LinkRober.github.io/bookshelf/2017/12/object-c%E5%92%8Cjs%E9%80%9A%E4%BF%A1%E6%A6%82%E8%BF%B0/</link>
-      <pubDate>Mon, 25 Dec 2017 00:00:00 +0000</pubDate>
-      
-      <guid>https://LinkRober.github.io/bookshelf/2017/12/object-c%E5%92%8Cjs%E9%80%9A%E4%BF%A1%E6%A6%82%E8%BF%B0/</guid>
->>>>>>> e5d3b4cdd690c0207a157fcf508e2f39bea06a82
       <description>&lt;p&gt;本系列文章作为学习RN期间的总结&lt;/p&gt;
 
 &lt;ul&gt;
@@ -42,7 +23,6 @@
 &lt;li&gt;Object-C和JS通信概述&lt;/li&gt;
 &lt;/ul&gt;
 
-<<<<<<< HEAD
 &lt;p&gt;&lt;/p&gt;
 
 &lt;h4 id=&#34;流程梳理&#34;&gt;流程梳理&lt;/h4&gt;
@@ -391,24 +371,14 @@ void RCTVerifyAllModulesExported(NSArray *extraModules)
 &lt;p&gt;&lt;a href=&#34;http://blog.cnbang.net/tech/2698/&#34;&gt;React Native通信机制详解&lt;/a&gt;&lt;/p&gt;
 
 &lt;p&gt;&lt;a href=&#34;http://awhisper.github.io/2016/06/24/ReactNative%E6%B5%81%E7%A8%8B%E6%BA%90%E7%A0%81%E5%88%86%E6%9E%90/&#34;&gt;ReactNative iOS源码解析&lt;/a&gt;&lt;/p&gt;</description>
-=======
-&lt;p&gt;&lt;/p&gt;</description>
->>>>>>> e5d3b4cdd690c0207a157fcf508e2f39bea06a82
     </item>
     
     <item>
       <title>RCTRootView、RCTBridge做了什么</title>
-<<<<<<< HEAD
       <link>https://linkrober.github.io/bookshelf/2017/10/rctrootviewrctbridge%E5%81%9A%E4%BA%86%E4%BB%80%E4%B9%88/</link>
       <pubDate>Sat, 28 Oct 2017 00:00:00 +0000</pubDate>
       
       <guid>https://linkrober.github.io/bookshelf/2017/10/rctrootviewrctbridge%E5%81%9A%E4%BA%86%E4%BB%80%E4%B9%88/</guid>
-=======
-      <link>https://LinkRober.github.io/bookshelf/2017/10/rctrootviewrctbridge%E5%81%9A%E4%BA%86%E4%BB%80%E4%B9%88/</link>
-      <pubDate>Sat, 28 Oct 2017 00:00:00 +0000</pubDate>
-      
-      <guid>https://LinkRober.github.io/bookshelf/2017/10/rctrootviewrctbridge%E5%81%9A%E4%BA%86%E4%BB%80%E4%B9%88/</guid>
->>>>>>> e5d3b4cdd690c0207a157fcf508e2f39bea06a82
       <description>&lt;p&gt;本系列文章作为学习RN期间的总结&lt;/p&gt;
 
 &lt;ul&gt;
@@ -418,7 +388,6 @@ void RCTVerifyAllModulesExported(NSArray *extraModules)
 &lt;li&gt;&lt;a href=&#34;https://linkrober.github.io/bookshelf/2017/12/native%E5%92%8Cjs%E9%80%9A%E4%BF%A1%E6%A6%82%E8%BF%B0/&#34;&gt;Object-C和JS通信概述&lt;/a&gt;&lt;/li&gt;
 &lt;/ul&gt;
 
-<<<<<<< HEAD
 &lt;p&gt;&lt;/p&gt;
 
 &lt;p&gt;本章主要讨论，RCTRootView、RCTBridge彼此之间的关系，以及它们做了什么。先放上类图&lt;/p&gt;
@@ -603,24 +572,14 @@ void RCTVerifyAllModulesExported(NSArray *extraModules)
 &lt;li&gt;负责&lt;code&gt;RCTBatchedBridge&lt;/code&gt;的初始化，调用子类bridge，开始执行加载js的一系列操作&lt;/li&gt;
 &lt;li&gt;负责在view消失或者重新加载的时候释放之前的一些对象（eg. currentbridge,遵循&lt;code&gt;RCTBridgeModule&lt;/code&gt;协议的对象）。&lt;/li&gt;
 &lt;/ul&gt;</description>
-=======
-&lt;p&gt;&lt;/p&gt;</description>
->>>>>>> e5d3b4cdd690c0207a157fcf508e2f39bea06a82
     </item>
     
     <item>
       <title>React Native和Native间的通信实践</title>
-<<<<<<< HEAD
       <link>https://linkrober.github.io/bookshelf/2017/10/react-native%E5%92%8Cnative%E9%97%B4%E7%9A%84%E9%80%9A%E4%BF%A1%E5%AE%9E%E8%B7%B5/</link>
       <pubDate>Wed, 25 Oct 2017 00:00:00 +0000</pubDate>
       
       <guid>https://linkrober.github.io/bookshelf/2017/10/react-native%E5%92%8Cnative%E9%97%B4%E7%9A%84%E9%80%9A%E4%BF%A1%E5%AE%9E%E8%B7%B5/</guid>
-=======
-      <link>https://LinkRober.github.io/bookshelf/2017/10/react-native%E5%92%8Cnative%E9%97%B4%E7%9A%84%E9%80%9A%E4%BF%A1%E5%AE%9E%E8%B7%B5/</link>
-      <pubDate>Wed, 25 Oct 2017 00:00:00 +0000</pubDate>
-      
-      <guid>https://LinkRober.github.io/bookshelf/2017/10/react-native%E5%92%8Cnative%E9%97%B4%E7%9A%84%E9%80%9A%E4%BF%A1%E5%AE%9E%E8%B7%B5/</guid>
->>>>>>> e5d3b4cdd690c0207a157fcf508e2f39bea06a82
       <description>&lt;!-- thumbnailImage = &#39;rn_image.jpeg&#39;
 thumbnailImagePosition = &#39;bottom&#39; --&gt;
 
@@ -633,7 +592,6 @@ thumbnailImagePosition = &#39;bottom&#39; --&gt;
 &lt;li&gt;&lt;a href=&#34;https://linkrober.github.io/bookshelf/2017/12/native%E5%92%8Cjs%E9%80%9A%E4%BF%A1%E6%A6%82%E8%BF%B0/&#34;&gt;Object-C和JS通信概述&lt;/a&gt;&lt;/li&gt;
 &lt;/ul&gt;
 
-<<<<<<< HEAD
 &lt;p&gt;&lt;/p&gt;
 
 &lt;p&gt;刚开始接触RN，有几点大家都想弄清楚：&lt;/p&gt;
@@ -821,24 +779,14 @@ thumbnailImagePosition = &#39;bottom&#39; --&gt;
 &lt;div class=&#34;alert info &#34;&gt;
   &lt;p&gt;从JS到Naitve所有的消息都是由&lt;code&gt;NSInvocation&lt;/code&gt;负责转发，后面打算专门开一章讨论这个类在RN中的使用。&lt;/p&gt;
 &lt;/div&gt;</description>
-=======
-&lt;p&gt;&lt;/p&gt;</description>
->>>>>>> e5d3b4cdd690c0207a157fcf508e2f39bea06a82
     </item>
     
     <item>
       <title>React Native如何集成到现有项目中</title>
-<<<<<<< HEAD
       <link>https://linkrober.github.io/bookshelf/2017/10/react-native%E5%A6%82%E4%BD%95%E9%9B%86%E6%88%90%E5%88%B0%E7%8E%B0%E6%9C%89%E9%A1%B9%E7%9B%AE%E4%B8%AD/</link>
       <pubDate>Mon, 23 Oct 2017 00:00:00 +0000</pubDate>
       
       <guid>https://linkrober.github.io/bookshelf/2017/10/react-native%E5%A6%82%E4%BD%95%E9%9B%86%E6%88%90%E5%88%B0%E7%8E%B0%E6%9C%89%E9%A1%B9%E7%9B%AE%E4%B8%AD/</guid>
-=======
-      <link>https://LinkRober.github.io/bookshelf/2017/10/react-native%E5%A6%82%E4%BD%95%E9%9B%86%E6%88%90%E5%88%B0%E7%8E%B0%E6%9C%89%E9%A1%B9%E7%9B%AE%E4%B8%AD/</link>
-      <pubDate>Mon, 23 Oct 2017 00:00:00 +0000</pubDate>
-      
-      <guid>https://LinkRober.github.io/bookshelf/2017/10/react-native%E5%A6%82%E4%BD%95%E9%9B%86%E6%88%90%E5%88%B0%E7%8E%B0%E6%9C%89%E9%A1%B9%E7%9B%AE%E4%B8%AD/</guid>
->>>>>>> e5d3b4cdd690c0207a157fcf508e2f39bea06a82
       <description>&lt;!-- thumbnailImage = &#39;rn_thumbnailImage.jpeg&#39;
 thumbnailImagePosition = &#39;bottom&#39; --&gt;
 
@@ -851,7 +799,6 @@ thumbnailImagePosition = &#39;bottom&#39; --&gt;
 &lt;li&gt;&lt;a href=&#34;https://linkrober.github.io/bookshelf/2017/12/native%E5%92%8Cjs%E9%80%9A%E4%BF%A1%E6%A6%82%E8%BF%B0/&#34;&gt;Object-C和JS通信概述&lt;/a&gt;&lt;/li&gt;
 &lt;/ul&gt;
 
-<<<<<<< HEAD
 &lt;p&gt;&lt;/p&gt;
 
 &lt;p&gt;虽然ReactNative能做到iOS和Android的大部分逻辑共享一套代码，节约开发成本；拥有像JSPatch那样的热修复功能，为线上问题提供非常灵活的解决方案。但是为什么大部分公司还是持观望态度，或者只在产品的某些部分用RN进行开发呢？&lt;/p&gt;
@@ -1037,9 +984,6 @@ class SettingsView extends React.PureComponent{
 &lt;h4 id=&#34;相关链接&#34;&gt;相关链接&lt;/h4&gt;
 
 &lt;p&gt;&lt;a href=&#34;https://facebook.github.io/react-native/docs/integration-with-existing-apps.html&#34;&gt;Integration with Existing Apps&lt;/a&gt;&lt;/p&gt;</description>
-=======
-&lt;p&gt;&lt;/p&gt;</description>
->>>>>>> e5d3b4cdd690c0207a157fcf508e2f39bea06a82
     </item>
     
   </channel>
