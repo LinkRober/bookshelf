@@ -519,6 +519,50 @@ ThreadTest[13645:406942] custome a product
 
 <p>只有当<code>unlock</code>和<code>lock</code>的值一一对应才能唤醒线程，执行后续操作。</p>
 
+<h5 id="dispatch-semaphore-信号">dispatch_semaphore（信号）</h5>
+
+<p>通过信号来控制同时执行的线程个数，来达到枷锁的目的。只有当信号大于0的时候才能执行接下去的操作。</p>
+
+<pre><code>//创建一个信号，同一时间只有一个线程可以执行，10即10个线程可以同时执行
+dispatch_semaphore_create(1)
+</code></pre>
+
+<pre><code>//等待信号&gt;0的时候再执行下面的操作
+dispatch_semaphore_wait(self._lock, DISPATCH_TIME_FOREVER)
+</code></pre>
+
+<pre><code>//信号+1
+dispatch_semaphore_signal(self._lock)
+</code></pre>
+
+<p></b>
+<span class="highlight-text success">
+Example
+</span></p>
+
+<pre><code>self._lock = dispatch_semaphore_create(1);
+    self.array = [[NSMutableArray alloc] initWithObjects:@(1),@(2),@(3), nil];
+    for (int i = 0; i &lt; 100; i ++) {
+        dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
+            dispatch_semaphore_wait(self._lock, DISPATCH_TIME_FOREVER);
+            NSLog(@&quot;-----%d&quot;,i);
+            sleep(2);
+            dispatch_semaphore_signal(self._lock);
+        });
+    }
+</code></pre>
+
+<p><strong>Result</strong></p>
+
+<pre><code>MultiThread[10894:436938] -----0
+MultiThread[10894:436939] -----1
+MultiThread[10894:436945] -----2
+MultiThread[10894:436937] -----3
+MultiThread[10894:436936] -----4
+</code></pre>
+
+<p>以上除了第一个结果其他的每隔2s才打印出来</p>
+
 <h4 id="参考资料">参考资料</h4>
 
 <p><a href="https://blog.ibireme.com/2016/01/16/spinlock_is_unsafe_in_ios/">不再安全的 OSSpinLock</a></p>
