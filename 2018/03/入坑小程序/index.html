@@ -1,0 +1,1014 @@
+
+
+  
+    
+  
+
+
+  
+
+
+
+
+
+  
+
+<!DOCTYPE html>
+<html lang="zh-cn">
+  <head>
+    
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="generator" content="Hugo 0.17 with theme Tranquilpeak 0.4.1-BETA">
+    <title>入坑小程序</title>
+    <meta name="author" content="董二千">
+    <meta name="keywords" content="Mini Program, Node.js">
+
+    <link rel="icon" href="https://LinkRober.github.io/bookshelf/favicon.png">
+    
+
+    
+    <meta name="description" content="描述
+
+去年各大平台纷纷开始占领微信上的又一流量入口——小程序。因为小程序的门槛低，这里指，技术上和前端大同小异，审核刚开始也比较松。除了大厂，很多个人开发这都投入进去。想在小程序上打响自己的个人品牌。在筹备了三个月之久，我的第一款小程序，终于快要完成了。在这里我会总结一下整体的过程，从idea到一个完整的小程序、期间遇到的坑、和觉得挺有意思的地方。
+
+">
+    <meta property="og:description" content="描述
+
+去年各大平台纷纷开始占领微信上的又一流量入口——小程序。因为小程序的门槛低，这里指，技术上和前端大同小异，审核刚开始也比较松。除了大厂，很多个人开发这都投入进去。想在小程序上打响自己的个人品牌。在筹备了三个月之久，我的第一款小程序，终于快要完成了。在这里我会总结一下整体的过程，从idea到一个完整的小程序、期间遇到的坑、和觉得挺有意思的地方。
+
+">
+    <meta property="og:type" content="blog">
+    <meta property="og:title" content="入坑小程序">
+    <meta property="og:url" content="/2018/03/%E5%85%A5%E5%9D%91%E5%B0%8F%E7%A8%8B%E5%BA%8F/">
+    <meta property="og:site_name" content="董二千">
+    <meta name="twitter:card" content="summary">
+    <meta name="twitter:title" content="董二千">
+    <meta name="twitter:description" content="描述
+
+去年各大平台纷纷开始占领微信上的又一流量入口——小程序。因为小程序的门槛低，这里指，技术上和前端大同小异，审核刚开始也比较松。除了大厂，很多个人开发这都投入进去。想在小程序上打响自己的个人品牌。在筹备了三个月之久，我的第一款小程序，终于快要完成了。在这里我会总结一下整体的过程，从idea到一个完整的小程序、期间遇到的坑、和觉得挺有意思的地方。
+
+">
+    
+    
+
+    
+    
+
+    
+      <meta property="og:image" content="https://avatars1.githubusercontent.com/u/7357189?v=3&s=460.png">
+    
+
+    
+    
+    
+
+    
+
+    
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css" integrity="sha256-eZrrJcwDc/3uDhsdt61sL2oOBY362qM3lon1gyExkL0=" crossorigin="anonymous" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/fancybox/2.1.4/jquery.fancybox.min.css" integrity="sha256-vuXZ9LGmmwtjqFX1F+EKin1ThZMub58gKULUyf0qECk=" crossorigin="anonymous" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/fancybox/2.1.4/helpers/jquery.fancybox-thumbs.min.css" integrity="sha256-SEa4XYAHihTcEP1f5gARTB2K26Uk8PsndQYHQC1f4jU=" crossorigin="anonymous" />
+    
+    
+    <link rel="stylesheet" href="https://LinkRober.github.io/bookshelf/css/style-fpbzgxsy0kgmdvyrj5ykkg6ratccrk3gocmaqn4xpcjywmv5dteilzucro4f.min.css" />
+    
+    
+
+    
+      
+    
+    
+  </head>
+
+  <body>
+    <div id="blog">
+      <header id="header" data-behavior="4">
+  <i id="btn-open-sidebar" class="fa fa-lg fa-bars"></i>
+  <div class="header-title">
+    <a class="header-title-link" href="https://LinkRober.github.io/bookshelf/">董二千</a>
+  </div>
+  
+    
+      <a class="header-right-picture "
+         href="https://LinkRober.github.io/bookshelf/#about">
+    
+    
+    
+      
+        <img class="header-picture" src="https://avatars1.githubusercontent.com/u/7357189?v=3&amp;s=460.png" alt="作者的图片" />
+      
+    
+    </a>
+  
+</header>
+
+      <nav id="sidebar" data-behavior="4">
+  <div class="sidebar-container">
+    
+      <div class="sidebar-profile">
+        <a href="https://LinkRober.github.io/bookshelf/#about">
+          <img class="sidebar-profile-picture" src="https://avatars1.githubusercontent.com/u/7357189?v=3&amp;s=460.png" alt="作者的图片" />
+        </a>
+        <h4 class="sidebar-profile-name">董二千</h4>
+        
+          <h5 class="sidebar-profile-bio">愿你走出半生 归来仍是少年</h5>
+        
+      </div>
+    
+    <ul class="sidebar-buttons">
+      
+  <li class="sidebar-button">
+    
+      <a class="sidebar-button-link " href="https://LinkRober.github.io/bookshelf/categories">
+    
+      <i class="sidebar-button-icon fa fa-lg fa-bookmark"></i>
+      
+      <span class="sidebar-button-desc">分类</span>
+    </a>
+  </li>
+
+  <li class="sidebar-button">
+    
+      <a class="sidebar-button-link " href="https://LinkRober.github.io/bookshelf/">
+    
+      <i class="sidebar-button-icon fa fa-lg fa-home"></i>
+      
+      <span class="sidebar-button-desc">首页</span>
+    </a>
+  </li>
+
+  <li class="sidebar-button">
+    
+      <a class="sidebar-button-link " href="https://LinkRober.github.io/bookshelf/tags">
+    
+      <i class="sidebar-button-icon fa fa-lg fa-tags"></i>
+      
+      <span class="sidebar-button-desc">标签</span>
+    </a>
+  </li>
+
+  <li class="sidebar-button">
+    
+      <a class="sidebar-button-link " href="https://LinkRober.github.io/bookshelf/#about">
+    
+      <i class="sidebar-button-icon fa fa-lg fa-question"></i>
+      
+      <span class="sidebar-button-desc">关于</span>
+    </a>
+  </li>
+
+  <li class="sidebar-button">
+    
+      <a class="sidebar-button-link " href="https://LinkRober.github.io/bookshelf/archives">
+    
+      <i class="sidebar-button-icon fa fa-lg fa-archive"></i>
+      
+      <span class="sidebar-button-desc">归档</span>
+    </a>
+  </li>
+
+
+    </ul>
+    <ul class="sidebar-buttons">
+      
+  <li class="sidebar-button">
+    
+      <a class="sidebar-button-link " href="https://github.com/LinkRober" target="_blank" rel="noopener">
+    
+      <i class="sidebar-button-icon fa fa-lg fa-github"></i>
+      
+      <span class="sidebar-button-desc">GitHub</span>
+    </a>
+  </li>
+
+  <li class="sidebar-button">
+    
+      <a class="sidebar-button-link " href="https://stackoverflow.com/users/4878280/buer" target="_blank" rel="noopener">
+    
+      <i class="sidebar-button-icon fa fa-lg fa-stack-overflow"></i>
+      
+      <span class="sidebar-button-desc">Stack Overflow</span>
+    </a>
+  </li>
+
+
+    </ul>
+    <ul class="sidebar-buttons">
+      
+
+    </ul>
+  </div>
+</nav>
+
+      
+  <div class="post-header-cover
+              text-left
+              "
+       style="background-image:url('../../../min_program.png')"
+       data-behavior="4">
+    
+      <div class="post-header main-content-wrap text-left">
+  
+    <h1 class="post-title" itemprop="headline">
+      入坑小程序
+    </h1>
+  
+  
+  <div class="postShorten-meta post-meta">
+    
+      <time itemprop="datePublished" datetime="2018-03-25T00:00:00Z">
+        
+  三月 25, 2018
+
+      </time>
+    
+    
+  
+  
+    <span>发布在</span>
+    
+      <a class="category-link" href="https://LinkRober.github.io/bookshelf/categories/mini-program">Mini Program</a>
+    
+  
+
+
+  </div>
+
+</div>
+    
+  </div>
+
+
+      <div id="main" data-behavior="4"
+        class="hasCover
+               hasCoverMetaIn
+               ">
+        <article class="post" itemscope itemType="http://schema.org/BlogPosting">
+          
+          
+          <div class="post-content markdown" itemprop="articleBody">
+            <div class="main-content-wrap">
+              <h3 id="描述">描述</h3>
+
+<p>去年各大平台纷纷开始占领微信上的又一流量入口——小程序。因为小程序的门槛低，这里指，技术上和前端大同小异，审核刚开始也比较松。除了大厂，很多个人开发这都投入进去。想在小程序上打响自己的个人品牌。在筹备了三个月之久，我的第一款小程序，终于快要完成了。在这里我会总结一下整体的过程，从idea到一个完整的小程序、期间遇到的坑、和觉得挺有意思的地方。</p>
+
+<p></p>
+
+<h3 id="流程">流程</h3>
+
+<p><br />
+1. 购买服务器
+    本人购买的服务器是阿里云服务器，因为经历的几家公司都是用的它，感觉还是比较靠谱的（我一同事也用过腾讯的服务，一直在吐槽不稳定，后来也换到阿里云了)</p>
+
+<p></br>
+2. 购买域名
+    小程序的是无法直接通过IP访问，必须申请一个域名，同样的阿里云上买就行了。这里要提醒大家的是，因为国家政策原因域名需要备案，整个过程大概需要一个月时间。阿里云还是比较良心的，备案成功之后会再赠送你一个月的服务器时间。因为整个备案时间大概是一个月。所有绑定域名一定要提前。</p>
+
+<p></br>
+3. 申请CA证书绑定到域名。在小程序里的API都需要Htps服务，如果你有CA证书可以直接使用，我也是通过阿里云申请的免费CA证书，时间是一年，到期看可以续的。</p>
+
+<p></br>
+4. 根据idea设计产品</p>
+
+<p></br>
+5. 开发小程序和server</p>
+
+<p></br>
+6.发布</p>
+
+<h3 id="小程序">小程序</h3>
+
+<p>因为是我的第一个小程序，先试试手，所以选了一个比较简单的东西，音乐欣赏。数据是从其他网站爬过来插到数据库的。
+本人是移动端出生，对前端和后端的东西都不是很熟，不过刚好去年写了不少RN的东西，前端的东西也算是半只脚入门了。在小程序里面文件分为下面几种</p>
+
+<ul>
+<li>js文件，和前端的一样，</li>
+<li>wxml文件，类似于html文件</li>
+<li>wxss文件，类似于css文件</li>
+<li>wxs文件，这是小程序的一套脚本语言，语法看似和JavaScript语法一样，其实他们是不同的语言，有自己的语法，并不和 javascript 一致    。我们可以把它当做方法类在wxml中来使用。在wxml中是无法调用js中的非事件方法的，如果从js文件里拿到的数据你希望再做一步处理然后展示，这样的处理需要放到wxs文件里。</li>
+</ul>
+
+<p>开发前花半天浏览下微信小程序的API差不多就可以了，套路都差不多MVC。</p>
+
+<h3 id="数据库">数据库</h3>
+
+<p>服务器是用Node.js+MongoDB+Express搭建的，全套搭建起来还是很快的。Node.js是一个基于事件驱动I/O的服务端JavaScript环境，它在高并发的服务上有很好的体验。同样是js所以语法基本没门槛了。
+MongoDB数据库和一般的关系型数据库不同，它是非关系型数据库。关系型数据库对数据操作都是:<code>SELECT</code>、<code>FROM</code>、<code>WHERE</code>、<code>BY</code>等。来感受一下MongoDB怎么操作数据：</p>
+
+<pre><code>//插入一个数据
+var user = {
+    &quot;name&quot;:&quot;小芳&quot;，
+    &quot;age&quot;:18,
+    &quot;gender&quot;:1,
+    &quot;country&quot;:&quot;中国&quot;
+};
+db.user.insert(user)
+</code></pre>
+
+<pre><code>//查询姓名是：张三、李四、王五的信息
+db.user.find({&quot;name&quot;:  {&quot;\$in&quot; : [&quot;张三&quot;,&quot;李四&quot;,&quot;王五&quot;] }})
+</code></pre>
+
+<p>给我最大的感觉，它是一个面向对象面向集合的存储过程，对于经常做面向对象开发人来说是比较容易入手的。</p>
+
+<h3 id="express">Express</h3>
+
+<p>基于Node.js的极其简洁灵活的web应用开发框架，它有丰富的HTTP快捷方法，非常快捷的创建node服务.</p>
+
+<p><strong>首页模块入口设置</strong></p>
+
+<pre><code>...
+...
+...
+var home = require('./routes/home');//首页接口
+...
+...
+...
+app.use('/home', home);//将home绑定到首页接口path
+</code></pre>
+
+<p><strong>详细的首页模块</strong></p>
+
+<pre><code>var express = require('express');
+var router = express.Router();
+var URL = require('url');
+var MusicModel = require('./model.js');
+const mongoose = require('mongoose');
+//连接数据库并打开
+mongoose.connect('mongodb://localhost:27017/funmusic')
+var db = mongoose.connection;
+
+db.on('open',function(){
+	console.log('MongoDB Connect Successed');
+});
+db.on('error',function(){
+	console.log('MongoDB Connect Error');
+});
+//定义card模型
+const cardSchema = new mongoose.Schema({
+ 	vol_id:String,
+ 	vol_number:String,
+ 	number:Number,
+ 	title:String,
+ 	summary:String,
+ 	covers:[{
+ 		origin:String,
+ 		large:String,
+ 		large_low:String,
+ 		small:String,
+ 	}],
+ 	create_time:Number,
+ 	is_free:Number,
+ 	is_trial:Number,
+ 	tags:[{
+ 		tag_id:String,
+ 		name:String,
+ 		alias:String,
+ 		cover:String,
+ 	}],
+ 	comments_count:String,
+ 	favs_count:Number,
+ 	url:String,
+ 	detail_desc:String
+ }, { collection: 'card' });
+const cardModel = mongoose.model('card',cardSchema);
+
+//list接口
+router.get('/list',function(req,res,next){
+	var params = URL.parse(req.url,true).query;
+	var response = res;
+	cardModel.find({},(err,result,res) =&gt; {
+		if(err)  return console.log(err);
+		console.log(result);
+		var content = {status:1,data:result};
+		response.send(JSON.stringify(content));
+	});
+	
+})
+
+//定义cardDetail模型
+const cardDetailSchema = new mongoose.Schema({
+	covers:[{
+		origin:String,
+		large:String,
+		large_low:String,
+		small:String,
+	}],
+	detail_desc:String,
+	title:String,
+	number:Number,
+	tags:[{
+ 		tag_id:String,
+ 		name:String,
+ 		alias:String,
+ 		cover:String,
+ 	}],
+},{collection:'card'});
+
+//detail接口
+router.get('/detail',function(req,res,next){
+	var params = URL.parse(req.url,true).query;
+	var response = res;
+	var _vol_id = params.vol_id;
+	console.log(_vol_id);
+	cardModel.aggregate([{ $match : { vol_id : _vol_id}},{ $project : {title : 1,covers : 1,detail_desc : 1,number : 1,tags : 1,&quot;_id&quot; : 0}}],(err,result,res) =&gt; {
+		if(err)  return console.log(err);
+		console.log(result);
+		var restruct = {
+			image_large:result[0].covers[0].large,
+			detail_desc:result[0].detail_desc,
+			title:result[0].title,
+			number:result[0].number,
+			tags:result[0].tags,
+		}
+		var content = {status:1,data:restruct};
+		response.send(JSON.stringify(content));
+	});
+});
+
+
+
+module.exports = router;
+
+</code></pre>
+
+<h3 id="端口管理-nginx">端口管理 - Nginx</h3>
+
+<p>Nginx是一个反向代理服务器，平时我们抓包数据从server到client是正向代理，从client到server就是反向代理。服务器的http服务只会向外暴露80端口（默认），https服务暴露443(默认)端口。我们的服务则是3000端口，Nginx会将请求反向代理到3000端口，无论你是http还是hppts请求。</p>
+
+<pre><code>http {
+    log_format  main  '$remote_addr - $remote_user [$time_local] &quot;$request&quot; '
+                      '$status $body_bytes_sent &quot;$http_referer&quot; '
+                      '&quot;$http_user_agent&quot; &quot;$http_x_forwarded_for&quot;';
+
+    access_log  /var/log/nginx/access.log  main;
+
+    sendfile            on;
+    tcp_nopush          on;
+    tcp_nodelay         on;
+    keepalive_timeout   65;
+    types_hash_max_size 2048;
+
+    include             /etc/nginx/mime.types;
+    default_type        application/octet-stream;
+
+    # Load modular configuration files from the /etc/nginx/conf.d directory.
+    # See http://nginx.org/en/docs/ngx_core_module.html#include
+    # for more information.
+    include /etc/nginx/conf.d/*.conf;
+
+    server {
+        listen       80 default_server;
+        listen       [::]:80 default_server;
+        server_name  _;
+        root         /usr/share/nginx/html;
+
+        # Load configuration files for the default server block.
+        include /etc/nginx/default.d/*.conf;
+
+        location / {
+	  proxy_pass http://127.0.0.1:3000;
+        }
+
+        error_page 404 /404.html;
+            location = /40x.html {
+        }
+
+        error_page 500 502 503 504 /50x.html;
+            location = /50x.html {
+        }
+    }
+
+# Settings for a TLS enabled server.
+#
+    server {
+        listen       443;
+        server_name  www.lify.online;
+	ssl on;
+        root         html;
+	index index.html index.htm;
+        ssl_certificate cert/214534222920959.pem;
+        ssl_certificate_key cert/214534222920959.key;
+        ssl_session_timeout  5m;
+        ssl_ciphers ECDHE-RSA-AES128-GCM-SHA256:ECDHE:ECDH:AES:HIGH:!NULL:!aNULL:!MD5:!ADH:!RC4;
+        ssl_protocols TLSv1 TLSv1.1 TLSv1.2;
+        ssl_prefer_server_ciphers on;
+        location / {
+	  #root html;
+	  #index index.html index.htm;
+	  proxy_pass http://127.0.0.1:3000;
+        }
+
+}
+}
+</code></pre>
+
+<h3 id="进程管理-pm2">进程管理 - PM2</h3>
+
+<p>使用它可以很方便的启动、停止和监控进程。刚开始重新发布接口的时候，都需要停止服务，kill进程，再次启动服务，有了pm2只要<code>pm2 restart 进程名</code></p>
+
+<p>以上是我最近一段时间小程序之旅的总结，希望对你有所帮助。</p>
+              
+            </div>
+          </div>
+          <div id="post-footer" class="post-footer main-content-wrap">
+            
+              
+                
+                
+                  <div class="post-footer-tags">
+                    <span class="text-color-light text-small">标签</span><br/>
+                    
+  <a class="tag tag--primary tag--small" href="https://linkrober.github.io/bookshelf//tags/mini-program/">Mini Program</a>
+
+                  </div>
+                
+              
+            
+            
+  <div class="post-actions-wrap">
+      <nav >
+        <ul class="post-actions post-action-nav">
+            <li class="post-action">
+              
+                <a class="post-action-btn btn btn--disabled">
+              
+                <i class="fa fa-angle-left"></i>
+                <span class="hide-xs hide-sm text-small icon-ml">下一篇</span>
+              </a>
+            </li>
+            <li class="post-action">
+              
+                <a class="post-action-btn btn btn--default tooltip--top" href="https://LinkRober.github.io/bookshelf/2018/02/%E9%80%92%E5%BD%92/" data-tooltip="递归">
+              
+                <span class="hide-xs hide-sm text-small icon-mr">上一篇</span>
+                <i class="fa fa-angle-right"></i>
+              </a>
+            </li>
+        </ul>
+      </nav>
+    <ul class="post-actions post-action-share" >
+      
+        <li class="post-action hide-lg hide-md hide-sm">
+          <a class="post-action-btn btn btn--default btn-open-shareoptions" href="#btn-open-shareoptions">
+            <i class="fa fa-share-alt"></i>
+          </a>
+        </li>
+        
+      
+      
+        <li class="post-action">
+          <a class="post-action-btn btn btn--default" href="#disqus_thread">
+            <i class="fa fa-comment-o"></i>
+          </a>
+        </li>
+      
+      <li class="post-action">
+        
+          <a class="post-action-btn btn btn--default" href="#">
+        
+          <i class="fa fa-list"></i>
+        </a>
+      </li>
+    </ul>
+  </div>
+
+
+            
+              
+                <div id="disqus_thread">
+  <noscript>Please enable JavaScript to view the <a href="//disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
+</div>
+              
+            
+          </div>
+        </article>
+        
+      </div>
+      <div id="bottom-bar" class="post-bottom-bar" data-behavior="4">
+        
+  <div class="post-actions-wrap">
+      <nav >
+        <ul class="post-actions post-action-nav">
+            <li class="post-action">
+              
+                <a class="post-action-btn btn btn--disabled">
+              
+                <i class="fa fa-angle-left"></i>
+                <span class="hide-xs hide-sm text-small icon-ml">下一篇</span>
+              </a>
+            </li>
+            <li class="post-action">
+              
+                <a class="post-action-btn btn btn--default tooltip--top" href="https://LinkRober.github.io/bookshelf/2018/02/%E9%80%92%E5%BD%92/" data-tooltip="递归">
+              
+                <span class="hide-xs hide-sm text-small icon-mr">上一篇</span>
+                <i class="fa fa-angle-right"></i>
+              </a>
+            </li>
+        </ul>
+      </nav>
+    <ul class="post-actions post-action-share" >
+      
+        <li class="post-action hide-lg hide-md hide-sm">
+          <a class="post-action-btn btn btn--default btn-open-shareoptions" href="#btn-open-shareoptions">
+            <i class="fa fa-share-alt"></i>
+          </a>
+        </li>
+        
+      
+      
+        <li class="post-action">
+          <a class="post-action-btn btn btn--default" href="#disqus_thread">
+            <i class="fa fa-comment-o"></i>
+          </a>
+        </li>
+      
+      <li class="post-action">
+        
+          <a class="post-action-btn btn btn--default" href="#">
+        
+          <i class="fa fa-list"></i>
+        </a>
+      </li>
+    </ul>
+  </div>
+
+
+      </div>
+      <div id="share-options-bar" class="share-options-bar" data-behavior="4">
+  <i id="btn-close-shareoptions" class="fa fa-close"></i>
+  <ul class="share-options">
+    
+  </ul>
+</div>
+<div id="share-options-mask" class="share-options-mask"></div>
+    </div>
+    
+    <div id="about">
+  <div id="about-card">
+    <div id="about-btn-close">
+      <i class="fa fa-remove"></i>
+    </div>
+    
+      <img id="about-card-picture" src="https://avatars1.githubusercontent.com/u/7357189?v=3&amp;s=460.png" alt="作者的图片" />
+    
+    <h4 id="about-card-name">董二千</h4>
+    
+      <div id="about-card-bio">愿你走出半生 归来仍是少年</div>
+    
+    
+      <div id="about-card-job">
+        <i class="fa fa-briefcase"></i>
+        <br/>
+        iOS Developer
+      </div>
+    
+    
+      <div id="about-card-location">
+        <i class="fa fa-map-marker"></i>
+        <br/>
+        China
+      </div>
+    
+  </div>
+</div>
+
+    <div id="algolia-search-modal" class="modal-container">
+  <div class="modal">
+    <div class="modal-header">
+      <span class="close-button"><i class="fa fa-close"></i></span>
+      <a href="https://algolia.com" target="_blank" rel="noopener" class="searchby-algolia text-color-light link-unstyled">
+        <span class="searchby-algolia-text text-color-light text-small">by</span>
+        <img class="searchby-algolia-logo" src="https://www.algolia.com/static_assets/images/press/downloads/algolia-light.svg">
+      </a>
+      <i class="search-icon fa fa-search"></i>
+      <form id="algolia-search-form">
+        <input type="text" id="algolia-search-input" name="search"
+          class="form-control input--large search-input" placeholder="搜索" />
+      </form>
+    </div>
+    <div class="modal-body">
+      <div class="no-result text-color-light text-center"></div>
+      <div class="results">
+        
+        
+          <div class="media">
+            
+            <div class="media-body">
+              <a class="link-unstyled" href="https://linkrober.github.io/bookshelf/2018/03/%E5%85%A5%E5%9D%91%E5%B0%8F%E7%A8%8B%E5%BA%8F/">
+                <h3 class="media-heading">入坑小程序</h3>
+              </a>
+              <span class="media-meta">
+                <span class="media-date text-small">
+                  Mar 3, 2018
+                </span>
+              </span>
+              <div class="media-content hide-xs font-merryweather"><h3 id="描述">描述</h3>
+
+<p>去年各大平台纷纷开始占领微信上的又一流量入口——小程序。因为小程序的门槛低，这里指，技术上和前端大同小异，审核刚开始也比较松。除了大厂，很多个人开发这都投入进去。想在小程序上打响自己的个人品牌。在筹备了三个月之久，我的第一款小程序，终于快要完成了。在这里我会总结一下整体的过程，从idea到一个完整的小程序、期间遇到的坑、和觉得挺有意思的地方。</p>
+
+<p></p></div>
+            </div>
+            <div style="clear:both;"></div>
+            <hr>
+          </div>
+        
+          <div class="media">
+            
+            <div class="media-body">
+              <a class="link-unstyled" href="https://linkrober.github.io/bookshelf/2018/02/%E9%80%92%E5%BD%92/">
+                <h3 class="media-heading">递归</h3>
+              </a>
+              <span class="media-meta">
+                <span class="media-date text-small">
+                  Feb 2, 2018
+                </span>
+              </span>
+              <div class="media-content hide-xs font-merryweather"><p></b>
+<span class="highlight-text primary">
+基本思想
+</span></p>
+
+<p>递归是一种直接或者间接调用自身函数或者方法的算法。递归的实质是把问题分解成规模缩小的同类问题的子问题，然后递归调用方法来表示问题的解。递归算法，其实就是程序的自身调用。在一段程序中往往会遇到调用自身的那样一种coding策略。递归往往能带来非常简洁非常直观的代码形式，从而使我们的编码大大简化，但是递归的思想确实和我们的常规思维相逆。我们通常是从上而下的思考问题，而递归是从下往上进行思考。这样我们就能看到我们会用很少的语句解决很大的问题，所以递归策略最主要的体现就是较少的代码量解决复杂的问题。</p>
+
+<p></p></div>
+            </div>
+            <div style="clear:both;"></div>
+            <hr>
+          </div>
+        
+          <div class="media">
+            
+            <div class="media-body">
+              <a class="link-unstyled" href="https://linkrober.github.io/bookshelf/2018/01/%E5%86%8D%E8%A7%812017%E4%BD%A0%E5%A5%BD2018/">
+                <h3 class="media-heading">再见2017，你好2018</h3>
+              </a>
+              <span class="media-meta">
+                <span class="media-date text-small">
+                  Jan 1, 2018
+                </span>
+              </span>
+              <div class="media-content hide-xs font-merryweather"><p>不知不觉工作已有三个年头，在iOS这条路上，从当年战战兢兢的新人变成一个熟练的开发者，这一路走来真不容易。不仅仅是身体上的负荷，个人对于技术的追求也使自己或迷惘或奋起。</p>
+
+<p></p></div>
+            </div>
+            <div style="clear:both;"></div>
+            <hr>
+          </div>
+        
+          <div class="media">
+            
+            <div class="media-body">
+              <a class="link-unstyled" href="https://linkrober.github.io/bookshelf/2017/12/object-c%E5%92%8Cjs%E9%80%9A%E4%BF%A1%E6%A6%82%E8%BF%B0/">
+                <h3 class="media-heading">Object-C和JS通信概述</h3>
+              </a>
+              <span class="media-meta">
+                <span class="media-date text-small">
+                  Dec 12, 2017
+                </span>
+              </span>
+              <div class="media-content hide-xs font-merryweather"><p>本系列文章作为学习RN期间的总结</p>
+
+<ul>
+<li><a href="https://linkrober.github.io/bookshelf/2017/10/react-native%E5%A6%82%E4%BD%95%E9%9B%86%E6%88%90%E5%88%B0%E7%8E%B0%E6%9C%89%E9%A1%B9%E7%9B%AE%E4%B8%AD/">React Native如何集成到现有项目中</a></li>
+<li><a href="https://linkrober.github.io/bookshelf/2017/10/react-native%E5%92%8Cnative%E9%97%B4%E7%9A%84%E9%80%9A%E4%BF%A1/">React Native和Native间的通信实践</a></li>
+<li><a href="https://linkrober.github.io/bookshelf/2017/10/rctrootviewrctbridge%E5%81%9A%E4%BA%86%E4%BB%80%E4%B9%88/">RCTRootView、RCTBridge做了什么</a></li>
+<li>Object-C和JS通信概述</li>
+</ul>
+
+<p></p></div>
+            </div>
+            <div style="clear:both;"></div>
+            <hr>
+          </div>
+        
+          <div class="media">
+            
+            <div class="media-body">
+              <a class="link-unstyled" href="https://linkrober.github.io/bookshelf/2017/12/ios%E5%A4%9A%E7%BA%BF%E7%A8%8B%E4%B8%AD%E7%9A%84%E9%94%81/">
+                <h3 class="media-heading">iOS多线程中的锁</h3>
+              </a>
+              <span class="media-meta">
+                <span class="media-date text-small">
+                  Dec 12, 2017
+                </span>
+              </span>
+              <div class="media-content hide-xs font-merryweather"><p>涉及到多线程共享资源的情况下就避免不了资源竞争的问题，这时候就会用到各种锁，例如，<code>@synchronized</code>、<code>NSLock</code>、<code>OSSpinLock</code>等等，虽然都是锁，但是锁的底层实现也不尽相同。大概可以分为：<span class="highlight-text blue">互斥锁</span>、<span class="highlight-text blue">自旋锁</span>、<span class="highlight-text blue">递归锁</span>、
+<span class="highlight-text blue">读写锁</span>。</p>
+
+<pre><code>{
+	lock()//加锁
+		doSomeThing()//临界区
+	unlock()//解锁
+}
+</code></pre>
+
+<p>我们锁的目的是在任何时刻最多只能有一个线程在修改资源，即在任何时刻只能有一个操作者保持锁。</p>
+
+<p></p></div>
+            </div>
+            <div style="clear:both;"></div>
+            <hr>
+          </div>
+        
+          <div class="media">
+            
+            <div class="media-body">
+              <a class="link-unstyled" href="https://linkrober.github.io/bookshelf/2017/12/%E5%BF%AB%E9%80%9F%E6%8E%92%E5%BA%8F/">
+                <h3 class="media-heading">快速排序</h3>
+              </a>
+              <span class="media-meta">
+                <span class="media-date text-small">
+                  Dec 12, 2017
+                </span>
+              </span>
+              <div class="media-content hide-xs font-merryweather"><span class="highlight-text primary">
+故事
+</span>
+
+<p>快速排序由<strong>C.A.R.Hoare（东尼霍尔）</strong>在1960年提出。之后又有许多人对此进行改进。如果你对快速排序感兴趣可以去看看东尼霍尔1962年在Computer Journal发表的论文“Quicksort”以及《算法导论》的第七章。</p></div>
+            </div>
+            <div style="clear:both;"></div>
+            <hr>
+          </div>
+        
+          <div class="media">
+            
+            <div class="media-body">
+              <a class="link-unstyled" href="https://linkrober.github.io/bookshelf/2017/11/%E4%B8%80%E4%B8%AA%E9%9F%B3%E8%A7%86%E9%A2%91%E5%8E%82%E7%9A%84%E5%9B%BE%E5%83%8F%E5%A4%84%E7%90%86%E6%B5%81%E7%A8%8B%E6%A6%82%E8%BF%B0/">
+                <h3 class="media-heading">一个音视频厂的图像处理流程概述</h3>
+              </a>
+              <span class="media-meta">
+                <span class="media-date text-small">
+                  Nov 11, 2017
+                </span>
+              </span>
+              <div class="media-content hide-xs font-merryweather"><p><img src="http://upload-images.jianshu.io/upload_images/1086250-3eac00965effbe70?imageMogr2/auto-orient/strip%7CimageView2/2/w/320" alt="" /></p>
+
+<p>视频编辑分为两部分：<strong>Camrea Engine（视频资源采集）</strong>和<strong>Video Edit Engine（后期视频编辑）</strong>。在Camrea Engine采集的时候我们也可以做一些编辑操作，这叫预处理，比如说加滤镜。等到把采集到的资源交给Video Edit Engine时就是后处理。</p>
+
+<p></p></div>
+            </div>
+            <div style="clear:both;"></div>
+            <hr>
+          </div>
+        
+          <div class="media">
+            
+            <div class="media-body">
+              <a class="link-unstyled" href="https://linkrober.github.io/bookshelf/2017/10/rctrootviewrctbridge%E5%81%9A%E4%BA%86%E4%BB%80%E4%B9%88/">
+                <h3 class="media-heading">RCTRootView、RCTBridge做了什么</h3>
+              </a>
+              <span class="media-meta">
+                <span class="media-date text-small">
+                  Oct 10, 2017
+                </span>
+              </span>
+              <div class="media-content hide-xs font-merryweather"><p>本系列文章作为学习RN期间的总结</p>
+
+<ul>
+<li><a href="https://linkrober.github.io/bookshelf/2017/10/react-native%E5%A6%82%E4%BD%95%E9%9B%86%E6%88%90%E5%88%B0%E7%8E%B0%E6%9C%89%E9%A1%B9%E7%9B%AE%E4%B8%AD/">React Native如何集成到现有项目中</a></li>
+<li><a href="https://linkrober.github.io/bookshelf/2017/10/react-native%E5%92%8Cnative%E9%97%B4%E7%9A%84%E9%80%9A%E4%BF%A1/">React Native和Native间的通信实践</a></li>
+<li>RCTRootView、RCTBridge做了什么</li>
+<li><a href="https://linkrober.github.io/bookshelf/2017/12/native%E5%92%8Cjs%E9%80%9A%E4%BF%A1%E6%A6%82%E8%BF%B0/">Object-C和JS通信概述</a></li>
+</ul>
+
+<p></p></div>
+            </div>
+            <div style="clear:both;"></div>
+            <hr>
+          </div>
+        
+          <div class="media">
+            
+            <div class="media-body">
+              <a class="link-unstyled" href="https://linkrober.github.io/bookshelf/2017/10/react-native%E5%92%8Cnative%E9%97%B4%E7%9A%84%E9%80%9A%E4%BF%A1%E5%AE%9E%E8%B7%B5/">
+                <h3 class="media-heading">React Native和Native间的通信实践</h3>
+              </a>
+              <span class="media-meta">
+                <span class="media-date text-small">
+                  Oct 10, 2017
+                </span>
+              </span>
+              <div class="media-content hide-xs font-merryweather"><!-- thumbnailImage = 'rn_image.jpeg'
+thumbnailImagePosition = 'bottom' -->
+
+<p>本系列文章作为学习RN期间的总结</p>
+
+<ul>
+<li><a href="https://linkrober.github.io/bookshelf/2017/10/react-native%E5%A6%82%E4%BD%95%E9%9B%86%E6%88%90%E5%88%B0%E7%8E%B0%E6%9C%89%E9%A1%B9%E7%9B%AE%E4%B8%AD/">React Native如何集成到现有项目中</a></li>
+<li>React Native和Native间的通信实践</li>
+<li><a href="https://linkrober.github.io/bookshelf/2017/10/rctrootviewrctbridge%E5%81%9A%E4%BA%86%E4%BB%80%E4%B9%88/">RCTRootView、RCTBridge做了什么</a></li>
+<li><a href="https://linkrober.github.io/bookshelf/2017/12/native%E5%92%8Cjs%E9%80%9A%E4%BF%A1%E6%A6%82%E8%BF%B0/">Object-C和JS通信概述</a></li>
+</ul>
+
+<p></p></div>
+            </div>
+            <div style="clear:both;"></div>
+            <hr>
+          </div>
+        
+          <div class="media">
+            
+            <div class="media-body">
+              <a class="link-unstyled" href="https://linkrober.github.io/bookshelf/2017/10/react-native%E5%A6%82%E4%BD%95%E9%9B%86%E6%88%90%E5%88%B0%E7%8E%B0%E6%9C%89%E9%A1%B9%E7%9B%AE%E4%B8%AD/">
+                <h3 class="media-heading">React Native如何集成到现有项目中</h3>
+              </a>
+              <span class="media-meta">
+                <span class="media-date text-small">
+                  Oct 10, 2017
+                </span>
+              </span>
+              <div class="media-content hide-xs font-merryweather"><!-- thumbnailImage = 'rn_thumbnailImage.jpeg'
+thumbnailImagePosition = 'bottom' -->
+
+<p>本系列文章作为学习RN期间的总结</p>
+
+<ul>
+<li>React Native如何集成到现有项目中</li>
+<li><a href="https://linkrober.github.io/bookshelf/2017/10/react-native%E5%92%8Cnative%E9%97%B4%E7%9A%84%E9%80%9A%E4%BF%A1/">React Native和Native间的通信实践</a></li>
+<li><a href="https://linkrober.github.io/bookshelf/2017/10/rctrootviewrctbridge%E5%81%9A%E4%BA%86%E4%BB%80%E4%B9%88/">RCTRootView、RCTBridge做了什么</a></li>
+<li><a href="https://linkrober.github.io/bookshelf/2017/12/native%E5%92%8Cjs%E9%80%9A%E4%BF%A1%E6%A6%82%E8%BF%B0/">Object-C和JS通信概述</a></li>
+</ul>
+
+<p></p></div>
+            </div>
+            <div style="clear:both;"></div>
+            <hr>
+          </div>
+        
+      </div>
+    </div>
+    <div class="modal-footer">
+      <p class="results-count text-medium"
+         data-message-zero=""
+         data-message-one=""
+         data-message-other="">
+         17 posts found
+      </p>
+    </div>
+  </div>
+</div>
+    
+  
+    
+    <div id="cover" style="background-image:url('https://LinkRober.github.io/bookshelf/images/cover.jpg');"></div>
+  
+
+
+    
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/2.1.3/jquery.min.js" integrity="sha256-IFHWFEbU2/+wNycDECKgjIRSirRNIDp2acEB5fvdVRU=" crossorigin="anonymous"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.8.0/highlight.min.js" integrity="sha256-+mpyNVJsNt4rVXCw0F+pAOiB3YxmHgrbJsx4ecPuUaI=" crossorigin="anonymous"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/fancybox/2.1.4/jquery.fancybox.min.js" integrity="sha256-vMxgR/7FtLovVA+IPrR7+xTgIgARH7y9VZQnmmi0HDI=" crossorigin="anonymous"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/fancybox/2.1.4/helpers/jquery.fancybox-thumbs.min.js" integrity="sha256-N0qFUh7/9vLvia87dDndewmsgsyYoNkdA212tPc+2NI=" crossorigin="anonymous"></script>
+
+
+<script src="https://LinkRober.github.io/bookshelf/js/script-qi9wbxp2ya2j6p7wx1i6tgavftewndznf4v0hy2gvivk1rxgc3lm7njqb6bz.min.js"></script>
+
+
+<script>
+$(document).ready(function() {
+  hljs.configure({ classPrefix: '', useBR: false });
+  $('pre.code-highlight, pre > code').each(function(i, block) {
+    if (!$(this).hasClass('codeblock')) {
+      $(this).addClass('codeblock');
+    }
+    hljs.highlightBlock(block);
+  });
+});
+</script>
+
+  
+    
+      <script>
+        var disqus_config = function () {
+          this.page.url = 'https:\/\/linkrober.github.io\/bookshelf\/2018\/03\/%E5%85%A5%E5%9D%91%E5%B0%8F%E7%A8%8B%E5%BA%8F\/';
+          
+            this.page.identifier = '\/2018\/03\/%E5%85%A5%E5%9D%91%E5%B0%8F%E7%A8%8B%E5%BA%8F\/'
+          
+        };
+        (function() {
+          
+          
+          if (window.location.hostname == "localhost") {
+            return;
+          }
+          var d = document, s = d.createElement('script');
+          var disqus_shortname = 'dongerqian';
+          s.src = '//' + disqus_shortname + '.disqus.com/embed.js';
+
+          s.setAttribute('data-timestamp', +new Date());
+          (d.head || d.body).appendChild(s);
+        })();
+      </script>
+    
+  
+
+
+
+    
+  </body>
+</html>
+

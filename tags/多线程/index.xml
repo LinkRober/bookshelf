@@ -1,22 +1,19 @@
 <?xml version="1.0" encoding="utf-8" standalone="yes" ?>
 <rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
   <channel>
-    <title>多线程 on 董二千</title>
-    <link>https://LinkRober.github.io/bookshelf/tags/%E5%A4%9A%E7%BA%BF%E7%A8%8B/</link>
-    <description>Recent content in 多线程 on 董二千</description>
+    <title>董二千</title>
+    <link>https://LinkRober.github.io/bookshelf/tags/%E5%A4%9A%E7%BA%BF%E7%A8%8B/index.xml</link>
+    <description>Recent content on 董二千</description>
     <generator>Hugo -- gohugo.io</generator>
     <language>zh-cn</language>
-    <lastBuildDate>Fri, 01 Dec 2017 00:00:00 +0000</lastBuildDate>
-    
-	<atom:link href="https://LinkRober.github.io/bookshelf/tags/%E5%A4%9A%E7%BA%BF%E7%A8%8B/index.xml" rel="self" type="application/rss+xml" />
-    
+    <atom:link href="https://LinkRober.github.io/bookshelf/tags/%E5%A4%9A%E7%BA%BF%E7%A8%8B/index.xml" rel="self" type="application/rss+xml" />
     
     <item>
       <title>iOS多线程中的锁</title>
-      <link>https://LinkRober.github.io/bookshelf/2017/12/ios%E5%A4%9A%E7%BA%BF%E7%A8%8B%E4%B8%AD%E7%9A%84%E9%94%81/</link>
+      <link>https://linkrober.github.io/bookshelf/2017/12/ios%E5%A4%9A%E7%BA%BF%E7%A8%8B%E4%B8%AD%E7%9A%84%E9%94%81/</link>
       <pubDate>Fri, 01 Dec 2017 00:00:00 +0000</pubDate>
       
-      <guid>https://LinkRober.github.io/bookshelf/2017/12/ios%E5%A4%9A%E7%BA%BF%E7%A8%8B%E4%B8%AD%E7%9A%84%E9%94%81/</guid>
+      <guid>https://linkrober.github.io/bookshelf/2017/12/ios%E5%A4%9A%E7%BA%BF%E7%A8%8B%E4%B8%AD%E7%9A%84%E9%94%81/</guid>
       <description>&lt;p&gt;涉及到多线程共享资源的情况下就避免不了资源竞争的问题，这时候就会用到各种锁，例如，&lt;code&gt;@synchronized&lt;/code&gt;、&lt;code&gt;NSLock&lt;/code&gt;、&lt;code&gt;OSSpinLock&lt;/code&gt;等等，虽然都是锁，但是锁的底层实现也不尽相同。大概可以分为：&lt;span class=&#34;highlight-text blue&#34;&gt;互斥锁&lt;/span&gt;、&lt;span class=&#34;highlight-text blue&#34;&gt;自旋锁&lt;/span&gt;、&lt;span class=&#34;highlight-text blue&#34;&gt;递归锁&lt;/span&gt;、
 &lt;span class=&#34;highlight-text blue&#34;&gt;读写锁&lt;/span&gt;。&lt;/p&gt;
 
@@ -29,7 +26,279 @@
 
 &lt;p&gt;我们锁的目的是在任何时刻最多只能有一个线程在修改资源，即在任何时刻只能有一个操作者保持锁。&lt;/p&gt;
 
-&lt;p&gt;&lt;/p&gt;</description>
+&lt;p&gt;&lt;/p&gt;
+
+&lt;h4 id=&#34;互斥锁&#34;&gt;互斥锁&lt;/h4&gt;
+
+&lt;p&gt;通过一个全局变量来控制某个线程是否可以在某个时刻访问资源，该变量值大于0说明锁正在被使用。如果某个线程在尝试获得锁的是否发现已经被占用，线程挂起，等待锁的释放。&lt;/p&gt;
+
+&lt;h4 id=&#34;自旋锁&#34;&gt;自旋锁&lt;/h4&gt;
+
+&lt;p&gt;通过一个全局变量来控制某个线程是否可以在某个时刻访问资源，该变量值大于0说明锁正在被使用。如果某个线程在尝试获得锁的是否发现已经被占用，进入忙等状态，直到获得锁。&lt;/p&gt;
+
+&lt;blockquote&gt;
+&lt;p&gt;以上可以看出，互斥锁和自旋锁很类似，稍有不同的地方在于当处于等待状态的时候各自的线程是怎么调度的。互斥锁即使时间片还未用尽，互斥锁也会直接挂起，这样就减少了CPU的开销。但是这时候会进行上下文（线程）的切换，也会带来一定的开销，适合I/O密集型操作。自旋锁，顾名思义，即使处于等待状态线程也不会挂起，一直处于忙等状态，类似于一直在进行一个whilte循环。这样增加了CPU的开销，所以对于需要保持上下文的任务必须要使用自旋锁，同时它是不能被抢占的（高优先级会抢占低优先级的进程），适用于CPU密集型的任务。&lt;/p&gt;
+&lt;/blockquote&gt;
+
+&lt;h4 id=&#34;递归锁&#34;&gt;递归锁&lt;/h4&gt;
+
+&lt;p&gt;对于递归调的时候我们不能简单的使用某个锁来锁住临界区，这样就会造成死锁，必须要使用递归锁。当加锁的时候，变量就会加1，解锁的时候开始减1，直到值为0的时候释放锁。&lt;/p&gt;
+
+&lt;h4 id=&#34;读写锁&#34;&gt;读写锁&lt;/h4&gt;
+
+&lt;p&gt;在上面提到的几种锁同一时刻只允许一个线程访问资源，在操作资源的时候，往往会出现一个线程在写操作，一个线程在读操作，这时候我们就会用到读写锁。
+读写锁，它分为两种锁，读锁和写锁。当一个线程在读资源的时候，我们为其加上读锁，有另一个线程也要访问资源的时候我们需要再加一个读锁。当第三个线程需要进行写操作的时候我们就要加上一个写锁，但是这个写锁只有当读锁的使用者为0的时候才有效。也就是说我们必须等另外两个线程的读操作结束之后才能为其加上写锁。虽然互斥锁和自旋锁也能达到要求，但是读写锁无疑让控制更加精细，节省了CPU。&lt;/p&gt;
+
+&lt;h4 id=&#34;ios中的锁&#34;&gt;iOS中的锁&lt;/h4&gt;
+
+&lt;p&gt;大神ibireme的一篇博客&lt;a href=&#34;https://blog.ibireme.com/2016/01/16/spinlock_is_unsafe_in_ios/&#34;&gt;不再安全的 OSSpinLock&lt;/a&gt;对锁的性能做了简单的比较，大家可以看下。
+&lt;img src=&#34;../../../来自ibireme的博客.png&#34; alt=&#34;来自ibireme的博客&#34; /&gt;&lt;/p&gt;
+
+&lt;h6 id=&#34;osspinlock&#34;&gt;OSSpinLock&lt;/h6&gt;
+
+&lt;span class=&#34;highlight-text blue&#34;&gt;自旋锁&lt;/span&gt;
+
+&lt;p&gt;在此之前OSSpinLock是无疑性能最好的锁，在2015年的时候苹果工程师透露出了自旋锁的bug。具体问题大概如下：
+系统维护了不同等级优先级的线程，高优先级的线程更容易获得系统资源。当一个低优先级的线程先获得锁之后，高优先级线程这时候也试图获取锁。这时候高优先级占据了大量的CPU，一直处于忙等状态。而低优先级的线程因为没有分配到足够的CPU一直无法完成任务，也就无法释放锁。这时候线程的调度就产生了优先级翻转。&lt;/b&gt;&lt;/p&gt;
+
+&lt;p&gt;&lt;/b&gt;
+&lt;span class=&#34;highlight-text success&#34;&gt;
+Example
+&lt;/span&gt;&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;//定义OSSpinLock锁
+__block OSSpinLock theLock = OS_SPINLOCK_INIT;
+//线程1
+dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
+    OSSpinLockLock(&amp;amp;theLock); 
+    NSLog(@&amp;quot;需要线程同步的操作1 开始&amp;quot;); 
+    sleep(3); 
+    NSLog(@&amp;quot;需要线程同步的操作1 结束&amp;quot;);
+    OSSpinLockUnlock(&amp;amp;theLock);
+});
+//线程2
+dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
+     OSSpinLockLock(&amp;amp;theLock); 
+     sleep(1); 
+     NSLog(@&amp;quot;需要线程同步的操作2&amp;quot;); 
+     OSSpinLockUnlock(&amp;amp;theLock);
+});
+
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;h6 id=&#34;sychronized&#34;&gt;sychronized&lt;/h6&gt;
+
+&lt;p&gt;&lt;span class=&#34;highlight-text blue&#34;&gt;互斥锁&lt;/span&gt; &lt;span class=&#34;highlight-text blue&#34;&gt;递归锁&lt;/span&gt;&lt;/p&gt;
+
+&lt;p&gt;iOS中性能最差的锁，但是写起来很开心，用起来简单，无论普通的锁还是递归锁都能应对。它牺牲了性能，保证了接口得友好。它会把每个传入的对象当作锁（这要求我们要保证对象的唯一性）并把他们放在一个哈希表中存储，通过这张表来管理锁。要注意的是，对象不能为&lt;strong&gt;nil&lt;/strong&gt;，这会让临界区不再是线程安全的。&lt;/b&gt;&lt;/p&gt;
+
+&lt;p&gt;&lt;/b&gt;&lt;/p&gt;
+
+&lt;span class=&#34;highlight-text success&#34;&gt;
+Example
+&lt;/span&gt;
+
+&lt;pre&gt;&lt;code&gt;//需要加锁的对象
+NSObject *obj = [[NSObject alloc] init];
+//线程1
+dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
+    @synchronized(obj) {
+         NSLog(@&amp;quot;需要线程同步的操作1 开始&amp;quot;);
+         sleep(3); 
+         NSLog(@&amp;quot;需要线程同步的操作1 结束&amp;quot;);
+     } 
+  }); 
+//线程2
+dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{ 
+    sleep(1); 
+    @synchronized(obj) { 
+         NSLog(@&amp;quot;需要线程同步的操作2&amp;quot;); 
+     } 
+});
+
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;&lt;strong&gt;Result&lt;/strong&gt;&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;ThreadTest[13438:385647] 需要线程同步的操作1 开始
+ThreadTest[13438:385647] 需要线程同步的操作1 结束
+ThreadTest[13438:385646] 需要线程同步的操作2
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;h6 id=&#34;nslock&#34;&gt;NSLock&lt;/h6&gt;
+
+&lt;span class=&#34;highlight-text blue&#34;&gt;互斥锁&lt;/span&gt;
+
+&lt;p&gt;将C语言的pthread_mutex锁进行了一次封装，更加的OC。&lt;code&gt;NSLock&lt;/code&gt;提供了&lt;code&gt;tryLock&lt;/code&gt;和&lt;code&gt;lockBeforeDate:&lt;/code&gt;方法。在加锁前尝试加锁，如果返回无法获得锁，并不会阻塞线程会继续往下走，返回&lt;code&gt;NO&lt;/code&gt;,&lt;code&gt;lockBeforeDate:&lt;/code&gt;让你控制加锁的时间，在规定时间未获得锁返回&lt;code&gt;NO&lt;/code&gt;
+&lt;/b&gt;&lt;/p&gt;
+
+&lt;p&gt;&lt;/b&gt;
+&lt;span class=&#34;highlight-text success&#34;&gt;
+Example
+&lt;/span&gt;&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;//创建锁
+NSLock *lock = [[NSLock alloc] init];
+//线程1
+dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{ 
+    //[lock lock]; 
+    //立即加锁
+    [lock lockBeforeDate:[NSDate date]];
+    NSLog(@&amp;quot;需要线程同步的操作1 开始&amp;quot;); 
+    sleep(2); 
+    NSLog(@&amp;quot;需要线程同步的操作1 结束&amp;quot;); 
+    [lock unlock];
+});
+//线程2
+dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
+    sleep(1);
+    //尝试加锁
+    if ([lock tryLock]) {
+        //尝试获取锁，如果获取不到返回NO，不会阻塞该线程 
+        NSLog(@&amp;quot;锁可用的操作&amp;quot;); 
+        [lock unlock]; 
+    }else{
+        NSLog(@&amp;quot;锁不可用的操作&amp;quot;); 
+    } 
+    
+    NSDate *date = [[NSDate alloc] initWithTimeIntervalSinceNow:3]; 
+    if ([lock lockBeforeDate:date]) {
+          //尝试在未来的3s内获取锁，并阻塞该线程，如果3s内获取不到恢复线程, 返回NO,不会阻塞该线程
+          NSLog(@&amp;quot;没有超时，获得锁&amp;quot;); 
+          [lock unlock]; 
+     }else{ 
+          NSLog(@&amp;quot;超时，没有获得锁&amp;quot;); 
+     } 
+});
+
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;&lt;strong&gt;Result&lt;/strong&gt;&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;ThreadTest[13541:394814] 需要线程同步的操作 1 开始
+ThreadTest[13541:394804] 锁不可用的操作
+ThreadTest[13541:394814] 需要线程同步的操作 1 结束
+ThreadTest[13541:394804] 没有超时，获得锁
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;h6 id=&#34;nsrecursivelock&#34;&gt;NSRecursiveLock&lt;/h6&gt;
+
+&lt;p&gt;&lt;span class=&#34;highlight-text blue&#34;&gt;互斥锁&lt;/span&gt; &lt;span class=&#34;highlight-text blue&#34;&gt;递归锁&lt;/span&gt;&lt;/p&gt;
+
+&lt;p&gt;实现和&lt;code&gt;NSLock&lt;/code&gt;差不多，只不过在底层NSLock使用的C的&lt;code&gt;pthread_mutex_lock&lt;/code&gt;,而&lt;code&gt;NSRecursiveLock&lt;/code&gt;使用的是&lt;code&gt;pthread_mutex_recursive&lt;/code&gt;。
+它也同样提供了&lt;code&gt;- (BOOL)tryLock&lt;/code&gt;和&lt;code&gt;- (BOOL)lockBeforeDate:(NSDate *)limit&lt;/code&gt;方法&lt;/b&gt;&lt;/p&gt;
+
+&lt;p&gt;&lt;/b&gt;
+&lt;span class=&#34;highlight-text success&#34;&gt;
+Example
+&lt;/span&gt;&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;//NSLock *lock = [[NSLock alloc] init];
+NSRecursiveLock *lock = [[NSRecursiveLock alloc] init];
+dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{ 
+    static void (^RecursiveMethod)(int); 
+    RecursiveMethod = ^(int value) { 
+        [lock lock]; 
+        if (value &amp;gt; 0) { 
+            NSLog(@&amp;quot;value = %d&amp;quot;, value); 
+            sleep(1); 
+            RecursiveMethod(value - 1); 
+      } 
+        [lock unlock]; 
+    };
+     RecursiveMethod(5); 
+});
+
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;如果使用&lt;code&gt;NSLock&lt;/code&gt;就会直接死锁。&lt;/p&gt;
+
+&lt;p&gt;&lt;strong&gt;Result&lt;/strong&gt;&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;ThreadTest[13593:400360] value = 5
+ThreadTest[13593:400360] value = 4
+ThreadTest[13593:400360] value = 4
+ThreadTest[13593:400360] value = 2
+ThreadTest[13593:400360] value = 1
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;h6 id=&#34;nscondition&#34;&gt;NSCondition&lt;/h6&gt;
+
+&lt;p&gt;&lt;span class=&#34;highlight-text blue&#34;&gt;互斥锁&lt;/span&gt; &lt;span class=&#34;highlight-text blue&#34;&gt;条件变量&lt;/span&gt;&lt;/p&gt;
+
+&lt;p&gt;条件变量和信号量很类似，提供了阻塞、等待就绪、唤醒线程的方法。比如，生产-消费者模式。
+在单线程执行中，我们经常会通过一个布尔值来控制某个方法或者值是否需要被执行和修改。在多线程的环境下，需要互斥锁来配合保证线程安全。&lt;/b&gt;&lt;/p&gt;
+
+&lt;p&gt;&lt;/b&gt;
+&lt;span class=&#34;highlight-text success&#34;&gt;
+Example
+&lt;/span&gt;&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;NSConditionLock *lock = [[NSConditionLock alloc] init];
+NSMutableArray *products = [NSMutableArray array]; 
+NSInteger HAS_DATA = 1; 
+NSInteger NO_DATA = 0;
+
+dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{ 
+    while (1) { 
+        [lock lockWhenCondition:NO_DATA]; 
+        [products addObject:[[NSObject alloc] init]]; 
+        NSLog(@&amp;quot;produce a product,总量:%zi&amp;quot;,products.count); 
+        [lock unlockWithCondition:HAS_DATA]; 
+        sleep(1); 
+   } 
+}); 
+
+dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{ 
+    while (1) { 
+         NSLog(@&amp;quot;wait for product&amp;quot;); 
+         [lock lockWhenCondition:HAS_DATA]; 
+         [products removeObjectAtIndex:0]; 
+         NSLog(@&amp;quot;custome a product&amp;quot;); 
+         [lock unlockWithCondition:NO_DATA]; 
+    } 
+});
+
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;&lt;strong&gt;Result&lt;/strong&gt;&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;ThreadTest[13645:406942] wait for product
+ThreadTest[13645:406951] produce a product, 总量 :1
+ThreadTest[13645:406942] custome a product
+ThreadTest[13645:406942] wait for product
+ThreadTest[13645:406951] produce a product, 总量:1
+ThreadTest[13645:406942] custome a product
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;只有当&lt;code&gt;unlock&lt;/code&gt;和&lt;code&gt;lock&lt;/code&gt;的值一一对应才能唤醒线程，执行后续操作。&lt;/p&gt;
+
+&lt;h4 id=&#34;参考资料&#34;&gt;参考资料&lt;/h4&gt;
+
+&lt;p&gt;&lt;a href=&#34;https://blog.ibireme.com/2016/01/16/spinlock_is_unsafe_in_ios/&#34;&gt;不再安全的 OSSpinLock&lt;/a&gt;&lt;/p&gt;
+
+&lt;p&gt;&lt;a href=&#34;https://casatwy.com/pthreadde-ge-chong-tong-bu-ji-zhi.html&#34;&gt;pthread的各种同步机制&lt;/a&gt;&lt;/p&gt;
+
+&lt;p&gt;&lt;a href=&#34;https://bestswifter.com/ios-lock/&#34;&gt;深入理解 iOS 开发中的锁&lt;/a&gt;&lt;/p&gt;
+
+&lt;p&gt;&lt;a href=&#34;http://www.jianshu.com/p/4edf98a61483&#34;&gt;IOS 保证线程同步方式&amp;amp;性能对比&lt;/a&gt;&lt;/p&gt;
+
+&lt;p&gt;&lt;a href=&#34;https://github.com/lattera/glibc/blob/master/nptl/pthread_mutex_lock.c&#34;&gt;pthreadmutexlock.c 源码&lt;/a&gt;&lt;/p&gt;
+
+&lt;p&gt;&lt;a href=&#34;http://yulingtianxia.com/blog/2015/11/01/More-than-you-want-to-know-about-synchronized/&#34;&gt;关于 @synchronized，这儿比你想知道的还要多&lt;/a&gt;&lt;/p&gt;
+
+&lt;p&gt;&lt;a href=&#34;http://pubs.opengroup.org/onlinepubs/7908799/xsh/pthread_mutex_lock.html&#34;&gt;pthreadmutexlock&lt;/a&gt;
+&lt;a href=&#34;https://developer.apple.
+com/library/content/documentation/Cocoa/Conceptual/Multithreading/ThreadSafety/ThreadSafety.html&#34;&gt;ThreadSafety&lt;/a&gt;&lt;/p&gt;
+
+&lt;p&gt;&lt;a href=&#34;https://stackoverflow.com/questions/62814/difference-between-binary-semaphore-and-mutex&#34;&gt;Difference between binary semaphore and mutex&lt;/a&gt;&lt;/p&gt;
+
+&lt;p&gt;&lt;a href=&#34;http://blog.csdn.net/Javadino/article/details/2891388&#34;&gt;[Pthread] Linux中的线程同步机制(二)&amp;ndash;In Glibc&lt;/a&gt;&lt;/p&gt;
+
+&lt;p&gt;&lt;a href=&#34;https://android.googlesource.com/platform/external/pthreads/+/master/pthread_cond_wait.
+c&#34;&gt;pthreadcondwait&lt;/a&gt;&lt;/p&gt;
+
+&lt;p&gt;&lt;a href=&#34;https://stackoverflow.com/questions/3513045/conditional-variable-vs-semaphore&#34;&gt;Conditional Variable vs Semaphore&lt;/a&gt;&lt;/p&gt;</description>
     </item>
     
   </channel>

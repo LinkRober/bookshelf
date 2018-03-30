@@ -1,0 +1,280 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes" ?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>董二千</title>
+    <link>https://LinkRober.github.io/bookshelf/tags/mini-program/index.xml</link>
+    <description>Recent content on 董二千</description>
+    <generator>Hugo -- gohugo.io</generator>
+    <language>zh-cn</language>
+    <atom:link href="https://LinkRober.github.io/bookshelf/tags/mini-program/index.xml" rel="self" type="application/rss+xml" />
+    
+    <item>
+      <title>入坑小程序</title>
+      <link>https://linkrober.github.io/bookshelf/2018/03/%E5%85%A5%E5%9D%91%E5%B0%8F%E7%A8%8B%E5%BA%8F/</link>
+      <pubDate>Sun, 25 Mar 2018 00:00:00 +0000</pubDate>
+      
+      <guid>https://linkrober.github.io/bookshelf/2018/03/%E5%85%A5%E5%9D%91%E5%B0%8F%E7%A8%8B%E5%BA%8F/</guid>
+      <description>&lt;h3 id=&#34;描述&#34;&gt;描述&lt;/h3&gt;
+
+&lt;p&gt;去年各大平台纷纷开始占领微信上的又一流量入口——小程序。因为小程序的门槛低，这里指，技术上和前端大同小异，审核刚开始也比较松。除了大厂，很多个人开发这都投入进去。想在小程序上打响自己的个人品牌。在筹备了三个月之久，我的第一款小程序，终于快要完成了。在这里我会总结一下整体的过程，从idea到一个完整的小程序、期间遇到的坑、和觉得挺有意思的地方。&lt;/p&gt;
+
+&lt;p&gt;&lt;/p&gt;
+
+&lt;h3 id=&#34;流程&#34;&gt;流程&lt;/h3&gt;
+
+&lt;p&gt;&lt;br /&gt;
+1. 购买服务器
+    本人购买的服务器是阿里云服务器，因为经历的几家公司都是用的它，感觉还是比较靠谱的（我一同事也用过腾讯的服务，一直在吐槽不稳定，后来也换到阿里云了)&lt;/p&gt;
+
+&lt;p&gt;&lt;/br&gt;
+2. 购买域名
+    小程序的是无法直接通过IP访问，必须申请一个域名，同样的阿里云上买就行了。这里要提醒大家的是，因为国家政策原因域名需要备案，整个过程大概需要一个月时间。阿里云还是比较良心的，备案成功之后会再赠送你一个月的服务器时间。因为整个备案时间大概是一个月。所有绑定域名一定要提前。&lt;/p&gt;
+
+&lt;p&gt;&lt;/br&gt;
+3. 申请CA证书绑定到域名。在小程序里的API都需要Htps服务，如果你有CA证书可以直接使用，我也是通过阿里云申请的免费CA证书，时间是一年，到期看可以续的。&lt;/p&gt;
+
+&lt;p&gt;&lt;/br&gt;
+4. 根据idea设计产品&lt;/p&gt;
+
+&lt;p&gt;&lt;/br&gt;
+5. 开发小程序和server&lt;/p&gt;
+
+&lt;p&gt;&lt;/br&gt;
+6.发布&lt;/p&gt;
+
+&lt;h3 id=&#34;小程序&#34;&gt;小程序&lt;/h3&gt;
+
+&lt;p&gt;因为是我的第一个小程序，先试试手，所以选了一个比较简单的东西，音乐欣赏。数据是从其他网站爬过来插到数据库的。
+本人是移动端出生，对前端和后端的东西都不是很熟，不过刚好去年写了不少RN的东西，前端的东西也算是半只脚入门了。在小程序里面文件分为下面几种&lt;/p&gt;
+
+&lt;ul&gt;
+&lt;li&gt;js文件，和前端的一样，&lt;/li&gt;
+&lt;li&gt;wxml文件，类似于html文件&lt;/li&gt;
+&lt;li&gt;wxss文件，类似于css文件&lt;/li&gt;
+&lt;li&gt;wxs文件，这是小程序的一套脚本语言，语法看似和JavaScript语法一样，其实他们是不同的语言，有自己的语法，并不和 javascript 一致    。我们可以把它当做方法类在wxml中来使用。在wxml中是无法调用js中的非事件方法的，如果从js文件里拿到的数据你希望再做一步处理然后展示，这样的处理需要放到wxs文件里。&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;p&gt;开发前花半天浏览下微信小程序的API差不多就可以了，套路都差不多MVC。&lt;/p&gt;
+
+&lt;h3 id=&#34;数据库&#34;&gt;数据库&lt;/h3&gt;
+
+&lt;p&gt;服务器是用Node.js+MongoDB+Express搭建的，全套搭建起来还是很快的。Node.js是一个基于事件驱动I/O的服务端JavaScript环境，它在高并发的服务上有很好的体验。同样是js所以语法基本没门槛了。
+MongoDB数据库和一般的关系型数据库不同，它是非关系型数据库。关系型数据库对数据操作都是:&lt;code&gt;SELECT&lt;/code&gt;、&lt;code&gt;FROM&lt;/code&gt;、&lt;code&gt;WHERE&lt;/code&gt;、&lt;code&gt;BY&lt;/code&gt;等。来感受一下MongoDB怎么操作数据：&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;//插入一个数据
+var user = {
+    &amp;quot;name&amp;quot;:&amp;quot;小芳&amp;quot;，
+    &amp;quot;age&amp;quot;:18,
+    &amp;quot;gender&amp;quot;:1,
+    &amp;quot;country&amp;quot;:&amp;quot;中国&amp;quot;
+};
+db.user.insert(user)
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;pre&gt;&lt;code&gt;//查询姓名是：张三、李四、王五的信息
+db.user.find({&amp;quot;name&amp;quot;:  {&amp;quot;\$in&amp;quot; : [&amp;quot;张三&amp;quot;,&amp;quot;李四&amp;quot;,&amp;quot;王五&amp;quot;] }})
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;给我最大的感觉，它是一个面向对象面向集合的存储过程，对于经常做面向对象开发人来说是比较容易入手的。&lt;/p&gt;
+
+&lt;h3 id=&#34;express&#34;&gt;Express&lt;/h3&gt;
+
+&lt;p&gt;基于Node.js的极其简洁灵活的web应用开发框架，它有丰富的HTTP快捷方法，非常快捷的创建node服务.&lt;/p&gt;
+
+&lt;p&gt;&lt;strong&gt;首页模块入口设置&lt;/strong&gt;&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;...
+...
+...
+var home = require(&#39;./routes/home&#39;);//首页接口
+...
+...
+...
+app.use(&#39;/home&#39;, home);//将home绑定到首页接口path
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;&lt;strong&gt;详细的首页模块&lt;/strong&gt;&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;var express = require(&#39;express&#39;);
+var router = express.Router();
+var URL = require(&#39;url&#39;);
+var MusicModel = require(&#39;./model.js&#39;);
+const mongoose = require(&#39;mongoose&#39;);
+//连接数据库并打开
+mongoose.connect(&#39;mongodb://localhost:27017/funmusic&#39;)
+var db = mongoose.connection;
+
+db.on(&#39;open&#39;,function(){
+	console.log(&#39;MongoDB Connect Successed&#39;);
+});
+db.on(&#39;error&#39;,function(){
+	console.log(&#39;MongoDB Connect Error&#39;);
+});
+//定义card模型
+const cardSchema = new mongoose.Schema({
+ 	vol_id:String,
+ 	vol_number:String,
+ 	number:Number,
+ 	title:String,
+ 	summary:String,
+ 	covers:[{
+ 		origin:String,
+ 		large:String,
+ 		large_low:String,
+ 		small:String,
+ 	}],
+ 	create_time:Number,
+ 	is_free:Number,
+ 	is_trial:Number,
+ 	tags:[{
+ 		tag_id:String,
+ 		name:String,
+ 		alias:String,
+ 		cover:String,
+ 	}],
+ 	comments_count:String,
+ 	favs_count:Number,
+ 	url:String,
+ 	detail_desc:String
+ }, { collection: &#39;card&#39; });
+const cardModel = mongoose.model(&#39;card&#39;,cardSchema);
+
+//list接口
+router.get(&#39;/list&#39;,function(req,res,next){
+	var params = URL.parse(req.url,true).query;
+	var response = res;
+	cardModel.find({},(err,result,res) =&amp;gt; {
+		if(err)  return console.log(err);
+		console.log(result);
+		var content = {status:1,data:result};
+		response.send(JSON.stringify(content));
+	});
+	
+})
+
+//定义cardDetail模型
+const cardDetailSchema = new mongoose.Schema({
+	covers:[{
+		origin:String,
+		large:String,
+		large_low:String,
+		small:String,
+	}],
+	detail_desc:String,
+	title:String,
+	number:Number,
+	tags:[{
+ 		tag_id:String,
+ 		name:String,
+ 		alias:String,
+ 		cover:String,
+ 	}],
+},{collection:&#39;card&#39;});
+
+//detail接口
+router.get(&#39;/detail&#39;,function(req,res,next){
+	var params = URL.parse(req.url,true).query;
+	var response = res;
+	var _vol_id = params.vol_id;
+	console.log(_vol_id);
+	cardModel.aggregate([{ $match : { vol_id : _vol_id}},{ $project : {title : 1,covers : 1,detail_desc : 1,number : 1,tags : 1,&amp;quot;_id&amp;quot; : 0}}],(err,result,res) =&amp;gt; {
+		if(err)  return console.log(err);
+		console.log(result);
+		var restruct = {
+			image_large:result[0].covers[0].large,
+			detail_desc:result[0].detail_desc,
+			title:result[0].title,
+			number:result[0].number,
+			tags:result[0].tags,
+		}
+		var content = {status:1,data:restruct};
+		response.send(JSON.stringify(content));
+	});
+});
+
+
+
+module.exports = router;
+
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;h3 id=&#34;端口管理-nginx&#34;&gt;端口管理 - Nginx&lt;/h3&gt;
+
+&lt;p&gt;Nginx是一个反向代理服务器，平时我们抓包数据从server到client是正向代理，从client到server就是反向代理。服务器的http服务只会向外暴露80端口（默认），https服务暴露443(默认)端口。我们的服务则是3000端口，Nginx会将请求反向代理到3000端口，无论你是http还是hppts请求。&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;http {
+    log_format  main  &#39;$remote_addr - $remote_user [$time_local] &amp;quot;$request&amp;quot; &#39;
+                      &#39;$status $body_bytes_sent &amp;quot;$http_referer&amp;quot; &#39;
+                      &#39;&amp;quot;$http_user_agent&amp;quot; &amp;quot;$http_x_forwarded_for&amp;quot;&#39;;
+
+    access_log  /var/log/nginx/access.log  main;
+
+    sendfile            on;
+    tcp_nopush          on;
+    tcp_nodelay         on;
+    keepalive_timeout   65;
+    types_hash_max_size 2048;
+
+    include             /etc/nginx/mime.types;
+    default_type        application/octet-stream;
+
+    # Load modular configuration files from the /etc/nginx/conf.d directory.
+    # See http://nginx.org/en/docs/ngx_core_module.html#include
+    # for more information.
+    include /etc/nginx/conf.d/*.conf;
+
+    server {
+        listen       80 default_server;
+        listen       [::]:80 default_server;
+        server_name  _;
+        root         /usr/share/nginx/html;
+
+        # Load configuration files for the default server block.
+        include /etc/nginx/default.d/*.conf;
+
+        location / {
+	  proxy_pass http://127.0.0.1:3000;
+        }
+
+        error_page 404 /404.html;
+            location = /40x.html {
+        }
+
+        error_page 500 502 503 504 /50x.html;
+            location = /50x.html {
+        }
+    }
+
+# Settings for a TLS enabled server.
+#
+    server {
+        listen       443;
+        server_name  www.lify.online;
+	ssl on;
+        root         html;
+	index index.html index.htm;
+        ssl_certificate cert/214534222920959.pem;
+        ssl_certificate_key cert/214534222920959.key;
+        ssl_session_timeout  5m;
+        ssl_ciphers ECDHE-RSA-AES128-GCM-SHA256:ECDHE:ECDH:AES:HIGH:!NULL:!aNULL:!MD5:!ADH:!RC4;
+        ssl_protocols TLSv1 TLSv1.1 TLSv1.2;
+        ssl_prefer_server_ciphers on;
+        location / {
+	  #root html;
+	  #index index.html index.htm;
+	  proxy_pass http://127.0.0.1:3000;
+        }
+
+}
+}
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;h3 id=&#34;进程管理-pm2&#34;&gt;进程管理 - PM2&lt;/h3&gt;
+
+&lt;p&gt;使用它可以很方便的启动、停止和监控进程。刚开始重新发布接口的时候，都需要停止服务，kill进程，再次启动服务，有了pm2只要&lt;code&gt;pm2 restart 进程名&lt;/code&gt;&lt;/p&gt;
+
+&lt;p&gt;以上是我最近一段时间小程序之旅的总结，希望对你有所帮助。&lt;/p&gt;</description>
+    </item>
+    
+  </channel>
+</rss>
