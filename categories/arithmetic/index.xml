@@ -1,19 +1,22 @@
 <?xml version="1.0" encoding="utf-8" standalone="yes" ?>
 <rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
   <channel>
-    <title>董二千</title>
-    <link>https://LinkRober.github.io/bookshelf/categories/arithmetic/index.xml</link>
-    <description>Recent content on 董二千</description>
+    <title>Arithmetic on 董二千</title>
+    <link>https://LinkRober.github.io/bookshelf/categories/arithmetic/</link>
+    <description>Recent content in Arithmetic on 董二千</description>
     <generator>Hugo -- gohugo.io</generator>
     <language>zh-cn</language>
-    <atom:link href="https://LinkRober.github.io/bookshelf/categories/arithmetic/index.xml" rel="self" type="application/rss+xml" />
+    <lastBuildDate>Fri, 02 Feb 2018 00:00:00 +0000</lastBuildDate>
+    
+	<atom:link href="https://LinkRober.github.io/bookshelf/categories/arithmetic/index.xml" rel="self" type="application/rss+xml" />
+    
     
     <item>
       <title>递归</title>
-      <link>https://linkrober.github.io/bookshelf/2018/02/%E9%80%92%E5%BD%92/</link>
+      <link>https://LinkRober.github.io/bookshelf/2018/02/%E9%80%92%E5%BD%92/</link>
       <pubDate>Fri, 02 Feb 2018 00:00:00 +0000</pubDate>
       
-      <guid>https://linkrober.github.io/bookshelf/2018/02/%E9%80%92%E5%BD%92/</guid>
+      <guid>https://LinkRober.github.io/bookshelf/2018/02/%E9%80%92%E5%BD%92/</guid>
       <description>&lt;p&gt;&lt;/b&gt;
 &lt;span class=&#34;highlight-text primary&#34;&gt;
 基本思想
@@ -21,169 +24,20 @@
 
 &lt;p&gt;递归是一种直接或者间接调用自身函数或者方法的算法。递归的实质是把问题分解成规模缩小的同类问题的子问题，然后递归调用方法来表示问题的解。递归算法，其实就是程序的自身调用。在一段程序中往往会遇到调用自身的那样一种coding策略。递归往往能带来非常简洁非常直观的代码形式，从而使我们的编码大大简化，但是递归的思想确实和我们的常规思维相逆。我们通常是从上而下的思考问题，而递归是从下往上进行思考。这样我们就能看到我们会用很少的语句解决很大的问题，所以递归策略最主要的体现就是较少的代码量解决复杂的问题。&lt;/p&gt;
 
-&lt;p&gt;&lt;/p&gt;
-
-&lt;p&gt;&lt;/b&gt;
-&lt;span class=&#34;highlight-text primary&#34;&gt;
-Example：计算阶乘
-&lt;/span&gt;
-计算阶乘是递归程序的经典示例。计算某个数的阶乘就是用那个数乘以包含1在内的比它小的所有数。例如，&lt;code&gt;factorial(6)&lt;/code&gt;等价于&lt;code&gt;6*5*4*3*2*1&lt;/code&gt;,阶乘的特性是，某个数的阶乘等于起始数乘以比它小的数的阶乘。阶乘函数：&lt;/p&gt;
-
-&lt;pre&gt;&lt;code&gt;int factorial(int n) {
-	return n * factorial(n-1);
-}
-&lt;/code&gt;&lt;/pre&gt;
-
-&lt;p&gt;但是这个函数会永远执行下去，因为它没有终止条件。所以我们需要一个条件告诉它何时停止。我们这里给出的条件就是&lt;code&gt;n == 1&lt;/code&gt;停止&lt;/p&gt;
-
-&lt;pre&gt;&lt;code&gt;int factorial(int n){
-	if(n == 1){
-		return 1;
-	}
-	else {
-		return n * factorial(n - 1);
-	}
-}
-&lt;/code&gt;&lt;/pre&gt;
-
-&lt;p&gt;流程示意图：&lt;/p&gt;
-
-&lt;p&gt;&lt;img src=&#34;../../../fact-shape.jpg&#34; alt=&#34;fact-shape&#34; /&gt;&lt;/p&gt;
-
-&lt;p&gt;&lt;/b&gt;
-&lt;span class=&#34;highlight-text primary&#34;&gt;
-Example：斐波纳契数列
-&lt;/span&gt;&lt;/p&gt;
-
-&lt;p&gt;数学上&lt;a href=&#34;https://zh.wikipedia.org/wiki/%E6%96%90%E6%B3%A2%E9%82%A3%E5%A5%91%E6%95%B0%E5%88%97&#34;&gt;斐波纳契数列&lt;/a&gt;是以递归的方式来定义的：
-&lt;img src=&#34;../../../Fibonacci Sequence.png&#34; alt=&#34;Fibonacci Sequence&#34; /&gt;&lt;/p&gt;
-
-&lt;p&gt;写成递归程序：&lt;/p&gt;
-
-&lt;pre&gt;&lt;code&gt;int Fibonacci(int n){
-    if (n &amp;lt;= 1)  
-        return n;  
-    else  
-        return Fibonacci(n-1) + Fibonacci(n-2);  
-}
-&lt;/code&gt;&lt;/pre&gt;
-
-&lt;p&gt;&lt;/b&gt;
-&lt;span class=&#34;highlight-text primary&#34;&gt;
-递归条件
-&lt;/span&gt;&lt;/p&gt;
-
-&lt;ul&gt;
-&lt;li&gt;递归开始时需要一个种子值&lt;/li&gt;
-&lt;li&gt;不断的调用自身&lt;/li&gt;
-&lt;li&gt;检查当前值是否已经匹配基本条件。如果匹配，则进行处理并返回值&lt;/li&gt;
-&lt;/ul&gt;</description>
+&lt;p&gt;&lt;/p&gt;</description>
     </item>
     
     <item>
       <title>快速排序</title>
-      <link>https://linkrober.github.io/bookshelf/2017/12/%E5%BF%AB%E9%80%9F%E6%8E%92%E5%BA%8F/</link>
+      <link>https://LinkRober.github.io/bookshelf/2017/12/%E5%BF%AB%E9%80%9F%E6%8E%92%E5%BA%8F/</link>
       <pubDate>Fri, 01 Dec 2017 00:00:00 +0000</pubDate>
       
-      <guid>https://linkrober.github.io/bookshelf/2017/12/%E5%BF%AB%E9%80%9F%E6%8E%92%E5%BA%8F/</guid>
+      <guid>https://LinkRober.github.io/bookshelf/2017/12/%E5%BF%AB%E9%80%9F%E6%8E%92%E5%BA%8F/</guid>
       <description>&lt;span class=&#34;highlight-text primary&#34;&gt;
 故事
 &lt;/span&gt;
 
-&lt;p&gt;快速排序由&lt;strong&gt;C.A.R.Hoare（东尼霍尔）&lt;/strong&gt;在1960年提出。之后又有许多人对此进行改进。如果你对快速排序感兴趣可以去看看东尼霍尔1962年在Computer Journal发表的论文“Quicksort”以及《算法导论》的第七章。&lt;/p&gt;
-
-&lt;p&gt;&lt;/b&gt;
-&lt;span class=&#34;highlight-text primary&#34;&gt;
-基本思想
-&lt;/span&gt;&lt;/p&gt;
-
-&lt;p&gt;通过一次排序将需要排序的数组分割成两部分,一部分的值比另一部分要小。再将这两个部分通过上面的方式排序，以此类推。最后分割成了很小的一部分，直到每个数字。整个排序的过程我们可以通过递归的方式进行。&lt;/p&gt;
-
-&lt;p&gt;&lt;/b&gt;
-&lt;span class=&#34;highlight-text primary&#34;&gt;
-时间复杂度
-&lt;/span&gt;&lt;/p&gt;
-
-&lt;p&gt;快速排序之所比较快，因为相比冒泡排序，每次交换是跳跃式的。每次排序的时候设置一个基准点，将小于等于基准点的数全部放到基准点的左边，将大于等于基准点的数全部放到基准点的右边。这样在每次交换的时候就不会像冒泡排序一样每次只能在相邻的数之间进行交换，交换的距离就大的多了。因此总的比较和交换次数就少了，速度自然就提高了。当然在最坏的情况下，仍可能是相邻的两个数进行了交换。因此快速排序的最差时间复杂度和冒泡排序是一样的都是O(N2)，它的平均时间复杂度为O(NlogN)。&lt;/p&gt;
-
-&lt;p&gt;&lt;/b&gt;
-&lt;span class=&#34;highlight-text primary&#34;&gt;
-Example：演示第一轮排序
-&lt;/span&gt;&lt;/p&gt;
-
-&lt;pre&gt;&lt;code&gt;5 7 6 4 3 1 9 8 0 2
-&lt;/code&gt;&lt;/pre&gt;
-
-&lt;p&gt;对上面的数进行排序,先定义一个基准数：&lt;strong&gt;5&lt;/strong&gt;。比较从两边进行，一边是从索引为0的开始，如果遇到比5大的就停下；另一边是从索引为9的开始，如果遇到比5小的就停下。然后交换两遍的数。在第一轮中，从左边开始比较的在遇到7之后就会停下来，因为7比5大；从右边开始的遇到2就会停下来，因为2比5小。然后交换两个人的位置。&lt;/p&gt;
-
-&lt;pre&gt;&lt;code&gt;5 2 6 4 3 1 9 8 0 7
-&lt;/code&gt;&lt;/pre&gt;
-
-&lt;p&gt;继续走，6比5大，0比5小，交换&lt;/p&gt;
-
-&lt;pre&gt;&lt;code&gt;5 2 0 4 3 1 9 8 6 7
-&lt;/code&gt;&lt;/pre&gt;
-
-&lt;p&gt;继续走，左边的遇到了9，比5大，停下来；右边的经过8，快要和左边的相遇了停下来。这时候当把9和5交换的时候发现排序后5左边并没有都比右边小&lt;/p&gt;
-
-&lt;pre&gt;&lt;code&gt;9 2 0 4 3 1 5 8 6 7
-&lt;/code&gt;&lt;/pre&gt;
-
-&lt;div class=&#34;alert danger &#34;&gt;
-  &lt;p&gt;注意这里我们刚开始的时候就先后顺序走错了，应该右边的先比较。&lt;/p&gt;
-&lt;/div&gt;
-
-&lt;p&gt;纠正一下，重新开始，最后一步比较的时候：这时候右边的先到1，发现1比5小停下。等左边的和右边的相遇时。将右边的1和基准数5交换，如下&lt;/p&gt;
-
-&lt;pre&gt;&lt;code&gt;1 2 0 4 3 5 9 8 6 7
-&lt;/code&gt;&lt;/pre&gt;
-
-&lt;span class=&#34;highlight-text primary&#34;&gt;
-Code
-&lt;/span&gt;
-
-&lt;pre&gt;&lt;code&gt;int a[10] = {6,1,2,7,9,3,4,5,10,8};
-
-void quickSort(int left,int right){
-    int i,j,t,temp;
-    if(left &amp;gt; right){
-        return;
-    }
-    
-    temp = a[left];
-    i = left;
-    j = right;
-    
-    while (i!=j) {
-        while (a[j] &amp;gt; temp &amp;amp;&amp;amp; i &amp;lt; j) {
-            j--;
-        }
-        while (a[i] &amp;lt;= temp &amp;amp;&amp;amp; i &amp;lt; j) {
-            i++;
-        }
-        
-        if(i &amp;lt; j){
-            t = a[i];
-            a[i] = a[j];
-            a[j] = t;
-        }
-    }
-    a[left] = a[i];
-    a[i] = temp;
-    
-    quickSort(left, i - 1);
-    quickSort(i + 1, right);
-}
-
-int main(int argc, const char * argv[]) {
-    // insert code here...
-    quickSort(0, 9);
-    for(int i = 0 ; i &amp;lt; 10;i++){
-        printf(&amp;quot;%d &amp;quot;,a[i]);
-    }
-    return 0;
-}
-&lt;/code&gt;&lt;/pre&gt;</description>
+&lt;p&gt;快速排序由&lt;strong&gt;C.A.R.Hoare（东尼霍尔）&lt;/strong&gt;在1960年提出。之后又有许多人对此进行改进。如果你对快速排序感兴趣可以去看看东尼霍尔1962年在Computer Journal发表的论文“Quicksort”以及《算法导论》的第七章。&lt;/p&gt;</description>
     </item>
     
   </channel>

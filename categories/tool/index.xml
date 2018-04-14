@@ -1,21 +1,25 @@
 <?xml version="1.0" encoding="utf-8" standalone="yes" ?>
 <rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
   <channel>
-    <title>董二千</title>
-    <link>https://LinkRober.github.io/bookshelf/categories/tool/index.xml</link>
-    <description>Recent content on 董二千</description>
+    <title>Tool on 董二千</title>
+    <link>https://LinkRober.github.io/bookshelf/categories/tool/</link>
+    <description>Recent content in Tool on 董二千</description>
     <generator>Hugo -- gohugo.io</generator>
     <language>zh-cn</language>
-    <atom:link href="https://LinkRober.github.io/bookshelf/categories/tool/index.xml" rel="self" type="application/rss+xml" />
+    <lastBuildDate>Mon, 03 Apr 2017 17:06:19 +0800</lastBuildDate>
+    
+	<atom:link href="https://LinkRober.github.io/bookshelf/categories/tool/index.xml" rel="self" type="application/rss+xml" />
+    
     
     <item>
       <title>git order</title>
-      <link>https://linkrober.github.io/bookshelf/2017/04/git-order/</link>
+      <link>https://LinkRober.github.io/bookshelf/2017/04/git-order/</link>
       <pubDate>Mon, 03 Apr 2017 17:06:19 +0800</pubDate>
       
-      <guid>https://linkrober.github.io/bookshelf/2017/04/git-order/</guid>
+      <guid>https://LinkRober.github.io/bookshelf/2017/04/git-order/</guid>
       <description>&lt;h3 id=&#34;常用命令&#34;&gt;常用命令&lt;/h3&gt;
 
+<<<<<<< HEAD
 &lt;p&gt;&lt;/p&gt;
 
 &lt;table&gt;
@@ -408,6 +412,9 @@
 &lt;p&gt; &lt;/p&gt;
 
 &lt;p&gt; &lt;/p&gt;</description>
+=======
+&lt;p&gt;&lt;/p&gt;</description>
+>>>>>>> e654d7cdd7892250a66bfe8797a63c4c74b18763
     </item>
     
   </channel>
