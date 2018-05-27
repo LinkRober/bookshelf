@@ -20,47 +20,50 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <meta name="generator" content="Hugo 0.17 with theme Tranquilpeak 0.4.1-BETA">
-    <title>RCTRootView、RCTBridge做了什么</title>
+    <title>Object-C多线程总结</title>
     <meta name="author" content="董二千">
-    <meta name="keywords" content="React Native">
+    <meta name="keywords" content="NSOperation, GCD, NSThread">
 
     <link rel="icon" href="https://LinkRober.github.io/bookshelf/favicon.png">
     
 
     
-    <meta name="description" content="本系列文章作为学习RN期间的总结
+    <meta name="description" content="目录
 
 
-React Native如何集成到现有项目中
-React Native和Native间的通信实践
-RCTRootView、RCTBridge做了什么
-Object-C和JS通信概述
+多线程概念
+NSOperation
+GCD(Grand Central Dispatch)
+NSThread
+资源竞争
 
 
 ">
-    <meta property="og:description" content="本系列文章作为学习RN期间的总结
+    <meta property="og:description" content="目录
 
 
-React Native如何集成到现有项目中
-React Native和Native间的通信实践
-RCTRootView、RCTBridge做了什么
-Object-C和JS通信概述
+多线程概念
+NSOperation
+GCD(Grand Central Dispatch)
+NSThread
+资源竞争
 
 
 ">
     <meta property="og:type" content="blog">
-    <meta property="og:title" content="RCTRootView、RCTBridge做了什么">
-    <meta property="og:url" content="/2017/10/rctrootviewrctbridge%E5%81%9A%E4%BA%86%E4%BB%80%E4%B9%88/">
+    <meta property="og:title" content="Object-C多线程总结">
+    <meta property="og:url" content="/2018/05/object-c%E5%A4%9A%E7%BA%BF%E7%A8%8B%E6%80%BB%E7%BB%93/">
     <meta property="og:site_name" content="董二千">
     <meta name="twitter:card" content="summary">
     <meta name="twitter:title" content="董二千">
-    <meta name="twitter:description" content="本系列文章作为学习RN期间的总结
+    <meta name="twitter:description" content="目录
 
 
-React Native如何集成到现有项目中
-React Native和Native间的通信实践
-RCTRootView、RCTBridge做了什么
-Object-C和JS通信概述
+多线程概念
+NSOperation
+GCD(Grand Central Dispatch)
+NSThread
+资源竞争
 
 
 ">
@@ -217,24 +220,26 @@ Object-C和JS通信概述
 </nav>
 
       
-  <div class="post-header-cover
-              text-left
-              "
-       style="background-image:url('../../../rn_image.jpg')"
-       data-behavior="4">
-    
-      <div class="post-header main-content-wrap text-left">
+
+      <div id="main" data-behavior="4"
+        class="
+               hasCoverMetaIn
+               ">
+        <article class="post" itemscope itemType="http://schema.org/BlogPosting">
+          
+          
+            <div class="post-header main-content-wrap text-left">
   
     <h1 class="post-title" itemprop="headline">
-      RCTRootView、RCTBridge做了什么
+      Object-C多线程总结
     </h1>
   
   
   <div class="postShorten-meta post-meta">
     
-      <time itemprop="datePublished" datetime="2017-10-28T00:00:00Z">
+      <time itemprop="datePublished" datetime="2018-05-27T00:00:00Z">
         
-  十月 28, 2017
+  五月 27, 2018
 
       </time>
     
@@ -243,7 +248,7 @@ Object-C和JS通信概述
   
     <span>发布在</span>
     
-      <a class="category-link" href="https://LinkRober.github.io/bookshelf/categories/reactnative">ReactNative</a>
+      <a class="category-link" href="https://LinkRober.github.io/bookshelf/categories/ios">ios</a>
     
   
 
@@ -251,212 +256,268 @@ Object-C和JS通信概述
   </div>
 
 </div>
-    
-  </div>
-
-
-      <div id="main" data-behavior="4"
-        class="hasCover
-               hasCoverMetaIn
-               ">
-        <article class="post" itemscope itemType="http://schema.org/BlogPosting">
-          
           
           <div class="post-content markdown" itemprop="articleBody">
             <div class="main-content-wrap">
-              <p>本系列文章作为学习RN期间的总结</p>
+              <h3 id="目录">目录</h3>
 
 <ul>
-<li><a href="https://linkrober.github.io/bookshelf/2017/10/react-native%E5%A6%82%E4%BD%95%E9%9B%86%E6%88%90%E5%88%B0%E7%8E%B0%E6%9C%89%E9%A1%B9%E7%9B%AE%E4%B8%AD/">React Native如何集成到现有项目中</a></li>
-<li><a href="https://linkrober.github.io/bookshelf/2017/10/react-native%E5%92%8Cnative%E9%97%B4%E7%9A%84%E9%80%9A%E4%BF%A1/">React Native和Native间的通信实践</a></li>
-<li>RCTRootView、RCTBridge做了什么</li>
-<li><a href="https://linkrober.github.io/bookshelf/2017/12/native%E5%92%8Cjs%E9%80%9A%E4%BF%A1%E6%A6%82%E8%BF%B0/">Object-C和JS通信概述</a></li>
+<li>多线程概念</li>
+<li>NSOperation</li>
+<li>GCD(Grand Central Dispatch)</li>
+<li>NSThread</li>
+<li>资源竞争</li>
 </ul>
 
 <p></p>
 
-<p>本章主要讨论，RCTRootView、RCTBridge彼此之间的关系，以及它们做了什么。先放上类图</p>
+<h3 id="多线程概念">多线程概念</h3>
 
-<p><img src="../../../相关类图.png" alt="相关类图" /></p>
+<p>线程也叫轻量级进程，是程序执行流的最小单元。
+线程组成：<strong>线程ID</strong>、<strong>指令指针</strong>、<strong>寄存器集合</strong>、<strong>堆栈</strong>。
+线程是进程中的一个实体，是被系统独立调度和分派的基本单位。</p>
 
-<h4 id="rctrootview">RCTRootView</h4>
+<p>线程自己不拥有系统资源，只拥有一点在运行中必不可少的资源，但它可与同属于一个进程的其他线程共享进程所拥有的全部资源。一个线程可以创建和撤销另一个线程，同一进程中的多个线程之间可以并发执行。</p>
 
-<p>它是RN在Native上展示的容器，<code>RCTJavaScriptWillStartLoadingNotification</code>、<code>RCTJavaScriptDidLoadNotification</code>、<code>RCTContentDidAppearNotification</code>这些通知注册都在里面。同时也是运行js的入口。</p>
+<p>线程有就绪、阻塞和运行三种基本状态。<br>
+<strong>就绪</strong>：是指线程具备运行的所有条件，逻辑上可运行，在等待处理机。<br>
+<strong>运行</strong>：线程占有处理机正在运行<br>
+<strong>阻塞</strong>：线程在等一个事件（如信号量），逻辑上不可执行</p>
 
-<p><span class="highlight-text blue">RCTJavaScriptWillStartLoadingNotification</span></br>
-当你在Debug模式下，选择<strong>Live Reload</strong>每次保存js文件的时候就会重新加载js。之前的<code>reactTag</code>会清空，等待重新赋值，但第一次初始化并不会触发这个通知。因为通知这时候还没注册。</p>
+<p>每一个程序都至少有一个线程，若程序只有一个线程，那就是程序本身。在单个程序中同时运行多个线程完成不同的工作，称为<strong>多线程</strong>。</p>
 
-<p><span class="highlight-text blue">RCTJavaScriptDidLoadNotification</span></br>
-同样的在<strong>Live Reload</strong>模式下，每次保存，才会正真的重新加载js，完毕之后，开始视图view的重新初始化即，<code>RCTRootContentView</code>，然后<code>RCTRootView</code>会通过bridge发送消息</p>
+<p><br></p>
 
-<pre><code>- (void)enqueueJSCall:(NSString *)module 
-			   method:(NSString *)method 
-			     args:(NSArray *)args 
-		   completion:(dispatch_block_t)completion;
+<h3 id="nsoperation">NSOperation</h3>
+
+<p>因为<code>NSOperation</code>是一个抽象类，我们不能直接使用它，我们一般使用系统定义好了的两个子类<code>NSInvocationOperation</code>和<code>NSBlockOperation</code>。尽管<code>NSOperation</code>很抽象，但是它的实现很优雅，能让你安全的执行任务。</p>
+
+<p>它是一次性对象（single-shot object），一个任务执行结束了，就不能再次执行。我们通常将它添加到<code>NSOperationQueue</code>来执行任务。<code>NSOperationQueue</code>将任务放到其他线程或者直接调动<code>GCD</code>来执行任务。如果你不想使用<code>NSOperationQueue</code>可以直接通过<code>NSOperation</code>的<code>start</code>方法来执行。但是这样会给你的code带来更多的负担。如果执行的时候线程不在一个就绪状态就会引起异常(<code>NSOperation</code>存在依赖)。</p>
+
+<p><br></p>
+
+<h4 id="nsblockoperation-nsinvocationoperation">NSBlockOperation&amp;NSInvocationOperation</h4>
+
+<p>添加任务</p>
+
+<pre><code>//selector
+- (nullable instancetype)initWithTarget:(id)target selector:(SEL)sel object:(nullable id)arg;
+//block
++ (instancetype)blockOperationWithBlock:(void (^)(void))block;
 </code></pre>
 
-<p>它把模块名称，方法名和在native中定义的属性（上一节提到的properies）发送到js端，让js端完整的逻辑渲染</p>
+<p><br></p>
+
+<p>操作</p>
+
+<pre><code>//开始执行任务
+- (void)start
+//可以取消线程操作对应方法
+- (void)cancel
+//添加依赖
+- (void)addDependency:(NSOperation *)op
+//移除依赖
+- (void)removeDependency:(NSOperation *)op
+</code></pre>
+
+<p><br></p>
+
+<h4 id="nsoperationqueue">NSOperationQueue</h4>
+
+<p><code>NSOperation</code>的队列，通过设置并发数量来控制异步还是同步，属性为<code>maxConcurrentOperationCount</code></p>
+
+<p>添加任务</p>
+
+<pre><code>- (void)addOperation:(NSOperation *)op;
+</code></pre>
+
+<pre><code>- (void)addOperations:(NSArray&lt;NSOperation *&gt; *)ops waitUntilFinished:(BOOL)wait API_AVAILABLE(macos(10.6), ios(4.0), watchos(2.0), tvos(9.0));
+</code></pre>
+
+<pre><code>- (void)addOperationWithBlock:(void (^)(void))block API_AVAILABLE(macos(10.6), ios(4.0), watchos(2.0), tvos(9.0));
+
+</code></pre>
 
 <blockquote>
-<p>它们是如何控制在第一次初始化rootview的时候不执行<code>RCTJavaScriptDidLoadNotification</code>这个通知定义的事件的呢？是通过下面的判断</p>
+<p>添加完之后会立即执行</p>
 </blockquote>
 
-<pre><code> RCTBridge *bridge = notification.userInfo[@&quot;bridge&quot;];
-  if (bridge != _contentView.bridge) {
-    [self bundleFinishedLoading:bridge];
-  }
+<p>取消任务</p>
+
+<pre><code>- (void)cancelAllOperations;
 </code></pre>
 
-<div class="alert danger ">
-  <p><code>RCTBatchedBridge.mm</code>是<code>RCTBridge.m</code>的子类，但是在后面可能会废弃。<code>RCTBridge</code>通过一种向下转型的方式，让其拥有了子类的能力。</p>
-</div>
+<p>等待</p>
 
-<p><span class="highlight-text blue">RCTContentDidAppearNotification</span></br>
-在视图出来的时候RN会通过这个通知隐藏loading页面，loading页面也是可以自定义的，通过重新它的<code>setLoadingView:</code>方法。</p>
-
-<span class="highlight-text yellow">总结：</span>
-
-<ul>
-<li>负责RN和Native通信的<code>RCTBridge</code>实例的初始化。</li>
-<li>正真用来展示视图的<code>RCTRootContentView</code>的初始化，完事后通过<code>[self insertSubview:_contentView atIndex:0];</code>的方式加到rootview上。</li>
-<li>负责loading视图的展示和隐藏。</li>
-<li>负责在刷新视图时清空reactTag，它是也是区分js中每个view的identifier。</li>
-<li>负责通知<code>RCTBridge</code>在合适的时候向JS发送已经准备好的信息，模块名，方法名、参数一起传递过去。</li>
-</ul>
-
-<h4 id="rctbridge">RCTBridge</h4>
-
-<p>所有的模块都保存在内存的静态常量区域，这个内存空间是在<code>RCTBridge</code>中被初始化的。因此这些模块属于全局的变量，可以在不同的bridge之间共享。可以通过<code>NSString *RCTBridgeModuleNameForClass(Class cls)</code>拿到每个模块的名称。</p>
-
-<pre><code>NSString *RCTBridgeModuleNameForClass(Class cls)
-{
-#if RCT_DEBUG
-  RCTAssert([cls conformsToProtocol:@protocol(RCTBridgeModule)],
-            @&quot;Bridge module `%@` does not conform to RCTBridgeModule&quot;, cls);
-#endif
-
-  NSString *name = [cls moduleName];
-  if (name.length == 0) {
-    name = NSStringFromClass(cls);
-  }
-
-  if ([name hasPrefix:@&quot;RK&quot;]) {
-    name = [name substringFromIndex:2];
-  } else if ([name hasPrefix:@&quot;RCT&quot;]) {
-    name = [name substringFromIndex:3];
-  }
-
-  return name;
-}
+<pre><code>- (void)waitUntilAllOperationsAreFinished;
 </code></pre>
 
-<p>从上面的代码可以看出，在native中定义的模块在被传递到js的时候会加上<code>RK</code>或者<code>RCT</code>前缀。</p>
+<blockquote>
+<p>会使当前线程（例如，主线程）忙等，直到所有任务完成</p>
+</blockquote>
 
-<div class="alert info no-icon ">
-  <p>模块都是遵循<code>RCTBridgeModule</code>协议的，用宏<code>RCT_EXPORT_MODULE();</code>进行声明；</p>
-</div>
+<p><br></p>
 
-<p>JS队列的初始化会在<code>RCTBridge</code>被调用到的时候通过<code>+ (void)initialize</code>进行初始化，而且它是一个单列对象。通过C的<code>extern __attribute__((visibility(&quot;default&quot;)))</code>暴露出来，让该队列变量暴露在动态链接库之外</p>
+<h3 id="gcd-grand-central-dispatch">GCD (Grand Central Dispatch)</h3>
 
-<pre><code>dispatch_queue_t RCTJSThread;
+<p>GCD将语言特性、OC运行时和系统提供的优化结合在一起，充分发挥系统的多核特性。BSD子系统，Core Foundation和Cocoa API都是用了CGD来帮助iOS系统和App跑的更快、更高效、响应更及时。GCD在系统层面更好的协调了所有在run的App，使它们在系统资源的利用上达到了一个平衡。<br></p>
 
-+ (void)initialize
-{
-  static dispatch_once_t onceToken;
-  dispatch_once(&amp;onceToken, ^{
+<p>当你使用Object-C的编译器编译你的App，所有的GCD对象都是Object-C对象。在RAC环境下，引用和释放也是自动管理的。在非ARC环境下需要手动管理。（dispatch_retain和 dispatch_release）</p>
 
-    // Set up JS thread
-    RCTJSThread = (id)kCFNull;
-  });
-}
+<p><code>CGD</code>每个任务都要放到一个队列中去执行，队列分两种串行队列和并行队列。任务也分两种同步和异步。</p>
+
+<table>
+<thead>
+<tr>
+<th></th>
+<th>串行队列</th>
+<th>并行队列</th>
+</tr>
+</thead>
+
+<tbody>
+<tr>
+<td>同步线程</td>
+<td>会阻塞当前线程；不会开辟新的线程；任务在当前的线程串行执行</td>
+<td>会阻塞当前线程；不会开辟新的线程；任务在当前的线程同步执行</td>
+</tr>
+
+<tr>
+<td>异步线程</td>
+<td>不会阻塞当前线程；会开辟新的线程；任务在新的线程串行执行</td>
+<td>不会阻塞当前线程；会开辟新的线程；任务在新的线程异步执行</td>
+</tr>
+</tbody>
+</table>
+
+<p><br></p>
+
+<h4 id="死锁">死锁</h4>
+
+<pre><code>dispatch_sync(dispatch_get_main_queue(), ^{
+    NSLog(@&quot;sync - %@&quot;, [NSThread currentThread]);
+});
 </code></pre>
 
-<p>每一个当前视图正在使用的bridge也会放在静态常量区，每次视图切换的时候都会重新赋值。</p>
+<p>因为是同步任务，主线程停下，等待队列里的任务完成，因为队列是主队列，跑的是主线程，这时候主线程处于等待状态，就出现了互相等待的情况。</p>
 
-<pre><code>static RCTBridge *RCTCurrentBridgeInstance = nil;
+<p><br></p>
 
-/**
- * The last current active bridge instance. This is set automatically whenever
- * the bridge is accessed. It can be useful for static functions or singletons
- * that need to access the bridge for purposes such as logging, but should not
- * be relied upon to return any particular instance, due to race conditions.
- */
-+ (instancetype)currentBridge
-{
-  return RCTCurrentBridgeInstance;
-}
+<h4 id="dispatch-group">dispatch_group</h4>
 
-+ (void)setCurrentBridge:(RCTBridge *)currentBridge
-{
-  RCTCurrentBridgeInstance = currentBridge;
-}
+<p><code>dispatch_group</code>能够在一个<code>Queue</code>的所有任务结束之后得到通知，执行相关代码</p>
+
+<pre><code>    dispatch_group_t anchorGroup = dispatch_group_create();
+
 </code></pre>
 
-<p>在<code>RCTBridge</code>的初始化方法中同时还会对<code>RCTBatchedBridge</code>进行初始化，由其发送消息开始加载js。其中分为两步：</p>
-
-<ul>
-<li>初始化modul和load资源</li>
-<li>设置JS的Executor和modul的配置</li>
-</ul>
-
-<p>它们在同一个队列<code>dispatch_queue_t bridgeQueue = dispatch_queue_create(&quot;com.facebook.react.RCTBridgeQueue&quot;, DISPATCH_QUEUE_CONCURRENT);</code>里的两个不同的group中异步执行：</p>
-
-<ul>
-<li><code>dispatch_group_t initModulesAndLoadSource = dispatch_group_create();</code></li>
-<li><code>dispatch_group_t setupJSExecutorAndModuleConfig = dispatch_group_create();</code></li>
-</ul>
-
-<p>因为在第一个group中的异步方法中也存在异步操作所有作者使用的<code>dispatch_group_enter()</code> 和 <code>dispatch_group_leave()</code>。</p>
-
-<p>第二个group直接用的<code>dispatch_group_async(dispatch_group_t  _Nonnull group, dispatch_queue_t  _Nonnull queue, ^(void)block)</code>
-当第二group的异步任务完成之后（<code>initModulesAndLoadSource</code>依赖<code>setupJSExecutorAndModuleConfig</code>），就开始执行对应的notify闭包向js注入json字符串</p>
-
-<pre><code>dispatch_group_notify(setupJSExecutorAndModuleConfig, bridgeQueue, ^{
-      // We're not waiting for this to complete to leave dispatch group, since
-      // injectJSONConfiguration and executeSourceCode will schedule operations
-      // on the same queue anyway.
-      [performanceLogger markStartForTag:RCTPLNativeModuleInjectConfig];
-      [weakSelf injectJSONConfiguration:config onComplete:^(NSError *error) {
-        [performanceLogger markStopForTag:RCTPLNativeModuleInjectConfig];
-        if (error) {
-          RCTLogWarn(@&quot;Failed to inject config: %@&quot;, error);
-          dispatch_async(dispatch_get_main_queue(), ^{
-            [weakSelf stopLoadingWithError:error];
-          });
-        }
-      }];
-</code></pre>
-
-<p>待第二个group结束，开始执行第一个group对应的notify闭包,开始加载js，加载结束之后发出<code>RCTJavaScriptDidLoadNotification</code>通知。</p>
-
-<div class="alert info no-icon ">
-  <p>执行JS所有相关的内容都是<code>@protocol RCTJavaScriptExecutor</code>这个协议负责，定义在bridge中<code>@property (nonatomic, weak, readonly) id&lt;RCTJavaScriptExecutor&gt; javaScriptExecutor;</code></p>
-</div>
-
-<p>当你在Debug模式下save或者退出当前页面的时候收到reload命令，该类会在主线程中将当前的bridge置空，如果没有成功会调用其所遵循的协议<code>@protocol RCTInvalidating</code>中的<code>invalidate</code>方法进行一系列的局部变量释放操作</p>
-
-<pre><code>- (void)invalidate
-{
-  RCTBridge *batchedBridge = self.batchedBridge;
-  self.batchedBridge = nil;
-
-  if (batchedBridge) {
-    RCTExecuteOnMainQueue(^{
-      [batchedBridge invalidate];
+<pre><code>dispatch_group_notify(anchorGroup, anchorQueue, ^{
+        //刷新第一个cell
+        @strongify(self);
+        [self.tableView reloadRowsAtIndexPaths:@[[NSIndexPath indexPathForRow:0 inSection:0]] withRowAnimation:UITableViewRowAnimationFade];
     });
-  }
-}
 </code></pre>
 
-<span class="highlight-text yellow">总结：</span>
+<p><br></p>
 
-<ul>
-<li>保存模块的集合 &ndash;<code>RCTModuleClasses</code></li>
-<li>定义了JS队列 &ndash; <code>dispatch_queue_t RCTJSThread</code></li>
-<li>定义当前正在使用的bridge，并负责切换</li>
-<li>负责<code>RCTBatchedBridge</code>的初始化，调用子类bridge，开始执行加载js的一系列操作</li>
-<li>负责在view消失或者重新加载的时候释放之前的一些对象（eg. currentbridge,遵循<code>RCTBridgeModule</code>协议的对象）。</li>
-</ul>
+<h4 id="dispatch-group-enter-dispatch-group-leave">dispatch_group_enter&amp;&amp;dispatch_group_leave</h4>
+
+<p>当GCD的任务是异步的时候，如果想要在所有任务结束之后得到通知，就要在各个任务的前后加上<code>dispatch_group_enter</code>和<code>dispatch_group_leave</code>。他们需要传入<code>group</code>作为参数</p>
+
+<pre><code>dispatch_group_enter(anchorGroup);
+    dispatch_async(anchorQueue, ^{
+        [[XYLeaderboardService share] anchorCharmLeaderboard:XYLeaderboardCharmMonthType succeed:^(NSArray&lt;XYLeaderboardItem *&gt; *items) {
+            @strongify(self);
+            [self.datasource firstObject].secondLeaderboard = items;
+            dispatch_group_leave(anchorGroup);
+        } failure:^(XYNetError *error) {
+            //
+            dispatch_group_leave(anchorGroup);
+        }];
+    });
+</code></pre>
+
+<p><br></p>
+
+<h4 id="dispatch-barrier-async-dispatch-queue-t-queue-dispatch-block-t-block">dispatch_barrier_async(dispatch_queue_t queue, dispatch_block_t block);</h4>
+
+<p>等待queue中的任务全部结束，异步执行block中的任务</p>
+
+<p><br></p>
+
+<h4 id="dispatch-barrier-sync-dispatch-queue-t-queue-dispatch-noescape-dispatch-block-t-block">dispatch_barrier_sync(dispatch_queue_t queue,DISPATCH_NOESCAPE dispatch_block_t block);</h4>
+
+<p>等待queue中的任务全部结束，同步执行block中的任务</p>
+
+<h3 id="nsthread">NSThread</h3>
+
+<p>在执行一个长任务的时候比较有优势，其他的和<code>NSOperation</code>比较像。</p>
+
+<h4 id="创建nsthread">创建NSThread</h4>
+
+<pre><code>NSThread *thread = [[NSThread alloc] initWithBlock:^{
+
+    }];
+</code></pre>
+
+<pre><code>NSThread *thread = [[NSThread alloc] initWithTarget:&lt;#(nonnull id)#&gt; selector:&lt;#(nonnull SEL)#&gt; object:&lt;#(nullable id)#&gt;];
+
+</code></pre>
+
+<h4 id="运行nsthread">运行NSThread</h4>
+
+<pre><code>NSThread *thread = [[NSThread alloc] initWithBlock:^{
+        NSLog(@&quot;thread测试%@&quot;,[NSThread currentThread]);
+    }];
+    [thread start];
+
+//直接运行
+[NSThread detachNewThreadWithBlock:^{
+        NSLog(@&quot;thrad直接执行%@&quot;,[NSThread currentThread]);
+    }];
+</code></pre>
+
+<h4 id="停止nsthread">停止NSThread</h4>
+
+<pre><code>//退出当前线程
+[NSThread exit];
+//取消该线程
+NSThread *thread = [[NSThread alloc] initWithBlock:^{
+        NSLog(@&quot;thread测试%@&quot;,[NSThread currentThread]);
+    }];
+[thread cancel];
+
+//阻塞当前线程直到某个时间
+[NSThread sleepUntilDate:&lt;#(nonnull NSDate *)#&gt;];
+
+//使当前线程沉睡多少时间
+NSLog(@&quot;===============start sleep================&quot;);
+[NSThread sleepForTimeInterval:5];
+NSLog(@&quot;==============end sleep=================&quot;);
+
+</code></pre>
+
+<h4 id="检测当前nsthread的状态">检测当前NSThread的状态</h4>
+
+<pre><code>//是否正在执行
+[thread isExecuting];
+//是否完成
+[thread isFinished];
+//是否被取消
+[thread isCancelled];
+</code></pre>
+
+<h4 id="priority">Priority</h4>
+
+<pre><code>//设置当前线程的优先级
+[NSThread setThreadPriority:&lt;#(double)#&gt;];
+//查看当前线程的优先级
+[NSThread threadPriority];
+</code></pre>
+
+<h3 id="资源竞争">资源竞争</h3>
+
+<p><a href="https://linkrober.github.io/bookshelf/2017/12/ios%E5%A4%9A%E7%BA%BF%E7%A8%8B%E4%B8%AD%E7%9A%84%E9%94%81/">iOS多线程中的锁</a></p>
               
             </div>
           </div>
@@ -468,11 +529,9 @@ Object-C和JS通信概述
                   <div class="post-footer-tags">
                     <span class="text-color-light text-small">标签</span><br/>
                     
-  <a class="tag tag--primary tag--small" href="https://linkrober.github.io/bookshelf//tags/reactnative/">ReactNative</a>
+  <a class="tag tag--primary tag--small" href="https://linkrober.github.io/bookshelf//tags/%E5%A4%9A%E7%BA%BF%E7%A8%8B/">多线程</a>
 
-  <a class="tag tag--primary tag--small" href="https://linkrober.github.io/bookshelf//tags/javsscript/">JavsScript</a>
-
-  <a class="tag tag--primary tag--small" href="https://linkrober.github.io/bookshelf//tags/objectc/">ObjectC</a>
+  <a class="tag tag--primary tag--small" href="https://linkrober.github.io/bookshelf//tags/objectc/">objectc</a>
 
                   </div>
                 
@@ -484,7 +543,7 @@ Object-C和JS通信概述
         <ul class="post-actions post-action-nav">
             <li class="post-action">
               
-                <a class="post-action-btn btn btn--default tooltip--top" href="https://LinkRober.github.io/bookshelf/2017/11/%E4%B8%80%E4%B8%AA%E9%9F%B3%E8%A7%86%E9%A2%91%E5%8E%82%E7%9A%84%E5%9B%BE%E5%83%8F%E5%A4%84%E7%90%86%E6%B5%81%E7%A8%8B%E6%A6%82%E8%BF%B0/" data-tooltip="一个音视频厂的图像处理流程概述">
+                <a class="post-action-btn btn btn--disabled">
               
                 <i class="fa fa-angle-left"></i>
                 <span class="hide-xs hide-sm text-small icon-ml">下一篇</span>
@@ -492,7 +551,7 @@ Object-C和JS通信概述
             </li>
             <li class="post-action">
               
-                <a class="post-action-btn btn btn--default tooltip--top" href="https://LinkRober.github.io/bookshelf/2017/10/react-native%E5%92%8Cnative%E9%97%B4%E7%9A%84%E9%80%9A%E4%BF%A1%E5%AE%9E%E8%B7%B5/" data-tooltip="React Native和Native间的通信实践">
+                <a class="post-action-btn btn btn--default tooltip--top" href="https://LinkRober.github.io/bookshelf/2018/03/%E5%85%A5%E5%9D%91%E5%B0%8F%E7%A8%8B%E5%BA%8F/" data-tooltip="入坑小程序">
               
                 <span class="hide-xs hide-sm text-small icon-mr">上一篇</span>
                 <i class="fa fa-angle-right"></i>
@@ -545,7 +604,7 @@ Object-C和JS通信概述
         <ul class="post-actions post-action-nav">
             <li class="post-action">
               
-                <a class="post-action-btn btn btn--default tooltip--top" href="https://LinkRober.github.io/bookshelf/2017/11/%E4%B8%80%E4%B8%AA%E9%9F%B3%E8%A7%86%E9%A2%91%E5%8E%82%E7%9A%84%E5%9B%BE%E5%83%8F%E5%A4%84%E7%90%86%E6%B5%81%E7%A8%8B%E6%A6%82%E8%BF%B0/" data-tooltip="一个音视频厂的图像处理流程概述">
+                <a class="post-action-btn btn btn--disabled">
               
                 <i class="fa fa-angle-left"></i>
                 <span class="hide-xs hide-sm text-small icon-ml">下一篇</span>
@@ -553,7 +612,7 @@ Object-C和JS通信概述
             </li>
             <li class="post-action">
               
-                <a class="post-action-btn btn btn--default tooltip--top" href="https://LinkRober.github.io/bookshelf/2017/10/react-native%E5%92%8Cnative%E9%97%B4%E7%9A%84%E9%80%9A%E4%BF%A1%E5%AE%9E%E8%B7%B5/" data-tooltip="React Native和Native间的通信实践">
+                <a class="post-action-btn btn btn--default tooltip--top" href="https://LinkRober.github.io/bookshelf/2018/03/%E5%85%A5%E5%9D%91%E5%B0%8F%E7%A8%8B%E5%BA%8F/" data-tooltip="入坑小程序">
               
                 <span class="hide-xs hide-sm text-small icon-mr">上一篇</span>
                 <i class="fa fa-angle-right"></i>
@@ -934,9 +993,9 @@ $(document).ready(function() {
     
       <script>
         var disqus_config = function () {
-          this.page.url = 'https:\/\/linkrober.github.io\/bookshelf\/2017\/10\/rctrootviewrctbridge%E5%81%9A%E4%BA%86%E4%BB%80%E4%B9%88\/';
+          this.page.url = 'https:\/\/linkrober.github.io\/bookshelf\/2018\/05\/object-c%E5%A4%9A%E7%BA%BF%E7%A8%8B%E6%80%BB%E7%BB%93\/';
           
-            this.page.identifier = '\/2017\/10\/rctrootviewrctbridge%E5%81%9A%E4%BA%86%E4%BB%80%E4%B9%88\/'
+            this.page.identifier = '\/2018\/05\/object-c%E5%A4%9A%E7%BA%BF%E7%A8%8B%E6%80%BB%E7%BB%93\/'
           
         };
         (function() {

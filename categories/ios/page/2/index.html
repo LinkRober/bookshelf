@@ -1,9 +1,5 @@
 
 
-  
-    
-  
-
 
   
 
@@ -20,50 +16,25 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <meta name="generator" content="Hugo 0.17 with theme Tranquilpeak 0.4.1-BETA">
-    <title>RCTRootView、RCTBridge做了什么</title>
+    <title>Ios</title>
     <meta name="author" content="董二千">
-    <meta name="keywords" content="React Native">
+    <meta name="keywords" content="">
 
     <link rel="icon" href="https://LinkRober.github.io/bookshelf/favicon.png">
     
+      <link rel="alternate" type="application/rss+xml" title="RSS" href="https://LinkRober.github.io/bookshelf/categories/ios/index.xml">
+    
 
     
-    <meta name="description" content="本系列文章作为学习RN期间的总结
-
-
-React Native如何集成到现有项目中
-React Native和Native间的通信实践
-RCTRootView、RCTBridge做了什么
-Object-C和JS通信概述
-
-
-">
-    <meta property="og:description" content="本系列文章作为学习RN期间的总结
-
-
-React Native如何集成到现有项目中
-React Native和Native间的通信实践
-RCTRootView、RCTBridge做了什么
-Object-C和JS通信概述
-
-
-">
+    <meta name="description" content="我们为什么要学习，毕竟改变需要时间">
+    <meta property="og:description" content="我们为什么要学习，毕竟改变需要时间">
     <meta property="og:type" content="blog">
-    <meta property="og:title" content="RCTRootView、RCTBridge做了什么">
-    <meta property="og:url" content="/2017/10/rctrootviewrctbridge%E5%81%9A%E4%BA%86%E4%BB%80%E4%B9%88/">
+    <meta property="og:title" content="Ios">
+    <meta property="og:url" content="/categories/ios/">
     <meta property="og:site_name" content="董二千">
     <meta name="twitter:card" content="summary">
     <meta name="twitter:title" content="董二千">
-    <meta name="twitter:description" content="本系列文章作为学习RN期间的总结
-
-
-React Native如何集成到现有项目中
-React Native和Native间的通信实践
-RCTRootView、RCTBridge做了什么
-Object-C和JS通信概述
-
-
-">
+    <meta name="twitter:description" content="我们为什么要学习，毕竟改变需要时间">
     
     
 
@@ -98,7 +69,7 @@ Object-C和JS通信概述
 
   <body>
     <div id="blog">
-      <header id="header" data-behavior="4">
+      <header id="header" data-behavior="1">
   <i id="btn-open-sidebar" class="fa fa-lg fa-bars"></i>
   <div class="header-title">
     <a class="header-title-link" href="https://LinkRober.github.io/bookshelf/">董二千</a>
@@ -118,7 +89,7 @@ Object-C和JS通信概述
   
 </header>
 
-      <nav id="sidebar" data-behavior="4">
+      <nav id="sidebar" data-behavior="1">
   <div class="sidebar-container">
     
       <div class="sidebar-profile">
@@ -217,24 +188,44 @@ Object-C和JS通信概述
 </nav>
 
       
-  <div class="post-header-cover
-              text-left
-              "
-       style="background-image:url('../../../rn_image.jpg')"
-       data-behavior="4">
+        
+
+      
+      <div id="main" data-behavior="1"
+        class="
+               hasCoverMetaIn
+               ">
+        
+          <section class="postShorten-group main-content-wrap">
+            
+            
+              
+  
     
-      <div class="post-header main-content-wrap text-left">
+      
+        
+      
+    
   
-    <h1 class="post-title" itemprop="headline">
-      RCTRootView、RCTBridge做了什么
-    </h1>
+
+
   
-  
+
+<article class="postShorten postShorten--thumbnailimg-bottom" itemscope itemType="http://schema.org/BlogPosting">
+  <div class="postShorten-wrap">
+    
+    <div class="postShorten-header">
+      <h1 class="postShorten-title" itemprop="headline">
+        <a class="link-unstyled" href="https://linkrober.github.io/bookshelf/2017/04/%E6%B6%88%E6%81%AF%E8%BD%AC%E5%8F%91/">
+          消息转发
+        </a>
+      </h1>
+      
   <div class="postShorten-meta post-meta">
     
-      <time itemprop="datePublished" datetime="2017-10-28T00:00:00Z">
+      <time itemprop="datePublished" datetime="2017-04-03T03:05:31&#43;08:00">
         
-  十月 28, 2017
+  四月 3, 2017
 
       </time>
     
@@ -243,359 +234,51 @@ Object-C和JS通信概述
   
     <span>发布在</span>
     
-      <a class="category-link" href="https://LinkRober.github.io/bookshelf/categories/reactnative">ReactNative</a>
+      <a class="category-link" href="https://LinkRober.github.io/bookshelf/categories/ios">iOS</a>
     
   
 
 
   </div>
 
-</div>
-    
-  </div>
-
-
-      <div id="main" data-behavior="4"
-        class="hasCover
-               hasCoverMetaIn
-               ">
-        <article class="post" itemscope itemType="http://schema.org/BlogPosting">
-          
-          
-          <div class="post-content markdown" itemprop="articleBody">
-            <div class="main-content-wrap">
-              <p>本系列文章作为学习RN期间的总结</p>
-
-<ul>
-<li><a href="https://linkrober.github.io/bookshelf/2017/10/react-native%E5%A6%82%E4%BD%95%E9%9B%86%E6%88%90%E5%88%B0%E7%8E%B0%E6%9C%89%E9%A1%B9%E7%9B%AE%E4%B8%AD/">React Native如何集成到现有项目中</a></li>
-<li><a href="https://linkrober.github.io/bookshelf/2017/10/react-native%E5%92%8Cnative%E9%97%B4%E7%9A%84%E9%80%9A%E4%BF%A1/">React Native和Native间的通信实践</a></li>
-<li>RCTRootView、RCTBridge做了什么</li>
-<li><a href="https://linkrober.github.io/bookshelf/2017/12/native%E5%92%8Cjs%E9%80%9A%E4%BF%A1%E6%A6%82%E8%BF%B0/">Object-C和JS通信概述</a></li>
-</ul>
-
-<p></p>
-
-<p>本章主要讨论，RCTRootView、RCTBridge彼此之间的关系，以及它们做了什么。先放上类图</p>
-
-<p><img src="../../../相关类图.png" alt="相关类图" /></p>
-
-<h4 id="rctrootview">RCTRootView</h4>
-
-<p>它是RN在Native上展示的容器，<code>RCTJavaScriptWillStartLoadingNotification</code>、<code>RCTJavaScriptDidLoadNotification</code>、<code>RCTContentDidAppearNotification</code>这些通知注册都在里面。同时也是运行js的入口。</p>
-
-<p><span class="highlight-text blue">RCTJavaScriptWillStartLoadingNotification</span></br>
-当你在Debug模式下，选择<strong>Live Reload</strong>每次保存js文件的时候就会重新加载js。之前的<code>reactTag</code>会清空，等待重新赋值，但第一次初始化并不会触发这个通知。因为通知这时候还没注册。</p>
-
-<p><span class="highlight-text blue">RCTJavaScriptDidLoadNotification</span></br>
-同样的在<strong>Live Reload</strong>模式下，每次保存，才会正真的重新加载js，完毕之后，开始视图view的重新初始化即，<code>RCTRootContentView</code>，然后<code>RCTRootView</code>会通过bridge发送消息</p>
-
-<pre><code>- (void)enqueueJSCall:(NSString *)module 
-			   method:(NSString *)method 
-			     args:(NSArray *)args 
-		   completion:(dispatch_block_t)completion;
-</code></pre>
-
-<p>它把模块名称，方法名和在native中定义的属性（上一节提到的properies）发送到js端，让js端完整的逻辑渲染</p>
-
-<blockquote>
-<p>它们是如何控制在第一次初始化rootview的时候不执行<code>RCTJavaScriptDidLoadNotification</code>这个通知定义的事件的呢？是通过下面的判断</p>
+    </div>
+    <div class="postShorten-excerpt" itemprop="articleBody">
+      <blockquote>
+<p>描述：如果类不能执行这个方法，会执行动态<strong>消息转发</strong>，如果该类还是不能动态的添加方法，则走<strong>完整的消息转发</strong>。分两步，第一步<strong>看看有没有其他类可以执行该方法</strong>，如果没有走第二步，<strong>将所有的细节封装到NSInvocation中，给接受者最后一次机会</strong>。</p>
 </blockquote>
 
-<pre><code> RCTBridge *bridge = notification.userInfo[@&quot;bridge&quot;];
-  if (bridge != _contentView.bridge) {
-    [self bundleFinishedLoading:bridge];
-  }
-</code></pre>
-
-<div class="alert danger ">
-  <p><code>RCTBatchedBridge.mm</code>是<code>RCTBridge.m</code>的子类，但是在后面可能会废弃。<code>RCTBridge</code>通过一种向下转型的方式，让其拥有了子类的能力。</p>
-</div>
-
-<p><span class="highlight-text blue">RCTContentDidAppearNotification</span></br>
-在视图出来的时候RN会通过这个通知隐藏loading页面，loading页面也是可以自定义的，通过重新它的<code>setLoadingView:</code>方法。</p>
-
-<span class="highlight-text yellow">总结：</span>
-
-<ul>
-<li>负责RN和Native通信的<code>RCTBridge</code>实例的初始化。</li>
-<li>正真用来展示视图的<code>RCTRootContentView</code>的初始化，完事后通过<code>[self insertSubview:_contentView atIndex:0];</code>的方式加到rootview上。</li>
-<li>负责loading视图的展示和隐藏。</li>
-<li>负责在刷新视图时清空reactTag，它是也是区分js中每个view的identifier。</li>
-<li>负责通知<code>RCTBridge</code>在合适的时候向JS发送已经准备好的信息，模块名，方法名、参数一起传递过去。</li>
-</ul>
-
-<h4 id="rctbridge">RCTBridge</h4>
-
-<p>所有的模块都保存在内存的静态常量区域，这个内存空间是在<code>RCTBridge</code>中被初始化的。因此这些模块属于全局的变量，可以在不同的bridge之间共享。可以通过<code>NSString *RCTBridgeModuleNameForClass(Class cls)</code>拿到每个模块的名称。</p>
-
-<pre><code>NSString *RCTBridgeModuleNameForClass(Class cls)
-{
-#if RCT_DEBUG
-  RCTAssert([cls conformsToProtocol:@protocol(RCTBridgeModule)],
-            @&quot;Bridge module `%@` does not conform to RCTBridgeModule&quot;, cls);
-#endif
-
-  NSString *name = [cls moduleName];
-  if (name.length == 0) {
-    name = NSStringFromClass(cls);
-  }
-
-  if ([name hasPrefix:@&quot;RK&quot;]) {
-    name = [name substringFromIndex:2];
-  } else if ([name hasPrefix:@&quot;RCT&quot;]) {
-    name = [name substringFromIndex:3];
-  }
-
-  return name;
-}
-</code></pre>
-
-<p>从上面的代码可以看出，在native中定义的模块在被传递到js的时候会加上<code>RK</code>或者<code>RCT</code>前缀。</p>
-
-<div class="alert info no-icon ">
-  <p>模块都是遵循<code>RCTBridgeModule</code>协议的，用宏<code>RCT_EXPORT_MODULE();</code>进行声明；</p>
-</div>
-
-<p>JS队列的初始化会在<code>RCTBridge</code>被调用到的时候通过<code>+ (void)initialize</code>进行初始化，而且它是一个单列对象。通过C的<code>extern __attribute__((visibility(&quot;default&quot;)))</code>暴露出来，让该队列变量暴露在动态链接库之外</p>
-
-<pre><code>dispatch_queue_t RCTJSThread;
-
-+ (void)initialize
-{
-  static dispatch_once_t onceToken;
-  dispatch_once(&amp;onceToken, ^{
-
-    // Set up JS thread
-    RCTJSThread = (id)kCFNull;
-  });
-}
-</code></pre>
-
-<p>每一个当前视图正在使用的bridge也会放在静态常量区，每次视图切换的时候都会重新赋值。</p>
-
-<pre><code>static RCTBridge *RCTCurrentBridgeInstance = nil;
-
-/**
- * The last current active bridge instance. This is set automatically whenever
- * the bridge is accessed. It can be useful for static functions or singletons
- * that need to access the bridge for purposes such as logging, but should not
- * be relied upon to return any particular instance, due to race conditions.
- */
-+ (instancetype)currentBridge
-{
-  return RCTCurrentBridgeInstance;
-}
-
-+ (void)setCurrentBridge:(RCTBridge *)currentBridge
-{
-  RCTCurrentBridgeInstance = currentBridge;
-}
-</code></pre>
-
-<p>在<code>RCTBridge</code>的初始化方法中同时还会对<code>RCTBatchedBridge</code>进行初始化，由其发送消息开始加载js。其中分为两步：</p>
-
-<ul>
-<li>初始化modul和load资源</li>
-<li>设置JS的Executor和modul的配置</li>
-</ul>
-
-<p>它们在同一个队列<code>dispatch_queue_t bridgeQueue = dispatch_queue_create(&quot;com.facebook.react.RCTBridgeQueue&quot;, DISPATCH_QUEUE_CONCURRENT);</code>里的两个不同的group中异步执行：</p>
-
-<ul>
-<li><code>dispatch_group_t initModulesAndLoadSource = dispatch_group_create();</code></li>
-<li><code>dispatch_group_t setupJSExecutorAndModuleConfig = dispatch_group_create();</code></li>
-</ul>
-
-<p>因为在第一个group中的异步方法中也存在异步操作所有作者使用的<code>dispatch_group_enter()</code> 和 <code>dispatch_group_leave()</code>。</p>
-
-<p>第二个group直接用的<code>dispatch_group_async(dispatch_group_t  _Nonnull group, dispatch_queue_t  _Nonnull queue, ^(void)block)</code>
-当第二group的异步任务完成之后（<code>initModulesAndLoadSource</code>依赖<code>setupJSExecutorAndModuleConfig</code>），就开始执行对应的notify闭包向js注入json字符串</p>
-
-<pre><code>dispatch_group_notify(setupJSExecutorAndModuleConfig, bridgeQueue, ^{
-      // We're not waiting for this to complete to leave dispatch group, since
-      // injectJSONConfiguration and executeSourceCode will schedule operations
-      // on the same queue anyway.
-      [performanceLogger markStartForTag:RCTPLNativeModuleInjectConfig];
-      [weakSelf injectJSONConfiguration:config onComplete:^(NSError *error) {
-        [performanceLogger markStopForTag:RCTPLNativeModuleInjectConfig];
-        if (error) {
-          RCTLogWarn(@&quot;Failed to inject config: %@&quot;, error);
-          dispatch_async(dispatch_get_main_queue(), ^{
-            [weakSelf stopLoadingWithError:error];
-          });
-        }
-      }];
-</code></pre>
-
-<p>待第二个group结束，开始执行第一个group对应的notify闭包,开始加载js，加载结束之后发出<code>RCTJavaScriptDidLoadNotification</code>通知。</p>
-
-<div class="alert info no-icon ">
-  <p>执行JS所有相关的内容都是<code>@protocol RCTJavaScriptExecutor</code>这个协议负责，定义在bridge中<code>@property (nonatomic, weak, readonly) id&lt;RCTJavaScriptExecutor&gt; javaScriptExecutor;</code></p>
-</div>
-
-<p>当你在Debug模式下save或者退出当前页面的时候收到reload命令，该类会在主线程中将当前的bridge置空，如果没有成功会调用其所遵循的协议<code>@protocol RCTInvalidating</code>中的<code>invalidate</code>方法进行一系列的局部变量释放操作</p>
-
-<pre><code>- (void)invalidate
-{
-  RCTBridge *batchedBridge = self.batchedBridge;
-  self.batchedBridge = nil;
-
-  if (batchedBridge) {
-    RCTExecuteOnMainQueue(^{
-      [batchedBridge invalidate];
-    });
-  }
-}
-</code></pre>
-
-<span class="highlight-text yellow">总结：</span>
-
-<ul>
-<li>保存模块的集合 &ndash;<code>RCTModuleClasses</code></li>
-<li>定义了JS队列 &ndash; <code>dispatch_queue_t RCTJSThread</code></li>
-<li>定义当前正在使用的bridge，并负责切换</li>
-<li>负责<code>RCTBatchedBridge</code>的初始化，调用子类bridge，开始执行加载js的一系列操作</li>
-<li>负责在view消失或者重新加载的时候释放之前的一些对象（eg. currentbridge,遵循<code>RCTBridgeModule</code>协议的对象）。</li>
-</ul>
-              
-            </div>
-          </div>
-          <div id="post-footer" class="post-footer main-content-wrap">
-            
-              
-                
-                
-                  <div class="post-footer-tags">
-                    <span class="text-color-light text-small">标签</span><br/>
-                    
-  <a class="tag tag--primary tag--small" href="https://linkrober.github.io/bookshelf//tags/reactnative/">ReactNative</a>
-
-  <a class="tag tag--primary tag--small" href="https://linkrober.github.io/bookshelf//tags/javsscript/">JavsScript</a>
-
-  <a class="tag tag--primary tag--small" href="https://linkrober.github.io/bookshelf//tags/objectc/">ObjectC</a>
-
-                  </div>
-                
-              
-            
-            
-  <div class="post-actions-wrap">
-      <nav >
-        <ul class="post-actions post-action-nav">
-            <li class="post-action">
-              
-                <a class="post-action-btn btn btn--default tooltip--top" href="https://LinkRober.github.io/bookshelf/2017/11/%E4%B8%80%E4%B8%AA%E9%9F%B3%E8%A7%86%E9%A2%91%E5%8E%82%E7%9A%84%E5%9B%BE%E5%83%8F%E5%A4%84%E7%90%86%E6%B5%81%E7%A8%8B%E6%A6%82%E8%BF%B0/" data-tooltip="一个音视频厂的图像处理流程概述">
-              
-                <i class="fa fa-angle-left"></i>
-                <span class="hide-xs hide-sm text-small icon-ml">下一篇</span>
-              </a>
-            </li>
-            <li class="post-action">
-              
-                <a class="post-action-btn btn btn--default tooltip--top" href="https://LinkRober.github.io/bookshelf/2017/10/react-native%E5%92%8Cnative%E9%97%B4%E7%9A%84%E9%80%9A%E4%BF%A1%E5%AE%9E%E8%B7%B5/" data-tooltip="React Native和Native间的通信实践">
-              
-                <span class="hide-xs hide-sm text-small icon-mr">上一篇</span>
-                <i class="fa fa-angle-right"></i>
-              </a>
-            </li>
-        </ul>
-      </nav>
-    <ul class="post-actions post-action-share" >
-      
-        <li class="post-action hide-lg hide-md hide-sm">
-          <a class="post-action-btn btn btn--default btn-open-shareoptions" href="#btn-open-shareoptions">
-            <i class="fa fa-share-alt"></i>
-          </a>
-        </li>
+<p></p>
+      <p>
+        <a href="https://linkrober.github.io/bookshelf/2017/04/%E6%B6%88%E6%81%AF%E8%BD%AC%E5%8F%91/" class="postShorten-excerpt_link link">阅读全文</a>
         
+      </p>
+    </div>
+  </div>
+  
+</article>
+
+            
+            
+  <div class="pagination-bar">
+    <ul class="pagination">
       
-      
-        <li class="post-action">
-          <a class="post-action-btn btn btn--default" href="#disqus_thread">
-            <i class="fa fa-comment-o"></i>
+        <li class="pagination-prev">
+          <a class="btn btn--default btn--small" href="https://LinkRober.github.io/bookshelf/categories/ios/">
+            <i class="fa fa-angle-left text-base icon-mr"></i>
+            <span>上一页</span>
           </a>
         </li>
       
-      <li class="post-action">
-        
-          <a class="post-action-btn btn btn--default" href="#">
-        
-          <i class="fa fa-list"></i>
-        </a>
-      </li>
+      
+      <li class="pagination-number">第 2 页 共 2 页</li>
     </ul>
   </div>
 
 
-            
-              
-                <div id="disqus_thread">
-  <noscript>Please enable JavaScript to view the <a href="//disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
-</div>
-              
-            
-          </div>
-        </article>
+          </section>
+        
         
       </div>
-      <div id="bottom-bar" class="post-bottom-bar" data-behavior="4">
-        
-  <div class="post-actions-wrap">
-      <nav >
-        <ul class="post-actions post-action-nav">
-            <li class="post-action">
-              
-                <a class="post-action-btn btn btn--default tooltip--top" href="https://LinkRober.github.io/bookshelf/2017/11/%E4%B8%80%E4%B8%AA%E9%9F%B3%E8%A7%86%E9%A2%91%E5%8E%82%E7%9A%84%E5%9B%BE%E5%83%8F%E5%A4%84%E7%90%86%E6%B5%81%E7%A8%8B%E6%A6%82%E8%BF%B0/" data-tooltip="一个音视频厂的图像处理流程概述">
-              
-                <i class="fa fa-angle-left"></i>
-                <span class="hide-xs hide-sm text-small icon-ml">下一篇</span>
-              </a>
-            </li>
-            <li class="post-action">
-              
-                <a class="post-action-btn btn btn--default tooltip--top" href="https://LinkRober.github.io/bookshelf/2017/10/react-native%E5%92%8Cnative%E9%97%B4%E7%9A%84%E9%80%9A%E4%BF%A1%E5%AE%9E%E8%B7%B5/" data-tooltip="React Native和Native间的通信实践">
-              
-                <span class="hide-xs hide-sm text-small icon-mr">上一篇</span>
-                <i class="fa fa-angle-right"></i>
-              </a>
-            </li>
-        </ul>
-      </nav>
-    <ul class="post-actions post-action-share" >
-      
-        <li class="post-action hide-lg hide-md hide-sm">
-          <a class="post-action-btn btn btn--default btn-open-shareoptions" href="#btn-open-shareoptions">
-            <i class="fa fa-share-alt"></i>
-          </a>
-        </li>
-        
-      
-      
-        <li class="post-action">
-          <a class="post-action-btn btn btn--default" href="#disqus_thread">
-            <i class="fa fa-comment-o"></i>
-          </a>
-        </li>
-      
-      <li class="post-action">
-        
-          <a class="post-action-btn btn btn--default" href="#">
-        
-          <i class="fa fa-list"></i>
-        </a>
-      </li>
-    </ul>
-  </div>
-
-
-      </div>
-      <div id="share-options-bar" class="share-options-bar" data-behavior="4">
-  <i id="btn-close-shareoptions" class="fa fa-close"></i>
-  <ul class="share-options">
-    
-  </ul>
-</div>
-<div id="share-options-mask" class="share-options-mask"></div>
     </div>
     
     <div id="about">
@@ -929,32 +612,6 @@ $(document).ready(function() {
   });
 });
 </script>
-
-  
-    
-      <script>
-        var disqus_config = function () {
-          this.page.url = 'https:\/\/linkrober.github.io\/bookshelf\/2017\/10\/rctrootviewrctbridge%E5%81%9A%E4%BA%86%E4%BB%80%E4%B9%88\/';
-          
-            this.page.identifier = '\/2017\/10\/rctrootviewrctbridge%E5%81%9A%E4%BA%86%E4%BB%80%E4%B9%88\/'
-          
-        };
-        (function() {
-          
-          
-          if (window.location.hostname == "localhost") {
-            return;
-          }
-          var d = document, s = d.createElement('script');
-          var disqus_shortname = 'dongerqian';
-          s.src = '//' + disqus_shortname + '.disqus.com/embed.js';
-
-          s.setAttribute('data-timestamp', +new Date());
-          (d.head || d.body).appendChild(s);
-        })();
-      </script>
-    
-  
 
 
 
