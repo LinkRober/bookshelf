@@ -6,8 +6,681 @@
     <description>Recent content on 董二千</description>
     <generator>Hugo -- gohugo.io</generator>
     <language>zh-cn</language>
-    <lastBuildDate>Sun, 27 May 2018 00:00:00 +0000</lastBuildDate>
+    <lastBuildDate>Thu, 26 Nov 2020 00:00:00 +0000</lastBuildDate>
     <atom:link href="https://LinkRober.github.io/bookshelf/index.xml" rel="self" type="application/rss+xml" />
+    
+    <item>
+      <title>方法替换和Aspects</title>
+      <link>https://linkrober.github.io/bookshelf/2020/11/%E6%96%B9%E6%B3%95%E6%9B%BF%E6%8D%A2%E5%92%8Caspects/</link>
+      <pubDate>Thu, 26 Nov 2020 00:00:00 +0000</pubDate>
+      
+      <guid>https://linkrober.github.io/bookshelf/2020/11/%E6%96%B9%E6%B3%95%E6%9B%BF%E6%8D%A2%E5%92%8Caspects/</guid>
+      <description>&lt;h4 id=&#34;带着问题看文章&#34;&gt;带着问题看文章：&lt;/h4&gt;
+
+&lt;p&gt;1.常规姿势的方法替换原理是什么&lt;/p&gt;
+
+&lt;p&gt;2.&lt;code&gt;Aspects&lt;/code&gt;的方法替换原理是什么&lt;/p&gt;
+
+&lt;p&gt;3.为什么这样下面的代码这样hook之后，所有的实例的&lt;code&gt;viewWillAppear:&lt;/code&gt;也被hook了&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;[[UIViewController class] aspect_hookSelector:@selector(viewWillAppear:) withOptions:AspectPositionBefore usingBlock:^(){
+        
+} error:nil];
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;4.为什么&lt;code&gt;Aspect&lt;/code&gt;不能hook静态方法&lt;/p&gt;
+
+&lt;p&gt;5.如果用先用Aspects hook了方法A，接着又用MethodSwizzle方法（下文有）对A进行了hook，两个hook都能执行吗？
+&lt;/p&gt;
+
+&lt;blockquote&gt;
+&lt;h3 id=&#34;正文&#34;&gt;正文&lt;/h3&gt;
+&lt;/blockquote&gt;
+
+&lt;h4 id=&#34;runtime&#34;&gt;&lt;code&gt;Runtime&lt;/code&gt;&lt;/h4&gt;
+
+&lt;pre&gt;&lt;code&gt;void MethodSwizzle(Class c,SEL origSEL,SEL overrideSEL)
+   {
+       Method origMethod = class_getInstanceMethod(c, origSEL);
+       Method overrideMethod= class_getInstanceMethod(c, overrideSEL);
+       if(class_addMethod(c, origSEL, method_getImplementation(overrideMethod),method_getTypeEncoding(overrideMethod)))
+       {
+            //当前类不存在`origSEL`
+            class_replaceMethod(c,overrideSEL, method_getImplementation(origMethod), method_getTypeEncoding(origMethod));
+       } else  {
+            method_exchangeImplementations(origMethod,overrideMethod);
+       }
+}
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;h5 id=&#34;1-method-class-getinstancemethod-class-cls-sel-sel&#34;&gt;1. &lt;code&gt;Method class_getInstanceMethod(Class cls, SEL sel)&lt;/code&gt;&lt;/h5&gt;
+
+&lt;p&gt;从子类往父类递归查找Method&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;static method_t *
+getMethod_nolock(Class cls, SEL sel)
+{
+    method_t *m = nil;
+
+    runtimeLock.assertLocked();
+
+    // fixme nil cls?
+    // fixme nil sel?
+
+    assert(cls-&amp;gt;isRealized());
+
+    while (cls  &amp;amp;&amp;amp;  ((m = getMethodNoSuper_nolock(cls, sel))) == nil) {
+        cls = cls-&amp;gt;superclass;
+    }
+
+    return m;
+}
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;h5 id=&#34;2-bool-class-addmethod-class-cls-sel-name-imp-imp-const-char-types&#34;&gt;2. &lt;code&gt;BOOL class_addMethod(Class cls, SEL name, IMP imp, const char *types)&lt;/code&gt;&lt;/h5&gt;
+
+&lt;p&gt;为类添加新方法&lt;/p&gt;
+
+&lt;p&gt;如果当前类已经有这个&lt;code&gt;selector&lt;/code&gt;，拿到该&lt;code&gt;selector&lt;/code&gt;的&lt;code&gt;IMP&lt;/code&gt;返回False；如果没有，或父类存在，会将这个方法的IMP指向新的IMP，返回True。&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;BOOL class_addMethod(Class cls, SEL name, IMP imp, const char *types)
+{
+    if (!cls) return NO;
+
+    mutex_locker_t lock(runtimeLock);
+    return ! addMethod(cls, name, imp, types ?: &amp;quot;&amp;quot;, NO);
+}
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;pre&gt;&lt;code&gt;static IMP 
+addMethod(Class cls, SEL name, IMP imp, const char *types, bool replace)
+{
+    IMP result = nil;
+
+    runtimeLock.assertLocked();
+
+    checkIsKnownClass(cls);
+    
+    assert(types);
+    assert(cls-&amp;gt;isRealized());
+
+    method_t *m;
+    if ((m = getMethodNoSuper_nolock(cls, name))) {
+        // already exists
+        if (!replace) {
+            result = m-&amp;gt;imp;
+        } else {
+            result = _method_setImplementation(cls, m, imp);
+        }
+    } else {
+        // fixme optimize
+        method_list_t *newlist;
+        newlist = (method_list_t *)calloc(sizeof(*newlist), 1);
+        newlist-&amp;gt;entsizeAndFlags = 
+            (uint32_t)sizeof(method_t) | fixed_up_method_list;
+        newlist-&amp;gt;count = 1;
+        newlist-&amp;gt;first.name = name;
+        newlist-&amp;gt;first.types = strdupIfMutable(types);
+        newlist-&amp;gt;first.imp = imp;
+
+        prepareMethodLists(cls, &amp;amp;newlist, 1, NO, NO);
+        cls-&amp;gt;data()-&amp;gt;methods.attachLists(&amp;amp;newlist, 1);
+        flushCaches(cls);
+
+        result = nil;
+    }
+
+    return result;
+}
+
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;h4 id=&#34;3-imp-class-replacemethod-class-cls-sel-name-imp-imp-const-char-types&#34;&gt;3. &lt;code&gt;IMP class_replaceMethod(Class cls, SEL name, IMP imp, const char *types)&lt;/code&gt;&lt;/h4&gt;
+
+&lt;p&gt;改变当前类中某个&lt;code&gt;selector&lt;/code&gt;的&lt;code&gt;IMP&lt;/code&gt;&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;IMP 
+class_replaceMethod(Class cls, SEL name, IMP imp, const char *types)
+{
+    if (!cls) return nil;
+
+    mutex_locker_t lock(runtimeLock);
+    return addMethod(cls, name, imp, types ?: &amp;quot;&amp;quot;, YES);
+}
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;pre&gt;&lt;code&gt;static IMP _method_setImplementation(Class cls, method_t *m, IMP imp)
+{
+    runtimeLock.assertLocked();
+
+    if (!m) return nil;
+    if (!imp) return nil;
+
+    IMP old = m-&amp;gt;imp;
+    m-&amp;gt;imp = imp;
+
+    // Cache updates are slow if cls is nil (i.e. unknown)
+    // RR/AWZ updates are slow if cls is nil (i.e. unknown)
+    // fixme build list of classes whose Methods are known externally?
+
+    flushCaches(cls);
+
+    updateCustomRR_AWZ(cls, m);
+
+    return old;
+}
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;h4 id=&#34;4-void-method-exchangeimplementations-method-m1-method-m2&#34;&gt;4. &lt;code&gt;void method_exchangeImplementations(Method m1, Method m2)&lt;/code&gt;&lt;/h4&gt;
+
+&lt;p&gt;交换两个&lt;code&gt;Method&lt;/code&gt;的&lt;code&gt;IMP&lt;/code&gt;&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;void method_exchangeImplementations(Method m1, Method m2)
+{
+    if (!m1  ||  !m2) return;
+
+    mutex_locker_t lock(runtimeLock);
+
+    IMP m1_imp = m1-&amp;gt;imp;
+    m1-&amp;gt;imp = m2-&amp;gt;imp;
+    m2-&amp;gt;imp = m1_imp;
+
+
+    // RR/AWZ updates are slow because class is unknown
+    // Cache updates are slow because class is unknown
+    // fixme build list of classes whose Methods are known externally?
+
+    flushCaches(nil);
+
+    updateCustomRR_AWZ(nil, m1);
+    updateCustomRR_AWZ(nil, m2);
+}
+
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;总结：&lt;/br&gt;
+上面包含了方法交互的两种方式：
+- 已经存在的要交换的方法，直接交换方法的&lt;code&gt;IMP&lt;/code&gt;指针
+- 要交换的方法不存在，动态创建方法再交换方法的&lt;code&gt;IMP&lt;/code&gt;&lt;/p&gt;
+
+&lt;blockquote&gt;
+&lt;p&gt;Tips:交换&lt;code&gt;Method&lt;/code&gt;&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;method_exchangeImplementations(class_getInstanceMethod(self, @selector(viewDidAppear:)),
+                                   class_getInstanceMethod(self, @selector(ex_viewDidAppear:
+&lt;/code&gt;&lt;/pre&gt;
+&lt;/blockquote&gt;
+
+&lt;h4 id=&#34;aspects&#34;&gt;&lt;code&gt;Aspects&lt;/code&gt;&lt;/h4&gt;
+
+&lt;h5 id=&#34;一-消息转发&#34;&gt;（一）消息转发&lt;/h5&gt;
+
+&lt;p&gt;消息转发有3个阶段：
+1. 当前对象动态添加方法来响应
+2. 有备用对象能够响应该方法
+3. 通过forwardInvocation方法来处理该方法&lt;/p&gt;
+
+&lt;p&gt;阶段3最灵活，和原来的类耦合最少。&lt;code&gt;Aspects&lt;/code&gt;就是在这个阶段来做方法替换。它替换的是什么呢，就是&lt;code&gt;forwardInvocation&lt;/code&gt;的&lt;code&gt;IMP&lt;/code&gt;。&lt;/p&gt;
+
+&lt;p&gt;&lt;img src=&#34;https://note.youdao.com/yws/api/personal/file/WEB95b6876b75aa452319fef5a997016d55?method=download&amp;amp;shareKey=809104bf2daedc6e202304bd2e45d2e8&#34; alt=&#34;&#34; /&gt;
+经过讨论应该是下面这样的流程
+&lt;img src=&#34;https://note.youdao.com/yws/api/personal/file/WEB84716c5dcfa90f82f31dca71e6baf268?method=download&amp;amp;shareKey=476d1e7dc88416af4d492f8d9e541243&#34; alt=&#34;&#34; /&gt;&lt;/p&gt;
+
+&lt;p&gt;Aspects会强制将你要hook的方法的&lt;code&gt;IMP&lt;/code&gt;指向&lt;code&gt;_objc_msgForward&lt;/code&gt;的&lt;code&gt;IMP&lt;/code&gt;，也就意味着你&lt;strong&gt;直接&lt;/strong&gt;走到了消息转发的最后一步。接着在新的&lt;code&gt;IMP&lt;/code&gt;： &lt;code&gt;__ASPECTS_ARE_BEING_CALLED__&lt;/code&gt; 里面做各种切面的hook，before、instead、after。&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;typedef NS_OPTIONS(NSUInteger, AspectOptions) {
+    AspectPositionAfter   = 0,            /// Called after the original implementation (default)
+    AspectPositionInstead = 1,            /// Will replace the original implementation.
+    AspectPositionBefore  = 2,            /// Called before the original implementation.
+    
+    AspectOptionAutomaticRemoval = 1 &amp;lt;&amp;lt; 3 /// Will remove the hook after the first execution.
+};
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;h5 id=&#34;二-实例对象和类对象的hook&#34;&gt;（二）实例对象和类对象的Hook&lt;/h5&gt;
+
+&lt;p&gt;类对象：&lt;br&gt;
+直接将当前类对象&lt;code&gt;forwardInvocation&lt;/code&gt;的&lt;code&gt;IMP&lt;/code&gt;替换。&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;static void aspect_swizzleForwardInvocation(Class klass) {
+    NSCParameterAssert(klass);
+    // If there is no method, replace will act like class_addMethod.
+    IMP originalImplementation = class_replaceMethod(klass, @selector(forwardInvocation:), (IMP)__ASPECTS_ARE_BEING_CALLED__, &amp;quot;v@:@&amp;quot;);
+    ...
+}
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;实例对象：&lt;/br&gt;&lt;/p&gt;
+
+&lt;p&gt;&lt;img src=&#34;https://note.youdao.com/yws/api/personal/file/WEBaab254928096c6f3850e8c5d74175e90?method=download&amp;amp;shareKey=f9ddd204eb6c299ad61feb797005dca4&#34; alt=&#34;&#34; /&gt;&lt;/p&gt;
+
+&lt;p&gt;1.动态创建当前类的子类，2.再将子类的&lt;code&gt;forwardInvocation&lt;/code&gt;进行替换，3.最后将类对象和原类&lt;code&gt;class&lt;/code&gt;方法的&lt;code&gt;IMP&lt;/code&gt;指向当前类的&lt;code&gt;class&lt;/code&gt;方法的&lt;code&gt;IMP&lt;/code&gt;,4.将当前类的&lt;code&gt;isa&lt;/code&gt;指向动态创建的类&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;const char *subclassName = [className stringByAppendingString:AspectsSubclassSuffix].UTF8String;
+Class subclass = objc_getClass(subclassName);
+if (subclass == nil) {
+		subclass = objc_allocateClassPair(baseClass, subclassName, 0);
+		if (subclass == nil) {
+            NSString *errrorDesc = [NSString stringWithFormat:@&amp;quot;objc_allocateClassPair failed to allocate class %s.&amp;quot;, subclassName];
+            AspectError(AspectErrorFailedToAllocateClassPair, errrorDesc);
+            return nil;
+        }
+
+		aspect_swizzleForwardInvocation(subclass);
+		aspect_hookedGetClass(subclass, statedClass);
+		aspect_hookedGetClass(object_getClass(subclass), statedClass);
+		objc_registerClassPair(subclass);
+	}
+	//将self的isa指向动态创建的类
+object_setClass(self, subclass);
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;这样做能保证现有的方法能正常执行；对当前类结构的改动最小。在&lt;code&gt;remove&lt;/code&gt;的时候&lt;code&gt;isa&lt;/code&gt;指针指回来就好了。&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;...
+NSString *className = NSStringFromClass(klass);
+        if ([className hasSuffix:AspectsSubclassSuffix]) {
+            Class originalClass = NSClassFromString([className stringByReplacingOccurrencesOfString:AspectsSubclassSuffix withString:@&amp;quot;&amp;quot;]);
+            NSCAssert(originalClass != nil, @&amp;quot;Original class must exist&amp;quot;);
+            //将self的isa指向原来的类
+            object_setClass(self, originalClass);
+            AspectLog(@&amp;quot;Aspects: %@ has been restored.&amp;quot;, NSStringFromClass(originalClass));
+            ...
+        }
+...
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;h5 id=&#34;三-源码&#34;&gt;（三）源码&lt;/h5&gt;
+
+&lt;h6 id=&#34;配置&#34;&gt;配置&lt;/h6&gt;
+
+&lt;pre&gt;&lt;code&gt;static id aspect_add(id self, SEL selector, AspectOptions options, id block, NSError **error) {
+    NSCParameterAssert(self);
+    NSCParameterAssert(selector);
+    NSCParameterAssert(block);
+
+    __block AspectIdentifier *identifier = nil;
+    
+    ①aspect_performLocked(^{
+        if (②aspect_isSelectorAllowedAndTrack(self, selector, options, error)) {
+            ③AspectsContainer *aspectContainer = aspect_getContainerForObject(self, selector);
+            identifier = [AspectIdentifier identifierWithSelector:selector object:self options:options block:block error:error];
+            if (identifier) {
+                ④[aspectContainer addAspect:identifier withOptions:options];
+
+                // Modify the class to allow message interception.
+                ⑤aspect_prepareClassAndHookSelector(self, selector, error);
+            }
+        }
+    });
+    return identifier;
+}
+
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;h3 id=&#34;①-br&#34;&gt;①&lt;/br&gt;&lt;/h3&gt;
+
+&lt;p&gt;对代码块加自旋锁&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;static void aspect_performLocked(dispatch_block_t block) {
+    static OSSpinLock aspect_lock = OS_SPINLOCK_INIT;
+    OSSpinLockLock(&amp;amp;aspect_lock);
+    block();
+    OSSpinLockUnlock(&amp;amp;aspect_lock);
+}
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;h3 id=&#34;②-br&#34;&gt;②&lt;/br&gt;&lt;/h3&gt;
+
+&lt;p&gt;selector校验和tracker设置&lt;/p&gt;
+
+&lt;ol&gt;
+&lt;li&gt;&lt;p&gt;黑名单校验，这些方法是无法被hook的，有&lt;code&gt;retain&lt;/code&gt;、&lt;code&gt;release&lt;/code&gt;、&lt;code&gt;autorelease&lt;/code&gt;、&lt;code&gt;forwardInvocation:&lt;/code&gt;、&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;// Check against the blacklist.
+NSString *selectorName = NSStringFromSelector(selector);
+if ([disallowedSelectorList containsObject:selectorName]) {
+    NSString *errorDescription = [NSString stringWithFormat:@&amp;quot;Selector %@ is blacklisted.&amp;quot;, selectorName];
+    AspectError(AspectErrorSelectorBlacklisted, errorDescription);
+    return NO;
+}
+&lt;/code&gt;&lt;/pre&gt;&lt;/li&gt;
+
+&lt;li&gt;&lt;p&gt;&lt;code&gt;dealloc&lt;/code&gt;无法在&lt;code&gt;AspectPositionBefore&lt;/code&gt;情况下被hook；当前实例和类必须要都能响应要hook的方法&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;AspectOptions position = options&amp;amp;AspectPositionFilter;
+if ([selectorName isEqualToString:@&amp;quot;dealloc&amp;quot;] &amp;amp;&amp;amp; position != AspectPositionBefore) {
+    NSString *errorDesc = @&amp;quot;AspectPositionBefore is the only valid position when hooking dealloc.&amp;quot;;
+    AspectError(AspectErrorSelectorDeallocPosition, errorDesc);
+    return NO;
+}
+if (![self respondsToSelector:selector] &amp;amp;&amp;amp; ![self.class instancesRespondToSelector:selector]) {
+    NSString *errorDesc = [NSString stringWithFormat:@&amp;quot;Unable to find selector -[%@ %@].&amp;quot;, NSStringFromClass(self.class), selectorName];
+    AspectError(AspectErrorDoesNotRespondToSelector, errorDesc);
+    return NO;
+}
+&lt;/code&gt;&lt;/pre&gt;&lt;/li&gt;
+
+&lt;li&gt;&lt;p&gt;如果是类对象，为该类及其继承体系上的所有类创建一个&lt;code&gt;AspectTracker&lt;/code&gt;，并保存到一个全局单例的可变字典中。&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;    currentClass = klass;
+    AspectTracker *parentTracker = nil;
+    do {
+        AspectTracker *tracker = swizzledClassesDict[currentClass];
+        if (!tracker) {
+            tracker = [[AspectTracker alloc] initWithTrackedClass:currentClass parent:parentTracker];
+            swizzledClassesDict[(id&amp;lt;NSCopying&amp;gt;)currentClass] = tracker;
+        }
+        [tracker.selectorNames addObject:selectorName];
+        // All superclasses get marked as having a subclass that is modified.
+        parentTracker = tracker;
+    }while ((currentClass = class_getSuperclass(currentClass)));
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;&lt;code&gt;AspectTracker结构&lt;/code&gt;
+&lt;img src=&#34;https://note.youdao.com/yws/api/personal/file/WEB715024449547b00293407b3d99066c57?method=download&amp;amp;shareKey=d84e9dd7fe1949030441cea5e1156e96&#34; alt=&#34;&#34; /&gt;&lt;/p&gt;&lt;/li&gt;
+&lt;/ol&gt;
+
+&lt;h3 id=&#34;③-br&#34;&gt;③&lt;/br&gt;&lt;/h3&gt;
+
+&lt;p&gt;通过runtime为当前类关联一个&lt;code&gt;AspectsContainer&lt;/code&gt;类型的属性。命名方式是&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;//aspects__ + 方法名
+eg:aspects__eat:andWater:
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;&lt;code&gt;AspectsContainer&lt;/code&gt;保存了被hook方法的三种切面数组
+&lt;img src=&#34;https://note.youdao.com/yws/api/personal/file/WEB970471b0e4303ce3e0f095a4a2c92d93?method=download&amp;amp;shareKey=014892c4716701c7a5ed9026b33e33d1&#34; alt=&#34;&#34; /&gt;&lt;/p&gt;
+
+&lt;p&gt;数组里面的对象&lt;code&gt;AspectIdentifier&lt;/code&gt;包含了在进行所有切面操作所需的信息，原方法、切面block、切面block的签名、如何切以及原方法所属的类。
+&lt;img src=&#34;https://note.youdao.com/yws/api/personal/file/WEB78a33ecad4ae519b1113d730103d4def?method=download&amp;amp;shareKey=49e5bfc2a4f7297a29964987ea9fa873&#34; alt=&#34;&#34; /&gt;&lt;/p&gt;
+
+&lt;p&gt;在创建&lt;code&gt;AspectIdentifier&lt;/code&gt;对象的初始化方法里有两个校验逻辑，1. 方法签名的校验 2. 方法签名兼容性判断。&lt;/p&gt;
+
+&lt;p&gt;&lt;code&gt;Aspects&lt;/code&gt;定义了一个结构和&lt;code&gt;NSGlobalBlock&lt;/code&gt;类似的结构体&lt;code&gt;_AspectBlock&lt;/code&gt;。我们的切面block(&lt;code&gt;NSGlobalBlock&lt;/code&gt;)会被强转为&lt;code&gt;_AspectBlock&lt;/code&gt;。&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;// Block internals.
+typedef NS_OPTIONS(int, AspectBlockFlags) {
+	AspectBlockFlagsHasCopyDisposeHelpers = (1 &amp;lt;&amp;lt; 25),
+	AspectBlockFlagsHasSignature          = (1 &amp;lt;&amp;lt; 30)
+};
+typedef struct _AspectBlock {
+	__unused Class isa;
+	AspectBlockFlags flags;
+	__unused int reserved;
+	void (__unused *invoke)(struct _AspectBlock *block, ...);
+	struct {
+		unsigned long int reserved;
+		unsigned long int size;
+		// requires AspectBlockFlagsHasCopyDisposeHelpers
+		void (*copy)(void *dst, const void *src);
+		void (*dispose)(const void *);
+		// requires AspectBlockFlagsHasSignature
+		const char *signature;
+		const char *layout;
+	} *descriptor;
+	// imported variables
+} *AspectBlockRef;
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;Block方法签名的校验有两步：
+1. &lt;code&gt;!(layout-&amp;gt;flags &amp;amp; AspectBlockFlagsHasSignature)&lt;/code&gt;(这应该是flags的一个规则)，如果&lt;code&gt;layout-&amp;gt;flags&lt;/code&gt;的值是0，返回nil&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;AspectBlockRef layout = (__bridge void *)block;
+	if (!(layout-&amp;gt;flags &amp;amp; AspectBlockFlagsHasSignature)) {
+        NSString *description = [NSString stringWithFormat:@&amp;quot;The block %@ doesn&#39;t contain a type signature.&amp;quot;, block];
+        AspectError(AspectErrorMissingBlockSignature, description);
+        return nil;
+}
+
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;ol&gt;
+&lt;li&gt;在&lt;code&gt;layout-&amp;gt;descriptor&lt;/code&gt;中是否存在&lt;code&gt;signature&lt;/code&gt;。&lt;code&gt;desc&lt;/code&gt;先向下偏移2个&lt;code&gt;unsigned long int&lt;/code&gt;大小，如果存在copy和dispose函数继续向下偏移2个&lt;code&gt;unsigned long int&lt;/code&gt;大小。这时候检查签名是否为空。
+&lt;code&gt;
+void *desc = layout-&amp;gt;descriptor;
+	desc += 2 * sizeof(unsigned long int);
+	if (layout-&amp;gt;flags &amp;amp; AspectBlockFlagsHasCopyDisposeHelpers) {
+		desc += 2 * sizeof(void *);
+}
+	if (!desc) {
+    NSString *description = [NSString stringWithFormat:@&amp;quot;The block %@ doesn&#39;t has a type signature.&amp;quot;, block];
+    AspectError(AspectErrorMissingBlockSignature, description);
+    return nil;
+}
+	const char *signature = (*(const char **)desc);
+	return [NSMethodSignature signatureWithObjCTypes:signature];
+&lt;/code&gt;
+&lt;img src=&#34;https://lc-api-gold-cdn.xitu.io/3293f66aeb756e10eba7&#34; alt=&#34;&#34; /&gt;&lt;/li&gt;
+&lt;/ol&gt;
+
+&lt;p&gt;方法签名兼容性判断，通过对比方法签名来实现。&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;static BOOL aspect_isCompatibleBlockSignature(NSMethodSignature *blockSignature, id object, SEL selector, NSError **error) {
+    NSCParameterAssert(blockSignature);
+    NSCParameterAssert(object);
+    NSCParameterAssert(selector);
+
+    BOOL signaturesMatch = YES;
+    NSMethodSignature *methodSignature = [[object class] instanceMethodSignatureForSelector:selector];
+    if (blockSignature.numberOfArguments &amp;gt; methodSignature.numberOfArguments) {
+        signaturesMatch = NO;
+    }else {
+        if (blockSignature.numberOfArguments &amp;gt; 1) {
+            const char *blockType = [blockSignature getArgumentTypeAtIndex:1];
+            if (blockType[0] != &#39;@&#39;) {
+                signaturesMatch = NO;
+            }
+        }
+        // Argument 0 is self/block, argument 1 is SEL or id&amp;lt;AspectInfo&amp;gt;. We start comparing at argument 2.
+        // The block can have less arguments than the method, that&#39;s ok.
+        if (signaturesMatch) {
+            for (NSUInteger idx = 2; idx &amp;lt; blockSignature.numberOfArguments; idx++) {
+                const char *methodType = [methodSignature getArgumentTypeAtIndex:idx];
+                const char *blockType = [blockSignature getArgumentTypeAtIndex:idx];
+                // Only compare parameter, not the optional type data.
+                if (!methodType || !blockType || methodType[0] != blockType[0]) {
+                    signaturesMatch = NO; break;
+                }
+            }
+        }
+    }
+
+    if (!signaturesMatch) {
+        NSString *description = [NSString stringWithFormat:@&amp;quot;Blog signature %@ doesn&#39;t match %@.&amp;quot;, blockSignature, methodSignature];
+        AspectError(AspectErrorIncompatibleBlockSignature, description);
+        return NO;
+    }
+    return YES;
+}
+
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;如果方法签名个数不等返回NO；如果切面block的方法签名第1个参数（从第0个开始）的字符不是&lt;code&gt;@&lt;/code&gt;返回NO；如果切面block的方法签名和要替换方法的方法签名从第2个开始不能一一匹配返回NO。&lt;/p&gt;
+
+&lt;h3 id=&#34;④-br&#34;&gt;④&lt;/br&gt;&lt;/h3&gt;
+
+&lt;p&gt;将构建好的&lt;code&gt;AspectIdentifier&lt;/code&gt;，添加到类对应的&lt;code&gt;AspectsContainer&lt;/code&gt;中，调用Hook方法时要用。&lt;/p&gt;
+
+&lt;h3 id=&#34;⑤-br&#34;&gt;⑤&lt;/br&gt;&lt;/h3&gt;
+
+&lt;pre&gt;&lt;code&gt;static void aspect_prepareClassAndHookSelector(NSObject *self, SEL selector, NSError **error) {
+    NSCParameterAssert(selector);
+    Class klass = aspect_hookClass(self, error);
+    Method targetMethod = class_getInstanceMethod(klass, selector);
+    IMP targetMethodIMP = method_getImplementation(targetMethod);
+    if (!aspect_isMsgForwardIMP(targetMethodIMP)) {
+        // Make a method alias for the existing method implementation, it not already copied.
+        const char *typeEncoding = method_getTypeEncoding(targetMethod);
+        SEL aliasSelector = aspect_aliasForSelector(selector);
+        if (![klass instancesRespondToSelector:aliasSelector]) {
+            __unused BOOL addedAlias = class_addMethod(klass, aliasSelector, method_getImplementation(targetMethod), typeEncoding);
+            NSCAssert(addedAlias, @&amp;quot;Original implementation for %@ is already copied to %@ on %@&amp;quot;, NSStringFromSelector(selector), NSStringFromSelector(aliasSelector), klass);
+        }
+
+        // We use forwardInvocation to hook in.
+        class_replaceMethod(klass, selector, aspect_getMsgForwardIMP(self, selector), typeEncoding);
+        AspectLog(@&amp;quot;Aspects: Installed hook for -[%@ %@].&amp;quot;, klass, NSStringFromSelector(selector));
+    }
+}
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;这里就是调整&lt;code&gt;IMP&lt;/code&gt;指针。下面这段代码主要有两个功能。
+1. 将类的&lt;code&gt;forwardInvocation&lt;/code&gt;的&lt;code&gt;IMP&lt;/code&gt;指向自定义的&lt;code&gt;IMP&lt;/code&gt;。这里分四种情况，（一）已经hook过的类，指实例对象，当前类的前缀是&lt;code&gt;_Aspects_&lt;/code&gt;，直接返回。（二）类对象，上文已讨论过。（三）类对象和元类不是同一个类。（四）动态添加方法，上文也已讨论过。&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;//交换forwardInvocation IMP的代码
+static NSString *const AspectsForwardInvocationSelectorName = @&amp;quot;__aspects_forwardInvocation:&amp;quot;;
+static void aspect_swizzleForwardInvocation(Class klass) {
+    NSCParameterAssert(klass);
+    // If there is no method, replace will act like class_addMethod.
+    IMP originalImplementation = class_replaceMethod(klass, @selector(forwardInvocation:), (IMP)__ASPECTS_ARE_BEING_CALLED__, &amp;quot;v@:@&amp;quot;);
+    if (originalImplementation) {
+        class_addMethod(klass, NSSelectorFromString(AspectsForwardInvocationSelectorName), originalImplementation, &amp;quot;v@:@&amp;quot;);
+    }
+    AspectLog(@&amp;quot;Aspects: %@ is now aspect aware.&amp;quot;, NSStringFromClass(klass));
+}
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;2.将要hook方法的&lt;code&gt;IMP&lt;/code&gt;指向&lt;code&gt;_objc_msgForward&lt;/code&gt;。&lt;/p&gt;
+
+&lt;p&gt;到这里完成了所有的配置工作&lt;/p&gt;
+
+&lt;h6 id=&#34;运行时&#34;&gt;运行时&lt;/h6&gt;
+
+&lt;p&gt;直接上源码。&lt;/br&gt;
+先拿实例对象和类对象的&lt;code&gt;AspectsContainer&lt;/code&gt;，可以为空。组装&lt;code&gt;AspectInfo&lt;/code&gt;。先执行所有的&lt;code&gt;beforeAspects&lt;/code&gt;切;接着如果存在&lt;code&gt;insteadAspects&lt;/code&gt;，执行install切面，否则执行原方法；最后执行&lt;code&gt;afterAspects&lt;/code&gt;切面。在每个切面执行的时候，实例对象和类对象的都要执行。如果有需要remove的切面都会加到&lt;code&gt;aspectsToRemove&lt;/code&gt;这个数组里面，最后以remove掉。&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;#pragma mark - Aspect Invoke Point
+
+// This is a macro so we get a cleaner stack trace.
+#define aspect_invoke(aspects, info) \
+for (AspectIdentifier *aspect in aspects) {\
+    [aspect invokeWithInfo:info];\
+    if (aspect.options &amp;amp; AspectOptionAutomaticRemoval) { \
+        aspectsToRemove = [aspectsToRemove?:@[] arrayByAddingObject:aspect]; \
+    } \
+}
+
+// This is the swizzled forwardInvocation: method.
+static void __ASPECTS_ARE_BEING_CALLED__(__unsafe_unretained NSObject *self, SEL selector, NSInvocation *invocation) {
+    NSCParameterAssert(self);
+    NSCParameterAssert(invocation);
+    SEL originalSelector = invocation.selector;
+	SEL aliasSelector = aspect_aliasForSelector(invocation.selector);
+    invocation.selector = aliasSelector;
+    AspectsContainer *objectContainer = objc_getAssociatedObject(self, aliasSelector);
+    AspectsContainer *classContainer = aspect_getContainerForClass(object_getClass(self), aliasSelector);
+    AspectInfo *info = [[AspectInfo alloc] initWithInstance:self invocation:invocation];
+    NSArray *aspectsToRemove = nil;
+
+    // Before hooks.
+    aspect_invoke(classContainer.beforeAspects, info);
+    aspect_invoke(objectContainer.beforeAspects, info);
+
+    // Instead hooks.
+    BOOL respondsToAlias = YES;
+    if (objectContainer.insteadAspects.count || classContainer.insteadAspects.count) {
+        aspect_invoke(classContainer.insteadAspects, info);
+        aspect_invoke(objectContainer.insteadAspects, info);
+    }else {
+        Class klass = object_getClass(invocation.target);
+        do {
+            if ((respondsToAlias = [klass instancesRespondToSelector:aliasSelector])) {
+                [invocation invoke];
+                break;
+            }
+        }while (!respondsToAlias &amp;amp;&amp;amp; (klass = class_getSuperclass(klass)));
+    }
+
+    // After hooks.
+    aspect_invoke(classContainer.afterAspects, info);
+    aspect_invoke(objectContainer.afterAspects, info);
+
+    // If no hooks are installed, call original implementation (usually to throw an exception)
+    if (!respondsToAlias) {
+        invocation.selector = originalSelector;
+        SEL originalForwardInvocationSEL = NSSelectorFromString(AspectsForwardInvocationSelectorName);
+        if ([self respondsToSelector:originalForwardInvocationSEL]) {
+            ((void( *)(id, SEL, NSInvocation *))objc_msgSend)(self, originalForwardInvocationSEL, invocation);
+        }else {
+            [self doesNotRecognizeSelector:invocation.selector];
+        }
+    }
+
+    // Remove any hooks that are queued for deregistration.
+    [aspectsToRemove makeObjectsPerformSelector:@selector(remove)];
+}
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;到这里基本差不多了，还有两个地方没讲，切面Block调用实现&lt;code&gt;[aspect invokeWithInfo:info]&lt;/code&gt;和移除切面，有兴趣的可以看看。&lt;/p&gt;
+
+&lt;p&gt;最后附上一张整体流程图
+&lt;img src=&#34;https://note.youdao.com/yws/api/personal/file/WEB24a1a6c4e7c65ed963c9c65099042c69?method=download&amp;amp;shareKey=c4ea75a79f085b53d9d848ebd1b8543b&#34; alt=&#34;&#34; /&gt;&lt;/p&gt;
+
+&lt;h5 id=&#34;四-答题&#34;&gt;（四）答题&lt;/h5&gt;
+
+&lt;p&gt;1、2上面基本都已经说清楚了，我们从3看起：&lt;/p&gt;
+
+&lt;p&gt;3.为什么这样hook之后所有的实例方法也被hook了&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;[[UIViewController class] aspect_hookSelector:@selector(viewWillAppear:) withOptions:AspectPositionBefore usingBlock:^(){
+        
+} error:nil];
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;答：这里考察的是&lt;code&gt;isa&lt;/code&gt;的概念。实例对象调用方法的时候是在&lt;strong&gt;isa指针指向的对象&lt;/strong&gt;里的方法列表去找，而&lt;strong&gt;isa指针指向的对象&lt;/strong&gt;就是类对象，&lt;code&gt;Aspects&lt;/code&gt;改变的是类对象方法列表里方法的&lt;code&gt;IMP&lt;/code&gt;，所以无论那是实例调用了&lt;code&gt;viewWillAppear:&lt;/code&gt;都会被hook&lt;/p&gt;
+
+&lt;p&gt;4.为什么&lt;code&gt;Aspect&lt;/code&gt;不能hook静态方法
+答：这里考察的也是&lt;code&gt;isa&lt;/code&gt;的概念，可见&lt;code&gt;isa&lt;/code&gt;在runtime中的地位非常重要。因为类对象调用方法的时候是到元类中去查找，而我们并没有对元类的方法进行hook。&lt;/p&gt;
+
+&lt;p&gt;5.如果用先用Aspects hook了方法A，接着又用MethodSwizzle对A进行了hook，两个hook都能执行吗？
+答：先看这张图，以&lt;code&gt;viewDidAppear:&lt;/code&gt;为列&lt;/p&gt;
+
+&lt;p&gt;&lt;img src=&#34;https://note.youdao.com/yws/api/personal/file/WEBbd552a8d0fd08c81bddf036c20023229?method=download&amp;amp;shareKey=c8ab8006d377bd96f97cd3bc38ca9d1b&#34; alt=&#34;&#34; /&gt;&lt;/p&gt;
+
+&lt;p&gt;&lt;code&gt;viewDidAppear:&lt;/code&gt;的IMP先被指向了&lt;code&gt;forwardInvocatoin:&lt;/code&gt;，当用MethodSwizzle进行第二次hook的时候，原来想指向&lt;code&gt;viewDidAppear:&lt;/code&gt;正真的&lt;code&gt;IMP&lt;/code&gt;的指针其实指向了&lt;code&gt;forwardInvocatoin:&lt;/code&gt;，而&lt;code&gt;forwardInvocatoin:&lt;/code&gt;被&lt;code&gt;Aspects&lt;/code&gt;指向了自定义的&lt;code&gt;__ASPECTS_ARE_BEING_CALLED__&lt;/code&gt;。这时候当调用&lt;code&gt;km_viewDidAppear:&lt;/code&gt;的时候调用了&lt;code&gt;Aspects&lt;/code&gt;的消息转发。在执行原方法的时候执行的是&lt;code&gt;aspects__t_viewDidAppear:&lt;/code&gt;而不是当初动态添加的&lt;code&gt;aspects__viewDidAppear:&lt;/code&gt;&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;[self doesNotRecognizeSelector:invocation.selector];
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;所以答案是用&lt;code&gt;MethodSwizzle&lt;/code&gt;hook的方法可以执行。&lt;code&gt;Aspects&lt;/code&gt;Hook的方法无法执行，已经无法拿到正确的&lt;code&gt;AspectsContainer&lt;/code&gt;，动态添加的属性名称class_getSuperclass不对（是基于&lt;code&gt;viewDidAppear&lt;/code&gt;创建的属性，而不是&lt;code&gt;km_viewDidAppear&lt;/code&gt;）了，最后崩溃了。&lt;/p&gt;
+
+&lt;p&gt;但是&lt;code&gt;Aspects&lt;/code&gt;还给了你最后一次机会如果被hook的类里面实现了方法&lt;code&gt;__aspects_forwardInvocation&lt;/code&gt;还能挽救下崩溃的局面。&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;...
+invocation.selector = originalSelector;
+SEL originalForwardInvocationSEL = NSSelectorFromString(AspectsForwardInvocationSelectorName);
+if ([self respondsToSelector:originalForwardInvocationSEL]) {
+    ((void( *)(id, SEL, NSInvocation *))objc_msgSend)(self, originalForwardInvocationSEL, invocation);
+}else {
+    [self doesNotRecognizeSelector:invocation.selector];
+}
+...
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;以上的推断建立在当前类没有实现&lt;code&gt;viewDidAppear:&lt;/code&gt;的前提下。如果当前类实现了&lt;code&gt;viewDidAppear:&lt;/code&gt;MethodSwizzle拿到的就不是被交换过的IMP。这时候就可以形成闭环：&lt;code&gt;km_viewDidAppear:&lt;/code&gt;-&amp;gt;&lt;code&gt;viewDidAppear:(调用了[super viewDidAppear])&lt;/code&gt;-&amp;gt;&lt;code&gt;__ASPECTS_ARE_BEING_CALLED__&lt;/code&gt;-&amp;gt;&lt;code&gt;Aspects的hook方法&lt;/code&gt;&lt;/br&gt;
+&lt;img src=&#34;https://note.youdao.com/yws/api/personal/file/WEBb7863bbb0e16ab705af8d7443bfead85?method=download&amp;amp;shareKey=3b736c680f87c3c52f724c4845dca10b&#34; alt=&#34;&#34; /&gt;&lt;/p&gt;
+
+&lt;h5 id=&#34;四-知识点&#34;&gt;（四）知识点：&lt;/h5&gt;
+
+&lt;ul&gt;
+&lt;li&gt;消息转发&lt;/li&gt;
+&lt;li&gt;runtime的各种方法&lt;/li&gt;
+&lt;li&gt;&lt;code&gt;object_getClass(id _Nullable obj)&lt;/code&gt;&lt;/li&gt;
+&lt;li&gt;&lt;code&gt;class_isMetaClass(Class _Nullable cls)&lt;/code&gt;&lt;/li&gt;
+&lt;li&gt;&lt;code&gt;class_getSuperclass(Class _Nullable cls)&lt;/code&gt;&lt;/li&gt;
+&lt;li&gt;&lt;code&gt;class_getInstanceMethod(Class _Nullable cls, SEL _Nonnull name)&lt;/code&gt;&lt;/li&gt;
+&lt;li&gt;&lt;code&gt;class_addMethod(Class _Nullable cls, SEL _Nonnull name, IMP _Nonnull imp, const char * _Nullable types)&lt;/code&gt;&lt;/li&gt;
+&lt;li&gt;&lt;code&gt;method_getImplementation(Method _Nonnull m)&lt;/code&gt;&lt;/li&gt;
+&lt;li&gt;&lt;code&gt;method_getTypeEncoding(Method _Nonnull m)&lt;/code&gt;&lt;/li&gt;
+&lt;li&gt;&lt;code&gt;class_replaceMethod(Class _Nullable cls, SEL _Nonnull name, IMP _Nonnull imp, const char * _Nullable types)&lt;/code&gt;&lt;/li&gt;
+&lt;li&gt;&lt;code&gt;method_exchangeImplementations(Method _Nonnull m1, Method _Nonnull m2)&lt;/code&gt;&lt;/li&gt;
+&lt;li&gt;&lt;code&gt;object_setClass(id _Nullable obj, Class _Nonnull cls)&lt;/code&gt;&lt;/li&gt;
+&lt;li&gt;isa指针&lt;/li&gt;
+&lt;li&gt;block结构&lt;/li&gt;
+&lt;li&gt;NSMethodSignature方法签名&lt;/li&gt;
+&lt;/ul&gt;</description>
+    </item>
     
     <item>
       <title>Object-C多线程总结</title>
@@ -1339,7 +2012,7 @@ ThreadTest[13645:406942] custome a product
 dispatch_semaphore_create(1)
 &lt;/code&gt;&lt;/pre&gt;
 
-&lt;pre&gt;&lt;code&gt;//等待信号&amp;gt;0的时候再执行下面的操作
+&lt;pre&gt;&lt;code&gt;//等待信号&amp;gt;0的时候再执行下面的操作，并将信号减一
 dispatch_semaphore_wait(self._lock, DISPATCH_TIME_FOREVER)
 &lt;/code&gt;&lt;/pre&gt;
 
@@ -2423,141 +3096,6 @@ for(i = 0;i &amp;lt; 100;i++){
 &lt;p&gt;首先&lt;code&gt;self&lt;/code&gt;和&lt;code&gt;_cmd&lt;/code&gt;被传递到具体的实现，在两个参数在方法中通过语法的方式被隐藏，但是当这些参数在被作为一个funcation被调用的时候必须要明确。
 使用&lt;code&gt;methodForSelector:&lt;/code&gt;来避免动态绑定可以节省大部分时间。但是如果同一个消息被多次调用，动态绑定的缓存机制可能更优雅点，因为上面的&lt;code&gt;for&lt;/code&gt;循环会遍历所有tartet。
 记住，&lt;code&gt;methodForSelector:&lt;/code&gt;是Cocoa的运行时系统提供的，它不是OC语言自己的特性。&lt;/p&gt;</description>
-    </item>
-    
-    <item>
-      <title>Run Loops (二)</title>
-      <link>https://linkrober.github.io/bookshelf/2017/09/run-loops-%E4%BA%8C/</link>
-      <pubDate>Tue, 26 Sep 2017 00:00:00 +0000</pubDate>
-      
-      <guid>https://linkrober.github.io/bookshelf/2017/09/run-loops-%E4%BA%8C/</guid>
-      <description>&lt;h3 id=&#34;when-would-you-use-a-run-loop&#34;&gt;When Would You Use a Run Loop?&lt;/h3&gt;
-
-&lt;p&gt;你唯一要使用run loop，就是当你要在application中创建线程的时候。你Application的主线程是架构很重要的一部分。所以，iOS系统为app的提供了&lt;i&gt;runloop&lt;/i&gt;代码，并自动开始。在iOS中运行Main loop作为app启动步骤的一部分。
-&lt;/p&gt;
-
-&lt;p&gt;对于其他的线程，你需要考虑是否必须要使用&lt;i&gt;run loop&lt;/i&gt;。如果有需要，配置并自己启动它。你不需要在每个线程中都启用run loop。例如，如果你使用一个线程来执行一些很长时间的运行和已经准备好的任务，你可能要避免使用它。Run loop的目的主要是用来解决线程间的通信。例如，如果你打算做下面的事情，你需要开启一个run loop。&lt;/p&gt;
-
-&lt;ul&gt;
-&lt;li&gt;使用port或者自定义input source来和其他线程通讯&lt;/li&gt;
-&lt;li&gt;在线程中使用timer&lt;/li&gt;
-&lt;li&gt;在Cocoa application使用&lt;code&gt;performSelector…&lt;/code&gt;方法&lt;/li&gt;
-&lt;li&gt;维持线程来执行周期性的任务&lt;/li&gt;
-&lt;/ul&gt;
-
-&lt;p&gt;如果你选择使用run loop，配置和设置就是接下来要做的。纵观整个线程编码过程，你应该有一个明确的认识在什么时候退出线程，这比强制退出好很多。关于如何配置和退出run loop的信息在这&lt;a href=&#34;https://developer.apple.com/library/content/documentation/Cocoa/Conceptual/Multithreading/RunLoopManagement/RunLoopManagement.html#//apple_ref/doc/uid/10000057i-CH16-SW5&#34;&gt;Using Run Loop Objects&lt;/a&gt;。&lt;/p&gt;
-
-&lt;h3 id=&#34;using-run-loop-objects&#34;&gt;Using Run Loop Objects&lt;/h3&gt;
-
-&lt;p&gt;&lt;i&gt;run loop&lt;/i&gt;对象提供了主要的接口来添加input sources，timers，run-loop observers到&lt;i&gt;run loop&lt;/i&gt;中再运行它。每个线程有一个和它相关的run loop object。在Cocoa中，这个对象是&lt;a href=&#34;https://developer.apple.com/documentation/foundation/runloop&#34;&gt;NSRunLoop&lt;/a&gt;的实例。在应用的底层，它是&lt;a href=&#34;https://developer.apple.com/documentation/corefoundation/cfrunloop&#34;&gt;CFRunLoopRef&lt;/a&gt;类的指针。&lt;/p&gt;
-
-&lt;h3 id=&#34;getting-a-run-loop-object&#34;&gt;Getting a Run Loop Object&lt;/h3&gt;
-
-&lt;p&gt;获取当前线程的runloop对象，你使用下面的一种方式：&lt;/p&gt;
-
-&lt;ul&gt;
-&lt;li&gt;在Cocoa Application中，使用&lt;a href=&#34;https://developer.apple.com/documentation/foundation/runloop/1412291-current&#34;&gt;NSRunLoop&lt;/a&gt;的类方法&lt;a href=&#34;https://developer.apple.com/documentation/foundation/runloop&#34;&gt;currentRunLoop&lt;/a&gt;，来获取&lt;code&gt;NSRunLoop&lt;/code&gt;对象。&lt;/li&gt;
-&lt;li&gt;使用&lt;a href=&#34;https://developer.apple.com/documentation/corefoundation/1542428-cfrunloopgetcurrent&#34;&gt;CFRunLoopGetCurrent&lt;/a&gt;方法。&lt;/li&gt;
-&lt;/ul&gt;
-
-&lt;p&gt;尽管它们不是无缝桥接的类，当需要的时候你可以从&lt;code&gt;NSRunLoop&lt;/code&gt;对象获得一个&lt;code&gt;CFRunLoopRef&lt;/code&gt;指针。&lt;code&gt;NSRunLoop&lt;/code&gt;类定义了一个&lt;a href=&#34;https://developer.apple.com/documentation/foundation/nsrunloop/1410140-getcfrunloop&#34;&gt;getCFRunLoop&lt;/a&gt;方法，它返回了一个&lt;code&gt;CFRunLoopRef&lt;/code&gt;类型，这你可以传入到Core Foundation中。因为两个对象指向同一个run loop，需要的时候你可以混合使用。&lt;/p&gt;
-
-&lt;h3 id=&#34;configuring-the-run-loop&#34;&gt;Configuring the Run Loop&lt;/h3&gt;
-
-&lt;p&gt;当你在自定义线程中跑run loop的时候，你至少添加一个input source或timer到run loop中，如果一个*run loop*没有任何source来监听，当你尝试运行它的时候，它会立即退出。如何向run loop中添加一个source，请看这里&lt;a href=&#34;https://developer.apple.com/library/content/documentation/Cocoa/Conceptual/Multithreading/RunLoopManagement/RunLoopManagement.html#//apple_ref/doc/uid/10000057i-CH16-SW7&#34;&gt;Configuring Run Loop Sources&lt;/a&gt;。&lt;/p&gt;
-
-&lt;p&gt;除了装载sources，你也可以装载run loop observers，使用它们来监听run loop的执行步骤。为了装载run loop observer，你创建了一个&lt;a href=&#34;https://developer.apple.com/documentation/corefoundation/cfrunloopobserver&#34;&gt;CFRunLoopObserverRef&lt;/a&gt;指针，并且使用&lt;a href=&#34;https://developer.apple.com/documentation/corefoundation/1542504-cfrunloopaddobserver&#34;&gt;CFRunLoopAddObserver&lt;/a&gt;方法并把它添加到你的run loop中。Run loop observer必须要使用Core Foundation来创建。&lt;/p&gt;
-
-&lt;p&gt;下面展示了在一个线程中，添加一个run loop observer到run loop中的主要的代码部分。&lt;/p&gt;
-
-&lt;pre&gt;&lt;code&gt;- (void)threadMain
-{
-	//The application use garbage collection,so no autorelease pool is needed.
-	NSRunLoop *myRunLoop = [NSRunLoop currentRunLoop];	
-	//Create a run loop observer and attach it to the run loop.
-	CFRunLoopObserverContent context = {0,self,NULL,NULL,NULL};
-	CFRunLoopObserverRef observer = CFRunLoopObserverCreate(kCFAllocatorDefault,kCFRunLoopAllActivities,YES,0,&amp;amp;myRunLoopObserver,&amp;amp;context);
-	if(observer)
-	{
-		CFRunLoopRef cfLoop = [myRunLoop getCFRunLoop];
-		CFRunLoopAddObserver(cfLoop,observer,kCFRunLoopDefaultMode);		
-	}	
-	//Create and schedule the timer.
-		[NSTimer scheduledTimerWithTimeInterval:0.1 target:self selector:@selector(doFireTimer:) userInfo:nil repeats:YES];
-		NSInteger loopCount = 10;
-	do 
-	{
-		//Run the run loop 10 times to let the timer fire
-		[myRunLoop runUntilDate:[NSDate dateWithTimeIntervalSinceNow:1]];
-		loopCount--;
-	}
-	while(loopCount);
-}
-&lt;/code&gt;&lt;/pre&gt;
-
-&lt;p&gt;当为一个活跃的线程配置run loop的时候，至少添加一个input source到接受的消息。尽管你能够只需要通过一个timer来启动run loop中，但是，一旦timer触发之后，它就会无效的，这会引起run loop的退出。传入一个repeat的timer可以保持run loop运行很长一段时间。但是将会周期性的调用触发的timer来唤醒你的线程。这是维持线程中&lt;i&gt;run loop&lt;/i&gt;的另一种方式，一个input source等待事件的到达，让你的线程处于睡眠中，直到它被唤醒。&lt;/p&gt;
-
-&lt;h3 id=&#34;starting-the-run-loop&#34;&gt;Starting the Run Loop&lt;/h3&gt;
-
-&lt;p&gt;一个run loop必须装载至少一个input source或者timer来。如果没有，run loop立即退出。
-下面有几种办法开启一个run loop。&lt;/p&gt;
-
-&lt;ul&gt;
-&lt;li&gt;无条件的启动run loop&lt;/li&gt;
-&lt;li&gt;设置一个超时时间启动run loop&lt;/li&gt;
-&lt;li&gt;通过一种特殊的模式启动run loop&lt;/li&gt;
-&lt;/ul&gt;
-
-&lt;p&gt;无条件的启动&lt;i&gt;runloop&lt;/i&gt;是最简单的，但是这也是最不推荐的一种方式。无条件的启动你的runloop，把线程作为&lt;i&gt;runloop&lt;/i&gt;的一个参数。这种方式对runloop的控制权很小。你可以添加或移除input source和timers，唯一停止&lt;i&gt;runloop&lt;/i&gt;的方式就是kill。这种启动方式没有办法在自定义mode。&lt;/p&gt;
-
-&lt;p&gt;除了无条件的启动一个runloop，使用time out value来开始一个&lt;i&gt;runloop&lt;/i&gt;更好。当你使用time out value，runloop运行直到事件到达或者超时。如果事件抵达，事件会被派发到一个handler来处理，然后run loop退出。你的code又能够重新开始runloop去处理下一个事件。如果超时，你可以简单的重启runloop，或者利用这段时间做任何需要的事。&lt;/p&gt;
-
-&lt;p&gt;除了time out value，你也可以使用一个指定的mode来运行runloop。Modes和timeout value并不是互斥的。当运行runloop的时候也可以同时使用它们。Modes限制了source的type。详细被描述在&lt;a href=&#34;https://developer.apple.com/library/content/documentation/Cocoa/Conceptual/Multithreading/RunLoopManagement/RunLoopManagement.html#//apple_ref/doc/uid/10000057i-CH16-SW12&#34;&gt;Run Loop Modes&lt;/a&gt;。&lt;/p&gt;
-
-&lt;p&gt;下面的code主要部分展示了runloop的基本结构。本质上，你添加你的input source和timer到runloop。重复调用其中一个routine来开始一个&lt;i&gt;run loop&lt;/i&gt;。每次run loop routine 返回的时，你检查&lt;i&gt;run lop&lt;/i&gt;是否满足某些条件导致退出thread。例子中使用Core Foundation的run loop routines，以至于它能检查返回的结果并检测run loop为什么退出。你也能使用&lt;a href=&#34;https://developer.apple.com/documentation/foundation/runloop&#34;&gt;NSRunLoop&lt;/a&gt;的方法以一种相似的方式来运行runloop，如果你正在使用Cocoa框架中的NSRunLoop，它是不需要检查return value的。&lt;/p&gt;
-
-&lt;pre&gt;&lt;code&gt;- (void)skeletonThreadMain {
-	//Set up an autorelease pool here if not using garbage collection.
-	BOOL done = NO;
-	//Add your sources or timer to the run loop and do any other setup
-	do
-	{
-		//Start the run loop but return after earch source is handled
-		SInt32 result = CFRunLoopRunInMode(kCFRunLoopDefaultMode,10,YES)
-		
-		//If a source explicitly stopped the run loop,or if there no sources or timers,go head and exit.
-		if ((result == kCFRunLoopRunStopped) || (result == kCFRunLoopRunFinished))
-		done = YES;
-		
-		//Check for any other exit conditions here and set the done variable as needed
-	}
-	while(!done);
-	//Clean up code here. Be sure to release any allocated autorelease pools.
-}
-&lt;/code&gt;&lt;/pre&gt;
-
-&lt;p&gt;递归运行run loop也是可能的。换句话说，你能够调用&lt;a href=&#34;https://developer.apple.com/documentation/corefoundation/1542011-cfrunlooprun&#34;&gt;CFRunLoopRun&lt;/a&gt;、&lt;a href=&#34;https://developer.apple.com/documentation/corefoundation/1541988-cfrunloopruninmode&#34;&gt;CFRunLoopRunInMode&lt;/a&gt;,任何&lt;code&gt;NSRunLoop&lt;/code&gt;的方法，从input source 或者 timer的handler routine开始runloop。当这样做的时候，你可以使用你想要的mode来运行内嵌的runloop。包括被outer run loop正在使用的mode。&lt;/p&gt;
-
-&lt;h3 id=&#34;exiting-the-run-loop&#34;&gt;Exiting the Run Loop&lt;/h3&gt;
-
-&lt;p&gt;有两种办法使runloop在处理事件之前退出。&lt;/p&gt;
-
-&lt;ul&gt;
-&lt;li&gt;为&lt;i&gt;Runloop&lt;/i&gt;配置一个time out时间&lt;/li&gt;
-&lt;li&gt;主动告诉&lt;i&gt;Runloop&lt;/i&gt;停止&lt;/li&gt;
-&lt;/ul&gt;
-
-&lt;p&gt;使用time out时间是一种比较好的选择。在退出之前，指定一个time out时间让runloop完成所有的任务，包括向&lt;i&gt;runloop observer&lt;/i&gt;发送通知。&lt;/p&gt;
-
-&lt;p&gt;使用&lt;a href=&#34;https://developer.apple.com/documentation/corefoundation/1541796-cfrunloopstop&#34;&gt;CFRunLoopStop&lt;/a&gt;方法停止一个&lt;i&gt;runloop&lt;/i&gt;，产生一个类似于超时的结果。使用runloop发送完剩下的runloop通知然后退出。唯一不同的就是只有当你无条件的启动&lt;i&gt;Runloop&lt;/i&gt;的时候才能使用这种方式退出。&lt;/p&gt;
-
-&lt;p&gt;尽管移除runloop的input source和timers可以引起runloop的退出，但是这不是一种稳定的方式。一些系统一般添加input source到run loop来处理需要的事件。因为你的code不需要关心这些input source。所以你不能移除input sources，让&lt;i&gt;run loop&lt;/i&gt;退出。&lt;/p&gt;
-
-&lt;h3 id=&#34;thread-safety-and-run-loop-objects&#34;&gt;Thread Safety and Run Loop Objects&lt;/h3&gt;
-
-&lt;p&gt;线程安全取决于你使用操作&lt;i&gt;runloop&lt;/i&gt;的API。在Core Foundation中的方法一般是线程安全的，可以被任何其他线程调用。如果你正在执行操作，这些操作改变了runloop的配置。无论什么时候，这样做任然是一个很好的实践。&lt;/p&gt;
-
-&lt;p&gt;Cocoa的&lt;a href=&#34;https://developer.apple.com/documentation/foundation/runloop&#34;&gt;NSRunLoop&lt;/a&gt;类。Cocoa的NSRunLoop和Core Foundation不一样，不是线程安全的。如果你使用&lt;code&gt;NSRunLoop&lt;/code&gt;类来修改你的runloop，你应该在原来的线程中做这些操作。在其他线程添加一个input source或者timer到原来runloop可能引起crash，或者一个意想不到的行为。&lt;/p&gt;</description>
     </item>
     
   </channel>

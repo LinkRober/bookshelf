@@ -281,7 +281,7 @@ ThreadTest[13645:406942] custome a product
 dispatch_semaphore_create(1)
 &lt;/code&gt;&lt;/pre&gt;
 
-&lt;pre&gt;&lt;code&gt;//等待信号&amp;gt;0的时候再执行下面的操作
+&lt;pre&gt;&lt;code&gt;//等待信号&amp;gt;0的时候再执行下面的操作，并将信号减一
 dispatch_semaphore_wait(self._lock, DISPATCH_TIME_FOREVER)
 &lt;/code&gt;&lt;/pre&gt;
 

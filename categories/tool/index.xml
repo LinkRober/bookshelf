@@ -394,6 +394,18 @@
 #git flow&lt;/p&gt;
 &lt;/blockquote&gt;
 
+&lt;h1 id=&#34;设置代理-让github的库走代理-如果库在自己公司的服务器上不走代理&#34;&gt;设置代理(让github的库走代理，如果库在自己公司的服务器上不走代理)&lt;/h1&gt;
+
+&lt;h3 id=&#34;只对github-com设置代理&#34;&gt;只对github.com设置代理&lt;/h3&gt;
+
+&lt;blockquote&gt;
+&lt;p&gt;git config &amp;ndash;global http.&lt;a href=&#34;https://github.com.proxy&#34;&gt;https://github.com.proxy&lt;/a&gt; socks5://127.0.0.1:1080&lt;/p&gt;
+
+&lt;h3 id=&#34;取消代理&#34;&gt;取消代理&lt;/h3&gt;
+
+&lt;p&gt;git config &amp;ndash;global &amp;ndash;unset http.&lt;a href=&#34;https://github.com.proxy)&#34;&gt;https://github.com.proxy)&lt;/a&gt;&lt;/p&gt;
+&lt;/blockquote&gt;
+
 &lt;hr /&gt;
 
 &lt;p&gt;参考:
