@@ -216,16 +216,16 @@
     
     <div class="postShorten-header">
       <h1 class="postShorten-title" itemprop="headline">
-        <a class="link-unstyled" href="https://linkrober.github.io/bookshelf/2020/11/%E6%96%B9%E6%B3%95%E6%9B%BF%E6%8D%A2%E5%92%8Caspects/">
-          方法替换和Aspects
+        <a class="link-unstyled" href="https://linkrober.github.io/bookshelf/2020/11/combinelatestzip%E5%92%8Cmerge%E7%9A%84%E5%8C%BA%E5%88%AB/">
+          CombineLatest、Zip和Merge的区别
         </a>
       </h1>
       
   <div class="postShorten-meta post-meta">
     
-      <time itemprop="datePublished" datetime="2020-11-26T00:00:00Z">
+      <time itemprop="datePublished" datetime="2020-11-27T00:00:00Z">
         
-  十一月 26, 2020
+  十一月 27, 2020
 
       </time>
     
@@ -243,90 +243,38 @@
 
     </div>
     <div class="postShorten-excerpt" itemprop="articleBody">
-      <h4 id="带着问题看文章">带着问题看文章：</h4>
+      <h4 id="信号触发方式">信号触发方式</h4>
 
-<p>1.常规姿势的方法替换原理是什么</p>
+<h5 id="merge">merge</h5>
 
-<p>2.<code>Aspects</code>的方法替换原理是什么</p>
+<p>只要<code>merge</code>之后生成的信号被订阅就会<strong>自动</strong>触发所有压缩信号的订阅回调，如果靠前的信号出现了<code>error</code>后面的信号不再发送。</p>
 
-<p>3.为什么这样下面的代码这样hook之后，所有的实例的<code>viewWillAppear:</code>也被hook了</p>
+<p>核心方法：<code>- (instancetype)flatten</code></br>
+值：多次收到，分开的</p>
 
-<pre><code>[[UIViewController class] aspect_hookSelector:@selector(viewWillAppear:) withOptions:AspectPositionBefore usingBlock:^(){
-        
-} error:nil];
+<pre><code> 1
+ 2
 </code></pre>
 
-<p>4.为什么<code>Aspect</code>不能hook静态方法</p>
+<pre><code>RACSignal *s1 = [RACSignal createSignal:^RACDisposable *(id&lt;RACSubscriber&gt; subscriber) {
+  [subscriber sendNext:@&quot;1&quot;];
+    return nil;
+}];
 
-<p>5.如果用先用Aspects hook了方法A，接着又用MethodSwizzle方法（下文有）对A进行了hook，两个hook都能执行吗？
-</p>
-      <p>
-        <a href="https://linkrober.github.io/bookshelf/2020/11/%E6%96%B9%E6%B3%95%E6%9B%BF%E6%8D%A2%E5%92%8Caspects/" class="postShorten-excerpt_link link">阅读全文</a>
-        
-      </p>
-    </div>
-  </div>
-  
-</article>
+RACSignal *s2 = [RACSignal createSignal:^RACDisposable *(id&lt;RACSubscriber&gt; subscriber) {
+    [subscriber sendNext:@&quot;2&quot;];
+    return nil;
+}];
 
-            
-              
-  
-    
-      
-        
-      
-    
-  
+[[RACSignal merge:@[s1,s2]] subscribeNext:^(id x) {
+    NSLog(@&quot;%@&quot;,x);
+}];
 
-
-  
-
-<article class="postShorten postShorten--thumbnailimg-bottom" itemscope itemType="http://schema.org/BlogPosting">
-  <div class="postShorten-wrap">
-    
-    <div class="postShorten-header">
-      <h1 class="postShorten-title" itemprop="headline">
-        <a class="link-unstyled" href="https://linkrober.github.io/bookshelf/2018/05/object-c%E5%A4%9A%E7%BA%BF%E7%A8%8B%E6%80%BB%E7%BB%93/">
-          Object-C多线程总结
-        </a>
-      </h1>
-      
-  <div class="postShorten-meta post-meta">
-    
-      <time itemprop="datePublished" datetime="2018-05-27T00:00:00Z">
-        
-  五月 27, 2018
-
-      </time>
-    
-    
-  
-  
-    <span>发布在</span>
-    
-      <a class="category-link" href="https://LinkRober.github.io/bookshelf/categories/ios">ios</a>
-    
-  
-
-
-  </div>
-
-    </div>
-    <div class="postShorten-excerpt" itemprop="articleBody">
-      <h3 id="目录">目录</h3>
-
-<ul>
-<li>多线程概念</li>
-<li>NSOperation</li>
-<li>GCD(Grand Central Dispatch)</li>
-<li>NSThread</li>
-<li>资源竞争</li>
-</ul>
+</code></pre>
 
 <p></p>
       <p>
-        <a href="https://linkrober.github.io/bookshelf/2018/05/object-c%E5%A4%9A%E7%BA%BF%E7%A8%8B%E6%80%BB%E7%BB%93/" class="postShorten-excerpt_link link">阅读全文</a>
+        <a href="https://linkrober.github.io/bookshelf/2020/11/combinelatestzip%E5%92%8Cmerge%E7%9A%84%E5%8C%BA%E5%88%AB/" class="postShorten-excerpt_link link">阅读全文</a>
         
       </p>
     </div>
@@ -352,16 +300,16 @@
     
     <div class="postShorten-header">
       <h1 class="postShorten-title" itemprop="headline">
-        <a class="link-unstyled" href="https://linkrober.github.io/bookshelf/2017/12/ios%E5%A4%9A%E7%BA%BF%E7%A8%8B%E4%B8%AD%E7%9A%84%E9%94%81/">
-          iOS多线程中的锁
+        <a class="link-unstyled" href="https://linkrober.github.io/bookshelf/2020/11/connectautoconnectracreplaysubjectreplay/">
+          Connect、AutoConnect、RACReplaySubject、Replay
         </a>
       </h1>
       
   <div class="postShorten-meta post-meta">
     
-      <time itemprop="datePublished" datetime="2017-12-01T00:00:00Z">
+      <time itemprop="datePublished" datetime="2020-11-27T00:00:00Z">
         
-  十二月 1, 2017
+  十一月 27, 2020
 
       </time>
     
@@ -370,7 +318,7 @@
   
     <span>发布在</span>
     
-      <a class="category-link" href="https://LinkRober.github.io/bookshelf/categories/ios">iOS</a>
+      <a class="category-link" href="https://LinkRober.github.io/bookshelf/categories/ios">ios</a>
     
   
 
@@ -379,21 +327,27 @@
 
     </div>
     <div class="postShorten-excerpt" itemprop="articleBody">
-      <p>涉及到多线程共享资源的情况下就避免不了资源竞争的问题，这时候就会用到各种锁，例如，<code>@synchronized</code>、<code>NSLock</code>、<code>OSSpinLock</code>等等，虽然都是锁，但是锁的底层实现也不尽相同。大概可以分为：<span class="highlight-text blue">互斥锁</span>、<span class="highlight-text blue">自旋锁</span>、<span class="highlight-text blue">递归锁</span>、
-<span class="highlight-text blue">读写锁</span>。</p>
+      <h4 id="connect">Connect</h4>
 
-<pre><code>{
-	lock()//加锁
-		doSomeThing()//临界区
-	unlock()//解锁
+<p>将冷信号包装成热信号，初始化冷信号，调用<code>publish</code>方法会自动生成一个<code>RACMulticastConnection</code>，该对象持有了原始信号和一个热信号。</p>
+
+<pre><code>- (RACMulticastConnection *)publish {
+	RACSubject *subject = [[RACSubject subject] setNameWithFormat:@&quot;[%@] -publish&quot;, self.name];
+	RACMulticastConnection *connection = [self multicast:subject];
+	return connection;
+}
+- (RACMulticastConnection *)multicast:(RACSubject *)subject {
+	[subject setNameWithFormat:@&quot;[%@] -multicast: %@&quot;, self.name, subject.name];
+	RACMulticastConnection *connection = [[RACMulticastConnection alloc] initWithSourceSignal:self subject:subject];
+	return connection;
 }
 </code></pre>
 
-<p>我们锁的目的是在任何时刻最多只能有一个线程在修改资源，即在任何时刻只能有一个操作者保持锁。</p>
+<p>调用<code>connect</code>方法来触发订阅，注意调用一次触发一次。</p>
 
 <p></p>
       <p>
-        <a href="https://linkrober.github.io/bookshelf/2017/12/ios%E5%A4%9A%E7%BA%BF%E7%A8%8B%E4%B8%AD%E7%9A%84%E9%94%81/" class="postShorten-excerpt_link link">阅读全文</a>
+        <a href="https://linkrober.github.io/bookshelf/2020/11/connectautoconnectracreplaysubjectreplay/" class="postShorten-excerpt_link link">阅读全文</a>
         
       </p>
     </div>
@@ -419,16 +373,16 @@
     
     <div class="postShorten-header">
       <h1 class="postShorten-title" itemprop="headline">
-        <a class="link-unstyled" href="https://linkrober.github.io/bookshelf/2017/10/runtime%E4%B8%89-%E6%B6%88%E6%81%AF%E8%BD%AC%E5%8F%91/">
-          Runtime(三) 消息转发
+        <a class="link-unstyled" href="https://linkrober.github.io/bookshelf/2020/11/racsignal/">
+          RACSignal
         </a>
       </h1>
       
   <div class="postShorten-meta post-meta">
     
-      <time itemprop="datePublished" datetime="2017-10-16T00:00:00Z">
+      <time itemprop="datePublished" datetime="2020-11-27T00:00:00Z">
         
-  十月 16, 2017
+  十一月 27, 2020
 
       </time>
     
@@ -437,7 +391,7 @@
   
     <span>发布在</span>
     
-      <a class="category-link" href="https://LinkRober.github.io/bookshelf/categories/ios">iOS</a>
+      <a class="category-link" href="https://LinkRober.github.io/bookshelf/categories/ios">ios</a>
     
   
 
@@ -446,10 +400,27 @@
 
     </div>
     <div class="postShorten-excerpt" itemprop="articleBody">
-      <p>向对象发送一个消息，如果没有处理就会发生错误。但是在产生错误之前，runtime会给接受对象第二次机会来处理消息。
-</p>
+      <h4 id="创建信号">创建信号</h4>
+
+<pre><code>
+RACSignal *signal = [RACSignal createSignal:^RACDisposable *(id&lt;RACSubscriber&gt; subscriber) {
+        [subscriber sendNext:@&quot;1&quot;];
+        return nil;
+    }];
+
+</code></pre>
+
+<p>分析</p>
+
+<pre><code>//RACSignal.m
++ (RACSignal *)createSignal:(RACDisposable * (^)(id&lt;RACSubscriber&gt; subscriber))didSubscribe {
+	return [RACDynamicSignal createSignal:didSubscribe];
+}
+</code></pre>
+
+<p></p>
       <p>
-        <a href="https://linkrober.github.io/bookshelf/2017/10/runtime%E4%B8%89-%E6%B6%88%E6%81%AF%E8%BD%AC%E5%8F%91/" class="postShorten-excerpt_link link">阅读全文</a>
+        <a href="https://linkrober.github.io/bookshelf/2020/11/racsignal/" class="postShorten-excerpt_link link">阅读全文</a>
         
       </p>
     </div>
@@ -475,16 +446,16 @@
     
     <div class="postShorten-header">
       <h1 class="postShorten-title" itemprop="headline">
-        <a class="link-unstyled" href="https://linkrober.github.io/bookshelf/2017/10/runtime-%E4%BA%8C--%E5%8A%A8%E6%80%81%E6%96%B9%E6%B3%95%E5%AE%9E%E7%8E%B0/">
-          Runtime (二)  动态方法实现
+        <a class="link-unstyled" href="https://linkrober.github.io/bookshelf/2020/11/switchtolatest/">
+          SwitchToLatest
         </a>
       </h1>
       
   <div class="postShorten-meta post-meta">
     
-      <time itemprop="datePublished" datetime="2017-10-09T18:06:28&#43;08:00">
+      <time itemprop="datePublished" datetime="2020-11-27T00:00:00Z">
         
-  十月 9, 2017
+  十一月 27, 2020
 
       </time>
     
@@ -493,7 +464,7 @@
   
     <span>发布在</span>
     
-      <a class="category-link" href="https://LinkRober.github.io/bookshelf/categories/ios">iOS</a>
+      <a class="category-link" href="https://LinkRober.github.io/bookshelf/categories/ios">ios</a>
     
   
 
@@ -502,12 +473,11 @@
 
     </div>
     <div class="postShorten-excerpt" itemprop="articleBody">
-      <h3 id="dynamic-method-resolution">Dynamic Method Resolution</h3>
+      <p><code>- (RACSignal *)switchToLatest</code>和<code>- (RACSignal *)flatten</code>的功能类似，都可以将信号中的信号的值取出来。不同的是，前者如果订阅者处理多个信号，只有最后一个信号的值能收到，之前的信号会被销毁。而后者则都能收到所有值。</p>
 
-<p>有的时候，你可能想要提供方法的动态实现。例如，Object-C 属性特征包含了<code>@dynamic</code>
-</p>
+<p></p>
       <p>
-        <a href="https://linkrober.github.io/bookshelf/2017/10/runtime-%E4%BA%8C--%E5%8A%A8%E6%80%81%E6%96%B9%E6%B3%95%E5%AE%9E%E7%8E%B0/" class="postShorten-excerpt_link link">阅读全文</a>
+        <a href="https://linkrober.github.io/bookshelf/2020/11/switchtolatest/" class="postShorten-excerpt_link link">阅读全文</a>
         
       </p>
     </div>
@@ -533,16 +503,16 @@
     
     <div class="postShorten-header">
       <h1 class="postShorten-title" itemprop="headline">
-        <a class="link-unstyled" href="https://linkrober.github.io/bookshelf/2017/09/runtime-%E4%B8%80-%E6%B6%88%E6%81%AF/">
-          Runtime (一) 消息
+        <a class="link-unstyled" href="https://linkrober.github.io/bookshelf/2020/11/concatcatchtonevertakeuntil/">
+          concat、catchTo、never、takeUntil
         </a>
       </h1>
       
   <div class="postShorten-meta post-meta">
     
-      <time itemprop="datePublished" datetime="2017-09-29T00:00:00Z">
+      <time itemprop="datePublished" datetime="2020-11-27T00:00:00Z">
         
-  九月 29, 2017
+  十一月 27, 2020
 
       </time>
     
@@ -551,7 +521,7 @@
   
     <span>发布在</span>
     
-      <a class="category-link" href="https://LinkRober.github.io/bookshelf/categories/ios">iOS</a>
+      <a class="category-link" href="https://LinkRober.github.io/bookshelf/categories/ios">ios</a>
     
   
 
@@ -560,16 +530,33 @@
 
     </div>
     <div class="postShorten-excerpt" itemprop="articleBody">
-      <h3 id="message">Message</h3>
+      <ol>
+<li><code>- (RACSignal *)concat:(RACSignal *)signal</code></li>
+</ol>
 
-<p>这篇文章描述了消息如何通过使用<code>objc_msgSend</code>发送，如何通过方法名称找到对应方法的reference</p>
+<pre><code>//源码
+- (RACSignal *)concat:(RACSignal *)signal {
+	return [[RACSignal createSignal:^(id&lt;RACSubscriber&gt; subscriber) {
+		RACSerialDisposable *serialDisposable = [[RACSerialDisposable alloc] init];
 
-<h4 id="the-objc-msgsend-function">The objc_msgSend Function</h4>
+		RACDisposable *sourceDisposable = [self subscribeNext:^(id x) {
+			[subscriber sendNext:x];
+		} error:^(NSError *error) {
+			[subscriber sendError:error];
+		} completed:^{
+			RACDisposable *concattedDisposable = [signal subscribe:subscriber];
+			serialDisposable.disposable = concattedDisposable;
+		}];
 
-<p>在Object-C中，发送的消息直到运行时才绑定到正真的方式实现。
-</p>
+		serialDisposable.disposable = sourceDisposable;
+		return serialDisposable;
+	}] setNameWithFormat:@&quot;[%@] -concat: %@&quot;, self.name, signal];
+}
+</code></pre>
+
+<p></p>
       <p>
-        <a href="https://linkrober.github.io/bookshelf/2017/09/runtime-%E4%B8%80-%E6%B6%88%E6%81%AF/" class="postShorten-excerpt_link link">阅读全文</a>
+        <a href="https://linkrober.github.io/bookshelf/2020/11/concatcatchtonevertakeuntil/" class="postShorten-excerpt_link link">阅读全文</a>
         
       </p>
     </div>
@@ -595,16 +582,16 @@
     
     <div class="postShorten-header">
       <h1 class="postShorten-title" itemprop="headline">
-        <a class="link-unstyled" href="https://linkrober.github.io/bookshelf/2017/09/run-loops-%E4%BA%8C/">
-          Run Loops (二)
+        <a class="link-unstyled" href="https://linkrober.github.io/bookshelf/2020/11/zip/">
+          zip
         </a>
       </h1>
       
   <div class="postShorten-meta post-meta">
     
-      <time itemprop="datePublished" datetime="2017-09-26T00:00:00Z">
+      <time itemprop="datePublished" datetime="2020-11-27T00:00:00Z">
         
-  九月 26, 2017
+  十一月 27, 2020
 
       </time>
     
@@ -613,7 +600,7 @@
   
     <span>发布在</span>
     
-      <a class="category-link" href="https://LinkRober.github.io/bookshelf/categories/ios">iOS</a>
+      <a class="category-link" href="https://LinkRober.github.io/bookshelf/categories/ios">ios</a>
     
   
 
@@ -622,12 +609,108 @@
 
     </div>
     <div class="postShorten-excerpt" itemprop="articleBody">
-      <h3 id="when-would-you-use-a-run-loop">When Would You Use a Run Loop?</h3>
+      <pre><code>RACSignal *s1 = [RACSignal createSignal:^RACDisposable *(id&lt;RACSubscriber&gt; subscriber) {
+       [subscriber sendNext:@&quot;1&quot;];
+    return nil;
+}];
+RACSignal *s2 = [RACSignal createSignal:^RACDisposable *(id&lt;RACSubscriber&gt; subscriber) {
+    [subscriber sendNext:@&quot;2&quot;];
+    return nil;
+}];
+RACSignal *s3 = [RACSignal createSignal:^RACDisposable *(id&lt;RACSubscriber&gt; subscriber) {
+    [subscriber sendNext:@&quot;3&quot;];
+    return nil;
+}];
 
-<p>你唯一要使用run loop，就是当你要在application中创建线程的时候。你Application的主线程是架构很重要的一部分。所以，iOS系统为app的提供了<i>runloop</i>代码，并自动开始。在iOS中运行Main loop作为app启动步骤的一部分。
-</p>
+RACSignal *zs = [RACSignal zip:@[s1,s2,s3]];
+
+[zs subscribeNext:^(id x) {
+    NSLog(@&quot;%@&quot;,x);
+}];
+
+</code></pre>
+
+<p>同<code>zip</code>压缩的信号只有等所有的自信号都<code>sendNext</code>之后才会执行订阅回调。</p>
+
+<p>问题：
+1. 如何确保每个信号都发送完，才执行后压缩信号的订阅回调</p>
+
+<p></p>
       <p>
-        <a href="https://linkrober.github.io/bookshelf/2017/09/run-loops-%E4%BA%8C/" class="postShorten-excerpt_link link">阅读全文</a>
+        <a href="https://linkrober.github.io/bookshelf/2020/11/zip/" class="postShorten-excerpt_link link">阅读全文</a>
+        
+      </p>
+    </div>
+  </div>
+  
+</article>
+
+            
+              
+  
+    
+      
+        
+      
+    
+  
+
+
+  
+
+<article class="postShorten postShorten--thumbnailimg-bottom" itemscope itemType="http://schema.org/BlogPosting">
+  <div class="postShorten-wrap">
+    
+    <div class="postShorten-header">
+      <h1 class="postShorten-title" itemprop="headline">
+        <a class="link-unstyled" href="https://linkrober.github.io/bookshelf/2020/11/%E4%BF%A1%E5%8F%B7%E4%B8%AD%E7%9A%84%E4%BF%A1%E5%8F%B7-flatten/">
+          信号中的信号-flatten
+        </a>
+      </h1>
+      
+  <div class="postShorten-meta post-meta">
+    
+      <time itemprop="datePublished" datetime="2020-11-27T00:00:00Z">
+        
+  十一月 27, 2020
+
+      </time>
+    
+    
+  
+  
+    <span>发布在</span>
+    
+      <a class="category-link" href="https://LinkRober.github.io/bookshelf/categories/ios">ios</a>
+    
+  
+
+
+  </div>
+
+    </div>
+    <div class="postShorten-excerpt" itemprop="articleBody">
+      <pre><code>    RACSignal *targetSignal = [RACSignal createSignal:^RACDisposable *(id&lt;RACSubscriber&gt; subscriber) {
+        [subscriber sendNext:@&quot;1&quot;];
+        return nil;
+    }];
+    
+    RACSignal *signal = [RACSignal createSignal:^RACDisposable *(id&lt;RACSubscriber&gt; subscriber) {
+    //发送一个信号
+        [subscriber sendNext:targetSignal];
+        return nil;
+    }];
+    
+    RACSignal *flattenSignal = [signal flatten];
+    [flattenSignal subscribeNext:^(id x) {
+        NSLog(@&quot;%@&quot;,x);//1
+    }];
+
+</code></pre>
+
+<p></p>
+      <p>
+        <a href="https://linkrober.github.io/bookshelf/2020/11/%E4%BF%A1%E5%8F%B7%E4%B8%AD%E7%9A%84%E4%BF%A1%E5%8F%B7-flatten/" class="postShorten-excerpt_link link">阅读全文</a>
         
       </p>
     </div>
@@ -648,7 +731,7 @@
           </a>
         </li>
       
-      <li class="pagination-number">第 1 页 共 2 页</li>
+      <li class="pagination-number">第 1 页 共 3 页</li>
     </ul>
   </div>
 
@@ -710,6 +793,283 @@
           <div class="media">
             
             <div class="media-body">
+              <a class="link-unstyled" href="https://linkrober.github.io/bookshelf/2020/11/combinelatestzip%E5%92%8Cmerge%E7%9A%84%E5%8C%BA%E5%88%AB/">
+                <h3 class="media-heading">CombineLatest、Zip和Merge的区别</h3>
+              </a>
+              <span class="media-meta">
+                <span class="media-date text-small">
+                  Nov 11, 2020
+                </span>
+              </span>
+              <div class="media-content hide-xs font-merryweather"><h4 id="信号触发方式">信号触发方式</h4>
+
+<h5 id="merge">merge</h5>
+
+<p>只要<code>merge</code>之后生成的信号被订阅就会<strong>自动</strong>触发所有压缩信号的订阅回调，如果靠前的信号出现了<code>error</code>后面的信号不再发送。</p>
+
+<p>核心方法：<code>- (instancetype)flatten</code></br>
+值：多次收到，分开的</p>
+
+<pre><code> 1
+ 2
+</code></pre>
+
+<pre><code>RACSignal *s1 = [RACSignal createSignal:^RACDisposable *(id&lt;RACSubscriber&gt; subscriber) {
+  [subscriber sendNext:@&quot;1&quot;];
+    return nil;
+}];
+
+RACSignal *s2 = [RACSignal createSignal:^RACDisposable *(id&lt;RACSubscriber&gt; subscriber) {
+    [subscriber sendNext:@&quot;2&quot;];
+    return nil;
+}];
+
+[[RACSignal merge:@[s1,s2]] subscribeNext:^(id x) {
+    NSLog(@&quot;%@&quot;,x);
+}];
+
+</code></pre>
+
+<p></p></div>
+            </div>
+            <div style="clear:both;"></div>
+            <hr>
+          </div>
+        
+          <div class="media">
+            
+            <div class="media-body">
+              <a class="link-unstyled" href="https://linkrober.github.io/bookshelf/2020/11/connectautoconnectracreplaysubjectreplay/">
+                <h3 class="media-heading">Connect、AutoConnect、RACReplaySubject、Replay</h3>
+              </a>
+              <span class="media-meta">
+                <span class="media-date text-small">
+                  Nov 11, 2020
+                </span>
+              </span>
+              <div class="media-content hide-xs font-merryweather"><h4 id="connect">Connect</h4>
+
+<p>将冷信号包装成热信号，初始化冷信号，调用<code>publish</code>方法会自动生成一个<code>RACMulticastConnection</code>，该对象持有了原始信号和一个热信号。</p>
+
+<pre><code>- (RACMulticastConnection *)publish {
+	RACSubject *subject = [[RACSubject subject] setNameWithFormat:@&quot;[%@] -publish&quot;, self.name];
+	RACMulticastConnection *connection = [self multicast:subject];
+	return connection;
+}
+- (RACMulticastConnection *)multicast:(RACSubject *)subject {
+	[subject setNameWithFormat:@&quot;[%@] -multicast: %@&quot;, self.name, subject.name];
+	RACMulticastConnection *connection = [[RACMulticastConnection alloc] initWithSourceSignal:self subject:subject];
+	return connection;
+}
+</code></pre>
+
+<p>调用<code>connect</code>方法来触发订阅，注意调用一次触发一次。</p>
+
+<p></p></div>
+            </div>
+            <div style="clear:both;"></div>
+            <hr>
+          </div>
+        
+          <div class="media">
+            
+            <div class="media-body">
+              <a class="link-unstyled" href="https://linkrober.github.io/bookshelf/2020/11/racsignal/">
+                <h3 class="media-heading">RACSignal</h3>
+              </a>
+              <span class="media-meta">
+                <span class="media-date text-small">
+                  Nov 11, 2020
+                </span>
+              </span>
+              <div class="media-content hide-xs font-merryweather"><h4 id="创建信号">创建信号</h4>
+
+<pre><code>
+RACSignal *signal = [RACSignal createSignal:^RACDisposable *(id&lt;RACSubscriber&gt; subscriber) {
+        [subscriber sendNext:@&quot;1&quot;];
+        return nil;
+    }];
+
+</code></pre>
+
+<p>分析</p>
+
+<pre><code>//RACSignal.m
++ (RACSignal *)createSignal:(RACDisposable * (^)(id&lt;RACSubscriber&gt; subscriber))didSubscribe {
+	return [RACDynamicSignal createSignal:didSubscribe];
+}
+</code></pre>
+
+<p></p></div>
+            </div>
+            <div style="clear:both;"></div>
+            <hr>
+          </div>
+        
+          <div class="media">
+            
+            <div class="media-body">
+              <a class="link-unstyled" href="https://linkrober.github.io/bookshelf/2020/11/switchtolatest/">
+                <h3 class="media-heading">SwitchToLatest</h3>
+              </a>
+              <span class="media-meta">
+                <span class="media-date text-small">
+                  Nov 11, 2020
+                </span>
+              </span>
+              <div class="media-content hide-xs font-merryweather"><p><code>- (RACSignal *)switchToLatest</code>和<code>- (RACSignal *)flatten</code>的功能类似，都可以将信号中的信号的值取出来。不同的是，前者如果订阅者处理多个信号，只有最后一个信号的值能收到，之前的信号会被销毁。而后者则都能收到所有值。</p>
+
+<p></p></div>
+            </div>
+            <div style="clear:both;"></div>
+            <hr>
+          </div>
+        
+          <div class="media">
+            
+            <div class="media-body">
+              <a class="link-unstyled" href="https://linkrober.github.io/bookshelf/2020/11/concatcatchtonevertakeuntil/">
+                <h3 class="media-heading">concat、catchTo、never、takeUntil</h3>
+              </a>
+              <span class="media-meta">
+                <span class="media-date text-small">
+                  Nov 11, 2020
+                </span>
+              </span>
+              <div class="media-content hide-xs font-merryweather"><ol>
+<li><code>- (RACSignal *)concat:(RACSignal *)signal</code></li>
+</ol>
+
+<pre><code>//源码
+- (RACSignal *)concat:(RACSignal *)signal {
+	return [[RACSignal createSignal:^(id&lt;RACSubscriber&gt; subscriber) {
+		RACSerialDisposable *serialDisposable = [[RACSerialDisposable alloc] init];
+
+		RACDisposable *sourceDisposable = [self subscribeNext:^(id x) {
+			[subscriber sendNext:x];
+		} error:^(NSError *error) {
+			[subscriber sendError:error];
+		} completed:^{
+			RACDisposable *concattedDisposable = [signal subscribe:subscriber];
+			serialDisposable.disposable = concattedDisposable;
+		}];
+
+		serialDisposable.disposable = sourceDisposable;
+		return serialDisposable;
+	}] setNameWithFormat:@&quot;[%@] -concat: %@&quot;, self.name, signal];
+}
+</code></pre>
+
+<p></p></div>
+            </div>
+            <div style="clear:both;"></div>
+            <hr>
+          </div>
+        
+          <div class="media">
+            
+            <div class="media-body">
+              <a class="link-unstyled" href="https://linkrober.github.io/bookshelf/2020/11/zip/">
+                <h3 class="media-heading">zip</h3>
+              </a>
+              <span class="media-meta">
+                <span class="media-date text-small">
+                  Nov 11, 2020
+                </span>
+              </span>
+              <div class="media-content hide-xs font-merryweather"><pre><code>RACSignal *s1 = [RACSignal createSignal:^RACDisposable *(id&lt;RACSubscriber&gt; subscriber) {
+       [subscriber sendNext:@&quot;1&quot;];
+    return nil;
+}];
+RACSignal *s2 = [RACSignal createSignal:^RACDisposable *(id&lt;RACSubscriber&gt; subscriber) {
+    [subscriber sendNext:@&quot;2&quot;];
+    return nil;
+}];
+RACSignal *s3 = [RACSignal createSignal:^RACDisposable *(id&lt;RACSubscriber&gt; subscriber) {
+    [subscriber sendNext:@&quot;3&quot;];
+    return nil;
+}];
+
+RACSignal *zs = [RACSignal zip:@[s1,s2,s3]];
+
+[zs subscribeNext:^(id x) {
+    NSLog(@&quot;%@&quot;,x);
+}];
+
+</code></pre>
+
+<p>同<code>zip</code>压缩的信号只有等所有的自信号都<code>sendNext</code>之后才会执行订阅回调。</p>
+
+<p>问题：
+1. 如何确保每个信号都发送完，才执行后压缩信号的订阅回调</p>
+
+<p></p></div>
+            </div>
+            <div style="clear:both;"></div>
+            <hr>
+          </div>
+        
+          <div class="media">
+            
+            <div class="media-body">
+              <a class="link-unstyled" href="https://linkrober.github.io/bookshelf/2020/11/%E4%BF%A1%E5%8F%B7%E4%B8%AD%E7%9A%84%E4%BF%A1%E5%8F%B7-flatten/">
+                <h3 class="media-heading">信号中的信号-flatten</h3>
+              </a>
+              <span class="media-meta">
+                <span class="media-date text-small">
+                  Nov 11, 2020
+                </span>
+              </span>
+              <div class="media-content hide-xs font-merryweather"><pre><code>    RACSignal *targetSignal = [RACSignal createSignal:^RACDisposable *(id&lt;RACSubscriber&gt; subscriber) {
+        [subscriber sendNext:@&quot;1&quot;];
+        return nil;
+    }];
+    
+    RACSignal *signal = [RACSignal createSignal:^RACDisposable *(id&lt;RACSubscriber&gt; subscriber) {
+    //发送一个信号
+        [subscriber sendNext:targetSignal];
+        return nil;
+    }];
+    
+    RACSignal *flattenSignal = [signal flatten];
+    [flattenSignal subscribeNext:^(id x) {
+        NSLog(@&quot;%@&quot;,x);//1
+    }];
+
+</code></pre>
+
+<p></p></div>
+            </div>
+            <div style="clear:both;"></div>
+            <hr>
+          </div>
+        
+          <div class="media">
+            
+            <div class="media-body">
+              <a class="link-unstyled" href="https://linkrober.github.io/bookshelf/2020/11/%E5%86%B7%E4%BF%A1%E5%8F%B7%E5%92%8C%E7%83%AD%E4%BF%A1%E5%8F%B7%E6%9E%84%E5%BB%BA%E8%A7%A6%E5%8F%91%E6%B5%81%E7%A8%8B/">
+                <h3 class="media-heading">冷信号和热信号构建触发流程</h3>
+              </a>
+              <span class="media-meta">
+                <span class="media-date text-small">
+                  Nov 11, 2020
+                </span>
+              </span>
+              <div class="media-content hide-xs font-merryweather"><p>提到RAC就离不开冷热信号。在实际的开发中如果不理清两者的用法就会出问题。</p>
+
+<p>冷信号像专车，从你打车（订阅）开始，从出发地点（sendNext）发往你在的地方。它是一对一的，不会错过。</p>
+
+<p>热信号像公交车，在你等车（订阅）之前可能已经发车了（sendNext）；不仅你可以上，其他人也能上，它是一对多的；错过了这班车（假设只有一班）就没了。</p>
+
+<p></p></div>
+            </div>
+            <div style="clear:both;"></div>
+            <hr>
+          </div>
+        
+          <div class="media">
+            
+            <div class="media-body">
               <a class="link-unstyled" href="https://linkrober.github.io/bookshelf/2020/11/%E6%96%B9%E6%B3%95%E6%9B%BF%E6%8D%A2%E5%92%8Caspects/">
                 <h3 class="media-heading">方法替换和Aspects</h3>
               </a>
@@ -767,193 +1127,6 @@
             <hr>
           </div>
         
-          <div class="media">
-            
-            <div class="media-body">
-              <a class="link-unstyled" href="https://linkrober.github.io/bookshelf/2018/03/%E5%85%A5%E5%9D%91%E5%B0%8F%E7%A8%8B%E5%BA%8F/">
-                <h3 class="media-heading">入坑小程序</h3>
-              </a>
-              <span class="media-meta">
-                <span class="media-date text-small">
-                  Mar 3, 2018
-                </span>
-              </span>
-              <div class="media-content hide-xs font-merryweather"><h3 id="描述">描述</h3>
-
-<p>去年各大平台纷纷开始占领微信上的又一流量入口——小程序。因为小程序的门槛低，这里指，技术上和前端大同小异，审核刚开始也比较松。除了大厂，很多个人开发这都投入进去。想在小程序上打响自己的个人品牌。在筹备了三个月之久，我的第一款小程序，终于快要完成了。在这里我会总结一下整体的过程，从idea到一个完整的小程序、期间遇到的坑、和觉得挺有意思的地方。</p>
-
-<p></p></div>
-            </div>
-            <div style="clear:both;"></div>
-            <hr>
-          </div>
-        
-          <div class="media">
-            
-            <div class="media-body">
-              <a class="link-unstyled" href="https://linkrober.github.io/bookshelf/2018/02/%E9%80%92%E5%BD%92/">
-                <h3 class="media-heading">递归</h3>
-              </a>
-              <span class="media-meta">
-                <span class="media-date text-small">
-                  Feb 2, 2018
-                </span>
-              </span>
-              <div class="media-content hide-xs font-merryweather"><p></b>
-<span class="highlight-text primary">
-基本思想
-</span></p>
-
-<p>递归是一种直接或者间接调用自身函数或者方法的算法。递归的实质是把问题分解成规模缩小的同类问题的子问题，然后递归调用方法来表示问题的解。递归算法，其实就是程序的自身调用。在一段程序中往往会遇到调用自身的那样一种coding策略。递归往往能带来非常简洁非常直观的代码形式，从而使我们的编码大大简化，但是递归的思想确实和我们的常规思维相逆。我们通常是从上而下的思考问题，而递归是从下往上进行思考。这样我们就能看到我们会用很少的语句解决很大的问题，所以递归策略最主要的体现就是较少的代码量解决复杂的问题。</p>
-
-<p></p></div>
-            </div>
-            <div style="clear:both;"></div>
-            <hr>
-          </div>
-        
-          <div class="media">
-            
-            <div class="media-body">
-              <a class="link-unstyled" href="https://linkrober.github.io/bookshelf/2018/01/%E5%86%8D%E8%A7%812017%E4%BD%A0%E5%A5%BD2018/">
-                <h3 class="media-heading">再见2017，你好2018</h3>
-              </a>
-              <span class="media-meta">
-                <span class="media-date text-small">
-                  Jan 1, 2018
-                </span>
-              </span>
-              <div class="media-content hide-xs font-merryweather"><p>不知不觉工作已有三个年头，在iOS这条路上，从当年战战兢兢的新人变成一个熟练的开发者，这一路走来真不容易。不仅仅是身体上的负荷，个人对于技术的追求也使自己或迷惘或奋起。</p>
-
-<p></p></div>
-            </div>
-            <div style="clear:both;"></div>
-            <hr>
-          </div>
-        
-          <div class="media">
-            
-            <div class="media-body">
-              <a class="link-unstyled" href="https://linkrober.github.io/bookshelf/2017/12/object-c%E5%92%8Cjs%E9%80%9A%E4%BF%A1%E6%A6%82%E8%BF%B0/">
-                <h3 class="media-heading">Object-C和JS通信概述</h3>
-              </a>
-              <span class="media-meta">
-                <span class="media-date text-small">
-                  Dec 12, 2017
-                </span>
-              </span>
-              <div class="media-content hide-xs font-merryweather"><p>本系列文章作为学习RN期间的总结</p>
-
-<ul>
-<li><a href="https://linkrober.github.io/bookshelf/2017/10/react-native%E5%A6%82%E4%BD%95%E9%9B%86%E6%88%90%E5%88%B0%E7%8E%B0%E6%9C%89%E9%A1%B9%E7%9B%AE%E4%B8%AD/">React Native如何集成到现有项目中</a></li>
-<li><a href="https://linkrober.github.io/bookshelf/2017/10/react-native%E5%92%8Cnative%E9%97%B4%E7%9A%84%E9%80%9A%E4%BF%A1/">React Native和Native间的通信实践</a></li>
-<li><a href="https://linkrober.github.io/bookshelf/2017/10/rctrootviewrctbridge%E5%81%9A%E4%BA%86%E4%BB%80%E4%B9%88/">RCTRootView、RCTBridge做了什么</a></li>
-<li>Object-C和JS通信概述</li>
-</ul>
-
-<p></p></div>
-            </div>
-            <div style="clear:both;"></div>
-            <hr>
-          </div>
-        
-          <div class="media">
-            
-            <div class="media-body">
-              <a class="link-unstyled" href="https://linkrober.github.io/bookshelf/2017/12/ios%E5%A4%9A%E7%BA%BF%E7%A8%8B%E4%B8%AD%E7%9A%84%E9%94%81/">
-                <h3 class="media-heading">iOS多线程中的锁</h3>
-              </a>
-              <span class="media-meta">
-                <span class="media-date text-small">
-                  Dec 12, 2017
-                </span>
-              </span>
-              <div class="media-content hide-xs font-merryweather"><p>涉及到多线程共享资源的情况下就避免不了资源竞争的问题，这时候就会用到各种锁，例如，<code>@synchronized</code>、<code>NSLock</code>、<code>OSSpinLock</code>等等，虽然都是锁，但是锁的底层实现也不尽相同。大概可以分为：<span class="highlight-text blue">互斥锁</span>、<span class="highlight-text blue">自旋锁</span>、<span class="highlight-text blue">递归锁</span>、
-<span class="highlight-text blue">读写锁</span>。</p>
-
-<pre><code>{
-	lock()//加锁
-		doSomeThing()//临界区
-	unlock()//解锁
-}
-</code></pre>
-
-<p>我们锁的目的是在任何时刻最多只能有一个线程在修改资源，即在任何时刻只能有一个操作者保持锁。</p>
-
-<p></p></div>
-            </div>
-            <div style="clear:both;"></div>
-            <hr>
-          </div>
-        
-          <div class="media">
-            
-            <div class="media-body">
-              <a class="link-unstyled" href="https://linkrober.github.io/bookshelf/2017/12/%E5%BF%AB%E9%80%9F%E6%8E%92%E5%BA%8F/">
-                <h3 class="media-heading">快速排序</h3>
-              </a>
-              <span class="media-meta">
-                <span class="media-date text-small">
-                  Dec 12, 2017
-                </span>
-              </span>
-              <div class="media-content hide-xs font-merryweather"><span class="highlight-text primary">
-故事
-</span>
-
-<p>快速排序由<strong>C.A.R.Hoare（东尼霍尔）</strong>在1960年提出。之后又有许多人对此进行改进。如果你对快速排序感兴趣可以去看看东尼霍尔1962年在Computer Journal发表的论文“Quicksort”以及《算法导论》的第七章。</p></div>
-            </div>
-            <div style="clear:both;"></div>
-            <hr>
-          </div>
-        
-          <div class="media">
-            
-            <div class="media-body">
-              <a class="link-unstyled" href="https://linkrober.github.io/bookshelf/2017/11/%E4%B8%80%E4%B8%AA%E9%9F%B3%E8%A7%86%E9%A2%91%E5%8E%82%E7%9A%84%E5%9B%BE%E5%83%8F%E5%A4%84%E7%90%86%E6%B5%81%E7%A8%8B%E6%A6%82%E8%BF%B0/">
-                <h3 class="media-heading">一个音视频厂的图像处理流程概述</h3>
-              </a>
-              <span class="media-meta">
-                <span class="media-date text-small">
-                  Nov 11, 2017
-                </span>
-              </span>
-              <div class="media-content hide-xs font-merryweather"><p><img src="http://upload-images.jianshu.io/upload_images/1086250-3eac00965effbe70?imageMogr2/auto-orient/strip%7CimageView2/2/w/320" alt="" /></p>
-
-<p>视频编辑分为两部分：<strong>Camrea Engine（视频资源采集）</strong>和<strong>Video Edit Engine（后期视频编辑）</strong>。在Camrea Engine采集的时候我们也可以做一些编辑操作，这叫预处理，比如说加滤镜。等到把采集到的资源交给Video Edit Engine时就是后处理。</p>
-
-<p></p></div>
-            </div>
-            <div style="clear:both;"></div>
-            <hr>
-          </div>
-        
-          <div class="media">
-            
-            <div class="media-body">
-              <a class="link-unstyled" href="https://linkrober.github.io/bookshelf/2017/10/rctrootviewrctbridge%E5%81%9A%E4%BA%86%E4%BB%80%E4%B9%88/">
-                <h3 class="media-heading">RCTRootView、RCTBridge做了什么</h3>
-              </a>
-              <span class="media-meta">
-                <span class="media-date text-small">
-                  Oct 10, 2017
-                </span>
-              </span>
-              <div class="media-content hide-xs font-merryweather"><p>本系列文章作为学习RN期间的总结</p>
-
-<ul>
-<li><a href="https://linkrober.github.io/bookshelf/2017/10/react-native%E5%A6%82%E4%BD%95%E9%9B%86%E6%88%90%E5%88%B0%E7%8E%B0%E6%9C%89%E9%A1%B9%E7%9B%AE%E4%B8%AD/">React Native如何集成到现有项目中</a></li>
-<li><a href="https://linkrober.github.io/bookshelf/2017/10/react-native%E5%92%8Cnative%E9%97%B4%E7%9A%84%E9%80%9A%E4%BF%A1/">React Native和Native间的通信实践</a></li>
-<li>RCTRootView、RCTBridge做了什么</li>
-<li><a href="https://linkrober.github.io/bookshelf/2017/12/native%E5%92%8Cjs%E9%80%9A%E4%BF%A1%E6%A6%82%E8%BF%B0/">Object-C和JS通信概述</a></li>
-</ul>
-
-<p></p></div>
-            </div>
-            <div style="clear:both;"></div>
-            <hr>
-          </div>
-        
       </div>
     </div>
     <div class="modal-footer">
@@ -961,7 +1134,7 @@
          data-message-zero=""
          data-message-one=""
          data-message-other="">
-         19 posts found
+         27 posts found
       </p>
     </div>
   </div>

@@ -1,0 +1,1050 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes" ?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>董二千</title>
+    <link>https://LinkRober.github.io/bookshelf/tags/reactivecocoa/index.xml</link>
+    <description>Recent content on 董二千</description>
+    <generator>Hugo -- gohugo.io</generator>
+    <language>zh-cn</language>
+    <atom:link href="https://LinkRober.github.io/bookshelf/tags/reactivecocoa/index.xml" rel="self" type="application/rss+xml" />
+    
+    <item>
+      <title>CombineLatest、Zip和Merge的区别</title>
+      <link>https://linkrober.github.io/bookshelf/2020/11/combinelatestzip%E5%92%8Cmerge%E7%9A%84%E5%8C%BA%E5%88%AB/</link>
+      <pubDate>Fri, 27 Nov 2020 00:00:00 +0000</pubDate>
+      
+      <guid>https://linkrober.github.io/bookshelf/2020/11/combinelatestzip%E5%92%8Cmerge%E7%9A%84%E5%8C%BA%E5%88%AB/</guid>
+      <description>&lt;h4 id=&#34;信号触发方式&#34;&gt;信号触发方式&lt;/h4&gt;
+
+&lt;h5 id=&#34;merge&#34;&gt;merge&lt;/h5&gt;
+
+&lt;p&gt;只要&lt;code&gt;merge&lt;/code&gt;之后生成的信号被订阅就会&lt;strong&gt;自动&lt;/strong&gt;触发所有压缩信号的订阅回调，如果靠前的信号出现了&lt;code&gt;error&lt;/code&gt;后面的信号不再发送。&lt;/p&gt;
+
+&lt;p&gt;核心方法：&lt;code&gt;- (instancetype)flatten&lt;/code&gt;&lt;/br&gt;
+值：多次收到，分开的&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt; 1
+ 2
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;pre&gt;&lt;code&gt;RACSignal *s1 = [RACSignal createSignal:^RACDisposable *(id&amp;lt;RACSubscriber&amp;gt; subscriber) {
+  [subscriber sendNext:@&amp;quot;1&amp;quot;];
+    return nil;
+}];
+
+RACSignal *s2 = [RACSignal createSignal:^RACDisposable *(id&amp;lt;RACSubscriber&amp;gt; subscriber) {
+    [subscriber sendNext:@&amp;quot;2&amp;quot;];
+    return nil;
+}];
+
+[[RACSignal merge:@[s1,s2]] subscribeNext:^(id x) {
+    NSLog(@&amp;quot;%@&amp;quot;,x);
+}];
+
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;&lt;/p&gt;
+
+&lt;h5 id=&#34;combinelatest&#34;&gt;combineLatest&lt;/h5&gt;
+
+&lt;p&gt;必须等到&lt;strong&gt;所有&lt;/strong&gt;的信号都成功发送才能触发&lt;code&gt;combineLatest&lt;/code&gt;生成的新信号的订阅回调。如果中间出现有信号error或者complete，新信号将收不到回调。&lt;/p&gt;
+
+&lt;p&gt;核心方法：
+&lt;code&gt;+ (instancetype)join:(id&amp;lt;NSFastEnumeration&amp;gt;)streams block:(RACStream * (^)(id, id))block&lt;/code&gt;&lt;/p&gt;
+
+&lt;p&gt;&lt;code&gt;- (RACSignal *)combineLatestWith:(RACSignal *)signal&lt;/code&gt;
+&lt;/br&gt;&lt;/p&gt;
+
+&lt;p&gt;值：一次收到，通过&lt;code&gt;RACTuple&lt;/code&gt;聚合的&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;&amp;lt;RACTuple: 0x60000318c780&amp;gt; (
+    1,
+    2
+)
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;pre&gt;&lt;code&gt;RACSubject *s1 = [RACSubject subject];
+[s1 subscribeNext:^(id x) {
+    NSLog(@&amp;quot;%@&amp;quot;,x);
+}];
+
+RACSubject *s2 = [RACSubject subject];
+[s2 subscribeNext:^(id x) {
+    NSLog(@&amp;quot;%@&amp;quot;,x);
+}];
+
+[[RACSignal combineLatest:@[s1,s2]] subscribeNext:^(id x) {
+    NSLog(@&amp;quot;%@&amp;quot;,x);
+}];
+
+[s1 sendNext:@&amp;quot;1&amp;quot;];
+[s2 sendNext:@&amp;quot;2&amp;quot;];
+
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;h5 id=&#34;zip&#34;&gt;zip&lt;/h5&gt;
+
+&lt;p&gt;必须等到&lt;strong&gt;所有&lt;/strong&gt;的信号都成功发送才能触发&lt;code&gt;zip&lt;/code&gt;生成的新信号的订阅回调(和&lt;code&gt;combineLatest&lt;/code&gt;类似)。如果中间出现有信号error或者complete，新信号将收不到回，和&lt;code&gt;combineLatest&lt;/code&gt;不同的是，同一时间返回多个信号的值只取第一个，而&lt;code&gt;combineLatest&lt;/code&gt;是取最新的值&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;//zip
+....
+void (^sendNext)(void) = ^{
+			@synchronized (selfValues) {
+				if (selfValues.count == 0) return;
+				if (otherValues.count == 0) return;
+				//去数组第一个值
+				RACTuple *tuple = [RACTuple tupleWithObjects:selfValues[0], otherValues[0], nil];
+				[selfValues removeObjectAtIndex:0];
+				[otherValues removeObjectAtIndex:0];
+
+				[subscriber sendNext:tuple];
+				sendCompletedIfNecessary();
+			}
+		};
+....
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;pre&gt;&lt;code&gt;//combineLatestWith
+...
+void (^sendNext)(void) = ^{
+			@synchronized (disposable) {
+				if (lastSelfValue == nil || lastOtherValue == nil) return;
+				[subscriber sendNext:[RACTuple tupleWithObjects:lastSelfValue, lastOtherValue, nil]];
+			}
+		};
+...
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;核心方法：
+1. &lt;code&gt;+ (instancetype)join:(id&amp;lt;NSFastEnumeration&amp;gt;)streams block:(RACStream * (^)(id, id))block&lt;/code&gt;
+2. &lt;code&gt;- (RACSignal *)zipWith:(RACSignal *)signal&lt;/code&gt;&lt;/p&gt;
+
+&lt;p&gt;值：一次收到，通过&lt;code&gt;RACTuple&lt;/code&gt;聚合的&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt; &amp;lt;RACTuple: 0x600002668e20&amp;gt; (
+    1,
+    2,
+    3
+)
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;pre&gt;&lt;code&gt;RACSignal *s1 = [RACSignal createSignal:^RACDisposable *(id&amp;lt;RACSubscriber&amp;gt; subscriber) {
+   [subscriber sendNext:@&amp;quot;1&amp;quot;];
+    return nil;
+}];
+RACSignal *s2 = [RACSignal createSignal:^RACDisposable *(id&amp;lt;RACSubscriber&amp;gt; subscriber) {
+    [subscriber sendNext:@&amp;quot;2&amp;quot;];
+    return nil;
+}];
+RACSignal *s3 = [RACSignal createSignal:^RACDisposable *(id&amp;lt;RACSubscriber&amp;gt; subscriber) {
+    [subscriber sendNext:@&amp;quot;3&amp;quot;];
+    return nil;
+}];
+
+RACSignal *zs = [RACSignal zip:@[s1,s2,s3]];
+
+[zs subscribeNext:^(id x) {
+    NSLog(@&amp;quot;%@&amp;quot;,x);
+}];
+&lt;/code&gt;&lt;/pre&gt;</description>
+    </item>
+    
+    <item>
+      <title>Connect、AutoConnect、RACReplaySubject、Replay</title>
+      <link>https://linkrober.github.io/bookshelf/2020/11/connectautoconnectracreplaysubjectreplay/</link>
+      <pubDate>Fri, 27 Nov 2020 00:00:00 +0000</pubDate>
+      
+      <guid>https://linkrober.github.io/bookshelf/2020/11/connectautoconnectracreplaysubjectreplay/</guid>
+      <description>&lt;h4 id=&#34;connect&#34;&gt;Connect&lt;/h4&gt;
+
+&lt;p&gt;将冷信号包装成热信号，初始化冷信号，调用&lt;code&gt;publish&lt;/code&gt;方法会自动生成一个&lt;code&gt;RACMulticastConnection&lt;/code&gt;，该对象持有了原始信号和一个热信号。&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;- (RACMulticastConnection *)publish {
+	RACSubject *subject = [[RACSubject subject] setNameWithFormat:@&amp;quot;[%@] -publish&amp;quot;, self.name];
+	RACMulticastConnection *connection = [self multicast:subject];
+	return connection;
+}
+- (RACMulticastConnection *)multicast:(RACSubject *)subject {
+	[subject setNameWithFormat:@&amp;quot;[%@] -multicast: %@&amp;quot;, self.name, subject.name];
+	RACMulticastConnection *connection = [[RACMulticastConnection alloc] initWithSourceSignal:self subject:subject];
+	return connection;
+}
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;调用&lt;code&gt;connect&lt;/code&gt;方法来触发订阅，注意调用一次触发一次。&lt;/p&gt;
+
+&lt;p&gt;&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;- (RACDisposable *)connect {
+	BOOL shouldConnect = OSAtomicCompareAndSwap32Barrier(0, 1, &amp;amp;_hasConnected);
+
+	if (shouldConnect) {
+		self.serialDisposable.disposable = [self.sourceSignal subscribe:_signal];
+	}
+
+	return self.serialDisposable;
+}
+
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;&lt;img src=&#34;https://note.youdao.com/yws/api/personal/file/WEB322c067dfd25b07390b5016979f95684?method=download&amp;amp;shareKey=18be9a0156c074ce3ed310a30cf3d782&#34; alt=&#34;&#34; /&gt;&lt;/p&gt;
+
+&lt;h4 id=&#34;autoconnect&#34;&gt;Autoconnect&lt;/h4&gt;
+
+&lt;p&gt;在&lt;code&gt;publish&lt;/code&gt;之后，&lt;code&gt;RACMulticastConnection&lt;/code&gt;调用&lt;code&gt;autoconnect&lt;/code&gt;，生成一个信号，只有当生成的信号订阅之后才会触发其他订阅者开始接受订阅消息。&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;- (RACSignal *)autoconnect {
+	__block volatile int32_t subscriberCount = 0;
+
+	return [[RACSignal
+		createSignal:^(id&amp;lt;RACSubscriber&amp;gt; subscriber) {
+			OSAtomicIncrement32Barrier(&amp;amp;subscriberCount);
+
+			RACDisposable *subscriptionDisposable = [self.signal subscribe:subscriber];
+			RACDisposable *connectionDisposable = [self connect];
+
+			return [RACDisposable disposableWithBlock:^{
+				[subscriptionDisposable dispose];
+
+				if (OSAtomicDecrement32Barrier(&amp;amp;subscriberCount) == 0) {
+					[connectionDisposable dispose];
+				}
+			}];
+		}]
+		setNameWithFormat:@&amp;quot;[%@] -autoconnect&amp;quot;, self.signal.name];
+}
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;&lt;img src=&#34;https://note.youdao.com/yws/api/personal/file/WEBfd22a762ef7800a5d21b2fd823b26905?method=download&amp;amp;shareKey=0d72e57669a7945987449fb7dd3179f3&#34; alt=&#34;&#34; /&gt;&lt;/p&gt;
+
+&lt;h4 id=&#34;racmulticastconnection-racreplaysubject&#34;&gt;RACMulticastConnection &amp;amp; RACReplaySubject&lt;/h4&gt;
+
+&lt;p&gt;上面在&lt;code&gt;connect&lt;/code&gt;之后的订阅者都不到订阅值，使用&lt;code&gt;RACReplaySubject&lt;/code&gt;可以让后面的订阅者也能收到订阅值。&lt;/p&gt;
+
+&lt;p&gt;例子：&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;RACSignal *sourceSignal = [RACSignal createSignal:^RACDisposable * _Nullable(id&amp;lt;RACSubscriber&amp;gt;  _Nonnull subscriber) {
+    [subscriber sendNext:@{@&amp;quot;id&amp;quot;:@&amp;quot;1&amp;quot;}];
+    return nil;
+}];
+
+RACMulticastConnection *connection = [sourceSignal multicast:[RACReplaySubject subject]];
+
+[connection.signal subscribeNext:^(id  _Nullable x) {
+    NSLog(@&amp;quot;product: %@&amp;quot;, x);
+}];
+
+[connection connect];
+
+[connection.signal subscribeNext:^(id  _Nullable x) {
+    NSNumber *productId = [x objectForKey:@&amp;quot;id&amp;quot;];
+    NSLog(@&amp;quot;productId: %@&amp;quot;, productId);
+}];
+
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;&lt;img src=&#34;https://note.youdao.com/yws/api/personal/file/WEBeaf769304dcdeb50aedaf81ef877ce54?method=download&amp;amp;shareKey=825769b6f66cab9528c1aa2337763104&#34; alt=&#34;&#34; /&gt;&lt;/p&gt;
+
+&lt;h4 id=&#34;replay&#34;&gt;Replay&lt;/h4&gt;
+
+&lt;p&gt;快速生成一个基于&lt;code&gt;RACReplaySubject&lt;/code&gt;创建的热信号。&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;- (RACSignal *)replay {
+	RACReplaySubject *subject = [[RACReplaySubject subject] setNameWithFormat:@&amp;quot;[%@] -replay&amp;quot;, self.name];
+
+	RACMulticastConnection *connection = [self multicast:subject];
+	[connection connect];
+
+	return connection.signal;
+}
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;例子：&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;RACSignal *sourceSignal = [[RACSignal createSignal:^RACDisposable * _Nullable(id&amp;lt;RACSubscriber&amp;gt;  _Nonnull subscriber) {
+        [subscriber sendNext:@{@&amp;quot;id&amp;quot;:@&amp;quot;1&amp;quot;}];
+        return nil;
+    }] replay];
+
+    [sourceSignal subscribeNext:^(id  _Nullable x) {
+        NSLog(@&amp;quot;product: %@&amp;quot;, x);
+    }];
+
+    [sourceSignal subscribeNext:^(id  _Nullable x) {
+        NSNumber *productId = [x objectForKey:@&amp;quot;id&amp;quot;];
+        NSLog(@&amp;quot;productId: %@&amp;quot;, productId);
+    }];
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;&lt;img src=&#34;https://note.youdao.com/yws/api/personal/file/WEBdddd77c6ae072d234b09b7b5e6e3e17c?method=download&amp;amp;shareKey=35c80261e0e41092892c011b92cbb488&#34; alt=&#34;&#34; /&gt;&lt;/p&gt;</description>
+    </item>
+    
+    <item>
+      <title>RACSignal</title>
+      <link>https://linkrober.github.io/bookshelf/2020/11/racsignal/</link>
+      <pubDate>Fri, 27 Nov 2020 00:00:00 +0000</pubDate>
+      
+      <guid>https://linkrober.github.io/bookshelf/2020/11/racsignal/</guid>
+      <description>&lt;h4 id=&#34;创建信号&#34;&gt;创建信号&lt;/h4&gt;
+
+&lt;pre&gt;&lt;code&gt;
+RACSignal *signal = [RACSignal createSignal:^RACDisposable *(id&amp;lt;RACSubscriber&amp;gt; subscriber) {
+        [subscriber sendNext:@&amp;quot;1&amp;quot;];
+        return nil;
+    }];
+
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;分析&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;//RACSignal.m
++ (RACSignal *)createSignal:(RACDisposable * (^)(id&amp;lt;RACSubscriber&amp;gt; subscriber))didSubscribe {
+	return [RACDynamicSignal createSignal:didSubscribe];
+}
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;&lt;/p&gt;
+
+&lt;p&gt;通过子类创建信号&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;//RACDynamicSignal.m
++ (RACSignal *)createSignal:(RACDisposable * (^)(id&amp;lt;RACSubscriber&amp;gt; subscriber))didSubscribe {
+	RACDynamicSignal *signal = [[self alloc] init];
+	signal-&amp;gt;_didSubscribe = [didSubscribe copy];
+	return [signal setNameWithFormat:@&amp;quot;+createSignal:&amp;quot;];
+}
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;创建一个RACDynamicSignal，将回调&lt;code&gt;didSubscribe&lt;/code&gt;保存在&lt;code&gt;_didSubscribe&lt;/code&gt;中。&lt;/p&gt;
+
+&lt;h4 id=&#34;订阅信号&#34;&gt;订阅信号&lt;/h4&gt;
+
+&lt;pre&gt;&lt;code&gt;[signal subscribeNext:^(id x) {
+        
+}];
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;分析&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;- (RACDisposable *)subscribeNext:(void (^)(id x))nextBlock {
+	NSCParameterAssert(nextBlock != NULL);
+	
+	RACSubscriber *o = [RACSubscriber subscriberWithNext:nextBlock error:NULL completed:NULL];
+	return [self subscribe:o];
+}
+
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;创建一个订阅者&lt;code&gt;RACSubscriber&lt;/code&gt;，将回调&lt;code&gt;nextBlock&lt;/code&gt;作为订阅者的初始入参，最后订阅RACSubscriber。&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;- (RACDisposable *)subscribe:(id&amp;lt;RACSubscriber&amp;gt;)subscriber {
+	NSCParameterAssert(subscriber != nil);
+	//创建销毁对象，负责销毁信号
+	RACCompoundDisposable *disposable = [RACCompoundDisposable compoundDisposable];
+	//将RACSubscriber类型的订阅者转换成RACPassthroughSubscriber，为什么呢
+	subscriber = [[RACPassthroughSubscriber alloc] initWithSubscriber:subscriber signal:self disposable:disposable];
+	
+	//创建自旋锁，防止资源竞争，懒加载订阅者集合(_subscribers),
+	OSSpinLockLock(&amp;amp;_subscribersLock);
+	if (_subscribers == nil) {
+		_subscribers = [NSMutableArray arrayWithObject:subscriber];
+	} else {
+		[_subscribers addObject:subscriber];
+	}
+	OSSpinLockUnlock(&amp;amp;_subscribersLock);
+	
+	@weakify(self);
+	//创建销毁对象（和上面的有什么不同？？？，看下面），当信号被销毁，从订阅者集合里面移除subscriber
+	RACDisposable *defaultDisposable = [RACDisposable disposableWithBlock:^{
+		@strongify(self);
+		if (self == nil) return;
+
+		BOOL stillHasSubscribers = YES;
+
+		OSSpinLockLock(&amp;amp;_subscribersLock);
+		{
+			// Since newer subscribers are generally shorter-lived, search
+			// starting from the end of the list.
+			NSUInteger index = [_subscribers indexOfObjectWithOptions:NSEnumerationReverse passingTest:^ BOOL (id&amp;lt;RACSubscriber&amp;gt; obj, NSUInteger index, BOOL *stop) {
+				return obj == subscriber;
+			}];
+
+			if (index != NSNotFound) {
+				[_subscribers removeObjectAtIndex:index];
+				stillHasSubscribers = _subscribers.count &amp;gt; 0;
+			}
+		}
+		OSSpinLockUnlock(&amp;amp;_subscribersLock);
+		
+		if (!stillHasSubscribers) {
+			[self invalidateGlobalRefIfNoNewSubscribersShowUp];
+		}
+	}];
+	
+	//将创建的销毁对象添加到一个管理类中
+	[disposable addDisposable:defaultDisposable];
+
+    //通过`didSubscribe`拿到订阅者对应的innerDisposable，添加到disposable中，
+    //最后将schedulingDisposabl也添加到disposable中
+	if (self.didSubscribe != NULL) {
+		RACDisposable *schedulingDisposable = [RACScheduler.subscriptionScheduler schedule:^{
+			RACDisposable *innerDisposable = self.didSubscribe(subscriber);
+			[disposable addDisposable:innerDisposable];
+		}];
+
+		[disposable addDisposable:schedulingDisposable];
+	}
+	
+	return disposable;
+}
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;信号被订阅之后的销毁流程。首先创建了一个销毁者管理类&lt;code&gt;disposable&lt;/code&gt;，以subscriber为入参生成一个新的subscriber（RACPassthroughSubscriber），老的订阅者和销毁者管理类都在这里面管理。
+然后将&lt;code&gt;defaultDisposable&lt;/code&gt;、&lt;code&gt;innerDisposable&lt;/code&gt;、 &lt;code&gt;schedulingDisposable&lt;/code&gt;都放到管理类中进行管理&lt;/p&gt;
+
+&lt;h4 id=&#34;问题&#34;&gt;问题&lt;/h4&gt;
+
+&lt;ol&gt;
+&lt;li&gt;如何做到一订阅，就开始执行&lt;code&gt;[subscriber sendNext:xxx];&lt;/code&gt;&lt;/li&gt;
+&lt;/ol&gt;
+
+&lt;p&gt;本质是调用了block。在创建的时候，block会被属性引用&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;signal-&amp;gt;_didSubscribe = [didSubscribe copy];
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;在订阅方法的最后，调用代码块&lt;code&gt;didSubscribe&lt;/code&gt;&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;	if (self.didSubscribe != NULL) {
+		RACDisposable *schedulingDisposable = [RACScheduler.subscriptionScheduler schedule:^{
+			RACDisposable *innerDisposable = self.didSubscribe(subscriber);
+			[disposable addDisposable:innerDisposable];
+		}];
+
+		[disposable addDisposable:schedulingDisposable];
+	}
+
+&lt;/code&gt;&lt;/pre&gt;</description>
+    </item>
+    
+    <item>
+      <title>SwitchToLatest</title>
+      <link>https://linkrober.github.io/bookshelf/2020/11/switchtolatest/</link>
+      <pubDate>Fri, 27 Nov 2020 00:00:00 +0000</pubDate>
+      
+      <guid>https://linkrober.github.io/bookshelf/2020/11/switchtolatest/</guid>
+      <description>&lt;p&gt;&lt;code&gt;- (RACSignal *)switchToLatest&lt;/code&gt;和&lt;code&gt;- (RACSignal *)flatten&lt;/code&gt;的功能类似，都可以将信号中的信号的值取出来。不同的是，前者如果订阅者处理多个信号，只有最后一个信号的值能收到，之前的信号会被销毁。而后者则都能收到所有值。&lt;/p&gt;
+
+&lt;p&gt;&lt;/p&gt;
+
+&lt;p&gt;代码&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;RACSignal *signal1 = [RACSignal createSignal:^RACDisposable *(id&amp;lt;RACSubscriber&amp;gt; subscriber) {
+   
+   
+    [subscriber sendNext:@&amp;quot;nancy&amp;quot;];
+    dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(0.5 * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
+        
+         [subscriber sendNext:@&amp;quot;botwen&amp;quot;];
+    });
+    return nil;
+}];
+    
+RACSignal *signal2 = [RACSignal createSignal:^RACDisposable *(id&amp;lt;RACSubscriber&amp;gt; subscriber) {
+    [subscriber sendNext:@&amp;quot;jiang&amp;quot;];
+    
+    dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(0.5 * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
+         [subscriber sendNext:@&amp;quot;longjian&amp;quot;];
+    });
+    return nil;
+}];
+    
+RACSignal *signal = [RACSignal createSignal:^RACDisposable * _Nullable(id&amp;lt;RACSubscriber&amp;gt;  _Nonnull subscriber) {
+    [subscriber sendNext: signal1];
+    [subscriber sendNext: signal2];
+    [subscriber sendCompleted];
+    
+    return nil;
+}];
+
+RACSignal *newSignal = [signal switchToLatest];
+[newSignal subscribeNext:^(id  _Nullable x) {
+    NSLog(@&amp;quot;-=-=======-=%@&amp;quot;, x);
+}];
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;输出：&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;-=-=======-=nancy
+-=-=======-=jiang
+-=-=======-=longjian
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;&lt;code&gt;botwen&lt;/code&gt;没有输出，因为&lt;code&gt;signal1&lt;/code&gt;已经被销毁。
+这里有一个难点，&lt;strong&gt;为什么&lt;code&gt;nancy&lt;/code&gt;输出了&lt;/strong&gt;。要知道原因，我们必须要清楚的理解整个信号的创建和销毁时机。&lt;/p&gt;
+
+&lt;p&gt;原信号O通过&lt;code&gt;- (RACSignal *)switchToLatest&lt;/code&gt;方法生成了一个新信号A，当A被订阅时，O信号通过&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;RACMulticastConnection *connection = [self publish];
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;生成了一个热信号，然后调用&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;- (__kindof RACStream *)flattenMap:(__kindof RACStream * (^)(id value))block
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;来实现信号中信号的压平，这里和&lt;code&gt;- (__kindof RACStream *)flatten&lt;/code&gt;一样，最大的不同是&lt;code&gt;block&lt;/code&gt;的实现，在&lt;code&gt;- (RACSignal *)switchToLatest&lt;/code&gt;中，&lt;code&gt;block&lt;/code&gt;里面调用了&lt;code&gt;takeUntil&lt;/code&gt;方法。&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;RACSignal *s = [connection.signal
+flattenMap:^(RACSignal *x) {
+    NSCAssert(x == nil || [x isKindOfClass:RACSignal.class], @&amp;quot;-switchToLatest requires that the source signal (%@) send signals. Instead we got: %@&amp;quot;, self, x);
+    return [x takeUntil:[connection.signal concat:[RACSignal never]]];
+}];
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;当信号&lt;code&gt;[connection.signal concat:[RACSignal never]]&lt;/code&gt;被&lt;strong&gt;订阅&lt;/strong&gt;的时候，通过&lt;code&gt;takeUntil&lt;/code&gt;生成的信号B会被销毁。这也是上面销毁&lt;code&gt;signal1&lt;/code&gt;的地方。&lt;/p&gt;
+
+&lt;p&gt;那么在什么时机触发销毁动作呢？这里涉及到热信号。每个热信号都有一个订阅者的数组，当热信号受到订阅者发送的消息时，会遍历这个数组，一一调用。&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;- (void)enumerateSubscribersUsingBlock:(void (^)(id&amp;lt;RACSubscriber&amp;gt; subscriber))block {
+	NSArray *subscribers;
+	@synchronized (self.subscribers) {
+		subscribers = [self.subscribers copy];
+	}
+
+	for (id&amp;lt;RACSubscriber&amp;gt; subscriber in subscribers) {
+		block(subscriber);
+	}
+}
+
+- (void)sendNext:(id)value {
+	[self enumerateSubscribersUsingBlock:^(id&amp;lt;RACSubscriber&amp;gt; subscriber) {
+		[subscriber sendNext:value];
+	}];
+}
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;实例代码里热信号的订阅者数组里面最多的时候一个有3个订阅者，下面列出添加订阅者数组的地方：&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;//[self subscribeNext:^(id x)...调用1次
+RACDisposable *bindingDisposable = [self subscribeNext:^(id x) {
+    // Manually check disposal to handle synchronous errors.
+    if (compoundDisposable.disposed) return;
+
+    BOOL stop = NO;
+    id signal = bindingBlock(x, &amp;amp;stop);
+
+    @autoreleasepool {
+        if (signal != nil) addSignal(signal);
+        if (signal == nil || stop) {
+            [selfDisposable dispose];
+            completeSignal(selfDisposable);
+        }
+    }
+} error:^(NSError *error) {
+    [compoundDisposable dispose];
+    [subscriber sendError:error];
+} completed:^{
+    @autoreleasepool {
+        completeSignal(selfDisposable);
+    }
+}];
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;pre&gt;&lt;code&gt;//这里的[self subscribeNext:^(id x)...调用了2次，对应两次订阅者发送信号
+- (RACSignal *)concat:(RACSignal *)signal {
+	return [[RACSignal createSignal:^(id&amp;lt;RACSubscriber&amp;gt; subscriber) {
+		RACCompoundDisposable *compoundDisposable = [[RACCompoundDisposable alloc] init];
+
+		RACDisposable *sourceDisposable = [self subscribeNext:^(id x) {
+			[subscriber sendNext:x];
+		} error:^(NSError *error) {
+			[subscriber sendError:error];
+		} completed:^{
+			RACDisposable *concattedDisposable = [signal subscribe:subscriber];
+			[compoundDisposable addDisposable:concattedDisposable];
+		}];
+
+		[compoundDisposable addDisposable:sourceDisposable];
+		return compoundDisposable;
+	}] setNameWithFormat:@&amp;quot;[%@] -concat: %@&amp;quot;, self.name, signal];
+}
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;第一次为了压平信号调&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;subscribers = [subscriber1]
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;第二次在&lt;code&gt;[subscriber sendNext: signal1];&lt;/code&gt;后调用。&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;subscribers = [subscriber1,subscriber2]
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;第三次在&lt;code&gt;[subscriber sendNext: signal2];&lt;/code&gt;后调用。&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;subscribers = [subscriber1,subscriber2,subscriber3]
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;在第三次调用&lt;code&gt;sendNext&lt;/code&gt;的时候会遍历订阅者数组（这时候数组里面还只有两个订阅者）发送信号从而走到&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;...
+RACCompoundDisposable *disposable = [RACCompoundDisposable compoundDisposable];
+		void (^triggerCompletion)(void) = ^{
+			[disposable dispose];
+			[subscriber sendCompleted];
+		};
+
+		RACDisposable *triggerDisposable = [signalTrigger subscribeNext:^(id _) {
+		    //走到这里
+			triggerCompletion();
+		} completed:^{
+			triggerCompletion();
+		}];
+...
+
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;将&lt;code&gt;signal1&lt;/code&gt;的订阅者销毁，以此类推。这也是为什么第一次两个信号的值都能收到的原因。&lt;/p&gt;
+
+&lt;p&gt;到这里就是&lt;code&gt;SwitchToLatest&lt;/code&gt;的功能实现。&lt;/p&gt;
+
+&lt;p&gt;难点；&lt;/p&gt;
+
+&lt;ol&gt;
+&lt;li&gt;理解&lt;code&gt;- (RACSignal *)takeUntil:(RACSignal *)signalTrigger&lt;/code&gt;&lt;/li&gt;
+&lt;li&gt;冷信号转换成热信号的实现&lt;/li&gt;
+&lt;/ol&gt;</description>
+    </item>
+    
+    <item>
+      <title>concat、catchTo、never、takeUntil</title>
+      <link>https://linkrober.github.io/bookshelf/2020/11/concatcatchtonevertakeuntil/</link>
+      <pubDate>Fri, 27 Nov 2020 00:00:00 +0000</pubDate>
+      
+      <guid>https://linkrober.github.io/bookshelf/2020/11/concatcatchtonevertakeuntil/</guid>
+      <description>&lt;ol&gt;
+&lt;li&gt;&lt;code&gt;- (RACSignal *)concat:(RACSignal *)signal&lt;/code&gt;&lt;/li&gt;
+&lt;/ol&gt;
+
+&lt;pre&gt;&lt;code&gt;//源码
+- (RACSignal *)concat:(RACSignal *)signal {
+	return [[RACSignal createSignal:^(id&amp;lt;RACSubscriber&amp;gt; subscriber) {
+		RACSerialDisposable *serialDisposable = [[RACSerialDisposable alloc] init];
+
+		RACDisposable *sourceDisposable = [self subscribeNext:^(id x) {
+			[subscriber sendNext:x];
+		} error:^(NSError *error) {
+			[subscriber sendError:error];
+		} completed:^{
+			RACDisposable *concattedDisposable = [signal subscribe:subscriber];
+			serialDisposable.disposable = concattedDisposable;
+		}];
+
+		serialDisposable.disposable = sourceDisposable;
+		return serialDisposable;
+	}] setNameWithFormat:@&amp;quot;[%@] -concat: %@&amp;quot;, self.name, signal];
+}
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;&lt;/p&gt;
+
+&lt;p&gt;多个信号顺序输出，只有当前一个信号&lt;code&gt;sendCompleted&lt;/code&gt;后一个信号才会执行。&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;//eg.
+RACSignal *s1 = [RACSignal createSignal:^RACDisposable *(id&amp;lt;RACSubscriber&amp;gt; subscriber) {
+    [subscriber sendNext:@&amp;quot;1&amp;quot;];
+    [subscriber sendCompleted];
+    return nil;
+}];
+
+RACSignal *s2 = [RACSignal createSignal:^RACDisposable *(id&amp;lt;RACSubscriber&amp;gt; subscriber) {
+    [subscriber sendNext:@&amp;quot;2&amp;quot;];
+    return nil;
+}];
+
+[[s1 concat:s2] subscribeNext:^(id x) {
+    NSLog(@&amp;quot;%@&amp;quot;,x);
+}];
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;输出：&lt;/p&gt;
+
+&lt;p&gt;2020-07-06 17:39:06.542592+0800 C-41[3323:243230] 1 &lt;/br&gt;
+2020-07-06 17:39:06.542817+0800 C-41[3323:243230] 2&lt;/p&gt;
+
+&lt;ol&gt;
+&lt;li&gt;&lt;code&gt;- (RACSignal *)catchTo:(RACSignal *)signal&lt;/code&gt;
+```
+//源码&lt;/li&gt;
+&lt;li&gt;(RACSignal *)catch:(RACSignal * (^)(NSError *error))catchBlock {
+	NSCParameterAssert(catchBlock != NULL);&lt;/li&gt;
+&lt;/ol&gt;
+
+&lt;p&gt;	return [[RACSignal createSignal:^(id&lt;RACSubscriber&gt; subscriber) {
+		RACSerialDisposable *catchDisposable = [[RACSerialDisposable alloc] init];&lt;/p&gt;
+
+&lt;p&gt;		RACDisposable *subscriptionDisposable = [self subscribeNext:^(id x) {
+			[subscriber sendNext:x];
+		} error:^(NSError *error) {
+			RACSignal *signal = catchBlock(error);
+			NSCAssert(signal != nil, @&amp;ldquo;Expected non-nil signal from catch block on %@&amp;rdquo;, self);
+			catchDisposable.disposable = [signal subscribe:subscriber];
+		} completed:^{
+			[subscriber sendCompleted];
+		}];&lt;/p&gt;
+
+&lt;p&gt;		return [RACDisposable disposableWithBlock:^{
+			[catchDisposable dispose];
+			[subscriptionDisposable dispose];
+		}];
+	}] setNameWithFormat:@&amp;rdquo;[%@] -catch:&amp;ldquo;, self.name];
+}&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;当某个信号发生错误时`senderError`，将替补信号的值作为备选值。
+
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;//eg.
+RACSignal *s1 = [RACSignal createSignal:^RACDisposable *(id&lt;RACSubscriber&gt; subscriber) {
+    [subscriber sendError:nil];
+    return nil;
+}];&lt;/p&gt;
+
+&lt;p&gt;RACSignal *s2 = [RACSignal createSignal:^RACDisposable *(id&lt;RACSubscriber&gt; subscriber) {
+    [subscriber sendNext:@&amp;ldquo;替补队员跟上&amp;rdquo;];
+    return nil;
+}];&lt;/p&gt;
+
+&lt;p&gt;[[s1 catchTo:s2] subscribeNext:^(id x) {
+    NSLog(@&amp;ldquo;%@&amp;rdquo;,x);
+}];&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;输出：
+
+2020-07-06 17:48:06.347187+0800 C-41[3418:248921] 替补队员跟上
+
+
+3. `+ (RACSignal *)never`
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;//源码
++ (RACSignal *)never {
+	return [[self createSignal:^ RACDisposable * (id&lt;RACSubscriber&gt; subscriber) {
+		return nil;
+	}] setNameWithFormat:@&amp;ldquo;+never&amp;rdquo;];
+}&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;订阅者永远收不到订阅值；没有错误；没有完成。
+
+
+
+4. `- (RACSignal *)takeUntil:(RACSignal *)signalTrigger`
+
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;//源码
+- (RACSignal *)takeUntil:(RACSignal *)signalTrigger {
+	return [[RACSignal createSignal:^(id&lt;RACSubscriber&gt; subscriber) {
+		RACCompoundDisposable *disposable = [RACCompoundDisposable compoundDisposable];
+		void (^triggerCompletion)(void) = ^{
+			[disposable dispose];
+			[subscriber sendCompleted];
+		};&lt;/p&gt;
+
+&lt;p&gt;		RACDisposable *triggerDisposable = [signalTrigger subscribeNext:^(id _) {
+			triggerCompletion();
+		} completed:^{
+			triggerCompletion();
+		}];&lt;/p&gt;
+
+&lt;p&gt;		[disposable addDisposable:triggerDisposable];&lt;/p&gt;
+
+&lt;p&gt;		RACDisposable *selfDisposable = [self subscribeNext:^(id x) {
+			[subscriber sendNext:x];
+		} error:^(NSError *error) {
+			[subscriber sendError:error];
+		} completed:^{
+			[disposable dispose];
+			[subscriber sendCompleted];
+		}];&lt;/p&gt;
+
+&lt;p&gt;		[disposable addDisposable:selfDisposable];&lt;/p&gt;
+
+&lt;p&gt;		return disposable;
+	}] setNameWithFormat:@&amp;rdquo;[%@] -takeUntil: %@&amp;ldquo;, self.name, signalTrigger];
+}&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;正在进行的信号叫做A信号，遇到信号B被订阅就停止。
+首先，通过A信号创建了一个中间信号A1。开始时对A信号进行了了订阅，并将值作为A1信号的输出。当B信号被订阅时，会触发A1信号的`sendCompleted`操作。这样无理A怎么发消息，A1都不会转发。
+
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;//eg.
+RACSubject *untilSignal = [RACSubject subject];
+RACSubject *afterUntilSignal = [RACSubject subject];&lt;/p&gt;
+
+&lt;p&gt;[[afterUntilSignal takeUntil:untilSignal] subscribeNext:^(id x) {
+    NSLog(@&amp;ldquo;%@&amp;rdquo;,x);
+}];&lt;/p&gt;
+
+&lt;p&gt;[untilSignal subscribeNext:^(id x) {
+    NSLog(@&amp;ldquo;%@&amp;rdquo;,x);
+}];&lt;/p&gt;
+
+&lt;p&gt;[afterUntilSignal sendNext:@&amp;ldquo;1&amp;rdquo;];
+[afterUntilSignal sendNext:@&amp;ldquo;2&amp;rdquo;];
+[untilSignal sendNext:@&amp;ldquo;stop&amp;rdquo;];
+[afterUntilSignal sendNext:@&amp;ldquo;3&amp;rdquo;];
+```
+输出&lt;/p&gt;
+
+&lt;p&gt;2020-07-06 17:42:51.878488+0800 C-41[3354:245702] 1&lt;/br&gt;
+2020-07-06 17:42:51.878642+0800 C-41[3354:245702] 2&lt;/br&gt;
+2020-07-06 17:42:51.878854+0800 C-41[3354:245702] stop&lt;/p&gt;</description>
+    </item>
+    
+    <item>
+      <title>zip</title>
+      <link>https://linkrober.github.io/bookshelf/2020/11/zip/</link>
+      <pubDate>Fri, 27 Nov 2020 00:00:00 +0000</pubDate>
+      
+      <guid>https://linkrober.github.io/bookshelf/2020/11/zip/</guid>
+      <description>&lt;pre&gt;&lt;code&gt;RACSignal *s1 = [RACSignal createSignal:^RACDisposable *(id&amp;lt;RACSubscriber&amp;gt; subscriber) {
+       [subscriber sendNext:@&amp;quot;1&amp;quot;];
+    return nil;
+}];
+RACSignal *s2 = [RACSignal createSignal:^RACDisposable *(id&amp;lt;RACSubscriber&amp;gt; subscriber) {
+    [subscriber sendNext:@&amp;quot;2&amp;quot;];
+    return nil;
+}];
+RACSignal *s3 = [RACSignal createSignal:^RACDisposable *(id&amp;lt;RACSubscriber&amp;gt; subscriber) {
+    [subscriber sendNext:@&amp;quot;3&amp;quot;];
+    return nil;
+}];
+
+RACSignal *zs = [RACSignal zip:@[s1,s2,s3]];
+
+[zs subscribeNext:^(id x) {
+    NSLog(@&amp;quot;%@&amp;quot;,x);
+}];
+
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;同&lt;code&gt;zip&lt;/code&gt;压缩的信号只有等所有的自信号都&lt;code&gt;sendNext&lt;/code&gt;之后才会执行订阅回调。&lt;/p&gt;
+
+&lt;p&gt;问题：
+1. 如何确保每个信号都发送完，才执行后压缩信号的订阅回调&lt;/p&gt;
+
+&lt;p&gt;&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;答：
++ (instancetype)join:(id&amp;lt;NSFastEnumeration&amp;gt;)streams block:(RACStream * (^)(id, id))block {
+    RACStream *current = nil;
+	// Creates streams of successively larger tuples by combining the input
+	// streams one-by-one.
+	for (RACStream *stream in streams) {
+		// For the first stream, just wrap its values in a RACTuple. That way,
+		// if only one stream is given, the result is still a stream of tuples.
+		if (current == nil) {
+			current = [stream map:^(id x) {
+				return RACTuplePack(x);
+			}];
+
+			continue;
+		}
+
+		current = block(current, stream);
+	}
+	    ....
+	    ....
+	    ....
+}
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;第一次&lt;code&gt;map&lt;/code&gt;操作信号1会生成一个新信号new1，new1和信号2经过&lt;code&gt;block(current,stream)&lt;/code&gt;又生成一个新信号new2，以此类推。
+这两种操作都会对原始信号进行订阅，如果接受不到请求就不会继续下去。&lt;/p&gt;
+
+&lt;ol&gt;
+&lt;li&gt;信号是如何被压平的&lt;/li&gt;
+&lt;/ol&gt;
+
+&lt;p&gt;在发生zs的订阅之后，通过&lt;code&gt;RACTuplePack(x)&lt;/code&gt;，生成一个元组，然后不断循环，形成元组套值(元组+值)的形式&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;&amp;lt;RACTuple: 0x60000236c720&amp;gt; (
+    &amp;lt;RACTuple: 0x600002375d00&amp;gt; (1),
+    2
+)
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;最后通过递归算法将值从元组套元组的组合里一一提取出来，这样信号就压平了。&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;NSMutableArray *values = [[NSMutableArray alloc] init];
+while (xs != nil) {
+    [values insertObject:xs.last ?: RACTupleNil.tupleNil atIndex:0];
+	xs = (xs.count &amp;gt; 1 ? xs.first : nil);
+}
+return [RACTuple tupleWithObjectsFromArray:values];
+&lt;/code&gt;&lt;/pre&gt;</description>
+    </item>
+    
+    <item>
+      <title>信号中的信号-flatten</title>
+      <link>https://linkrober.github.io/bookshelf/2020/11/%E4%BF%A1%E5%8F%B7%E4%B8%AD%E7%9A%84%E4%BF%A1%E5%8F%B7-flatten/</link>
+      <pubDate>Fri, 27 Nov 2020 00:00:00 +0000</pubDate>
+      
+      <guid>https://linkrober.github.io/bookshelf/2020/11/%E4%BF%A1%E5%8F%B7%E4%B8%AD%E7%9A%84%E4%BF%A1%E5%8F%B7-flatten/</guid>
+      <description>&lt;pre&gt;&lt;code&gt;    RACSignal *targetSignal = [RACSignal createSignal:^RACDisposable *(id&amp;lt;RACSubscriber&amp;gt; subscriber) {
+        [subscriber sendNext:@&amp;quot;1&amp;quot;];
+        return nil;
+    }];
+    
+    RACSignal *signal = [RACSignal createSignal:^RACDisposable *(id&amp;lt;RACSubscriber&amp;gt; subscriber) {
+    //发送一个信号
+        [subscriber sendNext:targetSignal];
+        return nil;
+    }];
+    
+    RACSignal *flattenSignal = [signal flatten];
+    [flattenSignal subscribeNext:^(id x) {
+        NSLog(@&amp;quot;%@&amp;quot;,x);//1
+    }];
+
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;&lt;/p&gt;
+
+&lt;p&gt;&lt;code&gt;[signal flatten]&lt;/code&gt;做了什么，可以看出最终返回的是一个信号，深入方法里面，进行了如下的方法调用&lt;/p&gt;
+
+&lt;ol&gt;
+&lt;li&gt;&lt;code&gt;- (instancetype)flatten&lt;/code&gt;&lt;/li&gt;
+&lt;li&gt;&lt;code&gt;- (instancetype)flattenMap:(RACStream * (^)(id value))block&lt;/code&gt;&lt;/li&gt;
+&lt;li&gt;&lt;code&gt;- (RACSignal *)bind:(RACStreamBindBlock (^)(void))block&lt;/code&gt;&lt;/li&gt;
+&lt;/ol&gt;
+
+&lt;p&gt;最终：&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;return [[RACSignal createSignal:^(id&amp;lt;RACSubscriber&amp;gt; subscriber) {....}
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;在这个方法里面，首先对自己就行了订阅，于是执行了&lt;code&gt;[subscriber sendNext:targetSignal];&lt;/code&gt;然后两层回调，&lt;code&gt;bindingBlock(x,&amp;amp;stop)&lt;/code&gt;和&lt;code&gt;block(value)&lt;/code&gt;。返回信号&lt;code&gt;targetSignal&lt;/code&gt;。将信号作为&lt;code&gt;void (^addSignal)(RACSignal *) = ^(RACSignal *signal){}&lt;/code&gt;的入参，其实是在这里面执行&lt;code&gt;targetSignal&lt;/code&gt;订阅，得到了值&lt;strong&gt;1&lt;/strong&gt;，最后通过原来的&lt;code&gt;[subscriber sendNext:x];&lt;/code&gt;将值返回。&lt;/p&gt;
+
+&lt;p&gt;这时候你可能想，这里只嵌套了一层信号，如果嵌套两层怎么处理。你可以类比成递归，将&lt;code&gt;RACSignal *flattenSignal = [signal flatten]&lt;/code&gt;作为递归中的一步，然后对层层信号进行&lt;code&gt;flatten&lt;/code&gt;操作，最后就能得到你想要的结果。&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;//三个信号
+    RACSignal *signal1 = [RACSignal createSignal:^RACDisposable *(id&amp;lt;RACSubscriber&amp;gt; subscriber) {
+        [subscriber sendNext:@&amp;quot;1&amp;quot;];
+        return nil;
+    }];
+    
+    RACSignal *signal2 = [RACSignal createSignal:^RACDisposable *(id&amp;lt;RACSubscriber&amp;gt; subscriber) {
+        [subscriber sendNext:signal1];
+        return nil;
+    }];
+    
+    RACSignal *faltSignal2 = [signal2 flattenMap:^RACStream *(id value) {
+        NSLog(@&amp;quot;&amp;quot;);
+        return value;
+    }];
+    
+    
+    RACSignal *param3 = [RACSignal createSignal:^RACDisposable *(id&amp;lt;RACSubscriber&amp;gt; subscriber) {
+        [subscriber sendNext:faltSignal2];
+        return nil;
+    }];
+    
+    RACSignal *flatSignal3 = [param3 flattenMap:^RACStream *(id value) {
+        NSLog(@&amp;quot;&amp;quot;);
+        return value;
+    }];
+    
+    [flatSignal3 subscribeNext:^(id x) {
+        NSLog(@&amp;quot;&amp;quot;);
+    }];
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;最后输出了1&lt;/p&gt;</description>
+    </item>
+    
+    <item>
+      <title>冷信号和热信号构建触发流程</title>
+      <link>https://linkrober.github.io/bookshelf/2020/11/%E5%86%B7%E4%BF%A1%E5%8F%B7%E5%92%8C%E7%83%AD%E4%BF%A1%E5%8F%B7%E6%9E%84%E5%BB%BA%E8%A7%A6%E5%8F%91%E6%B5%81%E7%A8%8B/</link>
+      <pubDate>Fri, 27 Nov 2020 00:00:00 +0000</pubDate>
+      
+      <guid>https://linkrober.github.io/bookshelf/2020/11/%E5%86%B7%E4%BF%A1%E5%8F%B7%E5%92%8C%E7%83%AD%E4%BF%A1%E5%8F%B7%E6%9E%84%E5%BB%BA%E8%A7%A6%E5%8F%91%E6%B5%81%E7%A8%8B/</guid>
+      <description>&lt;p&gt;提到RAC就离不开冷热信号。在实际的开发中如果不理清两者的用法就会出问题。&lt;/p&gt;
+
+&lt;p&gt;冷信号像专车，从你打车（订阅）开始，从出发地点（sendNext）发往你在的地方。它是一对一的，不会错过。&lt;/p&gt;
+
+&lt;p&gt;热信号像公交车，在你等车（订阅）之前可能已经发车了（sendNext）；不仅你可以上，其他人也能上，它是一对多的；错过了这班车（假设只有一班）就没了。&lt;/p&gt;
+
+&lt;p&gt;&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;//冷信号
+    RACSignal *signal = [RACSignal createSignal:^RACDisposable *(id&amp;lt;RACSubscriber&amp;gt; subscriber) {
+        [subscriber sendNext:@1];
+        return nil;
+    }];
+
+    [[RACScheduler mainThreadScheduler] afterDelay:1.1 schedule:^{
+        [signal subscribeNext:^(id x) {
+            NSLog(@&amp;quot;cold signal  recveive: %@&amp;quot;, x);
+        }];
+    }];
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;blockquote&gt;
+&lt;p&gt;输出: cold signal  recveive: 1&lt;/p&gt;
+&lt;/blockquote&gt;
+
+&lt;pre&gt;&lt;code&gt;//热信号
+        RACMulticastConnection *connection =  [[RACSignal createSignal:^RACDisposable *(id&amp;lt;RACSubscriber&amp;gt; subscriber) {
+            [subscriber sendNext:@1];
+            return nil;
+        }] publish];
+        [connection connect];
+
+        RACSignal *signal = connection.signal;
+
+        [[RACScheduler mainThreadScheduler] afterDelay:1.1 schedule:^{
+            [signal subscribeNext:^(id x) {
+                NSLog(@&amp;quot;hot signal recveive: %@&amp;quot;, x);
+            }];
+        }];
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;blockquote&gt;
+&lt;p&gt;没有输出，公交车比你早到了1.1s&lt;/p&gt;
+&lt;/blockquote&gt;
+
+&lt;p&gt;冷信号转换成热信号经过了两步&lt;code&gt;[RACSignal publish]&lt;/code&gt;和&lt;code&gt;[RACMulticastConnection connect]&lt;/code&gt;，
+第一步将信号&lt;code&gt;signal&lt;/code&gt;和&lt;code&gt;subject&lt;/code&gt;进行绑定，返回一个&lt;code&gt;RACMulticastConnection&lt;/code&gt;对象。&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;- (RACMulticastConnection *)multicast:(RACSubject *)subject {
+	[subject setNameWithFormat:@&amp;quot;[%@] -multicast: %@&amp;quot;, self.name, subject.name];
+	RACMulticastConnection *connection = [[RACMulticastConnection alloc] initWithSourceSignal:self subject:subject];
+	return connection;
+}
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;第二步立即触发信号的订阅，公交车开始发车了&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;- (RACDisposable *)connect {
+	BOOL shouldConnect = OSAtomicCompareAndSwap32Barrier(0, 1, &amp;amp;_hasConnected);
+
+	if (shouldConnect) {
+		self.serialDisposable.disposable = [self.sourceSignal subscribe:_signal];
+	}
+
+	return self.serialDisposable;
+}
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;那么&lt;code&gt;RACMulticastConnection&lt;/code&gt;是做什么的呢?
+它将信号（Signal）和订阅（subject）包装，为一个或多个订阅者提供服务（一对多）。当信号存在潜在的副作用或者接受事件不超过1次（eg.&lt;code&gt;[subscriber sendNext:@1]&lt;/code&gt;）的时候使用它。&lt;/p&gt;
+
+&lt;p&gt;&lt;img src=&#34;https://note.youdao.com/yws/api/personal/file/WEBb47d084e7444069fc09c784160fa22be?method=download&amp;amp;shareKey=44e2ac121991c7bfe127a3f1b3539762&#34; alt=&#34;&#34; /&gt;&lt;/p&gt;</description>
+    </item>
+    
+  </channel>
+</rss>

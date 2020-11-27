@@ -6,8 +6,1046 @@
     <description>Recent content in Post-rsses on 董二千</description>
     <generator>Hugo -- gohugo.io</generator>
     <language>zh-cn</language>
-    <lastBuildDate>Thu, 26 Nov 2020 00:00:00 +0000</lastBuildDate>
+    <lastBuildDate>Fri, 27 Nov 2020 00:00:00 +0000</lastBuildDate>
     <atom:link href="https://LinkRober.github.io/bookshelf/post/index.xml" rel="self" type="application/rss+xml" />
+    
+    <item>
+      <title>CombineLatest、Zip和Merge的区别</title>
+      <link>https://linkrober.github.io/bookshelf/2020/11/combinelatestzip%E5%92%8Cmerge%E7%9A%84%E5%8C%BA%E5%88%AB/</link>
+      <pubDate>Fri, 27 Nov 2020 00:00:00 +0000</pubDate>
+      
+      <guid>https://linkrober.github.io/bookshelf/2020/11/combinelatestzip%E5%92%8Cmerge%E7%9A%84%E5%8C%BA%E5%88%AB/</guid>
+      <description>&lt;h4 id=&#34;信号触发方式&#34;&gt;信号触发方式&lt;/h4&gt;
+
+&lt;h5 id=&#34;merge&#34;&gt;merge&lt;/h5&gt;
+
+&lt;p&gt;只要&lt;code&gt;merge&lt;/code&gt;之后生成的信号被订阅就会&lt;strong&gt;自动&lt;/strong&gt;触发所有压缩信号的订阅回调，如果靠前的信号出现了&lt;code&gt;error&lt;/code&gt;后面的信号不再发送。&lt;/p&gt;
+
+&lt;p&gt;核心方法：&lt;code&gt;- (instancetype)flatten&lt;/code&gt;&lt;/br&gt;
+值：多次收到，分开的&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt; 1
+ 2
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;pre&gt;&lt;code&gt;RACSignal *s1 = [RACSignal createSignal:^RACDisposable *(id&amp;lt;RACSubscriber&amp;gt; subscriber) {
+  [subscriber sendNext:@&amp;quot;1&amp;quot;];
+    return nil;
+}];
+
+RACSignal *s2 = [RACSignal createSignal:^RACDisposable *(id&amp;lt;RACSubscriber&amp;gt; subscriber) {
+    [subscriber sendNext:@&amp;quot;2&amp;quot;];
+    return nil;
+}];
+
+[[RACSignal merge:@[s1,s2]] subscribeNext:^(id x) {
+    NSLog(@&amp;quot;%@&amp;quot;,x);
+}];
+
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;&lt;/p&gt;
+
+&lt;h5 id=&#34;combinelatest&#34;&gt;combineLatest&lt;/h5&gt;
+
+&lt;p&gt;必须等到&lt;strong&gt;所有&lt;/strong&gt;的信号都成功发送才能触发&lt;code&gt;combineLatest&lt;/code&gt;生成的新信号的订阅回调。如果中间出现有信号error或者complete，新信号将收不到回调。&lt;/p&gt;
+
+&lt;p&gt;核心方法：
+&lt;code&gt;+ (instancetype)join:(id&amp;lt;NSFastEnumeration&amp;gt;)streams block:(RACStream * (^)(id, id))block&lt;/code&gt;&lt;/p&gt;
+
+&lt;p&gt;&lt;code&gt;- (RACSignal *)combineLatestWith:(RACSignal *)signal&lt;/code&gt;
+&lt;/br&gt;&lt;/p&gt;
+
+&lt;p&gt;值：一次收到，通过&lt;code&gt;RACTuple&lt;/code&gt;聚合的&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;&amp;lt;RACTuple: 0x60000318c780&amp;gt; (
+    1,
+    2
+)
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;pre&gt;&lt;code&gt;RACSubject *s1 = [RACSubject subject];
+[s1 subscribeNext:^(id x) {
+    NSLog(@&amp;quot;%@&amp;quot;,x);
+}];
+
+RACSubject *s2 = [RACSubject subject];
+[s2 subscribeNext:^(id x) {
+    NSLog(@&amp;quot;%@&amp;quot;,x);
+}];
+
+[[RACSignal combineLatest:@[s1,s2]] subscribeNext:^(id x) {
+    NSLog(@&amp;quot;%@&amp;quot;,x);
+}];
+
+[s1 sendNext:@&amp;quot;1&amp;quot;];
+[s2 sendNext:@&amp;quot;2&amp;quot;];
+
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;h5 id=&#34;zip&#34;&gt;zip&lt;/h5&gt;
+
+&lt;p&gt;必须等到&lt;strong&gt;所有&lt;/strong&gt;的信号都成功发送才能触发&lt;code&gt;zip&lt;/code&gt;生成的新信号的订阅回调(和&lt;code&gt;combineLatest&lt;/code&gt;类似)。如果中间出现有信号error或者complete，新信号将收不到回，和&lt;code&gt;combineLatest&lt;/code&gt;不同的是，同一时间返回多个信号的值只取第一个，而&lt;code&gt;combineLatest&lt;/code&gt;是取最新的值&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;//zip
+....
+void (^sendNext)(void) = ^{
+			@synchronized (selfValues) {
+				if (selfValues.count == 0) return;
+				if (otherValues.count == 0) return;
+				//去数组第一个值
+				RACTuple *tuple = [RACTuple tupleWithObjects:selfValues[0], otherValues[0], nil];
+				[selfValues removeObjectAtIndex:0];
+				[otherValues removeObjectAtIndex:0];
+
+				[subscriber sendNext:tuple];
+				sendCompletedIfNecessary();
+			}
+		};
+....
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;pre&gt;&lt;code&gt;//combineLatestWith
+...
+void (^sendNext)(void) = ^{
+			@synchronized (disposable) {
+				if (lastSelfValue == nil || lastOtherValue == nil) return;
+				[subscriber sendNext:[RACTuple tupleWithObjects:lastSelfValue, lastOtherValue, nil]];
+			}
+		};
+...
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;核心方法：
+1. &lt;code&gt;+ (instancetype)join:(id&amp;lt;NSFastEnumeration&amp;gt;)streams block:(RACStream * (^)(id, id))block&lt;/code&gt;
+2. &lt;code&gt;- (RACSignal *)zipWith:(RACSignal *)signal&lt;/code&gt;&lt;/p&gt;
+
+&lt;p&gt;值：一次收到，通过&lt;code&gt;RACTuple&lt;/code&gt;聚合的&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt; &amp;lt;RACTuple: 0x600002668e20&amp;gt; (
+    1,
+    2,
+    3
+)
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;pre&gt;&lt;code&gt;RACSignal *s1 = [RACSignal createSignal:^RACDisposable *(id&amp;lt;RACSubscriber&amp;gt; subscriber) {
+   [subscriber sendNext:@&amp;quot;1&amp;quot;];
+    return nil;
+}];
+RACSignal *s2 = [RACSignal createSignal:^RACDisposable *(id&amp;lt;RACSubscriber&amp;gt; subscriber) {
+    [subscriber sendNext:@&amp;quot;2&amp;quot;];
+    return nil;
+}];
+RACSignal *s3 = [RACSignal createSignal:^RACDisposable *(id&amp;lt;RACSubscriber&amp;gt; subscriber) {
+    [subscriber sendNext:@&amp;quot;3&amp;quot;];
+    return nil;
+}];
+
+RACSignal *zs = [RACSignal zip:@[s1,s2,s3]];
+
+[zs subscribeNext:^(id x) {
+    NSLog(@&amp;quot;%@&amp;quot;,x);
+}];
+&lt;/code&gt;&lt;/pre&gt;</description>
+    </item>
+    
+    <item>
+      <title>Connect、AutoConnect、RACReplaySubject、Replay</title>
+      <link>https://linkrober.github.io/bookshelf/2020/11/connectautoconnectracreplaysubjectreplay/</link>
+      <pubDate>Fri, 27 Nov 2020 00:00:00 +0000</pubDate>
+      
+      <guid>https://linkrober.github.io/bookshelf/2020/11/connectautoconnectracreplaysubjectreplay/</guid>
+      <description>&lt;h4 id=&#34;connect&#34;&gt;Connect&lt;/h4&gt;
+
+&lt;p&gt;将冷信号包装成热信号，初始化冷信号，调用&lt;code&gt;publish&lt;/code&gt;方法会自动生成一个&lt;code&gt;RACMulticastConnection&lt;/code&gt;，该对象持有了原始信号和一个热信号。&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;- (RACMulticastConnection *)publish {
+	RACSubject *subject = [[RACSubject subject] setNameWithFormat:@&amp;quot;[%@] -publish&amp;quot;, self.name];
+	RACMulticastConnection *connection = [self multicast:subject];
+	return connection;
+}
+- (RACMulticastConnection *)multicast:(RACSubject *)subject {
+	[subject setNameWithFormat:@&amp;quot;[%@] -multicast: %@&amp;quot;, self.name, subject.name];
+	RACMulticastConnection *connection = [[RACMulticastConnection alloc] initWithSourceSignal:self subject:subject];
+	return connection;
+}
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;调用&lt;code&gt;connect&lt;/code&gt;方法来触发订阅，注意调用一次触发一次。&lt;/p&gt;
+
+&lt;p&gt;&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;- (RACDisposable *)connect {
+	BOOL shouldConnect = OSAtomicCompareAndSwap32Barrier(0, 1, &amp;amp;_hasConnected);
+
+	if (shouldConnect) {
+		self.serialDisposable.disposable = [self.sourceSignal subscribe:_signal];
+	}
+
+	return self.serialDisposable;
+}
+
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;&lt;img src=&#34;https://note.youdao.com/yws/api/personal/file/WEB322c067dfd25b07390b5016979f95684?method=download&amp;amp;shareKey=18be9a0156c074ce3ed310a30cf3d782&#34; alt=&#34;&#34; /&gt;&lt;/p&gt;
+
+&lt;h4 id=&#34;autoconnect&#34;&gt;Autoconnect&lt;/h4&gt;
+
+&lt;p&gt;在&lt;code&gt;publish&lt;/code&gt;之后，&lt;code&gt;RACMulticastConnection&lt;/code&gt;调用&lt;code&gt;autoconnect&lt;/code&gt;，生成一个信号，只有当生成的信号订阅之后才会触发其他订阅者开始接受订阅消息。&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;- (RACSignal *)autoconnect {
+	__block volatile int32_t subscriberCount = 0;
+
+	return [[RACSignal
+		createSignal:^(id&amp;lt;RACSubscriber&amp;gt; subscriber) {
+			OSAtomicIncrement32Barrier(&amp;amp;subscriberCount);
+
+			RACDisposable *subscriptionDisposable = [self.signal subscribe:subscriber];
+			RACDisposable *connectionDisposable = [self connect];
+
+			return [RACDisposable disposableWithBlock:^{
+				[subscriptionDisposable dispose];
+
+				if (OSAtomicDecrement32Barrier(&amp;amp;subscriberCount) == 0) {
+					[connectionDisposable dispose];
+				}
+			}];
+		}]
+		setNameWithFormat:@&amp;quot;[%@] -autoconnect&amp;quot;, self.signal.name];
+}
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;&lt;img src=&#34;https://note.youdao.com/yws/api/personal/file/WEBfd22a762ef7800a5d21b2fd823b26905?method=download&amp;amp;shareKey=0d72e57669a7945987449fb7dd3179f3&#34; alt=&#34;&#34; /&gt;&lt;/p&gt;
+
+&lt;h4 id=&#34;racmulticastconnection-racreplaysubject&#34;&gt;RACMulticastConnection &amp;amp; RACReplaySubject&lt;/h4&gt;
+
+&lt;p&gt;上面在&lt;code&gt;connect&lt;/code&gt;之后的订阅者都不到订阅值，使用&lt;code&gt;RACReplaySubject&lt;/code&gt;可以让后面的订阅者也能收到订阅值。&lt;/p&gt;
+
+&lt;p&gt;例子：&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;RACSignal *sourceSignal = [RACSignal createSignal:^RACDisposable * _Nullable(id&amp;lt;RACSubscriber&amp;gt;  _Nonnull subscriber) {
+    [subscriber sendNext:@{@&amp;quot;id&amp;quot;:@&amp;quot;1&amp;quot;}];
+    return nil;
+}];
+
+RACMulticastConnection *connection = [sourceSignal multicast:[RACReplaySubject subject]];
+
+[connection.signal subscribeNext:^(id  _Nullable x) {
+    NSLog(@&amp;quot;product: %@&amp;quot;, x);
+}];
+
+[connection connect];
+
+[connection.signal subscribeNext:^(id  _Nullable x) {
+    NSNumber *productId = [x objectForKey:@&amp;quot;id&amp;quot;];
+    NSLog(@&amp;quot;productId: %@&amp;quot;, productId);
+}];
+
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;&lt;img src=&#34;https://note.youdao.com/yws/api/personal/file/WEBeaf769304dcdeb50aedaf81ef877ce54?method=download&amp;amp;shareKey=825769b6f66cab9528c1aa2337763104&#34; alt=&#34;&#34; /&gt;&lt;/p&gt;
+
+&lt;h4 id=&#34;replay&#34;&gt;Replay&lt;/h4&gt;
+
+&lt;p&gt;快速生成一个基于&lt;code&gt;RACReplaySubject&lt;/code&gt;创建的热信号。&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;- (RACSignal *)replay {
+	RACReplaySubject *subject = [[RACReplaySubject subject] setNameWithFormat:@&amp;quot;[%@] -replay&amp;quot;, self.name];
+
+	RACMulticastConnection *connection = [self multicast:subject];
+	[connection connect];
+
+	return connection.signal;
+}
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;例子：&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;RACSignal *sourceSignal = [[RACSignal createSignal:^RACDisposable * _Nullable(id&amp;lt;RACSubscriber&amp;gt;  _Nonnull subscriber) {
+        [subscriber sendNext:@{@&amp;quot;id&amp;quot;:@&amp;quot;1&amp;quot;}];
+        return nil;
+    }] replay];
+
+    [sourceSignal subscribeNext:^(id  _Nullable x) {
+        NSLog(@&amp;quot;product: %@&amp;quot;, x);
+    }];
+
+    [sourceSignal subscribeNext:^(id  _Nullable x) {
+        NSNumber *productId = [x objectForKey:@&amp;quot;id&amp;quot;];
+        NSLog(@&amp;quot;productId: %@&amp;quot;, productId);
+    }];
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;&lt;img src=&#34;https://note.youdao.com/yws/api/personal/file/WEBdddd77c6ae072d234b09b7b5e6e3e17c?method=download&amp;amp;shareKey=35c80261e0e41092892c011b92cbb488&#34; alt=&#34;&#34; /&gt;&lt;/p&gt;</description>
+    </item>
+    
+    <item>
+      <title>RACSignal</title>
+      <link>https://linkrober.github.io/bookshelf/2020/11/racsignal/</link>
+      <pubDate>Fri, 27 Nov 2020 00:00:00 +0000</pubDate>
+      
+      <guid>https://linkrober.github.io/bookshelf/2020/11/racsignal/</guid>
+      <description>&lt;h4 id=&#34;创建信号&#34;&gt;创建信号&lt;/h4&gt;
+
+&lt;pre&gt;&lt;code&gt;
+RACSignal *signal = [RACSignal createSignal:^RACDisposable *(id&amp;lt;RACSubscriber&amp;gt; subscriber) {
+        [subscriber sendNext:@&amp;quot;1&amp;quot;];
+        return nil;
+    }];
+
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;分析&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;//RACSignal.m
++ (RACSignal *)createSignal:(RACDisposable * (^)(id&amp;lt;RACSubscriber&amp;gt; subscriber))didSubscribe {
+	return [RACDynamicSignal createSignal:didSubscribe];
+}
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;&lt;/p&gt;
+
+&lt;p&gt;通过子类创建信号&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;//RACDynamicSignal.m
++ (RACSignal *)createSignal:(RACDisposable * (^)(id&amp;lt;RACSubscriber&amp;gt; subscriber))didSubscribe {
+	RACDynamicSignal *signal = [[self alloc] init];
+	signal-&amp;gt;_didSubscribe = [didSubscribe copy];
+	return [signal setNameWithFormat:@&amp;quot;+createSignal:&amp;quot;];
+}
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;创建一个RACDynamicSignal，将回调&lt;code&gt;didSubscribe&lt;/code&gt;保存在&lt;code&gt;_didSubscribe&lt;/code&gt;中。&lt;/p&gt;
+
+&lt;h4 id=&#34;订阅信号&#34;&gt;订阅信号&lt;/h4&gt;
+
+&lt;pre&gt;&lt;code&gt;[signal subscribeNext:^(id x) {
+        
+}];
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;分析&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;- (RACDisposable *)subscribeNext:(void (^)(id x))nextBlock {
+	NSCParameterAssert(nextBlock != NULL);
+	
+	RACSubscriber *o = [RACSubscriber subscriberWithNext:nextBlock error:NULL completed:NULL];
+	return [self subscribe:o];
+}
+
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;创建一个订阅者&lt;code&gt;RACSubscriber&lt;/code&gt;，将回调&lt;code&gt;nextBlock&lt;/code&gt;作为订阅者的初始入参，最后订阅RACSubscriber。&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;- (RACDisposable *)subscribe:(id&amp;lt;RACSubscriber&amp;gt;)subscriber {
+	NSCParameterAssert(subscriber != nil);
+	//创建销毁对象，负责销毁信号
+	RACCompoundDisposable *disposable = [RACCompoundDisposable compoundDisposable];
+	//将RACSubscriber类型的订阅者转换成RACPassthroughSubscriber，为什么呢
+	subscriber = [[RACPassthroughSubscriber alloc] initWithSubscriber:subscriber signal:self disposable:disposable];
+	
+	//创建自旋锁，防止资源竞争，懒加载订阅者集合(_subscribers),
+	OSSpinLockLock(&amp;amp;_subscribersLock);
+	if (_subscribers == nil) {
+		_subscribers = [NSMutableArray arrayWithObject:subscriber];
+	} else {
+		[_subscribers addObject:subscriber];
+	}
+	OSSpinLockUnlock(&amp;amp;_subscribersLock);
+	
+	@weakify(self);
+	//创建销毁对象（和上面的有什么不同？？？，看下面），当信号被销毁，从订阅者集合里面移除subscriber
+	RACDisposable *defaultDisposable = [RACDisposable disposableWithBlock:^{
+		@strongify(self);
+		if (self == nil) return;
+
+		BOOL stillHasSubscribers = YES;
+
+		OSSpinLockLock(&amp;amp;_subscribersLock);
+		{
+			// Since newer subscribers are generally shorter-lived, search
+			// starting from the end of the list.
+			NSUInteger index = [_subscribers indexOfObjectWithOptions:NSEnumerationReverse passingTest:^ BOOL (id&amp;lt;RACSubscriber&amp;gt; obj, NSUInteger index, BOOL *stop) {
+				return obj == subscriber;
+			}];
+
+			if (index != NSNotFound) {
+				[_subscribers removeObjectAtIndex:index];
+				stillHasSubscribers = _subscribers.count &amp;gt; 0;
+			}
+		}
+		OSSpinLockUnlock(&amp;amp;_subscribersLock);
+		
+		if (!stillHasSubscribers) {
+			[self invalidateGlobalRefIfNoNewSubscribersShowUp];
+		}
+	}];
+	
+	//将创建的销毁对象添加到一个管理类中
+	[disposable addDisposable:defaultDisposable];
+
+    //通过`didSubscribe`拿到订阅者对应的innerDisposable，添加到disposable中，
+    //最后将schedulingDisposabl也添加到disposable中
+	if (self.didSubscribe != NULL) {
+		RACDisposable *schedulingDisposable = [RACScheduler.subscriptionScheduler schedule:^{
+			RACDisposable *innerDisposable = self.didSubscribe(subscriber);
+			[disposable addDisposable:innerDisposable];
+		}];
+
+		[disposable addDisposable:schedulingDisposable];
+	}
+	
+	return disposable;
+}
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;信号被订阅之后的销毁流程。首先创建了一个销毁者管理类&lt;code&gt;disposable&lt;/code&gt;，以subscriber为入参生成一个新的subscriber（RACPassthroughSubscriber），老的订阅者和销毁者管理类都在这里面管理。
+然后将&lt;code&gt;defaultDisposable&lt;/code&gt;、&lt;code&gt;innerDisposable&lt;/code&gt;、 &lt;code&gt;schedulingDisposable&lt;/code&gt;都放到管理类中进行管理&lt;/p&gt;
+
+&lt;h4 id=&#34;问题&#34;&gt;问题&lt;/h4&gt;
+
+&lt;ol&gt;
+&lt;li&gt;如何做到一订阅，就开始执行&lt;code&gt;[subscriber sendNext:xxx];&lt;/code&gt;&lt;/li&gt;
+&lt;/ol&gt;
+
+&lt;p&gt;本质是调用了block。在创建的时候，block会被属性引用&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;signal-&amp;gt;_didSubscribe = [didSubscribe copy];
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;在订阅方法的最后，调用代码块&lt;code&gt;didSubscribe&lt;/code&gt;&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;	if (self.didSubscribe != NULL) {
+		RACDisposable *schedulingDisposable = [RACScheduler.subscriptionScheduler schedule:^{
+			RACDisposable *innerDisposable = self.didSubscribe(subscriber);
+			[disposable addDisposable:innerDisposable];
+		}];
+
+		[disposable addDisposable:schedulingDisposable];
+	}
+
+&lt;/code&gt;&lt;/pre&gt;</description>
+    </item>
+    
+    <item>
+      <title>SwitchToLatest</title>
+      <link>https://linkrober.github.io/bookshelf/2020/11/switchtolatest/</link>
+      <pubDate>Fri, 27 Nov 2020 00:00:00 +0000</pubDate>
+      
+      <guid>https://linkrober.github.io/bookshelf/2020/11/switchtolatest/</guid>
+      <description>&lt;p&gt;&lt;code&gt;- (RACSignal *)switchToLatest&lt;/code&gt;和&lt;code&gt;- (RACSignal *)flatten&lt;/code&gt;的功能类似，都可以将信号中的信号的值取出来。不同的是，前者如果订阅者处理多个信号，只有最后一个信号的值能收到，之前的信号会被销毁。而后者则都能收到所有值。&lt;/p&gt;
+
+&lt;p&gt;&lt;/p&gt;
+
+&lt;p&gt;代码&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;RACSignal *signal1 = [RACSignal createSignal:^RACDisposable *(id&amp;lt;RACSubscriber&amp;gt; subscriber) {
+   
+   
+    [subscriber sendNext:@&amp;quot;nancy&amp;quot;];
+    dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(0.5 * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
+        
+         [subscriber sendNext:@&amp;quot;botwen&amp;quot;];
+    });
+    return nil;
+}];
+    
+RACSignal *signal2 = [RACSignal createSignal:^RACDisposable *(id&amp;lt;RACSubscriber&amp;gt; subscriber) {
+    [subscriber sendNext:@&amp;quot;jiang&amp;quot;];
+    
+    dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(0.5 * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
+         [subscriber sendNext:@&amp;quot;longjian&amp;quot;];
+    });
+    return nil;
+}];
+    
+RACSignal *signal = [RACSignal createSignal:^RACDisposable * _Nullable(id&amp;lt;RACSubscriber&amp;gt;  _Nonnull subscriber) {
+    [subscriber sendNext: signal1];
+    [subscriber sendNext: signal2];
+    [subscriber sendCompleted];
+    
+    return nil;
+}];
+
+RACSignal *newSignal = [signal switchToLatest];
+[newSignal subscribeNext:^(id  _Nullable x) {
+    NSLog(@&amp;quot;-=-=======-=%@&amp;quot;, x);
+}];
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;输出：&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;-=-=======-=nancy
+-=-=======-=jiang
+-=-=======-=longjian
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;&lt;code&gt;botwen&lt;/code&gt;没有输出，因为&lt;code&gt;signal1&lt;/code&gt;已经被销毁。
+这里有一个难点，&lt;strong&gt;为什么&lt;code&gt;nancy&lt;/code&gt;输出了&lt;/strong&gt;。要知道原因，我们必须要清楚的理解整个信号的创建和销毁时机。&lt;/p&gt;
+
+&lt;p&gt;原信号O通过&lt;code&gt;- (RACSignal *)switchToLatest&lt;/code&gt;方法生成了一个新信号A，当A被订阅时，O信号通过&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;RACMulticastConnection *connection = [self publish];
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;生成了一个热信号，然后调用&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;- (__kindof RACStream *)flattenMap:(__kindof RACStream * (^)(id value))block
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;来实现信号中信号的压平，这里和&lt;code&gt;- (__kindof RACStream *)flatten&lt;/code&gt;一样，最大的不同是&lt;code&gt;block&lt;/code&gt;的实现，在&lt;code&gt;- (RACSignal *)switchToLatest&lt;/code&gt;中，&lt;code&gt;block&lt;/code&gt;里面调用了&lt;code&gt;takeUntil&lt;/code&gt;方法。&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;RACSignal *s = [connection.signal
+flattenMap:^(RACSignal *x) {
+    NSCAssert(x == nil || [x isKindOfClass:RACSignal.class], @&amp;quot;-switchToLatest requires that the source signal (%@) send signals. Instead we got: %@&amp;quot;, self, x);
+    return [x takeUntil:[connection.signal concat:[RACSignal never]]];
+}];
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;当信号&lt;code&gt;[connection.signal concat:[RACSignal never]]&lt;/code&gt;被&lt;strong&gt;订阅&lt;/strong&gt;的时候，通过&lt;code&gt;takeUntil&lt;/code&gt;生成的信号B会被销毁。这也是上面销毁&lt;code&gt;signal1&lt;/code&gt;的地方。&lt;/p&gt;
+
+&lt;p&gt;那么在什么时机触发销毁动作呢？这里涉及到热信号。每个热信号都有一个订阅者的数组，当热信号受到订阅者发送的消息时，会遍历这个数组，一一调用。&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;- (void)enumerateSubscribersUsingBlock:(void (^)(id&amp;lt;RACSubscriber&amp;gt; subscriber))block {
+	NSArray *subscribers;
+	@synchronized (self.subscribers) {
+		subscribers = [self.subscribers copy];
+	}
+
+	for (id&amp;lt;RACSubscriber&amp;gt; subscriber in subscribers) {
+		block(subscriber);
+	}
+}
+
+- (void)sendNext:(id)value {
+	[self enumerateSubscribersUsingBlock:^(id&amp;lt;RACSubscriber&amp;gt; subscriber) {
+		[subscriber sendNext:value];
+	}];
+}
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;实例代码里热信号的订阅者数组里面最多的时候一个有3个订阅者，下面列出添加订阅者数组的地方：&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;//[self subscribeNext:^(id x)...调用1次
+RACDisposable *bindingDisposable = [self subscribeNext:^(id x) {
+    // Manually check disposal to handle synchronous errors.
+    if (compoundDisposable.disposed) return;
+
+    BOOL stop = NO;
+    id signal = bindingBlock(x, &amp;amp;stop);
+
+    @autoreleasepool {
+        if (signal != nil) addSignal(signal);
+        if (signal == nil || stop) {
+            [selfDisposable dispose];
+            completeSignal(selfDisposable);
+        }
+    }
+} error:^(NSError *error) {
+    [compoundDisposable dispose];
+    [subscriber sendError:error];
+} completed:^{
+    @autoreleasepool {
+        completeSignal(selfDisposable);
+    }
+}];
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;pre&gt;&lt;code&gt;//这里的[self subscribeNext:^(id x)...调用了2次，对应两次订阅者发送信号
+- (RACSignal *)concat:(RACSignal *)signal {
+	return [[RACSignal createSignal:^(id&amp;lt;RACSubscriber&amp;gt; subscriber) {
+		RACCompoundDisposable *compoundDisposable = [[RACCompoundDisposable alloc] init];
+
+		RACDisposable *sourceDisposable = [self subscribeNext:^(id x) {
+			[subscriber sendNext:x];
+		} error:^(NSError *error) {
+			[subscriber sendError:error];
+		} completed:^{
+			RACDisposable *concattedDisposable = [signal subscribe:subscriber];
+			[compoundDisposable addDisposable:concattedDisposable];
+		}];
+
+		[compoundDisposable addDisposable:sourceDisposable];
+		return compoundDisposable;
+	}] setNameWithFormat:@&amp;quot;[%@] -concat: %@&amp;quot;, self.name, signal];
+}
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;第一次为了压平信号调&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;subscribers = [subscriber1]
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;第二次在&lt;code&gt;[subscriber sendNext: signal1];&lt;/code&gt;后调用。&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;subscribers = [subscriber1,subscriber2]
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;第三次在&lt;code&gt;[subscriber sendNext: signal2];&lt;/code&gt;后调用。&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;subscribers = [subscriber1,subscriber2,subscriber3]
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;在第三次调用&lt;code&gt;sendNext&lt;/code&gt;的时候会遍历订阅者数组（这时候数组里面还只有两个订阅者）发送信号从而走到&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;...
+RACCompoundDisposable *disposable = [RACCompoundDisposable compoundDisposable];
+		void (^triggerCompletion)(void) = ^{
+			[disposable dispose];
+			[subscriber sendCompleted];
+		};
+
+		RACDisposable *triggerDisposable = [signalTrigger subscribeNext:^(id _) {
+		    //走到这里
+			triggerCompletion();
+		} completed:^{
+			triggerCompletion();
+		}];
+...
+
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;将&lt;code&gt;signal1&lt;/code&gt;的订阅者销毁，以此类推。这也是为什么第一次两个信号的值都能收到的原因。&lt;/p&gt;
+
+&lt;p&gt;到这里就是&lt;code&gt;SwitchToLatest&lt;/code&gt;的功能实现。&lt;/p&gt;
+
+&lt;p&gt;难点；&lt;/p&gt;
+
+&lt;ol&gt;
+&lt;li&gt;理解&lt;code&gt;- (RACSignal *)takeUntil:(RACSignal *)signalTrigger&lt;/code&gt;&lt;/li&gt;
+&lt;li&gt;冷信号转换成热信号的实现&lt;/li&gt;
+&lt;/ol&gt;</description>
+    </item>
+    
+    <item>
+      <title>concat、catchTo、never、takeUntil</title>
+      <link>https://linkrober.github.io/bookshelf/2020/11/concatcatchtonevertakeuntil/</link>
+      <pubDate>Fri, 27 Nov 2020 00:00:00 +0000</pubDate>
+      
+      <guid>https://linkrober.github.io/bookshelf/2020/11/concatcatchtonevertakeuntil/</guid>
+      <description>&lt;ol&gt;
+&lt;li&gt;&lt;code&gt;- (RACSignal *)concat:(RACSignal *)signal&lt;/code&gt;&lt;/li&gt;
+&lt;/ol&gt;
+
+&lt;pre&gt;&lt;code&gt;//源码
+- (RACSignal *)concat:(RACSignal *)signal {
+	return [[RACSignal createSignal:^(id&amp;lt;RACSubscriber&amp;gt; subscriber) {
+		RACSerialDisposable *serialDisposable = [[RACSerialDisposable alloc] init];
+
+		RACDisposable *sourceDisposable = [self subscribeNext:^(id x) {
+			[subscriber sendNext:x];
+		} error:^(NSError *error) {
+			[subscriber sendError:error];
+		} completed:^{
+			RACDisposable *concattedDisposable = [signal subscribe:subscriber];
+			serialDisposable.disposable = concattedDisposable;
+		}];
+
+		serialDisposable.disposable = sourceDisposable;
+		return serialDisposable;
+	}] setNameWithFormat:@&amp;quot;[%@] -concat: %@&amp;quot;, self.name, signal];
+}
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;&lt;/p&gt;
+
+&lt;p&gt;多个信号顺序输出，只有当前一个信号&lt;code&gt;sendCompleted&lt;/code&gt;后一个信号才会执行。&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;//eg.
+RACSignal *s1 = [RACSignal createSignal:^RACDisposable *(id&amp;lt;RACSubscriber&amp;gt; subscriber) {
+    [subscriber sendNext:@&amp;quot;1&amp;quot;];
+    [subscriber sendCompleted];
+    return nil;
+}];
+
+RACSignal *s2 = [RACSignal createSignal:^RACDisposable *(id&amp;lt;RACSubscriber&amp;gt; subscriber) {
+    [subscriber sendNext:@&amp;quot;2&amp;quot;];
+    return nil;
+}];
+
+[[s1 concat:s2] subscribeNext:^(id x) {
+    NSLog(@&amp;quot;%@&amp;quot;,x);
+}];
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;输出：&lt;/p&gt;
+
+&lt;p&gt;2020-07-06 17:39:06.542592+0800 C-41[3323:243230] 1 &lt;/br&gt;
+2020-07-06 17:39:06.542817+0800 C-41[3323:243230] 2&lt;/p&gt;
+
+&lt;ol&gt;
+&lt;li&gt;&lt;code&gt;- (RACSignal *)catchTo:(RACSignal *)signal&lt;/code&gt;
+```
+//源码&lt;/li&gt;
+&lt;li&gt;(RACSignal *)catch:(RACSignal * (^)(NSError *error))catchBlock {
+	NSCParameterAssert(catchBlock != NULL);&lt;/li&gt;
+&lt;/ol&gt;
+
+&lt;p&gt;	return [[RACSignal createSignal:^(id&lt;RACSubscriber&gt; subscriber) {
+		RACSerialDisposable *catchDisposable = [[RACSerialDisposable alloc] init];&lt;/p&gt;
+
+&lt;p&gt;		RACDisposable *subscriptionDisposable = [self subscribeNext:^(id x) {
+			[subscriber sendNext:x];
+		} error:^(NSError *error) {
+			RACSignal *signal = catchBlock(error);
+			NSCAssert(signal != nil, @&amp;ldquo;Expected non-nil signal from catch block on %@&amp;rdquo;, self);
+			catchDisposable.disposable = [signal subscribe:subscriber];
+		} completed:^{
+			[subscriber sendCompleted];
+		}];&lt;/p&gt;
+
+&lt;p&gt;		return [RACDisposable disposableWithBlock:^{
+			[catchDisposable dispose];
+			[subscriptionDisposable dispose];
+		}];
+	}] setNameWithFormat:@&amp;rdquo;[%@] -catch:&amp;ldquo;, self.name];
+}&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;当某个信号发生错误时`senderError`，将替补信号的值作为备选值。
+
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;//eg.
+RACSignal *s1 = [RACSignal createSignal:^RACDisposable *(id&lt;RACSubscriber&gt; subscriber) {
+    [subscriber sendError:nil];
+    return nil;
+}];&lt;/p&gt;
+
+&lt;p&gt;RACSignal *s2 = [RACSignal createSignal:^RACDisposable *(id&lt;RACSubscriber&gt; subscriber) {
+    [subscriber sendNext:@&amp;ldquo;替补队员跟上&amp;rdquo;];
+    return nil;
+}];&lt;/p&gt;
+
+&lt;p&gt;[[s1 catchTo:s2] subscribeNext:^(id x) {
+    NSLog(@&amp;ldquo;%@&amp;rdquo;,x);
+}];&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;输出：
+
+2020-07-06 17:48:06.347187+0800 C-41[3418:248921] 替补队员跟上
+
+
+3. `+ (RACSignal *)never`
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;//源码
++ (RACSignal *)never {
+	return [[self createSignal:^ RACDisposable * (id&lt;RACSubscriber&gt; subscriber) {
+		return nil;
+	}] setNameWithFormat:@&amp;ldquo;+never&amp;rdquo;];
+}&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;订阅者永远收不到订阅值；没有错误；没有完成。
+
+
+
+4. `- (RACSignal *)takeUntil:(RACSignal *)signalTrigger`
+
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;//源码
+- (RACSignal *)takeUntil:(RACSignal *)signalTrigger {
+	return [[RACSignal createSignal:^(id&lt;RACSubscriber&gt; subscriber) {
+		RACCompoundDisposable *disposable = [RACCompoundDisposable compoundDisposable];
+		void (^triggerCompletion)(void) = ^{
+			[disposable dispose];
+			[subscriber sendCompleted];
+		};&lt;/p&gt;
+
+&lt;p&gt;		RACDisposable *triggerDisposable = [signalTrigger subscribeNext:^(id _) {
+			triggerCompletion();
+		} completed:^{
+			triggerCompletion();
+		}];&lt;/p&gt;
+
+&lt;p&gt;		[disposable addDisposable:triggerDisposable];&lt;/p&gt;
+
+&lt;p&gt;		RACDisposable *selfDisposable = [self subscribeNext:^(id x) {
+			[subscriber sendNext:x];
+		} error:^(NSError *error) {
+			[subscriber sendError:error];
+		} completed:^{
+			[disposable dispose];
+			[subscriber sendCompleted];
+		}];&lt;/p&gt;
+
+&lt;p&gt;		[disposable addDisposable:selfDisposable];&lt;/p&gt;
+
+&lt;p&gt;		return disposable;
+	}] setNameWithFormat:@&amp;rdquo;[%@] -takeUntil: %@&amp;ldquo;, self.name, signalTrigger];
+}&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;正在进行的信号叫做A信号，遇到信号B被订阅就停止。
+首先，通过A信号创建了一个中间信号A1。开始时对A信号进行了了订阅，并将值作为A1信号的输出。当B信号被订阅时，会触发A1信号的`sendCompleted`操作。这样无理A怎么发消息，A1都不会转发。
+
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;//eg.
+RACSubject *untilSignal = [RACSubject subject];
+RACSubject *afterUntilSignal = [RACSubject subject];&lt;/p&gt;
+
+&lt;p&gt;[[afterUntilSignal takeUntil:untilSignal] subscribeNext:^(id x) {
+    NSLog(@&amp;ldquo;%@&amp;rdquo;,x);
+}];&lt;/p&gt;
+
+&lt;p&gt;[untilSignal subscribeNext:^(id x) {
+    NSLog(@&amp;ldquo;%@&amp;rdquo;,x);
+}];&lt;/p&gt;
+
+&lt;p&gt;[afterUntilSignal sendNext:@&amp;ldquo;1&amp;rdquo;];
+[afterUntilSignal sendNext:@&amp;ldquo;2&amp;rdquo;];
+[untilSignal sendNext:@&amp;ldquo;stop&amp;rdquo;];
+[afterUntilSignal sendNext:@&amp;ldquo;3&amp;rdquo;];
+```
+输出&lt;/p&gt;
+
+&lt;p&gt;2020-07-06 17:42:51.878488+0800 C-41[3354:245702] 1&lt;/br&gt;
+2020-07-06 17:42:51.878642+0800 C-41[3354:245702] 2&lt;/br&gt;
+2020-07-06 17:42:51.878854+0800 C-41[3354:245702] stop&lt;/p&gt;</description>
+    </item>
+    
+    <item>
+      <title>zip</title>
+      <link>https://linkrober.github.io/bookshelf/2020/11/zip/</link>
+      <pubDate>Fri, 27 Nov 2020 00:00:00 +0000</pubDate>
+      
+      <guid>https://linkrober.github.io/bookshelf/2020/11/zip/</guid>
+      <description>&lt;pre&gt;&lt;code&gt;RACSignal *s1 = [RACSignal createSignal:^RACDisposable *(id&amp;lt;RACSubscriber&amp;gt; subscriber) {
+       [subscriber sendNext:@&amp;quot;1&amp;quot;];
+    return nil;
+}];
+RACSignal *s2 = [RACSignal createSignal:^RACDisposable *(id&amp;lt;RACSubscriber&amp;gt; subscriber) {
+    [subscriber sendNext:@&amp;quot;2&amp;quot;];
+    return nil;
+}];
+RACSignal *s3 = [RACSignal createSignal:^RACDisposable *(id&amp;lt;RACSubscriber&amp;gt; subscriber) {
+    [subscriber sendNext:@&amp;quot;3&amp;quot;];
+    return nil;
+}];
+
+RACSignal *zs = [RACSignal zip:@[s1,s2,s3]];
+
+[zs subscribeNext:^(id x) {
+    NSLog(@&amp;quot;%@&amp;quot;,x);
+}];
+
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;同&lt;code&gt;zip&lt;/code&gt;压缩的信号只有等所有的自信号都&lt;code&gt;sendNext&lt;/code&gt;之后才会执行订阅回调。&lt;/p&gt;
+
+&lt;p&gt;问题：
+1. 如何确保每个信号都发送完，才执行后压缩信号的订阅回调&lt;/p&gt;
+
+&lt;p&gt;&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;答：
++ (instancetype)join:(id&amp;lt;NSFastEnumeration&amp;gt;)streams block:(RACStream * (^)(id, id))block {
+    RACStream *current = nil;
+	// Creates streams of successively larger tuples by combining the input
+	// streams one-by-one.
+	for (RACStream *stream in streams) {
+		// For the first stream, just wrap its values in a RACTuple. That way,
+		// if only one stream is given, the result is still a stream of tuples.
+		if (current == nil) {
+			current = [stream map:^(id x) {
+				return RACTuplePack(x);
+			}];
+
+			continue;
+		}
+
+		current = block(current, stream);
+	}
+	    ....
+	    ....
+	    ....
+}
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;第一次&lt;code&gt;map&lt;/code&gt;操作信号1会生成一个新信号new1，new1和信号2经过&lt;code&gt;block(current,stream)&lt;/code&gt;又生成一个新信号new2，以此类推。
+这两种操作都会对原始信号进行订阅，如果接受不到请求就不会继续下去。&lt;/p&gt;
+
+&lt;ol&gt;
+&lt;li&gt;信号是如何被压平的&lt;/li&gt;
+&lt;/ol&gt;
+
+&lt;p&gt;在发生zs的订阅之后，通过&lt;code&gt;RACTuplePack(x)&lt;/code&gt;，生成一个元组，然后不断循环，形成元组套值(元组+值)的形式&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;&amp;lt;RACTuple: 0x60000236c720&amp;gt; (
+    &amp;lt;RACTuple: 0x600002375d00&amp;gt; (1),
+    2
+)
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;最后通过递归算法将值从元组套元组的组合里一一提取出来，这样信号就压平了。&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;NSMutableArray *values = [[NSMutableArray alloc] init];
+while (xs != nil) {
+    [values insertObject:xs.last ?: RACTupleNil.tupleNil atIndex:0];
+	xs = (xs.count &amp;gt; 1 ? xs.first : nil);
+}
+return [RACTuple tupleWithObjectsFromArray:values];
+&lt;/code&gt;&lt;/pre&gt;</description>
+    </item>
+    
+    <item>
+      <title>信号中的信号-flatten</title>
+      <link>https://linkrober.github.io/bookshelf/2020/11/%E4%BF%A1%E5%8F%B7%E4%B8%AD%E7%9A%84%E4%BF%A1%E5%8F%B7-flatten/</link>
+      <pubDate>Fri, 27 Nov 2020 00:00:00 +0000</pubDate>
+      
+      <guid>https://linkrober.github.io/bookshelf/2020/11/%E4%BF%A1%E5%8F%B7%E4%B8%AD%E7%9A%84%E4%BF%A1%E5%8F%B7-flatten/</guid>
+      <description>&lt;pre&gt;&lt;code&gt;    RACSignal *targetSignal = [RACSignal createSignal:^RACDisposable *(id&amp;lt;RACSubscriber&amp;gt; subscriber) {
+        [subscriber sendNext:@&amp;quot;1&amp;quot;];
+        return nil;
+    }];
+    
+    RACSignal *signal = [RACSignal createSignal:^RACDisposable *(id&amp;lt;RACSubscriber&amp;gt; subscriber) {
+    //发送一个信号
+        [subscriber sendNext:targetSignal];
+        return nil;
+    }];
+    
+    RACSignal *flattenSignal = [signal flatten];
+    [flattenSignal subscribeNext:^(id x) {
+        NSLog(@&amp;quot;%@&amp;quot;,x);//1
+    }];
+
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;&lt;/p&gt;
+
+&lt;p&gt;&lt;code&gt;[signal flatten]&lt;/code&gt;做了什么，可以看出最终返回的是一个信号，深入方法里面，进行了如下的方法调用&lt;/p&gt;
+
+&lt;ol&gt;
+&lt;li&gt;&lt;code&gt;- (instancetype)flatten&lt;/code&gt;&lt;/li&gt;
+&lt;li&gt;&lt;code&gt;- (instancetype)flattenMap:(RACStream * (^)(id value))block&lt;/code&gt;&lt;/li&gt;
+&lt;li&gt;&lt;code&gt;- (RACSignal *)bind:(RACStreamBindBlock (^)(void))block&lt;/code&gt;&lt;/li&gt;
+&lt;/ol&gt;
+
+&lt;p&gt;最终：&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;return [[RACSignal createSignal:^(id&amp;lt;RACSubscriber&amp;gt; subscriber) {....}
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;在这个方法里面，首先对自己就行了订阅，于是执行了&lt;code&gt;[subscriber sendNext:targetSignal];&lt;/code&gt;然后两层回调，&lt;code&gt;bindingBlock(x,&amp;amp;stop)&lt;/code&gt;和&lt;code&gt;block(value)&lt;/code&gt;。返回信号&lt;code&gt;targetSignal&lt;/code&gt;。将信号作为&lt;code&gt;void (^addSignal)(RACSignal *) = ^(RACSignal *signal){}&lt;/code&gt;的入参，其实是在这里面执行&lt;code&gt;targetSignal&lt;/code&gt;订阅，得到了值&lt;strong&gt;1&lt;/strong&gt;，最后通过原来的&lt;code&gt;[subscriber sendNext:x];&lt;/code&gt;将值返回。&lt;/p&gt;
+
+&lt;p&gt;这时候你可能想，这里只嵌套了一层信号，如果嵌套两层怎么处理。你可以类比成递归，将&lt;code&gt;RACSignal *flattenSignal = [signal flatten]&lt;/code&gt;作为递归中的一步，然后对层层信号进行&lt;code&gt;flatten&lt;/code&gt;操作，最后就能得到你想要的结果。&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;//三个信号
+    RACSignal *signal1 = [RACSignal createSignal:^RACDisposable *(id&amp;lt;RACSubscriber&amp;gt; subscriber) {
+        [subscriber sendNext:@&amp;quot;1&amp;quot;];
+        return nil;
+    }];
+    
+    RACSignal *signal2 = [RACSignal createSignal:^RACDisposable *(id&amp;lt;RACSubscriber&amp;gt; subscriber) {
+        [subscriber sendNext:signal1];
+        return nil;
+    }];
+    
+    RACSignal *faltSignal2 = [signal2 flattenMap:^RACStream *(id value) {
+        NSLog(@&amp;quot;&amp;quot;);
+        return value;
+    }];
+    
+    
+    RACSignal *param3 = [RACSignal createSignal:^RACDisposable *(id&amp;lt;RACSubscriber&amp;gt; subscriber) {
+        [subscriber sendNext:faltSignal2];
+        return nil;
+    }];
+    
+    RACSignal *flatSignal3 = [param3 flattenMap:^RACStream *(id value) {
+        NSLog(@&amp;quot;&amp;quot;);
+        return value;
+    }];
+    
+    [flatSignal3 subscribeNext:^(id x) {
+        NSLog(@&amp;quot;&amp;quot;);
+    }];
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;最后输出了1&lt;/p&gt;</description>
+    </item>
+    
+    <item>
+      <title>冷信号和热信号构建触发流程</title>
+      <link>https://linkrober.github.io/bookshelf/2020/11/%E5%86%B7%E4%BF%A1%E5%8F%B7%E5%92%8C%E7%83%AD%E4%BF%A1%E5%8F%B7%E6%9E%84%E5%BB%BA%E8%A7%A6%E5%8F%91%E6%B5%81%E7%A8%8B/</link>
+      <pubDate>Fri, 27 Nov 2020 00:00:00 +0000</pubDate>
+      
+      <guid>https://linkrober.github.io/bookshelf/2020/11/%E5%86%B7%E4%BF%A1%E5%8F%B7%E5%92%8C%E7%83%AD%E4%BF%A1%E5%8F%B7%E6%9E%84%E5%BB%BA%E8%A7%A6%E5%8F%91%E6%B5%81%E7%A8%8B/</guid>
+      <description>&lt;p&gt;提到RAC就离不开冷热信号。在实际的开发中如果不理清两者的用法就会出问题。&lt;/p&gt;
+
+&lt;p&gt;冷信号像专车，从你打车（订阅）开始，从出发地点（sendNext）发往你在的地方。它是一对一的，不会错过。&lt;/p&gt;
+
+&lt;p&gt;热信号像公交车，在你等车（订阅）之前可能已经发车了（sendNext）；不仅你可以上，其他人也能上，它是一对多的；错过了这班车（假设只有一班）就没了。&lt;/p&gt;
+
+&lt;p&gt;&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;//冷信号
+    RACSignal *signal = [RACSignal createSignal:^RACDisposable *(id&amp;lt;RACSubscriber&amp;gt; subscriber) {
+        [subscriber sendNext:@1];
+        return nil;
+    }];
+
+    [[RACScheduler mainThreadScheduler] afterDelay:1.1 schedule:^{
+        [signal subscribeNext:^(id x) {
+            NSLog(@&amp;quot;cold signal  recveive: %@&amp;quot;, x);
+        }];
+    }];
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;blockquote&gt;
+&lt;p&gt;输出: cold signal  recveive: 1&lt;/p&gt;
+&lt;/blockquote&gt;
+
+&lt;pre&gt;&lt;code&gt;//热信号
+        RACMulticastConnection *connection =  [[RACSignal createSignal:^RACDisposable *(id&amp;lt;RACSubscriber&amp;gt; subscriber) {
+            [subscriber sendNext:@1];
+            return nil;
+        }] publish];
+        [connection connect];
+
+        RACSignal *signal = connection.signal;
+
+        [[RACScheduler mainThreadScheduler] afterDelay:1.1 schedule:^{
+            [signal subscribeNext:^(id x) {
+                NSLog(@&amp;quot;hot signal recveive: %@&amp;quot;, x);
+            }];
+        }];
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;blockquote&gt;
+&lt;p&gt;没有输出，公交车比你早到了1.1s&lt;/p&gt;
+&lt;/blockquote&gt;
+
+&lt;p&gt;冷信号转换成热信号经过了两步&lt;code&gt;[RACSignal publish]&lt;/code&gt;和&lt;code&gt;[RACMulticastConnection connect]&lt;/code&gt;，
+第一步将信号&lt;code&gt;signal&lt;/code&gt;和&lt;code&gt;subject&lt;/code&gt;进行绑定，返回一个&lt;code&gt;RACMulticastConnection&lt;/code&gt;对象。&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;- (RACMulticastConnection *)multicast:(RACSubject *)subject {
+	[subject setNameWithFormat:@&amp;quot;[%@] -multicast: %@&amp;quot;, self.name, subject.name];
+	RACMulticastConnection *connection = [[RACMulticastConnection alloc] initWithSourceSignal:self subject:subject];
+	return connection;
+}
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;第二步立即触发信号的订阅，公交车开始发车了&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;- (RACDisposable *)connect {
+	BOOL shouldConnect = OSAtomicCompareAndSwap32Barrier(0, 1, &amp;amp;_hasConnected);
+
+	if (shouldConnect) {
+		self.serialDisposable.disposable = [self.sourceSignal subscribe:_signal];
+	}
+
+	return self.serialDisposable;
+}
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;那么&lt;code&gt;RACMulticastConnection&lt;/code&gt;是做什么的呢?
+它将信号（Signal）和订阅（subject）包装，为一个或多个订阅者提供服务（一对多）。当信号存在潜在的副作用或者接受事件不超过1次（eg.&lt;code&gt;[subscriber sendNext:@1]&lt;/code&gt;）的时候使用它。&lt;/p&gt;
+
+&lt;p&gt;&lt;img src=&#34;https://note.youdao.com/yws/api/personal/file/WEBb47d084e7444069fc09c784160fa22be?method=download&amp;amp;shareKey=44e2ac121991c7bfe127a3f1b3539762&#34; alt=&#34;&#34; /&gt;&lt;/p&gt;</description>
+    </item>
     
     <item>
       <title>方法替换和Aspects</title>
@@ -2074,1028 +3112,6 @@ com/library/content/documentation/Cocoa/Conceptual/Multithreading/ThreadSafety/T
 c&#34;&gt;pthreadcondwait&lt;/a&gt;&lt;/p&gt;
 
 &lt;p&gt;&lt;a href=&#34;https://stackoverflow.com/questions/3513045/conditional-variable-vs-semaphore&#34;&gt;Conditional Variable vs Semaphore&lt;/a&gt;&lt;/p&gt;</description>
-    </item>
-    
-    <item>
-      <title>快速排序</title>
-      <link>https://linkrober.github.io/bookshelf/2017/12/%E5%BF%AB%E9%80%9F%E6%8E%92%E5%BA%8F/</link>
-      <pubDate>Fri, 01 Dec 2017 00:00:00 +0000</pubDate>
-      
-      <guid>https://linkrober.github.io/bookshelf/2017/12/%E5%BF%AB%E9%80%9F%E6%8E%92%E5%BA%8F/</guid>
-      <description>&lt;span class=&#34;highlight-text primary&#34;&gt;
-故事
-&lt;/span&gt;
-
-&lt;p&gt;快速排序由&lt;strong&gt;C.A.R.Hoare（东尼霍尔）&lt;/strong&gt;在1960年提出。之后又有许多人对此进行改进。如果你对快速排序感兴趣可以去看看东尼霍尔1962年在Computer Journal发表的论文“Quicksort”以及《算法导论》的第七章。&lt;/p&gt;
-
-&lt;p&gt;&lt;/b&gt;
-&lt;span class=&#34;highlight-text primary&#34;&gt;
-基本思想
-&lt;/span&gt;&lt;/p&gt;
-
-&lt;p&gt;通过一次排序将需要排序的数组分割成两部分,一部分的值比另一部分要小。再将这两个部分通过上面的方式排序，以此类推。最后分割成了很小的一部分，直到每个数字。整个排序的过程我们可以通过递归的方式进行。&lt;/p&gt;
-
-&lt;p&gt;&lt;/b&gt;
-&lt;span class=&#34;highlight-text primary&#34;&gt;
-时间复杂度
-&lt;/span&gt;&lt;/p&gt;
-
-&lt;p&gt;快速排序之所比较快，因为相比冒泡排序，每次交换是跳跃式的。每次排序的时候设置一个基准点，将小于等于基准点的数全部放到基准点的左边，将大于等于基准点的数全部放到基准点的右边。这样在每次交换的时候就不会像冒泡排序一样每次只能在相邻的数之间进行交换，交换的距离就大的多了。因此总的比较和交换次数就少了，速度自然就提高了。当然在最坏的情况下，仍可能是相邻的两个数进行了交换。因此快速排序的最差时间复杂度和冒泡排序是一样的都是O(N2)，它的平均时间复杂度为O(NlogN)。&lt;/p&gt;
-
-&lt;p&gt;&lt;/b&gt;
-&lt;span class=&#34;highlight-text primary&#34;&gt;
-Example：演示第一轮排序
-&lt;/span&gt;&lt;/p&gt;
-
-&lt;pre&gt;&lt;code&gt;5 7 6 4 3 1 9 8 0 2
-&lt;/code&gt;&lt;/pre&gt;
-
-&lt;p&gt;对上面的数进行排序,先定义一个基准数：&lt;strong&gt;5&lt;/strong&gt;。比较从两边进行，一边是从索引为0的开始，如果遇到比5大的就停下；另一边是从索引为9的开始，如果遇到比5小的就停下。然后交换两遍的数。在第一轮中，从左边开始比较的在遇到7之后就会停下来，因为7比5大；从右边开始的遇到2就会停下来，因为2比5小。然后交换两个人的位置。&lt;/p&gt;
-
-&lt;pre&gt;&lt;code&gt;5 2 6 4 3 1 9 8 0 7
-&lt;/code&gt;&lt;/pre&gt;
-
-&lt;p&gt;继续走，6比5大，0比5小，交换&lt;/p&gt;
-
-&lt;pre&gt;&lt;code&gt;5 2 0 4 3 1 9 8 6 7
-&lt;/code&gt;&lt;/pre&gt;
-
-&lt;p&gt;继续走，左边的遇到了9，比5大，停下来；右边的经过8，快要和左边的相遇了停下来。这时候当把9和5交换的时候发现排序后5左边并没有都比右边小&lt;/p&gt;
-
-&lt;pre&gt;&lt;code&gt;9 2 0 4 3 1 5 8 6 7
-&lt;/code&gt;&lt;/pre&gt;
-
-&lt;div class=&#34;alert danger &#34;&gt;
-  &lt;p&gt;注意这里我们刚开始的时候就先后顺序走错了，应该右边的先比较。&lt;/p&gt;
-&lt;/div&gt;
-
-&lt;p&gt;纠正一下，重新开始，最后一步比较的时候：这时候右边的先到1，发现1比5小停下。等左边的和右边的相遇时。将右边的1和基准数5交换，如下&lt;/p&gt;
-
-&lt;pre&gt;&lt;code&gt;1 2 0 4 3 5 9 8 6 7
-&lt;/code&gt;&lt;/pre&gt;
-
-&lt;span class=&#34;highlight-text primary&#34;&gt;
-Code
-&lt;/span&gt;
-
-&lt;pre&gt;&lt;code&gt;int a[10] = {6,1,2,7,9,3,4,5,10,8};
-
-void quickSort(int left,int right){
-    int i,j,t,temp;
-    if(left &amp;gt; right){
-        return;
-    }
-    
-    temp = a[left];
-    i = left;
-    j = right;
-    
-    while (i!=j) {
-        while (a[j] &amp;gt; temp &amp;amp;&amp;amp; i &amp;lt; j) {
-            j--;
-        }
-        while (a[i] &amp;lt;= temp &amp;amp;&amp;amp; i &amp;lt; j) {
-            i++;
-        }
-        
-        if(i &amp;lt; j){
-            t = a[i];
-            a[i] = a[j];
-            a[j] = t;
-        }
-    }
-    a[left] = a[i];
-    a[i] = temp;
-    
-    quickSort(left, i - 1);
-    quickSort(i + 1, right);
-}
-
-int main(int argc, const char * argv[]) {
-    // insert code here...
-    quickSort(0, 9);
-    for(int i = 0 ; i &amp;lt; 10;i++){
-        printf(&amp;quot;%d &amp;quot;,a[i]);
-    }
-    return 0;
-}
-&lt;/code&gt;&lt;/pre&gt;</description>
-    </item>
-    
-    <item>
-      <title>一个音视频厂的图像处理流程概述</title>
-      <link>https://linkrober.github.io/bookshelf/2017/11/%E4%B8%80%E4%B8%AA%E9%9F%B3%E8%A7%86%E9%A2%91%E5%8E%82%E7%9A%84%E5%9B%BE%E5%83%8F%E5%A4%84%E7%90%86%E6%B5%81%E7%A8%8B%E6%A6%82%E8%BF%B0/</link>
-      <pubDate>Mon, 27 Nov 2017 00:00:00 +0000</pubDate>
-      
-      <guid>https://linkrober.github.io/bookshelf/2017/11/%E4%B8%80%E4%B8%AA%E9%9F%B3%E8%A7%86%E9%A2%91%E5%8E%82%E7%9A%84%E5%9B%BE%E5%83%8F%E5%A4%84%E7%90%86%E6%B5%81%E7%A8%8B%E6%A6%82%E8%BF%B0/</guid>
-      <description>&lt;p&gt;&lt;img src=&#34;http://upload-images.jianshu.io/upload_images/1086250-3eac00965effbe70?imageMogr2/auto-orient/strip%7CimageView2/2/w/320&#34; alt=&#34;&#34; /&gt;&lt;/p&gt;
-
-&lt;p&gt;视频编辑分为两部分：&lt;strong&gt;Camrea Engine（视频资源采集）&lt;/strong&gt;和&lt;strong&gt;Video Edit Engine（后期视频编辑）&lt;/strong&gt;。在Camrea Engine采集的时候我们也可以做一些编辑操作，这叫预处理，比如说加滤镜。等到把采集到的资源交给Video Edit Engine时就是后处理。&lt;/p&gt;
-
-&lt;p&gt;&lt;/p&gt;
-
-&lt;p&gt;Camera Engine是通过把被摄对象的光信号转变成相应的电信号，这时候还是模拟信号，经过采样、量化、编码，形成数字信号，计算机就可以用0和1来记录它，最终保存到磁盘上。&lt;/p&gt;
-
-&lt;p&gt;&lt;span class=&#34;highlight-text blue&#34;&gt;这里先阐述一下基本知识：&lt;/span&gt;&lt;/br&gt;
-滤镜是怎么加上去的呢？这要从图片说起。其实视频就是很多张图片连续播放形成的。人眼为什么可以看到东西，物体通过漫反射把光子打到视网膜上，而这个影像在视网膜上消失需要一段时间，这就是残影。经过试验只要两张图片的切换在1/24秒人眼是分辨不出来的，那么对人来说它就是连续的。&lt;/p&gt;
-
-&lt;p&gt;&lt;img src=&#34;http://upload-images.jianshu.io/upload_images/1086250-f7df91c7c0967686?imageMogr2/auto-orient/strip%7CimageView2/2/w/700&#34; alt=&#34;&#34; /&gt;&lt;/p&gt;
-
-&lt;p&gt;在胶卷时代是每秒要求24张，数字时期是达到了每秒30张，就算中间丢了6张图片我们也是不知道的，增加了视频处理的容错率，下面我们专业一点，用帧来代表一张图。那么一帧是怎么构成的呢，每帧上的色彩都是通过RGB三原色各种不同的组合呈现给我们的。在我们的日常生活中经常会听分辨率1080920类似的词，它说的就是在这个屏幕上有横向有920个像素，纵向有1080个像素，每个像素就是一个色点。把图片放大，你就可以清晰的看到图片是由一个个小方块构成的，每个方块都有自己的颜色。这里的颜色就是通过RGB三原色叠加而成的，而RGB每个都有256种亮度，从0到255。那么总共就能组合出256256*256=16777216种颜色，很多吧。&lt;/p&gt;
-
-&lt;p&gt;&lt;span class=&#34;highlight-text blue&#34;&gt;到这里基本知识我们铺垫的差不多了&lt;/span&gt;&lt;/br&gt;
-再回到加滤镜的话题，在业务层开发中我们加滤镜其实是加入了一种可以让Camera Engine识别的描述，它描述了每一帧上的每一个像素如何被“修改”，这里的“修改”可以是直接修改像点的RBG值，也可以是在这一帧上叠加一层(当然也可以叠加多层)。肉眼就会看到和原来视频不同的滤镜效果。有的滤镜亮，有的滤镜暗等等，其实最终就是通过调整GRB的亮度来实现的。到这里就是是视频的预处理。&lt;/p&gt;
-
-&lt;p&gt;&lt;img src=&#34;http://upload-images.jianshu.io/upload_images/1086250-b0f7dc9db4e364fc?imageMogr2/auto-orient/strip%7CimageView2/2/w/320&#34; alt=&#34;&#34; /&gt;&lt;/p&gt;
-
-&lt;p&gt;&lt;strong&gt;Video Edit Engine&lt;/strong&gt;设计到一下几个部分：storyboard、clip、stream、producer、effect和player。&lt;/p&gt;
-
-&lt;p&gt;storyboard相当于一个画布，这是一个抽象的概念，便于我们理解视频编辑，所有的编辑操作我们都在这上面进行。上面放的就是视频、图片，这里并不是指视频、图片的原文件，而是对原文件的描述。比如视频的起始时间和终止时间、视频的路径，方向等等。这种描述是通过一种面向对象的类clip体现的。一个storyboard上可以有很多段描述文件clip，它们是有序的，可修改的。这时候我们也可以为clip添加effect。effect可以理解为修改视频的描述文件的抽象类（我们使用的素材template就是effect更上层的抽象）。在storyboard导出成视频或图片的时候，它告诉Engine怎么修改视频的，最终也是通过修改每一帧上的像素点来实现的。
-&lt;img src=&#34;http://upload-images.jianshu.io/upload_images/1086250-765d8bfa6eb45e74?imageMogr2/auto-orient/strip%7CimageView2/2/w/700&#34; alt=&#34;&#34; /&gt;&lt;/p&gt;
-
-&lt;p&gt;在导出的时候需要经过进一步封装，把storyboard封装成stream，它会将文件进行解码，根据effect对clip的描述，通过producer生成一个用户想要的视频。只有通过stream才能压缩编码成本地的文件或者解码成比特流让播放器player来使用。所以stream起到了一个对VF（视频）和AF（音频）编解码的作用。这里就是视频的后处理。&lt;/p&gt;
-
-&lt;p&gt;到这里就是一些视频相关的厂视频图片编辑的大概思路。&lt;/p&gt;</description>
-    </item>
-    
-    <item>
-      <title>RCTRootView、RCTBridge做了什么</title>
-      <link>https://linkrober.github.io/bookshelf/2017/10/rctrootviewrctbridge%E5%81%9A%E4%BA%86%E4%BB%80%E4%B9%88/</link>
-      <pubDate>Sat, 28 Oct 2017 00:00:00 +0000</pubDate>
-      
-      <guid>https://linkrober.github.io/bookshelf/2017/10/rctrootviewrctbridge%E5%81%9A%E4%BA%86%E4%BB%80%E4%B9%88/</guid>
-      <description>&lt;p&gt;本系列文章作为学习RN期间的总结&lt;/p&gt;
-
-&lt;ul&gt;
-&lt;li&gt;&lt;a href=&#34;https://linkrober.github.io/bookshelf/2017/10/react-native%E5%A6%82%E4%BD%95%E9%9B%86%E6%88%90%E5%88%B0%E7%8E%B0%E6%9C%89%E9%A1%B9%E7%9B%AE%E4%B8%AD/&#34;&gt;React Native如何集成到现有项目中&lt;/a&gt;&lt;/li&gt;
-&lt;li&gt;&lt;a href=&#34;https://linkrober.github.io/bookshelf/2017/10/react-native%E5%92%8Cnative%E9%97%B4%E7%9A%84%E9%80%9A%E4%BF%A1/&#34;&gt;React Native和Native间的通信实践&lt;/a&gt;&lt;/li&gt;
-&lt;li&gt;RCTRootView、RCTBridge做了什么&lt;/li&gt;
-&lt;li&gt;&lt;a href=&#34;https://linkrober.github.io/bookshelf/2017/12/native%E5%92%8Cjs%E9%80%9A%E4%BF%A1%E6%A6%82%E8%BF%B0/&#34;&gt;Object-C和JS通信概述&lt;/a&gt;&lt;/li&gt;
-&lt;/ul&gt;
-
-&lt;p&gt;&lt;/p&gt;
-
-&lt;p&gt;本章主要讨论，RCTRootView、RCTBridge彼此之间的关系，以及它们做了什么。先放上类图&lt;/p&gt;
-
-&lt;p&gt;&lt;img src=&#34;../../../相关类图.png&#34; alt=&#34;相关类图&#34; /&gt;&lt;/p&gt;
-
-&lt;h4 id=&#34;rctrootview&#34;&gt;RCTRootView&lt;/h4&gt;
-
-&lt;p&gt;它是RN在Native上展示的容器，&lt;code&gt;RCTJavaScriptWillStartLoadingNotification&lt;/code&gt;、&lt;code&gt;RCTJavaScriptDidLoadNotification&lt;/code&gt;、&lt;code&gt;RCTContentDidAppearNotification&lt;/code&gt;这些通知注册都在里面。同时也是运行js的入口。&lt;/p&gt;
-
-&lt;p&gt;&lt;span class=&#34;highlight-text blue&#34;&gt;RCTJavaScriptWillStartLoadingNotification&lt;/span&gt;&lt;/br&gt;
-当你在Debug模式下，选择&lt;strong&gt;Live Reload&lt;/strong&gt;每次保存js文件的时候就会重新加载js。之前的&lt;code&gt;reactTag&lt;/code&gt;会清空，等待重新赋值，但第一次初始化并不会触发这个通知。因为通知这时候还没注册。&lt;/p&gt;
-
-&lt;p&gt;&lt;span class=&#34;highlight-text blue&#34;&gt;RCTJavaScriptDidLoadNotification&lt;/span&gt;&lt;/br&gt;
-同样的在&lt;strong&gt;Live Reload&lt;/strong&gt;模式下，每次保存，才会正真的重新加载js，完毕之后，开始视图view的重新初始化即，&lt;code&gt;RCTRootContentView&lt;/code&gt;，然后&lt;code&gt;RCTRootView&lt;/code&gt;会通过bridge发送消息&lt;/p&gt;
-
-&lt;pre&gt;&lt;code&gt;- (void)enqueueJSCall:(NSString *)module 
-			   method:(NSString *)method 
-			     args:(NSArray *)args 
-		   completion:(dispatch_block_t)completion;
-&lt;/code&gt;&lt;/pre&gt;
-
-&lt;p&gt;它把模块名称，方法名和在native中定义的属性（上一节提到的properies）发送到js端，让js端完整的逻辑渲染&lt;/p&gt;
-
-&lt;blockquote&gt;
-&lt;p&gt;它们是如何控制在第一次初始化rootview的时候不执行&lt;code&gt;RCTJavaScriptDidLoadNotification&lt;/code&gt;这个通知定义的事件的呢？是通过下面的判断&lt;/p&gt;
-&lt;/blockquote&gt;
-
-&lt;pre&gt;&lt;code&gt; RCTBridge *bridge = notification.userInfo[@&amp;quot;bridge&amp;quot;];
-  if (bridge != _contentView.bridge) {
-    [self bundleFinishedLoading:bridge];
-  }
-&lt;/code&gt;&lt;/pre&gt;
-
-&lt;div class=&#34;alert danger &#34;&gt;
-  &lt;p&gt;&lt;code&gt;RCTBatchedBridge.mm&lt;/code&gt;是&lt;code&gt;RCTBridge.m&lt;/code&gt;的子类，但是在后面可能会废弃。&lt;code&gt;RCTBridge&lt;/code&gt;通过一种向下转型的方式，让其拥有了子类的能力。&lt;/p&gt;
-&lt;/div&gt;
-
-&lt;p&gt;&lt;span class=&#34;highlight-text blue&#34;&gt;RCTContentDidAppearNotification&lt;/span&gt;&lt;/br&gt;
-在视图出来的时候RN会通过这个通知隐藏loading页面，loading页面也是可以自定义的，通过重新它的&lt;code&gt;setLoadingView:&lt;/code&gt;方法。&lt;/p&gt;
-
-&lt;span class=&#34;highlight-text yellow&#34;&gt;总结：&lt;/span&gt;
-
-&lt;ul&gt;
-&lt;li&gt;负责RN和Native通信的&lt;code&gt;RCTBridge&lt;/code&gt;实例的初始化。&lt;/li&gt;
-&lt;li&gt;正真用来展示视图的&lt;code&gt;RCTRootContentView&lt;/code&gt;的初始化，完事后通过&lt;code&gt;[self insertSubview:_contentView atIndex:0];&lt;/code&gt;的方式加到rootview上。&lt;/li&gt;
-&lt;li&gt;负责loading视图的展示和隐藏。&lt;/li&gt;
-&lt;li&gt;负责在刷新视图时清空reactTag，它是也是区分js中每个view的identifier。&lt;/li&gt;
-&lt;li&gt;负责通知&lt;code&gt;RCTBridge&lt;/code&gt;在合适的时候向JS发送已经准备好的信息，模块名，方法名、参数一起传递过去。&lt;/li&gt;
-&lt;/ul&gt;
-
-&lt;h4 id=&#34;rctbridge&#34;&gt;RCTBridge&lt;/h4&gt;
-
-&lt;p&gt;所有的模块都保存在内存的静态常量区域，这个内存空间是在&lt;code&gt;RCTBridge&lt;/code&gt;中被初始化的。因此这些模块属于全局的变量，可以在不同的bridge之间共享。可以通过&lt;code&gt;NSString *RCTBridgeModuleNameForClass(Class cls)&lt;/code&gt;拿到每个模块的名称。&lt;/p&gt;
-
-&lt;pre&gt;&lt;code&gt;NSString *RCTBridgeModuleNameForClass(Class cls)
-{
-#if RCT_DEBUG
-  RCTAssert([cls conformsToProtocol:@protocol(RCTBridgeModule)],
-            @&amp;quot;Bridge module `%@` does not conform to RCTBridgeModule&amp;quot;, cls);
-#endif
-
-  NSString *name = [cls moduleName];
-  if (name.length == 0) {
-    name = NSStringFromClass(cls);
-  }
-
-  if ([name hasPrefix:@&amp;quot;RK&amp;quot;]) {
-    name = [name substringFromIndex:2];
-  } else if ([name hasPrefix:@&amp;quot;RCT&amp;quot;]) {
-    name = [name substringFromIndex:3];
-  }
-
-  return name;
-}
-&lt;/code&gt;&lt;/pre&gt;
-
-&lt;p&gt;从上面的代码可以看出，在native中定义的模块在被传递到js的时候会加上&lt;code&gt;RK&lt;/code&gt;或者&lt;code&gt;RCT&lt;/code&gt;前缀。&lt;/p&gt;
-
-&lt;div class=&#34;alert info no-icon &#34;&gt;
-  &lt;p&gt;模块都是遵循&lt;code&gt;RCTBridgeModule&lt;/code&gt;协议的，用宏&lt;code&gt;RCT_EXPORT_MODULE();&lt;/code&gt;进行声明；&lt;/p&gt;
-&lt;/div&gt;
-
-&lt;p&gt;JS队列的初始化会在&lt;code&gt;RCTBridge&lt;/code&gt;被调用到的时候通过&lt;code&gt;+ (void)initialize&lt;/code&gt;进行初始化，而且它是一个单列对象。通过C的&lt;code&gt;extern __attribute__((visibility(&amp;quot;default&amp;quot;)))&lt;/code&gt;暴露出来，让该队列变量暴露在动态链接库之外&lt;/p&gt;
-
-&lt;pre&gt;&lt;code&gt;dispatch_queue_t RCTJSThread;
-
-+ (void)initialize
-{
-  static dispatch_once_t onceToken;
-  dispatch_once(&amp;amp;onceToken, ^{
-
-    // Set up JS thread
-    RCTJSThread = (id)kCFNull;
-  });
-}
-&lt;/code&gt;&lt;/pre&gt;
-
-&lt;p&gt;每一个当前视图正在使用的bridge也会放在静态常量区，每次视图切换的时候都会重新赋值。&lt;/p&gt;
-
-&lt;pre&gt;&lt;code&gt;static RCTBridge *RCTCurrentBridgeInstance = nil;
-
-/**
- * The last current active bridge instance. This is set automatically whenever
- * the bridge is accessed. It can be useful for static functions or singletons
- * that need to access the bridge for purposes such as logging, but should not
- * be relied upon to return any particular instance, due to race conditions.
- */
-+ (instancetype)currentBridge
-{
-  return RCTCurrentBridgeInstance;
-}
-
-+ (void)setCurrentBridge:(RCTBridge *)currentBridge
-{
-  RCTCurrentBridgeInstance = currentBridge;
-}
-&lt;/code&gt;&lt;/pre&gt;
-
-&lt;p&gt;在&lt;code&gt;RCTBridge&lt;/code&gt;的初始化方法中同时还会对&lt;code&gt;RCTBatchedBridge&lt;/code&gt;进行初始化，由其发送消息开始加载js。其中分为两步：&lt;/p&gt;
-
-&lt;ul&gt;
-&lt;li&gt;初始化modul和load资源&lt;/li&gt;
-&lt;li&gt;设置JS的Executor和modul的配置&lt;/li&gt;
-&lt;/ul&gt;
-
-&lt;p&gt;它们在同一个队列&lt;code&gt;dispatch_queue_t bridgeQueue = dispatch_queue_create(&amp;quot;com.facebook.react.RCTBridgeQueue&amp;quot;, DISPATCH_QUEUE_CONCURRENT);&lt;/code&gt;里的两个不同的group中异步执行：&lt;/p&gt;
-
-&lt;ul&gt;
-&lt;li&gt;&lt;code&gt;dispatch_group_t initModulesAndLoadSource = dispatch_group_create();&lt;/code&gt;&lt;/li&gt;
-&lt;li&gt;&lt;code&gt;dispatch_group_t setupJSExecutorAndModuleConfig = dispatch_group_create();&lt;/code&gt;&lt;/li&gt;
-&lt;/ul&gt;
-
-&lt;p&gt;因为在第一个group中的异步方法中也存在异步操作所有作者使用的&lt;code&gt;dispatch_group_enter()&lt;/code&gt; 和 &lt;code&gt;dispatch_group_leave()&lt;/code&gt;。&lt;/p&gt;
-
-&lt;p&gt;第二个group直接用的&lt;code&gt;dispatch_group_async(dispatch_group_t  _Nonnull group, dispatch_queue_t  _Nonnull queue, ^(void)block)&lt;/code&gt;
-当第二group的异步任务完成之后（&lt;code&gt;initModulesAndLoadSource&lt;/code&gt;依赖&lt;code&gt;setupJSExecutorAndModuleConfig&lt;/code&gt;），就开始执行对应的notify闭包向js注入json字符串&lt;/p&gt;
-
-&lt;pre&gt;&lt;code&gt;dispatch_group_notify(setupJSExecutorAndModuleConfig, bridgeQueue, ^{
-      // We&#39;re not waiting for this to complete to leave dispatch group, since
-      // injectJSONConfiguration and executeSourceCode will schedule operations
-      // on the same queue anyway.
-      [performanceLogger markStartForTag:RCTPLNativeModuleInjectConfig];
-      [weakSelf injectJSONConfiguration:config onComplete:^(NSError *error) {
-        [performanceLogger markStopForTag:RCTPLNativeModuleInjectConfig];
-        if (error) {
-          RCTLogWarn(@&amp;quot;Failed to inject config: %@&amp;quot;, error);
-          dispatch_async(dispatch_get_main_queue(), ^{
-            [weakSelf stopLoadingWithError:error];
-          });
-        }
-      }];
-&lt;/code&gt;&lt;/pre&gt;
-
-&lt;p&gt;待第二个group结束，开始执行第一个group对应的notify闭包,开始加载js，加载结束之后发出&lt;code&gt;RCTJavaScriptDidLoadNotification&lt;/code&gt;通知。&lt;/p&gt;
-
-&lt;div class=&#34;alert info no-icon &#34;&gt;
-  &lt;p&gt;执行JS所有相关的内容都是&lt;code&gt;@protocol RCTJavaScriptExecutor&lt;/code&gt;这个协议负责，定义在bridge中&lt;code&gt;@property (nonatomic, weak, readonly) id&amp;lt;RCTJavaScriptExecutor&amp;gt; javaScriptExecutor;&lt;/code&gt;&lt;/p&gt;
-&lt;/div&gt;
-
-&lt;p&gt;当你在Debug模式下save或者退出当前页面的时候收到reload命令，该类会在主线程中将当前的bridge置空，如果没有成功会调用其所遵循的协议&lt;code&gt;@protocol RCTInvalidating&lt;/code&gt;中的&lt;code&gt;invalidate&lt;/code&gt;方法进行一系列的局部变量释放操作&lt;/p&gt;
-
-&lt;pre&gt;&lt;code&gt;- (void)invalidate
-{
-  RCTBridge *batchedBridge = self.batchedBridge;
-  self.batchedBridge = nil;
-
-  if (batchedBridge) {
-    RCTExecuteOnMainQueue(^{
-      [batchedBridge invalidate];
-    });
-  }
-}
-&lt;/code&gt;&lt;/pre&gt;
-
-&lt;span class=&#34;highlight-text yellow&#34;&gt;总结：&lt;/span&gt;
-
-&lt;ul&gt;
-&lt;li&gt;保存模块的集合 &amp;ndash;&lt;code&gt;RCTModuleClasses&lt;/code&gt;&lt;/li&gt;
-&lt;li&gt;定义了JS队列 &amp;ndash; &lt;code&gt;dispatch_queue_t RCTJSThread&lt;/code&gt;&lt;/li&gt;
-&lt;li&gt;定义当前正在使用的bridge，并负责切换&lt;/li&gt;
-&lt;li&gt;负责&lt;code&gt;RCTBatchedBridge&lt;/code&gt;的初始化，调用子类bridge，开始执行加载js的一系列操作&lt;/li&gt;
-&lt;li&gt;负责在view消失或者重新加载的时候释放之前的一些对象（eg. currentbridge,遵循&lt;code&gt;RCTBridgeModule&lt;/code&gt;协议的对象）。&lt;/li&gt;
-&lt;/ul&gt;</description>
-    </item>
-    
-    <item>
-      <title>React Native和Native间的通信实践</title>
-      <link>https://linkrober.github.io/bookshelf/2017/10/react-native%E5%92%8Cnative%E9%97%B4%E7%9A%84%E9%80%9A%E4%BF%A1%E5%AE%9E%E8%B7%B5/</link>
-      <pubDate>Wed, 25 Oct 2017 00:00:00 +0000</pubDate>
-      
-      <guid>https://linkrober.github.io/bookshelf/2017/10/react-native%E5%92%8Cnative%E9%97%B4%E7%9A%84%E9%80%9A%E4%BF%A1%E5%AE%9E%E8%B7%B5/</guid>
-      <description>&lt;!-- thumbnailImage = &#39;rn_image.jpeg&#39;
-thumbnailImagePosition = &#39;bottom&#39; --&gt;
-
-&lt;p&gt;本系列文章作为学习RN期间的总结&lt;/p&gt;
-
-&lt;ul&gt;
-&lt;li&gt;&lt;a href=&#34;https://linkrober.github.io/bookshelf/2017/10/react-native%E5%A6%82%E4%BD%95%E9%9B%86%E6%88%90%E5%88%B0%E7%8E%B0%E6%9C%89%E9%A1%B9%E7%9B%AE%E4%B8%AD/&#34;&gt;React Native如何集成到现有项目中&lt;/a&gt;&lt;/li&gt;
-&lt;li&gt;React Native和Native间的通信实践&lt;/li&gt;
-&lt;li&gt;&lt;a href=&#34;https://linkrober.github.io/bookshelf/2017/10/rctrootviewrctbridge%E5%81%9A%E4%BA%86%E4%BB%80%E4%B9%88/&#34;&gt;RCTRootView、RCTBridge做了什么&lt;/a&gt;&lt;/li&gt;
-&lt;li&gt;&lt;a href=&#34;https://linkrober.github.io/bookshelf/2017/12/native%E5%92%8Cjs%E9%80%9A%E4%BF%A1%E6%A6%82%E8%BF%B0/&#34;&gt;Object-C和JS通信概述&lt;/a&gt;&lt;/li&gt;
-&lt;/ul&gt;
-
-&lt;p&gt;&lt;/p&gt;
-
-&lt;p&gt;刚开始接触RN，有几点大家都想弄清楚：&lt;/p&gt;
-
-&lt;ul&gt;
-&lt;li&gt;&lt;p&gt;如何从Native向RN传递参数，这里也分为几小点&lt;/p&gt;
-
-&lt;ol&gt;
-&lt;li&gt;在初始化RN的时候如何从Native传递初始化的参数&lt;/li&gt;
-&lt;li&gt;在RN视图已经渲染完成之后，如果从Native那参数&lt;/li&gt;
-&lt;/ol&gt;&lt;/li&gt;
-
-&lt;li&gt;&lt;p&gt;如何从RN向Native传递参数：&lt;/p&gt;
-
-&lt;ol&gt;
-&lt;li&gt;如何向Native发送消息（能否使用闭包）&lt;/li&gt;
-&lt;li&gt;如何让RN接受naitve的异步回调&lt;/li&gt;
-&lt;/ol&gt;&lt;/li&gt;
-&lt;/ul&gt;
-
-&lt;h4 id=&#34;native-rn&#34;&gt;Native -&amp;gt; RN&lt;/h4&gt;
-
-&lt;h6 id=&#34;properties&#34;&gt;Properties&lt;/h6&gt;
-
-&lt;p&gt;&lt;code&gt;properties&lt;/code&gt;是RN和Native间通信最简单的方式。我们只需要在初始化&lt;code&gt;RCTRootView&lt;/code&gt;的时候，将需要的数据通过方法入参的形式传入，它是一个字典类型。&lt;/p&gt;
-
-&lt;pre&gt;&lt;code&gt;- (instancetype)initWithBundleURL:(NSURL *)bundleURL
-                       moduleName:(NSString *)moduleName
-                initialProperties:&lt;span class=&#34;highlight-text red&#34;&gt;(NSDictionary *)initialProperties&lt;/span&gt;
-                    launchOptions:(NSDictionary *)launchOptions
-&lt;/code&gt;&lt;/pre&gt;
-
-&lt;p&gt;在RN中我们用来承接&lt;code&gt;initialProperties&lt;/code&gt;参数的就是每个js类的&lt;code&gt;props&lt;/code&gt;。如果我们需要在Native中修改&lt;code&gt;props&lt;/code&gt;属性，就要对&lt;code&gt;RCTRootView&lt;/code&gt;的&lt;code&gt;appProperties&lt;/code&gt;进行重新赋值，然后RN会对视图进行重新渲染，当且仅当两次赋值不一样的时候才会重新渲染。&lt;/p&gt;
-
-&lt;pre&gt;&lt;code&gt;rootView.appProperties = @{@&amp;quot;content&amp;quot; : imageList};
-&lt;/code&gt;&lt;/pre&gt;
-
-&lt;p&gt;我们也可以使用&lt;/p&gt;
-
-&lt;pre&gt;&lt;code&gt;- (instancetype)initWithBridge:(RCTBridge *)bridge
-                    moduleName:(NSString *)moduleName
-             initialProperties:(NSDictionary *)initialProperties NS_DESIGNATED_INITIALIZER;
-&lt;/code&gt;&lt;/pre&gt;
-
-&lt;p&gt;在初始化bridge时以代理的方式将bundleURL传入：&lt;/p&gt;
-
-&lt;pre&gt;&lt;code&gt;- (instancetype)initWithDelegate:(id&amp;lt;RCTBridgeDelegate&amp;gt;)delegate
-                   launchOptions:(NSDictionary *)launchOptions;
-
-
- @protocol RCTBridgeDelegate &amp;lt;NSObject&amp;gt;
-
-/**
- * The location of the JavaScript source file. When running from the packager
- * this should be an absolute URL, e.g. `http://localhost:8081/index.ios.bundle`.
- * When running from a locally bundled JS file, this should be a `file://` url
- * pointing to a path inside the app resources, e.g. `file://.../main.jsbundle`.
- */
-- (NSURL *)sourceURLForBridge:(RCTBridge *)bridge;
-
-@optional 
-&lt;/code&gt;&lt;/pre&gt;
-
-&lt;div class=&#34;alert warning &#34;&gt;
-  &lt;p&gt;需要注意的是，赋值操作必需要放在Native的主线程。而且js中的&lt;code&gt;componentWillReceiveProps&lt;/code&gt;和&lt;code&gt;componentWillUpdateProps&lt;/code&gt;并不会因为重新渲染而被再次调用，你只能在&lt;code&gt;componentWillMount&lt;/code&gt;方法中访问新的&lt;code&gt;props&lt;/code&gt;&lt;/p&gt;
-&lt;/div&gt;
-
-&lt;h6 id=&#34;rcteventemitter&#34;&gt;RCTEventEmitter&lt;/h6&gt;
-
-&lt;p&gt;我们可以使用&lt;code&gt;RCTEventEmitter&lt;/code&gt;类来让js监听native的事件，facebook的文档中是这样描述&lt;code&gt;RCTEventEmitter&lt;/code&gt;的：&lt;/p&gt;
-
-&lt;pre&gt;&lt;code&gt;/**
- * RCTEventEmitter is an abstract base class to be used for modules that emit
- * events to be observed by JS.
- */
-&lt;/code&gt;&lt;/pre&gt;
-
-&lt;p&gt;它是一个模块的抽象基类，用来发送被JS监听的事件。我们通过&lt;/p&gt;
-
-&lt;pre&gt;&lt;code&gt;- (void)sendEventWithName:(NSString *)name body:(id)body
-&lt;/code&gt;&lt;/pre&gt;
-
-&lt;p&gt;方法来完成事件的发送。入参是事件名称和需要携带的参数（Dictionary）。
-每一个&lt;code&gt;RCTRootView&lt;/code&gt;都有一个&lt;code&gt;RCTBridge&lt;/code&gt;属性，它是RN中非常重要的一个类，负责Native和JS之间的通信。通过&lt;code&gt;RCTBridge&lt;/code&gt;的:&lt;/p&gt;
-
-&lt;pre&gt;&lt;code&gt;/**
- * Retrieve a bridge module instance by name or class. Note that modules are
- * lazily instantiated, so calling these methods for the first time with a given
- * module name/class may cause the class to be sychronously instantiated,
- * potentially blocking both the calling thread and main thread for a short time.
- */
-- (id)moduleForName:(NSString *)moduleName;
-&lt;/code&gt;&lt;/pre&gt;
-
-&lt;p&gt;方法，我们可以拿到每个&lt;code&gt;RCTRootView&lt;/code&gt;对应的&lt;code&gt;RCTEventEmitter&lt;/code&gt;实例（它是通过lazy load的方式初始化的），因为这里的&lt;code&gt;moduleName&lt;/code&gt;参数可以是类名也可以是自定义的模块名称，所以在项目中如果出现多个实例，需要在初始化通过view的&lt;code&gt;reactTag&lt;/code&gt;属性来区分。该属性声明在分类&lt;code&gt;UIView+React.h&lt;/code&gt;中。&lt;/p&gt;
-
-&lt;pre&gt;&lt;code&gt;RCT_EXPORT_MODULE();
-
-+ (EventEmitterManger *)mangerWithRootView:(RCTRootView *)rootView {
-    return [rootView.bridge moduleForName:NSStringFromClass(self)];
-}
-&lt;/code&gt;&lt;/pre&gt;
-
-&lt;p&gt;这样我们就拿到目标RootView对应的&lt;code&gt;RCTEventEmitter&lt;/code&gt;对象。接下来我们需要为事件定义一个identifier，重写&lt;/p&gt;
-
-&lt;pre&gt;&lt;code&gt;/**
- * Override this method to return an array of supported event names. Attempting
- * to observe or send an event that isn&#39;t included in this list will result in
- * an error.
- */
-- (NSArray&amp;lt;NSString *&amp;gt; *)supportedEvents;
-&lt;/code&gt;&lt;/pre&gt;
-
-&lt;p&gt;方法，把你方法的identifer作为数组的一个元素返回。这样就可以使用上面所说的方法进行消息的发送了。
-到这里Native端的代码已经完成了，下面看在js中如何设置。
-我们需要在对应的js中引入一个&lt;code&gt;NativeModules&lt;/code&gt;、&lt;code&gt;NativeEventEmitter&lt;/code&gt;模块，然后获取监听模块的manger&lt;/p&gt;
-
-&lt;pre&gt;&lt;code&gt;var raToRnManger = NativeModules.EventEmitterManger
-&lt;/code&gt;&lt;/pre&gt;
-
-&lt;p&gt;在js对象的声明周期方法&lt;code&gt;componentWillMount&lt;/code&gt;中设置监听，接下来就等native发送消息了。&lt;/p&gt;
-
-&lt;pre&gt;&lt;code&gt;componentWillMount(){
-         var raToRnMangerEmitter = new NativeEventEmitter(raToRnManger)
-          const subscription = raToRnMangerEmitter.addListener(&amp;quot;EventReminder&amp;quot;,
-              (reminder) =&amp;gt; {
-                  console.log(&amp;quot;test&amp;quot;)
-                    this.setState({
-                        name:&amp;quot;B&amp;quot;
-                    })
-              }
-          );
-    }
-&lt;/code&gt;&lt;/pre&gt;
-
-&lt;h4 id=&#34;rn-native&#34;&gt;RN -&amp;gt; Native&lt;/h4&gt;
-
-&lt;h6 id=&#34;rctbridgemodule&#34;&gt;RCTBridgeModule&lt;/h6&gt;
-
-&lt;p&gt;在Native端定义RN模块的时候，让其遵循&lt;code&gt;&amp;lt;RCTBridgeModule&amp;gt;&lt;/code&gt;协议，在实现文件中暴露出你想要从RN向Native发送的消息&lt;/p&gt;
-
-&lt;pre&gt;&lt;code&gt;RCT_EXPORT_METHOD(exampleMethod:(NSString *)name)
-{
-    NSLog(@&amp;quot;%@&amp;quot;,name);
-}
-&lt;/code&gt;&lt;/pre&gt;
-
-&lt;p&gt;如果你想要该方法参数支持闭包，可以使用RN内置的闭包类型&lt;code&gt;RCTResponseSenderBlock&lt;/code&gt;&lt;/p&gt;
-
-&lt;pre&gt;&lt;code&gt;RCT_EXPORT_METHOD(exampleCallbackMethod:(RCTResponseSenderBlock)callback)
-{
-    NSDictionary *param = @{@&amp;quot;letter&amp;quot;:@&amp;quot;B&amp;quot;};
-    callback(@[[NSNull null], param]);
-}
-&lt;/code&gt;&lt;/pre&gt;
-
-&lt;p&gt;在js端，通过&lt;code&gt;NativeModules&lt;/code&gt;模块拿到Native中对应的模块&lt;/p&gt;
-
-&lt;pre&gt;&lt;code&gt;var manger = NativeModules.ExportMethodManger
-&lt;/code&gt;&lt;/pre&gt;
-
-&lt;p&gt;如果RN中某个事件被触发了，直接通过manger向Native发送消息，消息名称正如你在Native中声明的那样&lt;/p&gt;
-
-&lt;pre&gt;&lt;code&gt;onPressLearnMore(){
-        manger.exampleMethod(&amp;quot;##############Learn More############&amp;quot;)
-    }
-&lt;/code&gt;&lt;/pre&gt;
-
-&lt;p&gt;在Native项目中嵌入RN，你绝对不想要在js中再写一套网络请求吧。这时候就会遇到用RN展示UI，而数据请求放在在Native中做的情况。我们可以使用&lt;code&gt;XMLHttpRequest&lt;/code&gt;这类js网络框架，但是这里想说的是&lt;code&gt;async/await&lt;/code&gt;语法，它在ES6中被提供。从命名上一眼就能看出其目的，异步方法等待消息返回。&lt;/p&gt;
-
-&lt;pre&gt;&lt;code&gt;async updateEvents(){
-        try {
-            var events = await manger.findEvents();
-            this.setState({
-                letter:events[0].letter
-            });
-          } catch (e) {
-            console.error(e);
-          }
-    }
-&lt;/code&gt;&lt;/pre&gt;
-
-&lt;p&gt;这样，如果Native中&lt;code&gt;findEvents&lt;/code&gt;是一个异步的方法就可以在js中等待Native的回调了。&lt;/p&gt;
-
-&lt;div class=&#34;alert info &#34;&gt;
-  &lt;p&gt;从JS到Naitve所有的消息都是由&lt;code&gt;NSInvocation&lt;/code&gt;负责转发，后面打算专门开一章讨论这个类在RN中的使用。&lt;/p&gt;
-&lt;/div&gt;</description>
-    </item>
-    
-    <item>
-      <title>React Native如何集成到现有项目中</title>
-      <link>https://linkrober.github.io/bookshelf/2017/10/react-native%E5%A6%82%E4%BD%95%E9%9B%86%E6%88%90%E5%88%B0%E7%8E%B0%E6%9C%89%E9%A1%B9%E7%9B%AE%E4%B8%AD/</link>
-      <pubDate>Mon, 23 Oct 2017 00:00:00 +0000</pubDate>
-      
-      <guid>https://linkrober.github.io/bookshelf/2017/10/react-native%E5%A6%82%E4%BD%95%E9%9B%86%E6%88%90%E5%88%B0%E7%8E%B0%E6%9C%89%E9%A1%B9%E7%9B%AE%E4%B8%AD/</guid>
-      <description>&lt;!-- thumbnailImage = &#39;rn_thumbnailImage.jpeg&#39;
-thumbnailImagePosition = &#39;bottom&#39; --&gt;
-
-&lt;p&gt;本系列文章作为学习RN期间的总结&lt;/p&gt;
-
-&lt;ul&gt;
-&lt;li&gt;React Native如何集成到现有项目中&lt;/li&gt;
-&lt;li&gt;&lt;a href=&#34;https://linkrober.github.io/bookshelf/2017/10/react-native%E5%92%8Cnative%E9%97%B4%E7%9A%84%E9%80%9A%E4%BF%A1/&#34;&gt;React Native和Native间的通信实践&lt;/a&gt;&lt;/li&gt;
-&lt;li&gt;&lt;a href=&#34;https://linkrober.github.io/bookshelf/2017/10/rctrootviewrctbridge%E5%81%9A%E4%BA%86%E4%BB%80%E4%B9%88/&#34;&gt;RCTRootView、RCTBridge做了什么&lt;/a&gt;&lt;/li&gt;
-&lt;li&gt;&lt;a href=&#34;https://linkrober.github.io/bookshelf/2017/12/native%E5%92%8Cjs%E9%80%9A%E4%BF%A1%E6%A6%82%E8%BF%B0/&#34;&gt;Object-C和JS通信概述&lt;/a&gt;&lt;/li&gt;
-&lt;/ul&gt;
-
-&lt;p&gt;&lt;/p&gt;
-
-&lt;p&gt;虽然ReactNative能做到iOS和Android的大部分逻辑共享一套代码，节约开发成本；拥有像JSPatch那样的热修复功能，为线上问题提供非常灵活的解决方案。但是为什么大部分公司还是持观望态度，或者只在产品的某些部分用RN进行开发呢？&lt;/p&gt;
-
-&lt;p&gt;首先，React Native官方的某些组件仍然存在性能瓶颈，开发复杂场景的时候可能会遇到性能问题，像ListView，动不动就渲染整个视图，虽然推出了FlatList但是也存在着一些其他的Bug。其次，RN的周边生态并不完善，很多OC或Swift上已有的Library在NR上需要通过RN提供的方法重新用JS实现或者需要把这些库桥接到RN。因此大部分公司会选择交互不多，页面不太复杂的场景来尝试。本章，主要介绍如果在已有的App中集成React Native。&lt;/p&gt;
-
-&lt;h4 id=&#34;关键步骤&#34;&gt;关键步骤&lt;/h4&gt;
-
-&lt;ol&gt;
-&lt;li&gt;设置RN的依赖和目录结构&lt;/li&gt;
-&lt;li&gt;搞清楚你要在你的项目中使用的RN组件&lt;/li&gt;
-&lt;li&gt;使用CocoaPods添加你要使用的RN组件的依赖&lt;/li&gt;
-&lt;li&gt;使用npm安装JS组件&lt;/li&gt;
-&lt;li&gt;在JavaScript环境下，开发你的RN模块&lt;/li&gt;
-&lt;li&gt;添加一个&lt;code&gt;RCTRootView&lt;/code&gt;到你的app。它将会作为容器展示你的RN模块。&lt;/li&gt;
-&lt;li&gt;启动RN服务，Run你的App。&lt;/li&gt;
-&lt;/ol&gt;
-
-&lt;div class=&#34;alert info &#34;&gt;
-  &lt;p&gt;前置条件：安装Node、npm最新版本(npm是基于Node实现的包管理工具和iOS的CocoaPod地位相当)&lt;/p&gt;
-&lt;/div&gt;
-
-&lt;h6 id=&#34;设置rn的依赖和目录结构&#34;&gt;设置RN的依赖和目录结构&lt;/h6&gt;
-
-&lt;p&gt;为React Native项目创建一个新的文件夹，在文件夹中新建&lt;code&gt;/ios&lt;/code&gt;目录，拷贝所有原项目的内容到&lt;code&gt;/ios&lt;/code&gt;目录下。&lt;/p&gt;
-
-&lt;h6 id=&#34;安装javascript依赖&#34;&gt;安装JavaScript依赖&lt;/h6&gt;
-
-&lt;p&gt;在刚刚新建的文件夹中（即根目录中）创建一个&lt;code&gt;package.json&lt;/code&gt;文件，并添加一下内容：&lt;/p&gt;
-
-&lt;pre&gt;&lt;code&gt;{
-  &amp;quot;name&amp;quot;: &amp;quot;Snapvote&amp;quot;,
-  &amp;quot;version&amp;quot;: &amp;quot;0.0.1&amp;quot;,
-  &amp;quot;private&amp;quot;: true,
-  &amp;quot;scripts&amp;quot;: {
-    &amp;quot;start&amp;quot;: &amp;quot;node node_modules/react-native/local-cli/cli.js start&amp;quot;,
-    &amp;quot;test&amp;quot;: &amp;quot;jest&amp;quot;
-  },
-  &amp;quot;dependencies&amp;quot;: {
-    &amp;quot;react&amp;quot;: &amp;quot;16.0.0-alpha.12&amp;quot;,
-    &amp;quot;react-native&amp;quot;: &amp;quot;0.48.4&amp;quot;,
-    &amp;quot;react-native-vector-icons&amp;quot;: &amp;quot;^4.4.2&amp;quot;,
-    &amp;quot;whatwg-fetch&amp;quot;: &amp;quot;^2.0.3&amp;quot;
-  },
-  &amp;quot;devDependencies&amp;quot;: {
-    &amp;quot;babel-jest&amp;quot;: &amp;quot;21.2.0&amp;quot;,
-    &amp;quot;babel-preset-react-native&amp;quot;: &amp;quot;4.0.0&amp;quot;,
-    &amp;quot;jest&amp;quot;: &amp;quot;21.2.0&amp;quot;,
-    &amp;quot;react-test-renderer&amp;quot;: &amp;quot;16.0.0-alpha.12&amp;quot;
-  },
-  &amp;quot;jest&amp;quot;: {
-    &amp;quot;preset&amp;quot;: &amp;quot;react-native&amp;quot;
-  }
-}
-&lt;/code&gt;&lt;/pre&gt;
-
-&lt;p&gt;接下去，安装react和react-native包。打开Terminal，在你项目的根目录下面执行下面命令：&lt;/p&gt;
-
-&lt;pre&gt;&lt;code&gt;npm install --save r16.0.0-alpha.12 react-native
-&lt;/code&gt;&lt;/pre&gt;
-
-&lt;div class=&#34;alert warning &#34;&gt;
-  &lt;p&gt;要确保这里安装的版本和package.json里说明的版本一致&lt;/p&gt;
-&lt;/div&gt;
-
-&lt;p&gt;执行这个命令之后，将会在项目的根目录下创建一个&lt;code&gt;/node_modules&lt;/code&gt;的目录，这里保存着所有你项目中所需的JavaScript依赖。&lt;/p&gt;
-
-&lt;h6 id=&#34;安装cocoapods&#34;&gt;安装CocoaPods&lt;/h6&gt;
-
-&lt;p&gt;这里就不说了&lt;/p&gt;
-
-&lt;h6 id=&#34;配置cocoapods依赖&#34;&gt;配置CocoaPods依赖&lt;/h6&gt;
-
-&lt;p&gt;在你集成RN到你项目中之前，你需要选择你要使用的React Native库。你将通过CocoaPod库的开发模式将其集成进去。
-&lt;img src=&#34;../../../pod_develop.png&#34; alt=&#34;pod_develop&#34; /&gt;
-这些库的&lt;code&gt;subspec&lt;/code&gt;文件都会在&lt;code&gt;/node_modules&lt;/code&gt;目录下被说明,最后执行&lt;code&gt;pod install&lt;/code&gt;命令，所有的React Native库依赖到这里就都准备好了。
-&lt;img src=&#34;../../../pod_file.png&#34; alt=&#34;pod_file&#34; /&gt;&lt;/p&gt;
-
-&lt;h6 id=&#34;业务代码&#34;&gt;业务代码&lt;/h6&gt;
-
-&lt;ol&gt;
-&lt;li&gt;&lt;p&gt;创建 &lt;code&gt;index.js&lt;/code&gt; 文件
-在项目的根目录下创建&lt;code&gt;index.js&lt;/code&gt;文件，这个文件是你RN项目的
-&lt;span class=&#34;highlight-text danger&#34;&gt;
-入口
-&lt;/span&gt;，所有在Native中要用到的RN模块都在这里面进行注册。例如项目中的投票列表、设置页面等。各个模块的名称要和Native中的模块名称对应。
-&lt;img src=&#34;../../../rn_modul.png&#34; alt=&#34;rn_modul&#34; /&gt;&lt;/p&gt;&lt;/li&gt;
-
-&lt;li&gt;&lt;p&gt;添加React Native 代码（JavaScript和CSS）&lt;/p&gt;&lt;/li&gt;
-&lt;/ol&gt;
-
-&lt;pre&gt;&lt;code&gt;&#39;use strict&#39;;
-
-import React from &#39;react&#39;;
-import {
-  AppRegistry,
-  StyleSheet,
-  Text,
-  View,
-  FlatList,
-  NativeModules,
-  Image,
-  ActivityIndicator,
-  TouchableOpacity,
-  ScrollView,
-  Switch,
-  TouchableWithoutFeedback,
-  Alert,
-  NativeEventEmitter,
-  
-} from &#39;react-native&#39;;
-
-import StarRatingView from &#39;./starRating.view.js&#39;
-
-var { width, height } = require(&#39;Dimensions&#39;).get(&#39;window&#39;);
-var nativeModuleManager = NativeModules.XYRCTBrigeModule;
-
-class SettingsView extends React.PureComponent{
-
-    constructor(props){
-        super(props);
-    }
-    .....
-    .....
-&lt;/code&gt;&lt;/pre&gt;
-
-&lt;p&gt;在Native中使用&lt;code&gt;RCTRootView&lt;/code&gt;作为RN模块的容器。所有通过RN渲染出来的视图都会展示在该View上。&lt;/p&gt;
-
-&lt;pre&gt;&lt;code&gt;#import &amp;lt;React/RCTBundleURLProvider.h&amp;gt;
-#import &amp;lt;React/RCTRootView.h&amp;gt;
-
-@implementation AppDelegate
-
-- (BOOL)application:(UIApplication *)application didFinishLaunchingWithOptions:(NSDictionary *)launchOptions
-{
-  NSURL *jsCodeLocation;
-  &lt;span class=&#34;highlight-text green&#34;&gt;//设置获取JavaScript文件的路径，从服务器或者本地文件获取&lt;/span&gt;
-#if DEBUG
-  jsCodeLocation = [NSURL URLWithString:@&amp;quot;http://10.0.30.119:8081/index.ios.bundle?platform=ios&amp;quot;];
-#else
-  jsCodeLocation = [[RCTBundleURLProvider sharedSettings] jsBundleURLForBundleRoot:@&amp;quot;index.ios&amp;quot; fallbackResource:nil];
-#endif
-  
-  &lt;span class=&#34;highlight-text green&#34;&gt;//通过URL、模块名称加载对应的RN视图，生成一个OC对象`RCTRootView`，最后将该View添加到controller的View上&lt;/span&gt;
-  RCTRootView *rootView = [[RCTRootView alloc] initWithBundleURL:jsCodeLocation
-                                                      moduleName:@&amp;quot;TabberView&amp;quot;
-                                               initialProperties:nil
-                                                   launchOptions:launchOptions];
-  rootView.backgroundColor = [[UIColor alloc] initWithRed:1.0f green:1.0f blue:1.0f alpha:1];
-  
-  self.window = [[UIWindow alloc] initWithFrame:[UIScreen mainScreen].bounds];
-  UIViewController *rootViewController = [UIViewController new];
-  rootViewController.view = rootView;
-  self.window.rootViewController = rootViewController;
-  [self.window makeKeyAndVisible];
-  return YES;
-}
-&lt;/code&gt;&lt;/pre&gt;
-
-&lt;p&gt;到这里就完成了一个简单React Native App的集成。&lt;/p&gt;
-
-&lt;h4 id=&#34;测试&#34;&gt;测试&lt;/h4&gt;
-
-&lt;ol&gt;
-&lt;li&gt;因为HTTPS的限制，请将Domain添加到&lt;code&gt;Info.plist&lt;/code&gt;的白名单
-&lt;code&gt;
-&amp;lt;key&amp;gt;NSAppTransportSecurity&amp;lt;/key&amp;gt;
-&amp;lt;dict&amp;gt;
-&amp;lt;key&amp;gt;NSExceptionDomains&amp;lt;/key&amp;gt;
-&amp;lt;dict&amp;gt;
-    &amp;lt;key&amp;gt;localhost&amp;lt;/key&amp;gt;
-    &amp;lt;dict&amp;gt;
-        &amp;lt;key&amp;gt;NSTemporaryExceptionAllowsInsecureHTTPLoads&amp;lt;/key&amp;gt;
-        &amp;lt;true/&amp;gt;
-    &amp;lt;/dict&amp;gt;
-&amp;lt;/dict&amp;gt;
-&amp;lt;/dict&amp;gt;
-&lt;/code&gt;&lt;/li&gt;
-&lt;li&gt;执行&lt;code&gt;npm start&lt;/code&gt;开启本地服务&lt;/li&gt;
-&lt;li&gt;Xcode run.&lt;/li&gt;
-&lt;/ol&gt;
-
-&lt;h4 id=&#34;相关链接&#34;&gt;相关链接&lt;/h4&gt;
-
-&lt;p&gt;&lt;a href=&#34;https://facebook.github.io/react-native/docs/integration-with-existing-apps.html&#34;&gt;Integration with Existing Apps&lt;/a&gt;&lt;/p&gt;</description>
-    </item>
-    
-    <item>
-      <title>Runtime(三) 消息转发</title>
-      <link>https://linkrober.github.io/bookshelf/2017/10/runtime%E4%B8%89-%E6%B6%88%E6%81%AF%E8%BD%AC%E5%8F%91/</link>
-      <pubDate>Mon, 16 Oct 2017 00:00:00 +0000</pubDate>
-      
-      <guid>https://linkrober.github.io/bookshelf/2017/10/runtime%E4%B8%89-%E6%B6%88%E6%81%AF%E8%BD%AC%E5%8F%91/</guid>
-      <description>&lt;p&gt;向对象发送一个消息，如果没有处理就会发生错误。但是在产生错误之前，runtime会给接受对象第二次机会来处理消息。
-&lt;/p&gt;
-
-&lt;h3 id=&#34;forwarding&#34;&gt;Forwarding&lt;/h3&gt;
-
-&lt;p&gt;向对象发送一个消息，如果没有处理就会发生错误。但是在产生错误之前，runtime会向对象发送&lt;code&gt;forwardInvocation:&lt;/code&gt;消息，消息携带了一个&lt;code&gt;NSInvocation&lt;/code&gt;对象，这个对象里面包裹了原始消息和参数。&lt;/p&gt;
-
-&lt;p&gt;你可以实现&lt;code&gt;forwardInvocation:&lt;/code&gt;方法来处理消息，来避免错误的发生。正如方法名所暗示的&lt;code&gt;forwardInvocation:&lt;/code&gt;一般用来向另一个对象转发消息。&lt;/p&gt;
-
-&lt;p&gt;为了看到转发的过程和结果，我们想象下面的场景：首先，你设计了一个对象能够响应&lt;code&gt;negotiate&lt;/code&gt;方法，你希望它能够响应另外一个对象的消息。无论&lt;code&gt;negotiate&lt;/code&gt;的方法体是在哪里实现的,你可以通过传入&lt;code&gt;negotiate&lt;/code&gt;消息到另一个对象来完成。下一步，假设你想要&lt;code&gt;negotiate&lt;/code&gt;消息的响应可以被另外一个类明确的接受。一种办法是通过继承的方式，让你的类从父类中继承这个方法。但是如果在不同的继承链中，这种方法是不可能实现的。&lt;/p&gt;
-
-&lt;p&gt;即使你的类不能通过继承的方式使用&lt;code&gt;negotiate&lt;/code&gt;方法，我们仍然可以借用下面这种方式，向另一个类对象传递消息。&lt;/p&gt;
-
-&lt;pre&gt;&lt;code&gt;- (id)negotiate
-{
-    if ( [someOtherObject respondsTo:@selector(negotiate)] )
-        return [someOtherObject negotiate];
-    return self;
-}
-&lt;/code&gt;&lt;/pre&gt;
-
-&lt;p&gt;但是这种方式有点笨重，特别是如果你有大量的消息需要传递到另一个类的时候。你必须要在一个方法里面覆盖所有你想要调用的其他类的方法。而且，可能有些方法你不能考虑周全。所有的方法集合都依赖于运行时事件，在以后类的实现中作为新的方法发生改变。&lt;/p&gt;
-
-&lt;p&gt;第二次机会被&lt;code&gt;forwardInvocation:&lt;/code&gt;方法所提供，这是一种比较特殊的解决方式，它是动态的而不是静态的。它工作起来就像是：当一个对象不能响应一个消息，因为在消息中没有selector匹配这个方法。runtime会用&lt;code&gt;forwardInvocation:&lt;/code&gt;消息来通知对象。每个对象都从NSObject里继承了&lt;code&gt;forwardInvocation:&lt;/code&gt;方法。但是NSObject只是简单的调用&lt;code&gt;doesNotRecognizeSelector:&lt;/code&gt;。通过重写NSObject版本的实现，你可以利用这次机会，通过&lt;code&gt;forwardInvocation:&lt;/code&gt;消息提供一个方法转发到另一个类中。
-为了转发一个消息，所有的&lt;code&gt;forwardInvocation:&lt;/code&gt;方法必须包含下面的两个步骤:&lt;/p&gt;
-
-&lt;ul&gt;
-&lt;li&gt;确定消息的去向&lt;/li&gt;
-&lt;li&gt;转发的时候携带原始的参数&lt;/li&gt;
-&lt;/ul&gt;
-
-&lt;p&gt;消息可以通过&lt;code&gt;invokeWithTarget:&lt;/code&gt;方法被发送：&lt;/p&gt;
-
-&lt;pre&gt;&lt;code&gt;- (void)forwardInvocation:(NSInvocation *)anInvocation
-{
-	if ([someOtherObject respondsToSelector:[anInvocation selector]])
-		[aInvocation invokeWithTarget:someOtherObject];
-	else
-		[super forwardInvocation:anInvocation];
-}
-&lt;/code&gt;&lt;/pre&gt;
-
-&lt;p&gt;被转发的消息的返回值被返回到原始的sender。所有返回值的类型包括：ids、structures，双精度浮点数。
-对于unrecognized消息，&lt;code&gt;forwardInvocation:&lt;/code&gt;方法就像一个消息转发中心，将message包裹起来发送到不同的接受者。或者作为一个中转站，发送所有消息到同样的地方。它可以转发一个消息到另一个。&lt;code&gt;forwardInvocation:&lt;/code&gt;方法可以定位几个消息消息到单一的response。&lt;code&gt;forwardInvocation:&lt;/code&gt;要做的是准备实现。但是，这次机会为转发链中的链接对象提供更多程序设计的可能。&lt;/p&gt;
-
-&lt;blockquote&gt;
-&lt;p&gt;&lt;strong&gt;Note:&lt;/strong&gt;&lt;code&gt;forwardInvocation:&lt;/code&gt;方法开始处理消息，只有它们不能调用在接受者中已经存在的方法时。比如，你想要你的对象去转发&lt;code&gt;negotiate&lt;/code&gt;消息到另一个对象，但对象并没有自己对该消息的实现。如果是这样，消息将永远不会到达&lt;code&gt;forwardInvocation:&lt;/code&gt;&lt;/p&gt;
-&lt;/blockquote&gt;
-
-&lt;h3 id=&#34;forwarding-and-multiple-inheritance&#34;&gt;Forwarding and Multiple Inheritance&lt;/h3&gt;
-
-&lt;p&gt;转发可以模仿多继承，可以实现多继承的一些效果。对象通过转发来响应消息，就像是借用或者继承了另一个类的某个方法的实现
-&lt;img src=&#34;../../../forwarding.png&#34; alt=&#34;forwarding&#34; /&gt;&lt;/p&gt;
-
-&lt;p&gt;在这个例子中，Warrior类的实例转发一个&lt;code&gt;negotiate&lt;/code&gt;消息到Diplomat类的实例。Warrior可以像Diplomat一样调用negotiate。看起来就像响应&lt;code&gt;negotiate&lt;/code&gt;方法。
-对象转发消息，这样“继承”的方法来自两种继承架构链。上面的例子中，它就像Warrior的类继承自Diplomat ，就像子类继承父类一样。&lt;/p&gt;
-
-&lt;p&gt;转发提供了很多特性，一般你可以用它来实现多继承。但是，这和多继承有两个很大不同地方：首先，在一个类中，多继承组合出不同的能力。它趋向于较庞大的多接口对象。另一方面，继承可以区分不同种类的方法到不同的对象。&lt;/p&gt;
-
-&lt;h3 id=&#34;forwarding-and-inheritance&#34;&gt;Forwarding and Inheritance&lt;/h3&gt;
-
-&lt;p&gt;尽管转发可以模仿继承，NSObject类绝不能混合这两种方式。像&lt;code&gt;respondsToSelector:&lt;/code&gt;和&lt;code&gt;isKindOfClass:&lt;/code&gt;方法，只能在继承链中看到，不能用于消息转发链。例如，一个Warrior对象被查询是否响应&lt;code&gt;negotiate&lt;/code&gt;消息，&lt;/p&gt;
-
-&lt;pre&gt;&lt;code&gt;if([aWarrior respondsToSelector:@selector(negotiate)])
-...
-&lt;/code&gt;&lt;/pre&gt;
-
-&lt;p&gt;答案是&lt;code&gt;NO&lt;/code&gt;，在某种意义上，即使它能无错误的接受&lt;code&gt;negotiate&lt;/code&gt;消息，并且响应它们，通过转发它们到Diplomat。&lt;/p&gt;
-
-&lt;p&gt;在许多情况下，&lt;code&gt;NO&lt;/code&gt;是正确的答案。但也需不是。如果你使用转发来设置一个替代的object或者扩展一个类的能力，转发机制应该像继承一样透明。如果你想要你的对象的行为就好像真正是通过继承来实现消息转发的。你将需要重新实现&lt;code&gt;respondsToSelector:&lt;/code&gt;和&lt;code&gt;isKindOfClass:&lt;/code&gt;包括你的转发算法：&lt;/p&gt;
-
-&lt;pre&gt;&lt;code&gt;- (BOOL)respondsToSelector:(SEL)aSelector
-{
-	if([super respondsToSelector:aSelector])
-		return YESl
-	else {
-		/* Here,test whether the aSelector message can *
-		 * be forwarded to another object and whether that *
-		 * object can respond to it.Return YES if it can. */
-	}
-	return NO;
-}
-&lt;/code&gt;&lt;/pre&gt;
-
-&lt;p&gt;除了&lt;code&gt;respondsToSelector:&lt;/code&gt;和&lt;code&gt;isKindOfClass:&lt;/code&gt;,&lt;code&gt;instancesRespondToSelector:&lt;/code&gt;方法应该反映转发算法。如果协议被使用,&lt;code&gt;conformsToProtocol:&lt;/code&gt;方法应该同样被添加到这个list中。类似的，如果一个对象转发任何它接受的远程消息，它应该有一个&lt;code&gt;methodSignatureForSelector:&lt;/code&gt;方法的实现，它能返回方法精确的描述。最终响应转发的消息。例如，如果一个对象能够转发一个消息到它的替代者，你应该向下面这样实现&lt;code&gt;methodSignatureForSelector:&lt;/code&gt;方法：&lt;/p&gt;
-
-&lt;pre&gt;&lt;code&gt;- (NSMethodSignature *)methodSignatureForSelector:(SEL)selector
-{
-	NSMethodSignature *signature = [super methodSignatureForSelector:selector];
-	if(!signature){
-		signature = [surrogate methodSignatureForSelector:selector];
-	}
-	return signature;
-}
-&lt;/code&gt;&lt;/pre&gt;
-
-&lt;p&gt;你可能考虑把转发算法放在私有代码的某个地方并且拥有所有这些方法,&lt;code&gt;forwardInvocation:&lt;/code&gt;包括调用它。&lt;/p&gt;
-
-&lt;blockquote&gt;
-&lt;p&gt;&lt;strong&gt;Note:&lt;/strong&gt;这是一个高级技巧，仅仅适用于没有其他解决方案的时候。这也不将作为继承的替代。如果你必须使用这个技术，确保你能完全理解在进行转发和要转发到的目标类的行为。&lt;/p&gt;
-&lt;/blockquote&gt;
-
-&lt;p&gt;在这部分提到的方法被描述在&lt;code&gt;NSObject&lt;/code&gt;类的说明中。更多的关于&lt;code&gt;invokeWithTarget:&lt;/code&gt;请看&lt;a href=&#34;https://developer.apple.com/documentation/foundation/nsinvocation&#34;&gt;NSInvocation&lt;/a&gt;类的说明。&lt;/p&gt;</description>
-    </item>
-    
-    <item>
-      <title>Runtime (二)  动态方法实现</title>
-      <link>https://linkrober.github.io/bookshelf/2017/10/runtime-%E4%BA%8C--%E5%8A%A8%E6%80%81%E6%96%B9%E6%B3%95%E5%AE%9E%E7%8E%B0/</link>
-      <pubDate>Mon, 09 Oct 2017 18:06:28 +0800</pubDate>
-      
-      <guid>https://linkrober.github.io/bookshelf/2017/10/runtime-%E4%BA%8C--%E5%8A%A8%E6%80%81%E6%96%B9%E6%B3%95%E5%AE%9E%E7%8E%B0/</guid>
-      <description>&lt;h3 id=&#34;dynamic-method-resolution&#34;&gt;Dynamic Method Resolution&lt;/h3&gt;
-
-&lt;p&gt;有的时候，你可能想要提供方法的动态实现。例如，Object-C 属性特征包含了&lt;code&gt;@dynamic&lt;/code&gt;
-&lt;/p&gt;
-
-&lt;pre&gt;&lt;code&gt;@dynamic propertyName;
-&lt;/code&gt;&lt;/pre&gt;
-
-&lt;p&gt;这里是告诉编译器属性相关方法的实现会被动态的提供。&lt;/p&gt;
-
-&lt;p&gt;你可以实现&lt;code&gt;resolveInstanceMethod:&lt;/code&gt;和&lt;code&gt;resolveClassMethod:&lt;/code&gt;为各个实例和类动态的提供一个selector。&lt;/p&gt;
-
-&lt;p&gt;一个Object-C方法是一个简单的C函数，它最少持有两个参数&amp;ndash;&lt;code&gt;self&lt;/code&gt;和&lt;code&gt;_cmd&lt;/code&gt;。你可以使用&lt;code&gt;class_addMethod&lt;/code&gt;添加一个函数到类中作为方法，函数大概像这样：&lt;/p&gt;
-
-&lt;pre&gt;&lt;code&gt;void dynamicMethodIMP(id self,SEL _cmd) {
-	//implementation...
-}
-&lt;/code&gt;&lt;/pre&gt;
-
-&lt;p&gt;你可以动态的把它添加到类中作为一个方法，通过使用&lt;code&gt;resolveInstanceMethod:&lt;/code&gt;调用&lt;code&gt;resolveThisMethodDynamically&lt;/code&gt;方法，像这样：&lt;/p&gt;
-
-&lt;pre&gt;&lt;code&gt;@implementation MyClass
-+ (BOOL)resolveInstanceMethod:(SEL)aSEL
-{
-	if(aSEL == @selector(resolveThisMethodDynamically)){
-		class_addMethod([self class],aSEL,(IMP)dynamicMethodIMP,&amp;quot;v@:&amp;quot;);
-		return YES;
-	}
-	return [super resolveInstanceMethod:aSEL];
-}
-&lt;/code&gt;&lt;/pre&gt;
-
-&lt;p&gt;@end
-一个类在消息转发机制开始前有机会动态的添加一个方法。如果&lt;code&gt;respondsToSelector:&lt;/code&gt;或者&lt;code&gt;instancesRespondToSelector:&lt;/code&gt;方法被调用时，动态的方法接受者首先会被给予一次机会，为selector提供一个&lt;code&gt;IMP&lt;/code&gt;。如果你实现了&lt;code&gt;resolveInstanceMethod:&lt;/code&gt;方法，但是想要指定的selector，通过转发机制被转发，你要return &lt;code&gt;NO&lt;/code&gt;。&lt;/p&gt;
-
-&lt;h3 id=&#34;dynamic-loading&#34;&gt;Dynamic Loading&lt;/h3&gt;
-
-&lt;p&gt;一个Object-C程序可以在运行的时候加载和链接新的类。动态加载可以用来做很多不同的事情。例如，系统偏好中的不同模块是通过动态加载的方式实现的。
-在Cocoa的环境中，动态加载一般被用来让应用更具灵活性。在编写自己的模块的时候，可以在runtime的时候被加载。更多的是用接口加载自定义的模版。OS X的系统设置中加载自定义的偏好模块。你应用程序的模块扩展等。
-因此在Mach-O文件中有一个runtime函数执行Object-C的动态加载(objc_loadModules,定义在objc/objc-load.h中)，Cocoa的&lt;code&gt;NSBundle&lt;/code&gt;类为动态加载提供了一个更方便的接口&amp;ndash;面向对象的聚合相关服务的接口。&lt;/p&gt;</description>
-    </item>
-    
-    <item>
-      <title>Runtime (一) 消息</title>
-      <link>https://linkrober.github.io/bookshelf/2017/09/runtime-%E4%B8%80-%E6%B6%88%E6%81%AF/</link>
-      <pubDate>Fri, 29 Sep 2017 00:00:00 +0000</pubDate>
-      
-      <guid>https://linkrober.github.io/bookshelf/2017/09/runtime-%E4%B8%80-%E6%B6%88%E6%81%AF/</guid>
-      <description>&lt;h3 id=&#34;message&#34;&gt;Message&lt;/h3&gt;
-
-&lt;p&gt;这篇文章描述了消息如何通过使用&lt;code&gt;objc_msgSend&lt;/code&gt;发送，如何通过方法名称找到对应方法的reference&lt;/p&gt;
-
-&lt;h4 id=&#34;the-objc-msgsend-function&#34;&gt;The objc_msgSend Function&lt;/h4&gt;
-
-&lt;p&gt;在Object-C中，发送的消息直到运行时才绑定到正真的方式实现。
-&lt;/p&gt;
-
-&lt;pre&gt;&lt;code&gt;[receiver message]
-&lt;/code&gt;&lt;/pre&gt;
-
-&lt;p&gt;&lt;code&gt;objc_msgSend&lt;/code&gt;是真正调用消息的函数，这个函数持有消息的接受者和方法的名称：&lt;/p&gt;
-
-&lt;pre&gt;&lt;code&gt;objc_msgSend(receiver,selector)
-&lt;/code&gt;&lt;/pre&gt;
-
-&lt;p&gt;任何其他的参数也是通过这个方法传入：&lt;/p&gt;
-
-&lt;pre&gt;&lt;code&gt;objc_msgSend(receiver,selector,arg1,arg2,...)
-&lt;/code&gt;&lt;/pre&gt;
-
-&lt;p&gt;这个方法会做一些必要的事情来进行动态绑定：&lt;/p&gt;
-
-&lt;ul&gt;
-&lt;li&gt;首先找到方法的实现即selector的引用。因为在不同的类中都可以实现相同方法名的方法，所以通过方法的实现找到真正的receiver的class。&lt;/li&gt;
-&lt;li&gt;然后传入该方法指定的receiver和参数。&lt;/li&gt;
-&lt;li&gt;最后将实现的返回值作为它自己的返回值。&lt;/li&gt;
-&lt;/ul&gt;
-
-&lt;blockquote&gt;
-&lt;p&gt;Note:编译器生成调用消息的方法，在日常开发中永远不要在你写的代码中直接调用。&lt;/p&gt;
-&lt;/blockquote&gt;
-
-&lt;p&gt;在架构中消息传递的关键在于编译器编译每个class和object。每个class的结构中包含两个重要元素：&lt;/p&gt;
-
-&lt;ul&gt;
-&lt;li&gt;指向父类的指针&lt;/li&gt;
-&lt;li&gt;一个类的派发表 ，这个表记录了方法的selector和定义该方法的地址。&lt;code&gt;setOrigin::&lt;/code&gt;方法和其对应的地址；&lt;code&gt;display&lt;/code&gt;和其对应的地址。&lt;/li&gt;
-&lt;/ul&gt;
-
-&lt;p&gt;当一个新的对象被创建，内存被分配，实例变量被初始化。第一件事就是对象变量指针指向它的类结构。这个指针一般被称作&lt;code&gt;isa&lt;/code&gt;,给予对象访问类的权利。所有的类都是从这个类继承而来。&lt;/p&gt;
-
-&lt;blockquote&gt;
-&lt;p&gt;Note:尽管这是oc不太严谨的一部分(容易被hook)，但是这也是oc对象在运行时不可缺少的一部分。一个对象需要一个和它等效的结构体来代表，在任何地方都可以用它来定义。如果你曾经需要创建一个根对象。这个对象自动继承&lt;code&gt;NSObject&lt;/code&gt;或者&lt;code&gt;NSProxy&lt;/code&gt;都会携带一个&lt;code&gt;isa&lt;/code&gt;变量。&lt;/p&gt;
-&lt;/blockquote&gt;
-
-&lt;p&gt;类的这些元素和对象结构如下：&lt;/p&gt;
-
-&lt;p&gt;&lt;img src=&#34;../../../messaging1.png&#34; alt=&#34;messaging1&#34; /&gt;&lt;/p&gt;
-
-&lt;p&gt;当消息被发送到一个对象，消息方法跟随对象的&lt;code&gt;isa&lt;/code&gt;指向类结构，在派发表中一直向上寻找对应的方法。如果你不能在这里找到你需要的方法，&lt;code&gt;objc_msgSend&lt;/code&gt;方法会继续向上在父类的派发表里面尝试寻找该方法。还是失败就会一直寻找直到到达&lt;code&gt;NSObject&lt;/code&gt;类，一旦找到selector，就会从表中的入口调用该方法，把它传递到对象的数据结构中。&lt;/p&gt;
-
-&lt;p&gt;这种方式的方法调用是在运行时进行的。在面向对象编程的专业术语中，我们称它为—&lt;strong&gt;动态消息绑定&lt;/strong&gt;&lt;/p&gt;
-
-&lt;p&gt;为了加速消息处理的过程，运行时系统会缓存曾经使用过的selectors和对应的方法地址。每个类是被分开缓存的。和在类中定义的方法一样，它也包含继承方法的selector。在查找派发表之前，消息路径会第一个会检查接受者类的缓存.如果方法的selector在缓存中，消息只比方法调用慢一点点。一旦程序运行了足够长的时间唤醒缓存，几乎发送的所有消息都能在缓存中找到。在程序运行的时候，缓存动态的增加来容纳新的方法。&lt;/p&gt;
-
-&lt;h4 id=&#34;using-hidden-arguments&#34;&gt;Using Hidden Arguments&lt;/h4&gt;
-
-&lt;p&gt;当&lt;code&gt;objc_msgSend&lt;/code&gt;寻找实现方法的过程，它调用方法并传递所有的参数。同时它也为这个程序传递了两个隐藏的参数：&lt;/p&gt;
-
-&lt;ul&gt;
-&lt;li&gt;接受者对象&lt;/li&gt;
-&lt;li&gt;方法的selector&lt;/li&gt;
-&lt;/ul&gt;
-
-&lt;p&gt;这些参数给予每个方法的实现明确的信息。因为这两个参数的隐藏不能表现在编码中，一般是在编译的时候被插入到具体的实现。&lt;/p&gt;
-
-&lt;p&gt;尽管这些参数没有被明确的声明，源码仍然可以引用到它们(就像可以引用对象的实例变量)。方法通过&lt;code&gt;self&lt;/code&gt;引用接受者对象，通过&lt;code&gt;_cmd&lt;/code&gt;代表selector。在下面的例子中，&lt;code&gt;_cmd&lt;/code&gt;指向&lt;code&gt;strange&lt;/code&gt;方法的selector，这个对象的&lt;code&gt;self&lt;/code&gt;接受&lt;code&gt;strange&lt;/code&gt;消息。&lt;/p&gt;
-
-&lt;pre&gt;&lt;code&gt;- strange
-{
-	id target = getTheReceiver();
-	SEL method = getTheMethod();
-
-	if(target == self || method == _cmd)
-		return nil;
-	return [target performSelector:method];
-}
-&lt;/code&gt;&lt;/pre&gt;
-
-&lt;h4 id=&#34;getting-a-method-address&#34;&gt;Getting a Method Address&lt;/h4&gt;
-
-&lt;p&gt;避免动态绑定的唯一办法，就是拿到方法的地址直接调用，就像调用一个方法一样。这只适合在一些少有情况下：当一个具体的方法需要被多次成功的执行，你想要在每次方法执行的时候避免消息带来的开销。&lt;/p&gt;
-
-&lt;p&gt;定义在&lt;code&gt;NSObject&lt;/code&gt;类中的方法&lt;code&gt;methodForSelector:&lt;/code&gt;你可以获得一个指向方法具体实现的指针，然后使用指针调用程序。&lt;code&gt;methodForSelector:&lt;/code&gt;方法返回的指针一定要小心的包裹来指向一个适当的函数类型。返回值和输入参数都需要包含在里面。&lt;/p&gt;
-
-&lt;p&gt;下面的例子展示了&lt;code&gt;setFilled:&lt;/code&gt;方法调用的实现过程：&lt;/p&gt;
-
-&lt;pre&gt;&lt;code&gt;void (*setter)(id,SEL,BOOL);
-int i;
-setter = (void (*)(id,SEL,BOOL))[target methodForSelector:@selector(setFilled:)];
-for(i = 0;i &amp;lt; 100;i++){
-	setter(targetList[i],@selector(setFilled:),YES);
-}
-&lt;/code&gt;&lt;/pre&gt;
-
-&lt;p&gt;首先&lt;code&gt;self&lt;/code&gt;和&lt;code&gt;_cmd&lt;/code&gt;被传递到具体的实现，在两个参数在方法中通过语法的方式被隐藏，但是当这些参数在被作为一个funcation被调用的时候必须要明确。
-使用&lt;code&gt;methodForSelector:&lt;/code&gt;来避免动态绑定可以节省大部分时间。但是如果同一个消息被多次调用，动态绑定的缓存机制可能更优雅点，因为上面的&lt;code&gt;for&lt;/code&gt;循环会遍历所有tartet。
-记住，&lt;code&gt;methodForSelector:&lt;/code&gt;是Cocoa的运行时系统提供的，它不是OC语言自己的特性。&lt;/p&gt;</description>
     </item>
     
   </channel>
