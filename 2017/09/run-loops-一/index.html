@@ -342,7 +342,7 @@ CFRunLoopRef CFRunLoopGetCurrent() {
 
 <p>下图展示了一个<i>runloop</i>的概念结构和各种不同的sources。Input sources发送一个异步的事件来执行相对应的handler（例如，图中的<code>hanlePort</code>、<code>mySelector</code>等），并通过<code>runUntilDate:</code>方法（调用thread相关的<a href="https://developer.apple.com/documentation/foundation/runloop">NSRunLoop</a>对象）来退出。Timer sources发送事件到runloop的handler，但不会引起runloop的退出。</p>
 
-<p><img src="http://upload-images.jianshu.io/upload_images/1086250-2f8e40f8ce0f82c0.jpg?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240" alt="runloop-1.jpg" /></p>
+<p><img src="../../../1086250-2f8e40f8ce0f82c0.jpg" alt="runloop-1.jpg" /></p>
 
 <p>除了处理输入源对应的handler，<i>Runloop</i>生成关于run loop行为的通知。注册<i>run-loop</i> 的observer接受这些通知。使用它们在thread上做一些其他的操作。你可以在你的线程中使用Core Foundation里面的类来创建<i>run-loop observer</i>。</p>
 
@@ -560,21 +560,21 @@ NSRunLoop *runLoop = [NSRunLoop currentRunLoop];
 
 <p>PPT总结一下：</p>
 
-<p><img src="http://upload-images.jianshu.io/upload_images/1086250-cb2c4b4a6d0973e7.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240" alt="Screen Shot 2017-09-05 at 10.12.16 AM.png" /></p>
+<p><img src="../../../1086250-cb2c4b4a6d0973e7.png" alt="什么是runloop" /></p>
 
-<p><img src="http://upload-images.jianshu.io/upload_images/1086250-fb6430f46efe4735.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240" alt="Screen Shot 2017-09-05 at 10.12.37 AM.png" /></p>
+<p><img src="../../../1086250-7118fdeabb5ffe76.png" alt="基本组成" /></p>
 
-<p><img src="http://upload-images.jianshu.io/upload_images/1086250-7118fdeabb5ffe76.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240" alt="Screen Shot 2017-09-05 at 10.12.53 AM.png" /></p>
+<p><img src="../../../1086250-e7ae08b4d61ec9e6.png" alt="source的种类" /></p>
 
-<p><img src="http://upload-images.jianshu.io/upload_images/1086250-e7ae08b4d61ec9e6.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240" alt="Screen Shot 2017-09-05 at 10.13.01 AM.png" /></p>
+<p><img src="../../../1086250-fb6430f46efe4735.png" alt="runloop生命周期" /></p>
 
-<p><img src="http://upload-images.jianshu.io/upload_images/1086250-073579ed39612c1d.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240" alt="Screen Shot 2017-09-05 at 10.12.47 AM.png" /></p>
+<p><img src="../../../1086250-073579ed39612c1d.png" alt="为什么使用runloop" /></p>
 
-<p><img src="http://upload-images.jianshu.io/upload_images/1086250-cae92bc60b877b48.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240" alt="Screen Shot 2017-09-05 at 10.13.12 AM.png" /></p>
+<p><img src="../../../1086250-cae92bc60b877b48.png" alt="具体列子" /></p>
 
-<p><img src="http://upload-images.jianshu.io/upload_images/1086250-fae8de2bdb8232aa.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240" alt="Screen Shot 2017-09-05 at 10.13.21 AM.png" /></p>
+<p><img src="../../../1086250-fae8de2bdb8232aa.png" alt="检测主线程是否卡顿" /></p>
 
-<p><img src="http://upload-images.jianshu.io/upload_images/1086250-ac972598a07a90bc.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240" alt="Screen Shot 2017-09-05 at 10.13.27 AM.png" /></p>
+<p><img src="../../../1086250-ac972598a07a90bc.png" alt="AFNetworking" /></p>
               
             </div>
           </div>
