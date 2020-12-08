@@ -98,10 +98,10 @@ oldTable = &amp;amp;SideTables()[oldObj];
       <description>&lt;p&gt;本文较长查分为三段按序阅读体验更佳，第四篇为辅助阅读按需看&lt;/p&gt;
 
 &lt;ol&gt;
-&lt;li&gt;[Weak的实现（一）]()&lt;/li&gt;
-&lt;li&gt;[Weak的实现（二）]()&lt;/li&gt;
-&lt;li&gt;[Weak的实现（三）]()&lt;/li&gt;
-&lt;li&gt;[Weak的实现-&amp;amp;SideTables()[oldObj]]()&lt;/li&gt;
+&lt;li&gt;&lt;a href=&#34;https://linkrober.github.io/bookshelf/2020/12/weak%E7%9A%84%E5%AE%9E%E7%8E%B0%E4%B8%80/&#34;&gt;Weak的实现（一）&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;&lt;a href=&#34;https://linkrober.github.io/bookshelf/2020/12/weak%E7%9A%84%E5%AE%9E%E7%8E%B0%E4%BA%8C/&#34;&gt;Weak的实现（二）&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;&lt;a href=&#34;https://linkrober.github.io/bookshelf/2020/12/weak%E7%9A%84%E5%AE%9E%E7%8E%B0%E4%B8%89/&#34;&gt;Weak的实现（三）&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;&lt;a href=&#34;https://linkrober.github.io/bookshelf/2020/12/weak%E7%9A%84%E5%AE%9E%E7%8E%B0-sidetablesoldobj/&#34;&gt;Weak的实现-&amp;amp;SideTables()[oldObj]&lt;/a&gt;&lt;/li&gt;
 &lt;/ol&gt;
 
 &lt;p&gt;带着问题看源码：&lt;/p&gt;
