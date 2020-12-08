@@ -1,0 +1,1014 @@
+
+
+  
+    
+  
+
+
+  
+
+
+
+
+
+  
+
+<!DOCTYPE html>
+<html lang="zh-cn">
+  <head>
+    
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="generator" content="Hugo 0.17 with theme Tranquilpeak 0.4.1-BETA">
+    <title>Weak的实现（三）</title>
+    <meta name="author" content="董二千">
+    <meta name="keywords" content="Weak">
+
+    <link rel="icon" href="https://LinkRober.github.io/bookshelf/favicon.png">
+    
+
+    
+    <meta name="description" content="3 设置弱引用标志位
+
+">
+    <meta property="og:description" content="3 设置弱引用标志位
+
+">
+    <meta property="og:type" content="blog">
+    <meta property="og:title" content="Weak的实现（三）">
+    <meta property="og:url" content="/2020/12/weak%E7%9A%84%E5%AE%9E%E7%8E%B0%E4%B8%89/">
+    <meta property="og:site_name" content="董二千">
+    <meta name="twitter:card" content="summary">
+    <meta name="twitter:title" content="董二千">
+    <meta name="twitter:description" content="3 设置弱引用标志位
+
+">
+    
+    
+
+    
+    
+
+    
+      <meta property="og:image" content="https://avatars1.githubusercontent.com/u/7357189?v=3&s=460.png">
+    
+
+    
+    
+    
+
+    
+
+    
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css" integrity="sha256-eZrrJcwDc/3uDhsdt61sL2oOBY362qM3lon1gyExkL0=" crossorigin="anonymous" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/fancybox/2.1.4/jquery.fancybox.min.css" integrity="sha256-vuXZ9LGmmwtjqFX1F+EKin1ThZMub58gKULUyf0qECk=" crossorigin="anonymous" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/fancybox/2.1.4/helpers/jquery.fancybox-thumbs.min.css" integrity="sha256-SEa4XYAHihTcEP1f5gARTB2K26Uk8PsndQYHQC1f4jU=" crossorigin="anonymous" />
+    
+    
+    <link rel="stylesheet" href="https://LinkRober.github.io/bookshelf/css/style-fpbzgxsy0kgmdvyrj5ykkg6ratccrk3gocmaqn4xpcjywmv5dteilzucro4f.min.css" />
+    
+    
+
+    
+      
+    
+    
+  </head>
+
+  <body>
+    <div id="blog">
+      <header id="header" data-behavior="4">
+  <i id="btn-open-sidebar" class="fa fa-lg fa-bars"></i>
+  <div class="header-title">
+    <a class="header-title-link" href="https://LinkRober.github.io/bookshelf/">董二千</a>
+  </div>
+  
+    
+      <a class="header-right-picture "
+         href="https://LinkRober.github.io/bookshelf/#about">
+    
+    
+    
+      
+        <img class="header-picture" src="https://avatars1.githubusercontent.com/u/7357189?v=3&amp;s=460.png" alt="作者的图片" />
+      
+    
+    </a>
+  
+</header>
+
+      <nav id="sidebar" data-behavior="4">
+  <div class="sidebar-container">
+    
+      <div class="sidebar-profile">
+        <a href="https://LinkRober.github.io/bookshelf/#about">
+          <img class="sidebar-profile-picture" src="https://avatars1.githubusercontent.com/u/7357189?v=3&amp;s=460.png" alt="作者的图片" />
+        </a>
+        <h4 class="sidebar-profile-name">董二千</h4>
+        
+          <h5 class="sidebar-profile-bio">愿你走出半生 归来仍是少年</h5>
+        
+      </div>
+    
+    <ul class="sidebar-buttons">
+      
+  <li class="sidebar-button">
+    
+      <a class="sidebar-button-link " href="https://LinkRober.github.io/bookshelf/categories">
+    
+      <i class="sidebar-button-icon fa fa-lg fa-bookmark"></i>
+      
+      <span class="sidebar-button-desc">分类</span>
+    </a>
+  </li>
+
+  <li class="sidebar-button">
+    
+      <a class="sidebar-button-link " href="https://LinkRober.github.io/bookshelf/">
+    
+      <i class="sidebar-button-icon fa fa-lg fa-home"></i>
+      
+      <span class="sidebar-button-desc">首页</span>
+    </a>
+  </li>
+
+  <li class="sidebar-button">
+    
+      <a class="sidebar-button-link " href="https://LinkRober.github.io/bookshelf/tags">
+    
+      <i class="sidebar-button-icon fa fa-lg fa-tags"></i>
+      
+      <span class="sidebar-button-desc">标签</span>
+    </a>
+  </li>
+
+  <li class="sidebar-button">
+    
+      <a class="sidebar-button-link " href="https://LinkRober.github.io/bookshelf/#about">
+    
+      <i class="sidebar-button-icon fa fa-lg fa-question"></i>
+      
+      <span class="sidebar-button-desc">关于</span>
+    </a>
+  </li>
+
+  <li class="sidebar-button">
+    
+      <a class="sidebar-button-link " href="https://LinkRober.github.io/bookshelf/archives">
+    
+      <i class="sidebar-button-icon fa fa-lg fa-archive"></i>
+      
+      <span class="sidebar-button-desc">归档</span>
+    </a>
+  </li>
+
+
+    </ul>
+    <ul class="sidebar-buttons">
+      
+  <li class="sidebar-button">
+    
+      <a class="sidebar-button-link " href="https://github.com/LinkRober" target="_blank" rel="noopener">
+    
+      <i class="sidebar-button-icon fa fa-lg fa-github"></i>
+      
+      <span class="sidebar-button-desc">GitHub</span>
+    </a>
+  </li>
+
+  <li class="sidebar-button">
+    
+      <a class="sidebar-button-link " href="https://stackoverflow.com/users/4878280/buer" target="_blank" rel="noopener">
+    
+      <i class="sidebar-button-icon fa fa-lg fa-stack-overflow"></i>
+      
+      <span class="sidebar-button-desc">Stack Overflow</span>
+    </a>
+  </li>
+
+
+    </ul>
+    <ul class="sidebar-buttons">
+      
+
+    </ul>
+  </div>
+</nav>
+
+      
+
+      <div id="main" data-behavior="4"
+        class="
+               hasCoverMetaIn
+               ">
+        <article class="post" itemscope itemType="http://schema.org/BlogPosting">
+          
+          
+            <div class="post-header main-content-wrap text-left">
+  
+    <h1 class="post-title" itemprop="headline">
+      Weak的实现（三）
+    </h1>
+  
+  
+  <div class="postShorten-meta post-meta">
+    
+      <time itemprop="datePublished" datetime="2020-12-08T00:00:00Z">
+        
+  十二月 8, 2020
+
+      </time>
+    
+    
+  
+  
+    <span>发布在</span>
+    
+      <a class="category-link" href="https://LinkRober.github.io/bookshelf/categories/ios">iOS</a>
+    
+  
+
+
+  </div>
+
+</div>
+          
+          <div class="post-content markdown" itemprop="articleBody">
+            <div class="main-content-wrap">
+              <h4 id="3-设置弱引用标志位">3 设置弱引用标志位</h4>
+
+<p></p>
+
+<pre><code>inline void
+objc_object::setWeaklyReferenced_nolock()
+{
+ retry:
+    //去对象的isa指针
+    isa_t oldisa = LoadExclusive(&amp;isa.bits);
+    isa_t newisa = oldisa;
+    //如果不是non-pointer
+    if (slowpath(!newisa.nonpointer)) {
+        ClearExclusive(&amp;isa.bits);
+        //&lt;&lt;3.1&gt;&gt;
+        sidetable_setWeaklyReferenced_nolock();
+        return;
+    }
+    if (newisa.weakly_referenced) {
+        ClearExclusive(&amp;isa.bits);
+        return;
+    }
+    //弱引用标志位设为1
+    newisa.weakly_referenced = true;
+    //如果oldisa.bits和newisa.bits不相等返回NO，继续tery里面的内容，这时候newisa.weakly_referenced已经是true了，所以return
+    if (!StoreExclusive(&amp;isa.bits, oldisa.bits, newisa.bits)) goto retry;
+}
+</code></pre>
+
+<p>设置nonpointer类型的isa和非nonpointer类型的isa的弱引用位为1</p>
+
+<h5 id="3-1-设置nonpointer的isa指针的弱引用标志位">3.1 设置nonpointer的isa指针的弱引用标志位</h5>
+
+<pre><code>void 
+objc_object::sidetable_setWeaklyReferenced_nolock()
+{
+#if SUPPORT_NONPOINTER_ISA
+    ASSERT(!isa.nonpointer);
+#endif
+
+    SideTable&amp; table = SideTables()[this];
+    table.refcnts[this] |= SIDE_TABLE_WEAKLY_REFERENCED;
+}
+</code></pre>
+
+<p><code>RefcountMap</code>，也是哈希表</p>
+
+<pre><code>typedef objc::DenseMap&lt;DisguisedPtr&lt;objc_object&gt;,size_t,RefcountMapValuePurgeable&gt; RefcountMap;
+</code></pre>
+
+<p>key是<code>DisguisedPtr&lt;objc_object&gt;</code>即<code>weak_referrer_t</code>，弱引用对象，value是<code>size_t</code>，弱引用数量</p>
+
+<p>这里将<code>table.refcnts[this]</code>即最后一位与SIDE_TABLE_WEAKLY_REFERENCED进行位或操作，这时候弱引用标志位变成<strong>1</strong>。</p>
+
+<h4 id="答题">答题</h4>
+
+<p>问题1、2、3、5我们放在一起回答</p>
+
+<ol>
+<li>大家都知道weak的底层实现是一个散列表，那么散列表的结构是什么样的？</li>
+<li>散列表的key是什么，value是什么，散列函数是怎样的？</li>
+<li>通过几次查找才能找到对应的弱引用？</li>
+<li>一个对象对应一个<code>SideTable</code>表而一个<code>SideTable</code>对应多个对象，为什么这样设计</li>
+</ol>
+
+<p>大概的讲是一个散列表<code>SideTablesMap</code>，以对象为<code>key</code>,<code>SideTable</code>为<code>value</code>。散列函数是</p>
+
+<pre><code>static unsigned int indexForPointer(const void *p) {
+        uintptr_t addr = reinterpret_cast&lt;uintptr_t&gt;(p);
+        return ((addr &gt;&gt; 4) ^ (addr &gt;&gt; 9)) % StripeCount;
+}
+</code></pre>
+
+<p>但这只是开始，它取到的是很多对象弱引用表的集合。要想准确的找到某个对象的弱引位置用还要经过两步。</p>
+
+<ul>
+<li>以对象为key，经过一系列运算（位运算，算数运算），最后通过BITMASK找到<code>weak_entries</code>的入口<code>index</code>开始变量，判断对象是否相等。最后才能找到对象所在的<code>weak_entry_t</code>。</li>
+<li>因为<code>weak_entry_t</code>这里面保存了对象的所有有弱引用，要找到指定的，还要经历和上述类似的操作对比<code>old_referrer</code>才能找到正真的弱引用<code>weak_referrer_t</code>位置。</li>
+</ul>
+
+<p>所以经过3次查找才能找到正真的弱引用。</p>
+
+<p>为什么苹果要创建64个<code>SideTable</code>（在iphone上是8个，其他上面是64个），而不是用一个SideTable解决呢。简单的类比，大家都在火车站或者飞机场打过出租车吧，当你前面的队伍黑压压的一片看不到头你是不是希望多开几个出租车上车点。使用多个<code>SideTable</code>也是这个原理提高弱引用的索引速度。</p>
+
+<p>还有一点，我想提下，在整个过程中有两次扩容，一次收缩容量。它们都是动态的。分别是在
+- <code>weak_unregister_no_lock</code>的时候，收缩<code>weak_table_t</code>的容量</p>
+
+<pre><code>// Shrink the table if it is mostly empty.
+static void weak_compact_maybe(weak_table_t *weak_table)
+{
+    size_t old_size = TABLE_SIZE(weak_table);
+
+    // Shrink if larger than 1024 buckets and at most 1/16 full.
+    if (old_size &gt;= 1024  &amp;&amp; old_size / 16 &gt;= weak_table-&gt;num_entries) {
+        weak_resize(weak_table, old_size / 8);
+        // leaves new table no more than 1/2 full
+    }
+}
+</code></pre>
+
+<ul>
+<li><p><code>append_referrer</code>的时候增加<code>weak_entry_t</code>中动态数组<code>*referrers</code>的容量</p>
+
+<pre><code>__attribute__((noinline, used))
+static void grow_refs_and_insert(weak_entry_t *entry, 
+                             objc_object **new_referrer)
+{
+ASSERT(entry-&gt;out_of_line());
+
+size_t old_size = TABLE_SIZE(entry);
+size_t new_size = old_size ? old_size * 2 : 8;
+
+size_t num_refs = entry-&gt;num_refs;
+weak_referrer_t *old_refs = entry-&gt;referrers;
+entry-&gt;mask = new_size - 1;
+    
+entry-&gt;referrers = (weak_referrer_t *)
+    calloc(TABLE_SIZE(entry), sizeof(weak_referrer_t));
+entry-&gt;num_refs = 0;
+entry-&gt;max_hash_displacement = 0;
+    
+for (size_t i = 0; i &lt; old_size &amp;&amp; num_refs &gt; 0; i++) {
+    if (old_refs[i] != nil) {
+        append_referrer(entry, old_refs[i]);
+        num_refs--;
+    }
+}
+// Insert
+append_referrer(entry, new_referrer);
+if (old_refs) free(old_refs);
+}
+</code></pre></li>
+
+<li><p><code>weak_grow_maybe</code>的时候,增加<code>weak_table_t</code>的容量</p>
+
+<pre><code>static void weak_grow_maybe(weak_table_t *weak_table)
+{
+size_t old_size = TABLE_SIZE(weak_table);
+
+// Grow if at least 3/4 full.
+if (weak_table-&gt;num_entries &gt;= old_size * 3 / 4) {
+    weak_resize(weak_table, old_size ? old_size*2 : 64);
+}
+}
+</code></pre></li>
+</ul>
+
+<p>问题4</p>
+
+<ol>
+<li>如何查找弱引用对象的引用计数？</li>
+</ol>
+
+<pre><code>uintptr_t
+_objc_rootRetainCount(id obj)
+{
+    ASSERT(obj);
+
+    return obj-&gt;rootRetainCount();
+}
+
+inline uintptr_t 
+objc_object::rootRetainCount()
+{
+    if (isTaggedPointer()) return (uintptr_t)this;
+
+    sidetable_lock();
+    //获取isa的比特位
+    isa_t bits = LoadExclusive(&amp;isa.bits);
+    ClearExclusive(&amp;isa.bits);
+    //是不是non-pointer
+    if (bits.nonpointer) {
+        //引用比特位上的引用数加1
+        uintptr_t rc = 1 + bits.extra_rc;
+        if (bits.has_sidetable_rc) {
+            //判断sidetable是否存在引用计数，如果存在继续相加
+            rc += sidetable_getExtraRC_nolock();
+        }
+        sidetable_unlock();
+        return rc;
+    }
+
+    sidetable_unlock();
+    return sidetable_retainCount();
+}
+</code></pre>
+
+<p>从<code>rootRetainCount</code>源码可以看出，弱引用的引用计数分布在两个地方，一个是<code>isa</code>的比特位中，还有一个在<code>SideTable</code>中。它们相加才是对象的引用计数的数量。</p>
+
+<p>最后祭上Weak的类图和四层存储结构图，结构图中有获取对应层级所用到的算法
+<img src="https://note.youdao.com/yws/api/personal/file/WEBe05b83f81e4040473f0385979441c881?method=download&amp;shareKey=028270cc018dcad1590865e61eb2624c" alt="" />
+<img src="https://note.youdao.com/yws/api/personal/file/WEB97fdb40aae006524c1682b57022200cd?method=download&amp;shareKey=ec82da0a1b701817110cc4a24494437a" alt="" /></p>
+
+<p>参考：</p>
+
+<p><a href="https://www.jianshu.com/p/ef6d9bf8fe59">iOS管理对象内存的数据结构以及操作算法&ndash;SideTables、RefcountMap、weak_table_t-一
+</a></p>
+
+<p><a href="https://www.leewong.cn/2020/08/16/sidetablestructure/">SideTable结构
+</a></p>
+              
+            </div>
+          </div>
+          <div id="post-footer" class="post-footer main-content-wrap">
+            
+              
+                
+                
+                  <div class="post-footer-tags">
+                    <span class="text-color-light text-small">标签</span><br/>
+                    
+  <a class="tag tag--primary tag--small" href="https://linkrober.github.io/bookshelf//tags/weak/">Weak</a>
+
+                  </div>
+                
+              
+            
+            
+  <div class="post-actions-wrap">
+      <nav >
+        <ul class="post-actions post-action-nav">
+            <li class="post-action">
+              
+                <a class="post-action-btn btn btn--default tooltip--top" href="https://LinkRober.github.io/bookshelf/2020/12/weak%E7%9A%84%E5%AE%9E%E7%8E%B0%E4%B8%80/" data-tooltip="Weak的实现（一）">
+              
+                <i class="fa fa-angle-left"></i>
+                <span class="hide-xs hide-sm text-small icon-ml">下一篇</span>
+              </a>
+            </li>
+            <li class="post-action">
+              
+                <a class="post-action-btn btn btn--default tooltip--top" href="https://LinkRober.github.io/bookshelf/2020/12/weak%E7%9A%84%E5%AE%9E%E7%8E%B0%E4%BA%8C/" data-tooltip="Weak的实现（二）">
+              
+                <span class="hide-xs hide-sm text-small icon-mr">上一篇</span>
+                <i class="fa fa-angle-right"></i>
+              </a>
+            </li>
+        </ul>
+      </nav>
+    <ul class="post-actions post-action-share" >
+      
+        <li class="post-action hide-lg hide-md hide-sm">
+          <a class="post-action-btn btn btn--default btn-open-shareoptions" href="#btn-open-shareoptions">
+            <i class="fa fa-share-alt"></i>
+          </a>
+        </li>
+        
+      
+      
+        <li class="post-action">
+          <a class="post-action-btn btn btn--default" href="#disqus_thread">
+            <i class="fa fa-comment-o"></i>
+          </a>
+        </li>
+      
+      <li class="post-action">
+        
+          <a class="post-action-btn btn btn--default" href="#">
+        
+          <i class="fa fa-list"></i>
+        </a>
+      </li>
+    </ul>
+  </div>
+
+
+            
+              
+                <div id="disqus_thread">
+  <noscript>Please enable JavaScript to view the <a href="//disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
+</div>
+              
+            
+          </div>
+        </article>
+        
+      </div>
+      <div id="bottom-bar" class="post-bottom-bar" data-behavior="4">
+        
+  <div class="post-actions-wrap">
+      <nav >
+        <ul class="post-actions post-action-nav">
+            <li class="post-action">
+              
+                <a class="post-action-btn btn btn--default tooltip--top" href="https://LinkRober.github.io/bookshelf/2020/12/weak%E7%9A%84%E5%AE%9E%E7%8E%B0%E4%B8%80/" data-tooltip="Weak的实现（一）">
+              
+                <i class="fa fa-angle-left"></i>
+                <span class="hide-xs hide-sm text-small icon-ml">下一篇</span>
+              </a>
+            </li>
+            <li class="post-action">
+              
+                <a class="post-action-btn btn btn--default tooltip--top" href="https://LinkRober.github.io/bookshelf/2020/12/weak%E7%9A%84%E5%AE%9E%E7%8E%B0%E4%BA%8C/" data-tooltip="Weak的实现（二）">
+              
+                <span class="hide-xs hide-sm text-small icon-mr">上一篇</span>
+                <i class="fa fa-angle-right"></i>
+              </a>
+            </li>
+        </ul>
+      </nav>
+    <ul class="post-actions post-action-share" >
+      
+        <li class="post-action hide-lg hide-md hide-sm">
+          <a class="post-action-btn btn btn--default btn-open-shareoptions" href="#btn-open-shareoptions">
+            <i class="fa fa-share-alt"></i>
+          </a>
+        </li>
+        
+      
+      
+        <li class="post-action">
+          <a class="post-action-btn btn btn--default" href="#disqus_thread">
+            <i class="fa fa-comment-o"></i>
+          </a>
+        </li>
+      
+      <li class="post-action">
+        
+          <a class="post-action-btn btn btn--default" href="#">
+        
+          <i class="fa fa-list"></i>
+        </a>
+      </li>
+    </ul>
+  </div>
+
+
+      </div>
+      <div id="share-options-bar" class="share-options-bar" data-behavior="4">
+  <i id="btn-close-shareoptions" class="fa fa-close"></i>
+  <ul class="share-options">
+    
+  </ul>
+</div>
+<div id="share-options-mask" class="share-options-mask"></div>
+    </div>
+    
+    <div id="about">
+  <div id="about-card">
+    <div id="about-btn-close">
+      <i class="fa fa-remove"></i>
+    </div>
+    
+      <img id="about-card-picture" src="https://avatars1.githubusercontent.com/u/7357189?v=3&amp;s=460.png" alt="作者的图片" />
+    
+    <h4 id="about-card-name">董二千</h4>
+    
+      <div id="about-card-bio">愿你走出半生 归来仍是少年</div>
+    
+    
+      <div id="about-card-job">
+        <i class="fa fa-briefcase"></i>
+        <br/>
+        iOS Developer
+      </div>
+    
+    
+      <div id="about-card-location">
+        <i class="fa fa-map-marker"></i>
+        <br/>
+        China
+      </div>
+    
+  </div>
+</div>
+
+    <div id="algolia-search-modal" class="modal-container">
+  <div class="modal">
+    <div class="modal-header">
+      <span class="close-button"><i class="fa fa-close"></i></span>
+      <a href="https://algolia.com" target="_blank" rel="noopener" class="searchby-algolia text-color-light link-unstyled">
+        <span class="searchby-algolia-text text-color-light text-small">by</span>
+        <img class="searchby-algolia-logo" src="https://www.algolia.com/static_assets/images/press/downloads/algolia-light.svg">
+      </a>
+      <i class="search-icon fa fa-search"></i>
+      <form id="algolia-search-form">
+        <input type="text" id="algolia-search-input" name="search"
+          class="form-control input--large search-input" placeholder="搜索" />
+      </form>
+    </div>
+    <div class="modal-body">
+      <div class="no-result text-color-light text-center"></div>
+      <div class="results">
+        
+        
+          <div class="media">
+            
+            <div class="media-body">
+              <a class="link-unstyled" href="https://linkrober.github.io/bookshelf/2020/12/weak%E7%9A%84%E5%AE%9E%E7%8E%B0-sidetablesoldobj/">
+                <h3 class="media-heading">Weak的实现-&amp;SideTables()[oldObj]</h3>
+              </a>
+              <span class="media-meta">
+                <span class="media-date text-small">
+                  Dec 12, 2020
+                </span>
+              </span>
+              <div class="media-content hide-xs font-merryweather"><p><code>&amp;SideTables()[oldObj]</code>这是什么？很多人看到这里都被这操作搞蒙了，下面分三步来理解，分别是<code>SideTables()</code>、<code>[oldObj]</code>、<code>&amp;</code>。先贴上入口的代码</p>
+
+<pre><code>id oldObj;
+SideTable *oldTable;
+
+oldObj = *location;
+oldTable = &amp;SideTables()[oldObj];
+</code></pre>
+
+<p></p></div>
+            </div>
+            <div style="clear:both;"></div>
+            <hr>
+          </div>
+        
+          <div class="media">
+            
+            <div class="media-body">
+              <a class="link-unstyled" href="https://linkrober.github.io/bookshelf/2020/12/weak%E7%9A%84%E5%AE%9E%E7%8E%B0%E4%B8%80/">
+                <h3 class="media-heading">Weak的实现（一）</h3>
+              </a>
+              <span class="media-meta">
+                <span class="media-date text-small">
+                  Dec 12, 2020
+                </span>
+              </span>
+              <div class="media-content hide-xs font-merryweather"><p>本文较长查分为三段按序阅读体验更佳，第四篇为辅助阅读按需看</p>
+
+<ol>
+<li>[Weak的实现（一）]()</li>
+<li>[Weak的实现（二）]()</li>
+<li>[Weak的实现（三）]()</li>
+<li>[Weak的实现-&amp;SideTables()[oldObj]]()</li>
+</ol>
+
+<p>带着问题看源码：</p>
+
+<ol>
+<li>大家都知道weak的底层实现是一个散列表，那么散列表的结构是什么样的？</li>
+<li>散列表的key是什么，value是什么，散列函数是怎样的？</li>
+<li>通过几次查找才能找到对应的弱引用？</li>
+<li>如何查找弱引用对象的引用计数？</li>
+<li>一个对象对应一个<code>SideTable</code>表而一个<code>SideTable</code>对应多个对象，为什么这样设计</li>
+</ol>
+
+<p></p></div>
+            </div>
+            <div style="clear:both;"></div>
+            <hr>
+          </div>
+        
+          <div class="media">
+            
+            <div class="media-body">
+              <a class="link-unstyled" href="https://linkrober.github.io/bookshelf/2020/12/weak%E7%9A%84%E5%AE%9E%E7%8E%B0%E4%B8%89/">
+                <h3 class="media-heading">Weak的实现（三）</h3>
+              </a>
+              <span class="media-meta">
+                <span class="media-date text-small">
+                  Dec 12, 2020
+                </span>
+              </span>
+              <div class="media-content hide-xs font-merryweather"><h4 id="3-设置弱引用标志位">3 设置弱引用标志位</h4>
+
+<p></p></div>
+            </div>
+            <div style="clear:both;"></div>
+            <hr>
+          </div>
+        
+          <div class="media">
+            
+            <div class="media-body">
+              <a class="link-unstyled" href="https://linkrober.github.io/bookshelf/2020/12/weak%E7%9A%84%E5%AE%9E%E7%8E%B0%E4%BA%8C/">
+                <h3 class="media-heading">Weak的实现（二）</h3>
+              </a>
+              <span class="media-meta">
+                <span class="media-date text-small">
+                  Dec 12, 2020
+                </span>
+              </span>
+              <div class="media-content hide-xs font-merryweather"><h4 id="2-生成新的-weak-entry-t-插入到-weak-entries-中">2 生成新的<code>weak_entry_t</code>插入到<code>weak_entries</code>中</h4>
+
+<p></p></div>
+            </div>
+            <div style="clear:both;"></div>
+            <hr>
+          </div>
+        
+          <div class="media">
+            
+            <div class="media-body">
+              <a class="link-unstyled" href="https://linkrober.github.io/bookshelf/2020/11/combinelatestzip%E5%92%8Cmerge%E7%9A%84%E5%8C%BA%E5%88%AB/">
+                <h3 class="media-heading">CombineLatest、Zip和Merge的区别</h3>
+              </a>
+              <span class="media-meta">
+                <span class="media-date text-small">
+                  Nov 11, 2020
+                </span>
+              </span>
+              <div class="media-content hide-xs font-merryweather"><h4 id="信号触发方式">信号触发方式</h4>
+
+<h5 id="merge">merge</h5>
+
+<p>只要<code>merge</code>之后生成的信号被订阅就会<strong>自动</strong>触发所有压缩信号的订阅回调，如果靠前的信号出现了<code>error</code>后面的信号不再发送。</p>
+
+<p>核心方法：<code>- (instancetype)flatten</code></br>
+值：多次收到，分开的</p>
+
+<pre><code> 1
+ 2
+</code></pre>
+
+<pre><code>RACSignal *s1 = [RACSignal createSignal:^RACDisposable *(id&lt;RACSubscriber&gt; subscriber) {
+  [subscriber sendNext:@&quot;1&quot;];
+    return nil;
+}];
+
+RACSignal *s2 = [RACSignal createSignal:^RACDisposable *(id&lt;RACSubscriber&gt; subscriber) {
+    [subscriber sendNext:@&quot;2&quot;];
+    return nil;
+}];
+
+[[RACSignal merge:@[s1,s2]] subscribeNext:^(id x) {
+    NSLog(@&quot;%@&quot;,x);
+}];
+
+</code></pre>
+
+<p></p></div>
+            </div>
+            <div style="clear:both;"></div>
+            <hr>
+          </div>
+        
+          <div class="media">
+            
+            <div class="media-body">
+              <a class="link-unstyled" href="https://linkrober.github.io/bookshelf/2020/11/connectautoconnectracreplaysubjectreplay/">
+                <h3 class="media-heading">Connect、AutoConnect、RACReplaySubject、Replay</h3>
+              </a>
+              <span class="media-meta">
+                <span class="media-date text-small">
+                  Nov 11, 2020
+                </span>
+              </span>
+              <div class="media-content hide-xs font-merryweather"><h4 id="connect">Connect</h4>
+
+<p>将冷信号包装成热信号，初始化冷信号，调用<code>publish</code>方法会自动生成一个<code>RACMulticastConnection</code>，该对象持有了原始信号和一个热信号。</p>
+
+<pre><code>- (RACMulticastConnection *)publish {
+	RACSubject *subject = [[RACSubject subject] setNameWithFormat:@&quot;[%@] -publish&quot;, self.name];
+	RACMulticastConnection *connection = [self multicast:subject];
+	return connection;
+}
+- (RACMulticastConnection *)multicast:(RACSubject *)subject {
+	[subject setNameWithFormat:@&quot;[%@] -multicast: %@&quot;, self.name, subject.name];
+	RACMulticastConnection *connection = [[RACMulticastConnection alloc] initWithSourceSignal:self subject:subject];
+	return connection;
+}
+</code></pre>
+
+<p>调用<code>connect</code>方法来触发订阅，注意调用一次触发一次。</p>
+
+<p></p></div>
+            </div>
+            <div style="clear:both;"></div>
+            <hr>
+          </div>
+        
+          <div class="media">
+            
+            <div class="media-body">
+              <a class="link-unstyled" href="https://linkrober.github.io/bookshelf/2020/11/racsignal/">
+                <h3 class="media-heading">RACSignal</h3>
+              </a>
+              <span class="media-meta">
+                <span class="media-date text-small">
+                  Nov 11, 2020
+                </span>
+              </span>
+              <div class="media-content hide-xs font-merryweather"><h4 id="创建信号">创建信号</h4>
+
+<pre><code>
+RACSignal *signal = [RACSignal createSignal:^RACDisposable *(id&lt;RACSubscriber&gt; subscriber) {
+        [subscriber sendNext:@&quot;1&quot;];
+        return nil;
+    }];
+
+</code></pre>
+
+<p>分析</p>
+
+<pre><code>//RACSignal.m
++ (RACSignal *)createSignal:(RACDisposable * (^)(id&lt;RACSubscriber&gt; subscriber))didSubscribe {
+	return [RACDynamicSignal createSignal:didSubscribe];
+}
+</code></pre>
+
+<p></p></div>
+            </div>
+            <div style="clear:both;"></div>
+            <hr>
+          </div>
+        
+          <div class="media">
+            
+            <div class="media-body">
+              <a class="link-unstyled" href="https://linkrober.github.io/bookshelf/2020/11/switchtolatest/">
+                <h3 class="media-heading">SwitchToLatest</h3>
+              </a>
+              <span class="media-meta">
+                <span class="media-date text-small">
+                  Nov 11, 2020
+                </span>
+              </span>
+              <div class="media-content hide-xs font-merryweather"><p><code>- (RACSignal *)switchToLatest</code>和<code>- (RACSignal *)flatten</code>的功能类似，都可以将信号中的信号的值取出来。不同的是，前者如果订阅者处理多个信号，只有最后一个信号的值能收到，之前的信号会被销毁。而后者则都能收到所有值。</p>
+
+<p></p></div>
+            </div>
+            <div style="clear:both;"></div>
+            <hr>
+          </div>
+        
+          <div class="media">
+            
+            <div class="media-body">
+              <a class="link-unstyled" href="https://linkrober.github.io/bookshelf/2020/11/concatcatchtonevertakeuntil/">
+                <h3 class="media-heading">concat、catchTo、never、takeUntil</h3>
+              </a>
+              <span class="media-meta">
+                <span class="media-date text-small">
+                  Nov 11, 2020
+                </span>
+              </span>
+              <div class="media-content hide-xs font-merryweather"><ol>
+<li><code>- (RACSignal *)concat:(RACSignal *)signal</code></li>
+</ol>
+
+<pre><code>//源码
+- (RACSignal *)concat:(RACSignal *)signal {
+	return [[RACSignal createSignal:^(id&lt;RACSubscriber&gt; subscriber) {
+		RACSerialDisposable *serialDisposable = [[RACSerialDisposable alloc] init];
+
+		RACDisposable *sourceDisposable = [self subscribeNext:^(id x) {
+			[subscriber sendNext:x];
+		} error:^(NSError *error) {
+			[subscriber sendError:error];
+		} completed:^{
+			RACDisposable *concattedDisposable = [signal subscribe:subscriber];
+			serialDisposable.disposable = concattedDisposable;
+		}];
+
+		serialDisposable.disposable = sourceDisposable;
+		return serialDisposable;
+	}] setNameWithFormat:@&quot;[%@] -concat: %@&quot;, self.name, signal];
+}
+</code></pre>
+
+<p></p></div>
+            </div>
+            <div style="clear:both;"></div>
+            <hr>
+          </div>
+        
+          <div class="media">
+            
+            <div class="media-body">
+              <a class="link-unstyled" href="https://linkrober.github.io/bookshelf/2020/11/zip/">
+                <h3 class="media-heading">zip</h3>
+              </a>
+              <span class="media-meta">
+                <span class="media-date text-small">
+                  Nov 11, 2020
+                </span>
+              </span>
+              <div class="media-content hide-xs font-merryweather"><pre><code>RACSignal *s1 = [RACSignal createSignal:^RACDisposable *(id&lt;RACSubscriber&gt; subscriber) {
+       [subscriber sendNext:@&quot;1&quot;];
+    return nil;
+}];
+RACSignal *s2 = [RACSignal createSignal:^RACDisposable *(id&lt;RACSubscriber&gt; subscriber) {
+    [subscriber sendNext:@&quot;2&quot;];
+    return nil;
+}];
+RACSignal *s3 = [RACSignal createSignal:^RACDisposable *(id&lt;RACSubscriber&gt; subscriber) {
+    [subscriber sendNext:@&quot;3&quot;];
+    return nil;
+}];
+
+RACSignal *zs = [RACSignal zip:@[s1,s2,s3]];
+
+[zs subscribeNext:^(id x) {
+    NSLog(@&quot;%@&quot;,x);
+}];
+
+</code></pre>
+
+<p>同<code>zip</code>压缩的信号只有等所有的自信号都<code>sendNext</code>之后才会执行订阅回调。</p>
+
+<p>问题：
+1. 如何确保每个信号都发送完，才执行后压缩信号的订阅回调</p>
+
+<p></p></div>
+            </div>
+            <div style="clear:both;"></div>
+            <hr>
+          </div>
+        
+      </div>
+    </div>
+    <div class="modal-footer">
+      <p class="results-count text-medium"
+         data-message-zero=""
+         data-message-one=""
+         data-message-other="">
+         31 posts found
+      </p>
+    </div>
+  </div>
+</div>
+    
+  
+    
+    <div id="cover" style="background-image:url('https://LinkRober.github.io/bookshelf/images/cover.jpg');"></div>
+  
+
+
+    
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/2.1.3/jquery.min.js" integrity="sha256-IFHWFEbU2/+wNycDECKgjIRSirRNIDp2acEB5fvdVRU=" crossorigin="anonymous"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.8.0/highlight.min.js" integrity="sha256-+mpyNVJsNt4rVXCw0F+pAOiB3YxmHgrbJsx4ecPuUaI=" crossorigin="anonymous"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/fancybox/2.1.4/jquery.fancybox.min.js" integrity="sha256-vMxgR/7FtLovVA+IPrR7+xTgIgARH7y9VZQnmmi0HDI=" crossorigin="anonymous"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/fancybox/2.1.4/helpers/jquery.fancybox-thumbs.min.js" integrity="sha256-N0qFUh7/9vLvia87dDndewmsgsyYoNkdA212tPc+2NI=" crossorigin="anonymous"></script>
+
+
+<script src="https://LinkRober.github.io/bookshelf/js/script-qi9wbxp2ya2j6p7wx1i6tgavftewndznf4v0hy2gvivk1rxgc3lm7njqb6bz.min.js"></script>
+
+
+<script>
+$(document).ready(function() {
+  hljs.configure({ classPrefix: '', useBR: false });
+  $('pre.code-highlight, pre > code').each(function(i, block) {
+    if (!$(this).hasClass('codeblock')) {
+      $(this).addClass('codeblock');
+    }
+    hljs.highlightBlock(block);
+  });
+});
+</script>
+
+  
+    
+      <script>
+        var disqus_config = function () {
+          this.page.url = 'https:\/\/linkrober.github.io\/bookshelf\/2020\/12\/weak%E7%9A%84%E5%AE%9E%E7%8E%B0%E4%B8%89\/';
+          
+            this.page.identifier = '\/2020\/12\/weak%E7%9A%84%E5%AE%9E%E7%8E%B0%E4%B8%89\/'
+          
+        };
+        (function() {
+          
+          
+          if (window.location.hostname == "localhost") {
+            return;
+          }
+          var d = document, s = d.createElement('script');
+          var disqus_shortname = 'dongerqian';
+          s.src = '//' + disqus_shortname + '.disqus.com/embed.js';
+
+          s.setAttribute('data-timestamp', +new Date());
+          (d.head || d.body).appendChild(s);
+        })();
+      </script>
+    
+  
+
+
+
+    
+  </body>
+</html>
+

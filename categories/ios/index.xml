@@ -9,6 +9,1073 @@
     <atom:link href="https://LinkRober.github.io/bookshelf/categories/ios/index.xml" rel="self" type="application/rss+xml" />
     
     <item>
+      <title>Weak的实现-&amp;SideTables()[oldObj]</title>
+      <link>https://linkrober.github.io/bookshelf/2020/12/weak%E7%9A%84%E5%AE%9E%E7%8E%B0-sidetablesoldobj/</link>
+      <pubDate>Tue, 08 Dec 2020 00:00:00 +0000</pubDate>
+      
+      <guid>https://linkrober.github.io/bookshelf/2020/12/weak%E7%9A%84%E5%AE%9E%E7%8E%B0-sidetablesoldobj/</guid>
+      <description>&lt;p&gt;&lt;code&gt;&amp;amp;SideTables()[oldObj]&lt;/code&gt;这是什么？很多人看到这里都被这操作搞蒙了，下面分三步来理解，分别是&lt;code&gt;SideTables()&lt;/code&gt;、&lt;code&gt;[oldObj]&lt;/code&gt;、&lt;code&gt;&amp;amp;&lt;/code&gt;。先贴上入口的代码&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;id oldObj;
+SideTable *oldTable;
+
+oldObj = *location;
+oldTable = &amp;amp;SideTables()[oldObj];
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;&lt;/p&gt;
+
+&lt;h4 id=&#34;1-理解-sidetables&#34;&gt;1. 理解&lt;code&gt;SideTables()&lt;/code&gt;&lt;/h4&gt;
+
+&lt;p&gt;首先&lt;code&gt;SideTables()&lt;/code&gt;是一个静态函数，完全体是这样的&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;static StripedMap&amp;lt;SideTable&amp;gt;&amp;amp; SideTables() {
+    return SideTablesMap.get();
+}
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;函数体里面调用了一个全局的静态变量&lt;code&gt;SideTablesMap&lt;/code&gt;的&lt;code&gt;get()&lt;/code&gt;方法，
+静态变量里面保存了所有的&lt;code&gt;SideTable&lt;/code&gt;。的声明如下：&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;static objc::ExplicitInit&amp;lt;StripedMap&amp;lt;SideTable&amp;gt;&amp;gt; SideTablesMap;
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;可以看出&lt;code&gt;SideTablesMap&lt;/code&gt;是在命名空间objc下面的一个&lt;code&gt;ExplicitInit&lt;/code&gt;类，它里面实现了&lt;code&gt;get()&lt;/code&gt;方法，如下&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;Type &amp;amp;get() {
+    return *reinterpret_cast&amp;lt;Type *&amp;gt;(_storage);
+}
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;对于不熟悉c++的理解下面这几点基本就能看懂：&lt;/p&gt;
+
+&lt;ul&gt;
+&lt;li&gt;c++ 中的引用&lt;code&gt;&amp;amp;&lt;/code&gt;，在c++中&lt;code&gt;&amp;amp;&lt;/code&gt;除了有&lt;code&gt;取地址&lt;/code&gt;的作用还可以作为&lt;code&gt;引用&lt;/code&gt;。方法返回的是一个引用，如果没有c++基础的很容易误认为返回了一个指针。&lt;/li&gt;
+&lt;li&gt;c++中的模板&lt;code&gt;template&lt;/code&gt;，泛型&lt;code&gt;Type&lt;/code&gt;是通过模板传入的，即&lt;code&gt;StripedMap&lt;/code&gt;。
+从上面声明&lt;code&gt;SideTablesMap&lt;/code&gt;的地方可以看到，这里是个模板的嵌套，&lt;code&gt;StripedMap&lt;/code&gt;是&lt;code&gt;ExplicitInit&lt;/code&gt;模板的泛型；&lt;code&gt;SideTable&lt;/code&gt;是&lt;code&gt;StripedMap&lt;/code&gt;模板的泛型。&lt;/li&gt;
+&lt;li&gt;c++中的&lt;code&gt;reinterpret_cast&amp;lt;new_type&amp;gt;(expression)
+&lt;/code&gt;，它可以将两种任何类型进行转换，新值和旧值（expression）有相同的比特位。&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;p&gt;最后用&lt;code&gt;*&lt;/code&gt;取转换后得到的地址的所保存的值，返回，所以说这里返回的不是指针。
+&lt;code&gt;Type *&lt;/code&gt;就相当于&lt;code&gt;StripedMap *&lt;/code&gt;，所以&lt;code&gt;get()&lt;/code&gt;方法返回的就是&lt;code&gt;StripedMap&lt;/code&gt;结构体实例。&lt;/p&gt;
+
+&lt;h4 id=&#34;2-理解-oldobj&#34;&gt;2. 理解&lt;code&gt;[oldObj]&lt;/code&gt;&lt;/h4&gt;
+
+&lt;p&gt;这里的&lt;code&gt;[]&lt;/code&gt;其实是对&lt;code&gt;[]&lt;/code&gt;进行了重载&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;T&amp;amp; operator[] (const void *p) { 
+        return array[indexForPointer(p)].value; 
+}
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;在&lt;code&gt;indexForPointer()&lt;/code&gt;方法里，先将结构体指针&lt;code&gt;oldObj&lt;/code&gt;转化成和其有相同比特位的地址，再进行位移、异或、去模操作得到一个从0-63位之间的&lt;code&gt;index&lt;/code&gt;，通过&lt;code&gt;index&lt;/code&gt;，拿到数组里面的&lt;code&gt;PaddedT&lt;/code&gt;结构体，返回该结构体的&lt;code&gt;value&lt;/code&gt;成员即结构体&lt;code&gt;SideTable&lt;/code&gt;。&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;static unsigned int indexForPointer(const void *p) {
+        uintptr_t addr = reinterpret_cast&amp;lt;uintptr_t&amp;gt;(p);
+        return ((addr &amp;gt;&amp;gt; 4) ^ (addr &amp;gt;&amp;gt; 9)) % StripeCount;
+}
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;pre&gt;&lt;code&gt; struct PaddedT {
+        T value alignas(CacheLineSize);
+    };
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;其实&lt;code&gt;StripedMap&lt;/code&gt;是一个以&lt;code&gt;void *p&lt;/code&gt;为&lt;code&gt;key&lt;/code&gt;，&lt;code&gt;PaddedT&lt;/code&gt;为&lt;code&gt;value&lt;/code&gt;的的表。&lt;/p&gt;
+
+&lt;h4 id=&#34;3&#34;&gt;3. &lt;code&gt;&amp;amp;&lt;/code&gt;&lt;/h4&gt;
+
+&lt;p&gt;最后对&lt;code&gt;SideTables()[oldObj]&lt;/code&gt;即&lt;code&gt;SideTable&lt;/code&gt;取地址，这样就和&lt;code&gt;SideTable *newTable;&lt;/code&gt;对上了。&lt;/p&gt;</description>
+    </item>
+    
+    <item>
+      <title>Weak的实现（一）</title>
+      <link>https://linkrober.github.io/bookshelf/2020/12/weak%E7%9A%84%E5%AE%9E%E7%8E%B0%E4%B8%80/</link>
+      <pubDate>Tue, 08 Dec 2020 00:00:00 +0000</pubDate>
+      
+      <guid>https://linkrober.github.io/bookshelf/2020/12/weak%E7%9A%84%E5%AE%9E%E7%8E%B0%E4%B8%80/</guid>
+      <description>&lt;p&gt;本文较长查分为三段按序阅读体验更佳，第四篇为辅助阅读按需看&lt;/p&gt;
+
+&lt;ol&gt;
+&lt;li&gt;[Weak的实现（一）]()&lt;/li&gt;
+&lt;li&gt;[Weak的实现（二）]()&lt;/li&gt;
+&lt;li&gt;[Weak的实现（三）]()&lt;/li&gt;
+&lt;li&gt;[Weak的实现-&amp;amp;SideTables()[oldObj]]()&lt;/li&gt;
+&lt;/ol&gt;
+
+&lt;p&gt;带着问题看源码：&lt;/p&gt;
+
+&lt;ol&gt;
+&lt;li&gt;大家都知道weak的底层实现是一个散列表，那么散列表的结构是什么样的？&lt;/li&gt;
+&lt;li&gt;散列表的key是什么，value是什么，散列函数是怎样的？&lt;/li&gt;
+&lt;li&gt;通过几次查找才能找到对应的弱引用？&lt;/li&gt;
+&lt;li&gt;如何查找弱引用对象的引用计数？&lt;/li&gt;
+&lt;li&gt;一个对象对应一个&lt;code&gt;SideTable&lt;/code&gt;表而一个&lt;code&gt;SideTable&lt;/code&gt;对应多个对象，为什么这样设计&lt;/li&gt;
+&lt;/ol&gt;
+
+&lt;p&gt;&lt;/p&gt;
+
+&lt;blockquote&gt;
+&lt;p&gt;散列表：散列表（Hash table），根据键直接方法在内存存储位置的数据结构。也就是说，它通过计算一个关于键值的函数，将所需查询的数据映射到表中一个位置来访问记录，这加快了查找速度。这个映射函数称做散列函数，存放记录的数组称做散列表。&lt;/p&gt;
+
+&lt;p&gt;散列函数：它是一个函数，如果把它定义成hash(key)，其中key表示元素的键值，在hash(key)的值表示经过散列函数计算得到的散列值&lt;/p&gt;
+&lt;/blockquote&gt;
+
+&lt;p&gt;从代码开始&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;{
+    NSObject *obj = [[NSObject alloc] init];
+    id __weak obj1 = obj;
+}
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;创建&lt;code&gt;weak&lt;/code&gt;引用的时候会走到&lt;code&gt;runtime&lt;/code&gt;的&lt;code&gt;objc_initWeak&lt;/code&gt;这个方法里面。通过符号断点可以验证。&lt;/p&gt;
+
+&lt;p&gt;&lt;code&gt;runtime&lt;/code&gt;里的入口&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;id objc_initWeak(id *location, id newObj)
+{
+    if (!newObj) {
+        *location = nil;
+        return nil;
+    }
+
+    return storeWeak&amp;lt;DontHaveOld, DoHaveNew, DoCrashIfDeallocating&amp;gt;
+        (location, (objc_object*)newObj);
+}
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;可以看到是走到了&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;/*
+@param `*location`:weak的指针地址
+@param `objc_object`:被引用的对象
+*/
+template &amp;lt;HaveOld haveOld, HaveNew haveNew,
+          CrashIfDeallocating crashIfDeallocating&amp;gt; 
+storeWeak(id *location, objc_object *newObj)
+
+{
+    //校验旧对象和新对象必须存其一
+    ASSERT(haveOld  ||  haveNew);
+    //校验如果haveNew=true，newObj不能为nil
+    if (!haveNew) ASSERT(newObj == nil);
+
+    Class previouslyInitializedClass = nil;
+    id oldObj;
+    SideTable *oldTable;
+    SideTable *newTable;
+
+    // Acquire locks for old and new values.
+    // Order by lock address to prevent lock ordering problems. 
+    // Retry if the old value changes underneath us.
+ retry:
+    if (haveOld) {
+    //如果weak ptr存在旧值，就取出旧值
+        oldObj = *location;
+        //以旧对象为析构函数的入参取出旧的SideTable
+        oldTable = &amp;amp;SideTables()[oldObj];
+    } else {
+        oldTable = nil;
+    }
+    if (haveNew) {
+     //如果weak ptr是新值，以新对象为析构函数的入参取出对应的SideTable
+        newTable = &amp;amp;SideTables()[newObj];
+    } else {
+        newTable = nil;
+    }
+    
+    //将oldTable和newTable都上锁
+    SideTable::lockTwo&amp;lt;haveOld, haveNew&amp;gt;(oldTable, newTable);
+    //校验，如果旧值对不上 goto retry
+    if (haveOld  &amp;amp;&amp;amp;  *location != oldObj) {
+        SideTable::unlockTwo&amp;lt;haveOld, haveNew&amp;gt;(oldTable, newTable);
+        goto retry;
+    }
+
+    // Prevent a deadlock between the weak reference machinery
+    // and the +initialize machinery by ensuring that no 
+    // weakly-referenced object has an un-+initialized isa.
+    //保证弱引用对象的isa非空，防止弱引用机制和+initialize 发生死锁
+    if (haveNew  &amp;amp;&amp;amp;  newObj) {
+        Class cls = newObj-&amp;gt;getIsa();
+        if (cls != previouslyInitializedClass  &amp;amp;&amp;amp;  
+            !((objc_class *)cls)-&amp;gt;isInitialized()) 
+        {
+            SideTable::unlockTwo&amp;lt;haveOld, haveNew&amp;gt;(oldTable, newTable);
+            //如果class没有初始化发送+initialized消息
+            class_initialize(cls, (id)newObj);
+
+            // If this class is finished with +initialize then we&#39;re good.
+            // If this class is still running +initialize on this thread 
+            // (i.e. +initialize called storeWeak on an instance of itself)
+            // then we may proceed but it will appear initializing and 
+            // not yet initialized to the check above.
+            // Instead set previouslyInitializedClass to recognize it on retry.
+            previouslyInitializedClass = cls;
+            //到这里class肯定已经初始化了，在走一遍
+            goto retry;
+        }
+    }
+
+    // Clean up old value, if any.
+    // 如果weak ptr之前引用了其他对象，在这里清空
+    if (haveOld) {
+    //&amp;lt;&amp;lt;1&amp;gt;&amp;gt;
+        weak_unregister_no_lock(&amp;amp;oldTable-&amp;gt;weak_table, oldObj, location);
+    }
+
+    // Assign new value, if any.
+    if (haveNew) {
+    //通过newObj和location生成一个新的weak_entry_t并插入到newObj的弱引用数组中（weak_entries）
+    //&amp;lt;&amp;lt;2&amp;gt;&amp;gt;
+        newObj = (objc_object *)
+            weak_register_no_lock(&amp;amp;newTable-&amp;gt;weak_table, (id)newObj, location, 
+                                  crashIfDeallocating);
+        // weak_register_no_lock returns nil if weak store should be rejected
+
+        // Set is-weakly-referenced bit in refcount table.
+        if (newObj  &amp;amp;&amp;amp;  !newObj-&amp;gt;isTaggedPointer()) {
+           //&amp;lt;&amp;lt;3&amp;gt;&amp;gt; 
+           newObj-&amp;gt;setWeaklyReferenced_nolock();
+        }
+
+        // Do not set *location anywhere else. That would introduce a race.
+        *location = (id)newObj;
+    }
+    else {
+        // No new value. The storage is not changed.
+    }
+    
+    SideTable::unlockTwo&amp;lt;haveOld, haveNew&amp;gt;(oldTable, newTable);
+
+    return (id)newObj;
+}
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;ul&gt;
+&lt;li&gt;获取对象所在的&lt;code&gt;SideTable&lt;/code&gt;&lt;/li&gt;
+&lt;li&gt;&lt;code&gt;isa&lt;/code&gt;非空校验，如果&lt;code&gt;isa&lt;/code&gt;没有初始化执行&lt;code&gt;class_initialize(cls, (id)newObj);&lt;/code&gt;方法&lt;/li&gt;
+&lt;li&gt;如果地址&lt;code&gt;location&lt;/code&gt;的引用对象已经存在，删除其在&lt;code&gt;weak_table_t&lt;/code&gt;表中的所有引用&lt;/li&gt;
+&lt;li&gt;注册新对象的弱引用到&lt;code&gt;weak_table_t&lt;/code&gt;表中&lt;/li&gt;
+&lt;li&gt;设置新对象的弱引用标志符为&lt;code&gt;YES&lt;/code&gt;&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;p&gt;如果对&lt;code&gt;&amp;amp;SideTables()[oldObj]&lt;/code&gt;不太理解的可以先移步&lt;a href=&#34;http://note.youdao.com/s/dIRTiheA&#34;&gt;这篇文章&lt;/a&gt;
+&amp;gt;阅读提醒：每一个&amp;lt;&amp;lt;&amp;gt;&amp;gt;中的序号后面都会扩展开讲&lt;/p&gt;
+
+&lt;h4 id=&#34;1-清除老对象的弱引表&#34;&gt;1.清除老对象的弱引表&lt;/h4&gt;
+
+&lt;pre&gt;&lt;code&gt;/** 
+ * @param weak_table 某个对象的全局weak_table.
+ * @param referent 当前对象
+ * @param referrer 当前对象的弱引用地址
+ */
+void
+weak_unregister_no_lock(weak_table_t *weak_table, id referent_id, 
+                        id *referrer_id)
+    objc_object *referent = (objc_object *)referent_id;
+    objc_object **referrer = (objc_object **)referrer_id;//二级指针 weak_ptr的地址
+
+    weak_entry_t *entry;
+
+    if (!referent) return;
+    //&amp;lt;&amp;lt;1.1&amp;gt;&amp;gt;查找referent对应的weak_entry_t
+    if ((entry = weak_entry_for_referent(weak_table, referent))) {
+        //&amp;lt;&amp;lt;1.2&amp;gt;&amp;gt;如果entry存在，删除entry
+        remove_referrer(entry, referrer);
+        bool empty = true;
+        //判断entry的动态数组referrers中是否有值
+        if (entry-&amp;gt;out_of_line()  &amp;amp;&amp;amp;  entry-&amp;gt;num_refs != 0) {
+            empty = false;
+        }
+        else {
+            //判断entry的定长数组inline_referrers中是否有值
+            for (size_t i = 0; i &amp;lt; WEAK_INLINE_COUNT; i++) {
+                if (entry-&amp;gt;inline_referrers[i]) {
+                    empty = false; 
+                    break;
+                }
+            }
+        }
+        //如果都是空的将entry从weak_table移除
+        if (empty) {
+            //&amp;lt;&amp;lt;1.3&amp;gt;&amp;gt;
+            weak_entry_remove(weak_table, entry);
+        }
+    }
+
+    // Do not set *referrer = nil. objc_storeWeak() requires that the 
+    // value not change.
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;该方法的主要目的是清除存储在&lt;code&gt;entry&lt;/code&gt;中的&lt;code&gt;weak_referrer_t&lt;/code&gt;，如果发现&lt;code&gt;entry&lt;/code&gt;中一个&lt;code&gt;weak_referrer_t&lt;/code&gt;也没有，就将整个&lt;code&gt;entry&lt;/code&gt;从&lt;code&gt;weak_table&lt;/code&gt;中移除。&lt;/p&gt;
+
+&lt;h5 id=&#34;1-1查找-referent-对应的-entry&#34;&gt;1.1查找&lt;code&gt;referent&lt;/code&gt;对应的&lt;code&gt;entry&lt;/code&gt;&lt;/h5&gt;
+
+&lt;pre&gt;&lt;code&gt;* @param weak_table 对象的weak_table 
+* @param referent 当前对象
+static weak_entry_t *
+weak_entry_for_referent(weak_table_t *weak_table, objc_object *referent)
+{
+    ASSERT(referent);
+
+    weak_entry_t *weak_entries = weak_table-&amp;gt;weak_entries;
+
+    if (!weak_entries) return nil;
+
+    size_t begin = hash_pointer(referent) &amp;amp; weak_table-&amp;gt;mask;
+    size_t index = begin;
+    size_t hash_displacement = 0;
+    while (weak_table-&amp;gt;weak_entries[index].referent != referent) {
+        index = (index+1) &amp;amp; weak_table-&amp;gt;mask;
+        if (index == begin) bad_weak_table(weak_table-&amp;gt;weak_entries);
+        hash_displacement++;
+        if (hash_displacement &amp;gt; weak_table-&amp;gt;max_hash_displacement) {
+            return nil;
+        }
+    }
+    
+    return &amp;amp;weak_table-&amp;gt;weak_entries[index];
+}
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;pre&gt;&lt;code&gt;size_t begin = hash_pointer(referent) &amp;amp; weak_table-&amp;gt;mask;
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;ul&gt;
+&lt;li&gt;通过指针的哈希方法生成的值与&lt;code&gt;weak_table-&amp;gt;mask&lt;/code&gt;进行&lt;a href=&#34;https://en.wikipedia.org/wiki/Mask_(computing)&#34;&gt;BITMASK&lt;/a&gt;操作得到一个起始值，这个等下会提一下。&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;pre&gt;&lt;code&gt;#if __LP64__
+static inline uint32_t ptr_hash(uint64_t key)
+{
+    key ^= key &amp;gt;&amp;gt; 4;
+    key *= 0x8a970be7488fda55;
+    key ^= __builtin_bswap64(key);
+    return (uint32_t)key;
+}
+#else
+static inline uint32_t ptr_hash(uint32_t key)
+{
+    key ^= key &amp;gt;&amp;gt; 4;
+    key *= 0x5052acdb;
+    key ^= __builtin_bswap32(key);
+    return key;
+}
+#endif
+
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;ul&gt;
+&lt;li&gt;每次遍历如果没在&lt;code&gt;weak_entries&lt;/code&gt;中找到&lt;code&gt;referent&lt;/code&gt;就对index加1再进行BITMASK操作。遍历一次就认为是哈希冲突一次并记录在遍历&lt;code&gt;hash_displacement&lt;/code&gt;&lt;/li&gt;
+&lt;li&gt;如果哈希冲突超过了最大值返回nil，当前对象在&lt;code&gt;weak_table&lt;/code&gt;中不存在弱引用&lt;/li&gt;
+&lt;li&gt;成功找到对应的&lt;code&gt;referent&lt;/code&gt;就返回相应的&lt;code&gt;weak_entry_t&lt;/code&gt;&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;p&gt;简单说一下&lt;strong&gt;BITMASK&lt;/strong&gt;技术:&lt;/br&gt;&lt;/p&gt;
+
+&lt;p&gt;&lt;code&gt;weak&lt;/code&gt;的实现中在对&lt;code&gt;weak_entry_t&lt;/code&gt;和&lt;code&gt;weak_referrer_t&lt;/code&gt;的遍历查找都是通过&lt;code&gt;BITMASK&lt;/code&gt;来实现的。个人猜测先经过一系列运算得到底位是表示数量的二进制数，在进行BITMASK操作。&lt;/p&gt;
+
+&lt;p&gt;在日常开发中用的不多，主要是用于对二进制位进行操作。能快速的得到我们只关心位的值。&lt;/p&gt;
+
+&lt;p&gt;|value|位操作|mask|结果|
+|-|:-:|-|:-:|
+|0x00000000|&amp;amp;|0x000000011|0|
+|0x00000001|&amp;amp;|0x000000011|1|
+|0x00000010|&amp;amp;|0x000000011|2|
+|0x00000011|&amp;amp;|0x000000011|3|
+|0x00000100|&amp;amp;|0x000000011|0|&lt;/p&gt;
+
+&lt;p&gt;可以看到如果我们只关心低两位地址，进行BITMASK就能屏蔽其他位。所以上文中的&lt;code&gt;weak_table-&amp;gt;mask&lt;/code&gt;就是&lt;code&gt;weak_table_t&lt;/code&gt;中&lt;code&gt;weak_entry_t&lt;/code&gt;的最大容量减1（从0开始算）。从&lt;code&gt;static void weak_resize(weak_table_t *weak_table, size_t new_size)&lt;/code&gt;方法中可以看出&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;...
+weak_table-&amp;gt;mask = new_size - 1;
+...
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;h4 id=&#34;理解结构体-weak-entry-t&#34;&gt;理解结构体&lt;code&gt;weak_entry_t&lt;/code&gt;&lt;/h4&gt;
+
+&lt;p&gt;在继续下去之前先看下这个结构体，要注意的是它里面有个联合体，联合体里面的两个结构体共享内存。而他们的区别在于，如果弱引用的数量不大于4个就有定长数组&lt;code&gt;inline_referrers&lt;/code&gt;，否则使用动态数组&lt;code&gt;referrers&lt;/code&gt;。&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;struct weak_entry_t {
+    DisguisedPtr&amp;lt;objc_object&amp;gt; referent;//弱引用对象
+    union {//联合体，两种结构体共占有一块内存
+        //弱引用数量大于4个用到的结构体
+        struct {
+            weak_referrer_t *referrers;
+            uintptr_t        out_of_line_ness : 2;
+            uintptr_t        num_refs : PTR_MINUS_2;
+            uintptr_t        mask;
+            uintptr_t        max_hash_displacement;
+        };
+        //弱引用数量不大于4个用到的结构体
+        struct {
+            // out_of_line_ness field is low bits of inline_referrers[1]
+            weak_referrer_t  inline_referrers[WEAK_INLINE_COUNT];
+        };
+    };
+    
+    //判断是否是用的referrers来存储弱引用指针
+    bool out_of_line() {
+        return (out_of_line_ness == REFERRERS_OUT_OF_LINE);
+    }
+    //覆盖老数据
+    weak_entry_t&amp;amp; operator=(const weak_entry_t&amp;amp; other) {
+        memcpy(this, &amp;amp;other, sizeof(other));
+        return *this;
+    }
+    //构造方法
+    weak_entry_t(objc_object *newReferent, objc_object **newReferrer)
+        : referent(newReferent)
+    {
+        inline_referrers[0] = newReferrer;
+        for (int i = 1; i &amp;lt; WEAK_INLINE_COUNT; i++) {
+            inline_referrers[i] = nil;
+        }
+    }
+};
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;这个里面存放了某个对象的所有弱引用指针，如果弱引用对象数量不超过四个就报错在结构体数组&lt;code&gt;inline_referrers&lt;/code&gt;，否则保存在&lt;code&gt;referrers&lt;/code&gt;&lt;/p&gt;
+
+&lt;h5 id=&#34;1-2删除-entry-中的-referrer&#34;&gt;1.2删除 &lt;code&gt;entry&lt;/code&gt;中的&lt;code&gt;referrer&lt;/code&gt;&lt;/h5&gt;
+
+&lt;pre&gt;&lt;code&gt;/** 
+ * @param entry 当前对象对应的weak_entry_t
+ * @param old_referrer 弱引用指针地址
+ */
+static void remove_referrer(weak_entry_t *entry, objc_object **old_referrer)
+{
+    if (! entry-&amp;gt;out_of_line()) {
+        for (size_t i = 0; i &amp;lt; WEAK_INLINE_COUNT; i++) {
+            if (entry-&amp;gt;inline_referrers[i] == old_referrer) {
+                entry-&amp;gt;inline_referrers[i] = nil;
+                return;
+            }
+        }
+        _objc_inform(&amp;quot;Attempted to unregister unknown __weak variable &amp;quot;
+                     &amp;quot;at %p. This is probably incorrect use of &amp;quot;
+                     &amp;quot;objc_storeWeak() and objc_loadWeak(). &amp;quot;
+                     &amp;quot;Break on objc_weak_error to debug.\n&amp;quot;, 
+                     old_referrer);
+        objc_weak_error();
+        return;
+    }
+
+    size_t begin = w_hash_pointer(old_referrer) &amp;amp; (entry-&amp;gt;mask);
+    size_t index = begin;
+    size_t hash_displacement = 0;
+    while (entry-&amp;gt;referrers[index] != old_referrer) {
+        index = (index+1) &amp;amp; entry-&amp;gt;mask;
+        if (index == begin) bad_weak_table(entry);
+        hash_displacement++;
+        if (hash_displacement &amp;gt; entry-&amp;gt;max_hash_displacement) {
+            _objc_inform(&amp;quot;Attempted to unregister unknown __weak variable &amp;quot;
+                         &amp;quot;at %p. This is probably incorrect use of &amp;quot;
+                         &amp;quot;objc_storeWeak() and objc_loadWeak(). &amp;quot;
+                         &amp;quot;Break on objc_weak_error to debug.\n&amp;quot;, 
+                         old_referrer);
+            objc_weak_error();
+            return;
+        }
+    }
+    entry-&amp;gt;referrers[index] = nil;
+    entry-&amp;gt;num_refs--;
+}
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;ul&gt;
+&lt;li&gt;如果定长数组&lt;code&gt;inline_referrers&lt;/code&gt;中有值且存在弱引用指针&lt;code&gt;old_referrer&lt;/code&gt;，设为nil&lt;/li&gt;
+&lt;li&gt;如果动态数组&lt;code&gt;referrers&lt;/code&gt;中有值且存在弱引用指针&lt;code&gt;old_referrer&lt;/code&gt;，设为nil,并将引用数量-1&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;h5 id=&#34;1-3-如果有必要删除对象的整个弱引用表&#34;&gt;1.3 如果有必要删除对象的整个弱引用表&lt;/h5&gt;
+
+&lt;pre&gt;&lt;code&gt;**
+ * Remove entry from the zone&#39;s table of weak references.
+ */
+static void weak_entry_remove(weak_table_t *weak_table, weak_entry_t *entry)
+{
+    // remove entry
+    if (entry-&amp;gt;out_of_line()) free(entry-&amp;gt;referrers);
+    bzero(entry, sizeof(*entry));
+
+    weak_table-&amp;gt;num_entries--;
+
+    weak_compact_maybe(weak_table);
+}
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;ul&gt;
+&lt;li&gt;如果使用的是动态数组，释放动态数组的内存&lt;/li&gt;
+&lt;li&gt;以&lt;code&gt;entry&lt;/code&gt;为起始地址的前&lt;code&gt;sizeof(*entry)&lt;/code&gt;个字节区域清零&lt;/li&gt;
+&lt;li&gt;全局&lt;code&gt;weak_table&lt;/code&gt;中，弱引用对象数量-1&lt;/li&gt;
+
+&lt;li&gt;&lt;p&gt;收缩表大小&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;// Shrink the table if it is mostly empty.
+static void weak_compact_maybe(weak_table_t *weak_table)
+{
+size_t old_size = TABLE_SIZE(weak_table);
+
+// Shrink if larger than 1024 buckets and at most 1/16 full.
+if (old_size &amp;gt;= 1024  &amp;amp;&amp;amp; old_size / 16 &amp;gt;= weak_table-&amp;gt;num_entries) {
+    weak_resize(weak_table, old_size / 8);
+    // leaves new table no more than 1/2 full
+}
+}
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;如果&lt;code&gt;weak_table&lt;/code&gt;内存占用超过&lt;strong&gt;1024&lt;/strong&gt;字节且内存的1/16比弱引用对象的数量还多就收缩表大小，使其不大于原来的&lt;strong&gt;&lt;sup&gt;1&lt;/sup&gt;&amp;frasl;&lt;sub&gt;2&lt;/sub&gt;&lt;/strong&gt;。&lt;/p&gt;&lt;/li&gt;
+&lt;/ul&gt;</description>
+    </item>
+    
+    <item>
+      <title>Weak的实现（三）</title>
+      <link>https://linkrober.github.io/bookshelf/2020/12/weak%E7%9A%84%E5%AE%9E%E7%8E%B0%E4%B8%89/</link>
+      <pubDate>Tue, 08 Dec 2020 00:00:00 +0000</pubDate>
+      
+      <guid>https://linkrober.github.io/bookshelf/2020/12/weak%E7%9A%84%E5%AE%9E%E7%8E%B0%E4%B8%89/</guid>
+      <description>&lt;h4 id=&#34;3-设置弱引用标志位&#34;&gt;3 设置弱引用标志位&lt;/h4&gt;
+
+&lt;p&gt;&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;inline void
+objc_object::setWeaklyReferenced_nolock()
+{
+ retry:
+    //去对象的isa指针
+    isa_t oldisa = LoadExclusive(&amp;amp;isa.bits);
+    isa_t newisa = oldisa;
+    //如果不是non-pointer
+    if (slowpath(!newisa.nonpointer)) {
+        ClearExclusive(&amp;amp;isa.bits);
+        //&amp;lt;&amp;lt;3.1&amp;gt;&amp;gt;
+        sidetable_setWeaklyReferenced_nolock();
+        return;
+    }
+    if (newisa.weakly_referenced) {
+        ClearExclusive(&amp;amp;isa.bits);
+        return;
+    }
+    //弱引用标志位设为1
+    newisa.weakly_referenced = true;
+    //如果oldisa.bits和newisa.bits不相等返回NO，继续tery里面的内容，这时候newisa.weakly_referenced已经是true了，所以return
+    if (!StoreExclusive(&amp;amp;isa.bits, oldisa.bits, newisa.bits)) goto retry;
+}
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;设置nonpointer类型的isa和非nonpointer类型的isa的弱引用位为1&lt;/p&gt;
+
+&lt;h5 id=&#34;3-1-设置nonpointer的isa指针的弱引用标志位&#34;&gt;3.1 设置nonpointer的isa指针的弱引用标志位&lt;/h5&gt;
+
+&lt;pre&gt;&lt;code&gt;void 
+objc_object::sidetable_setWeaklyReferenced_nolock()
+{
+#if SUPPORT_NONPOINTER_ISA
+    ASSERT(!isa.nonpointer);
+#endif
+
+    SideTable&amp;amp; table = SideTables()[this];
+    table.refcnts[this] |= SIDE_TABLE_WEAKLY_REFERENCED;
+}
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;&lt;code&gt;RefcountMap&lt;/code&gt;，也是哈希表&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;typedef objc::DenseMap&amp;lt;DisguisedPtr&amp;lt;objc_object&amp;gt;,size_t,RefcountMapValuePurgeable&amp;gt; RefcountMap;
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;key是&lt;code&gt;DisguisedPtr&amp;lt;objc_object&amp;gt;&lt;/code&gt;即&lt;code&gt;weak_referrer_t&lt;/code&gt;，弱引用对象，value是&lt;code&gt;size_t&lt;/code&gt;，弱引用数量&lt;/p&gt;
+
+&lt;p&gt;这里将&lt;code&gt;table.refcnts[this]&lt;/code&gt;即最后一位与SIDE_TABLE_WEAKLY_REFERENCED进行位或操作，这时候弱引用标志位变成&lt;strong&gt;1&lt;/strong&gt;。&lt;/p&gt;
+
+&lt;h4 id=&#34;答题&#34;&gt;答题&lt;/h4&gt;
+
+&lt;p&gt;问题1、2、3、5我们放在一起回答&lt;/p&gt;
+
+&lt;ol&gt;
+&lt;li&gt;大家都知道weak的底层实现是一个散列表，那么散列表的结构是什么样的？&lt;/li&gt;
+&lt;li&gt;散列表的key是什么，value是什么，散列函数是怎样的？&lt;/li&gt;
+&lt;li&gt;通过几次查找才能找到对应的弱引用？&lt;/li&gt;
+&lt;li&gt;一个对象对应一个&lt;code&gt;SideTable&lt;/code&gt;表而一个&lt;code&gt;SideTable&lt;/code&gt;对应多个对象，为什么这样设计&lt;/li&gt;
+&lt;/ol&gt;
+
+&lt;p&gt;大概的讲是一个散列表&lt;code&gt;SideTablesMap&lt;/code&gt;，以对象为&lt;code&gt;key&lt;/code&gt;,&lt;code&gt;SideTable&lt;/code&gt;为&lt;code&gt;value&lt;/code&gt;。散列函数是&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;static unsigned int indexForPointer(const void *p) {
+        uintptr_t addr = reinterpret_cast&amp;lt;uintptr_t&amp;gt;(p);
+        return ((addr &amp;gt;&amp;gt; 4) ^ (addr &amp;gt;&amp;gt; 9)) % StripeCount;
+}
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;但这只是开始，它取到的是很多对象弱引用表的集合。要想准确的找到某个对象的弱引位置用还要经过两步。&lt;/p&gt;
+
+&lt;ul&gt;
+&lt;li&gt;以对象为key，经过一系列运算（位运算，算数运算），最后通过BITMASK找到&lt;code&gt;weak_entries&lt;/code&gt;的入口&lt;code&gt;index&lt;/code&gt;开始变量，判断对象是否相等。最后才能找到对象所在的&lt;code&gt;weak_entry_t&lt;/code&gt;。&lt;/li&gt;
+&lt;li&gt;因为&lt;code&gt;weak_entry_t&lt;/code&gt;这里面保存了对象的所有有弱引用，要找到指定的，还要经历和上述类似的操作对比&lt;code&gt;old_referrer&lt;/code&gt;才能找到正真的弱引用&lt;code&gt;weak_referrer_t&lt;/code&gt;位置。&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;p&gt;所以经过3次查找才能找到正真的弱引用。&lt;/p&gt;
+
+&lt;p&gt;为什么苹果要创建64个&lt;code&gt;SideTable&lt;/code&gt;（在iphone上是8个，其他上面是64个），而不是用一个SideTable解决呢。简单的类比，大家都在火车站或者飞机场打过出租车吧，当你前面的队伍黑压压的一片看不到头你是不是希望多开几个出租车上车点。使用多个&lt;code&gt;SideTable&lt;/code&gt;也是这个原理提高弱引用的索引速度。&lt;/p&gt;
+
+&lt;p&gt;还有一点，我想提下，在整个过程中有两次扩容，一次收缩容量。它们都是动态的。分别是在
+- &lt;code&gt;weak_unregister_no_lock&lt;/code&gt;的时候，收缩&lt;code&gt;weak_table_t&lt;/code&gt;的容量&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;// Shrink the table if it is mostly empty.
+static void weak_compact_maybe(weak_table_t *weak_table)
+{
+    size_t old_size = TABLE_SIZE(weak_table);
+
+    // Shrink if larger than 1024 buckets and at most 1/16 full.
+    if (old_size &amp;gt;= 1024  &amp;amp;&amp;amp; old_size / 16 &amp;gt;= weak_table-&amp;gt;num_entries) {
+        weak_resize(weak_table, old_size / 8);
+        // leaves new table no more than 1/2 full
+    }
+}
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;ul&gt;
+&lt;li&gt;&lt;p&gt;&lt;code&gt;append_referrer&lt;/code&gt;的时候增加&lt;code&gt;weak_entry_t&lt;/code&gt;中动态数组&lt;code&gt;*referrers&lt;/code&gt;的容量&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;__attribute__((noinline, used))
+static void grow_refs_and_insert(weak_entry_t *entry, 
+                             objc_object **new_referrer)
+{
+ASSERT(entry-&amp;gt;out_of_line());
+
+size_t old_size = TABLE_SIZE(entry);
+size_t new_size = old_size ? old_size * 2 : 8;
+
+size_t num_refs = entry-&amp;gt;num_refs;
+weak_referrer_t *old_refs = entry-&amp;gt;referrers;
+entry-&amp;gt;mask = new_size - 1;
+    
+entry-&amp;gt;referrers = (weak_referrer_t *)
+    calloc(TABLE_SIZE(entry), sizeof(weak_referrer_t));
+entry-&amp;gt;num_refs = 0;
+entry-&amp;gt;max_hash_displacement = 0;
+    
+for (size_t i = 0; i &amp;lt; old_size &amp;amp;&amp;amp; num_refs &amp;gt; 0; i++) {
+    if (old_refs[i] != nil) {
+        append_referrer(entry, old_refs[i]);
+        num_refs--;
+    }
+}
+// Insert
+append_referrer(entry, new_referrer);
+if (old_refs) free(old_refs);
+}
+&lt;/code&gt;&lt;/pre&gt;&lt;/li&gt;
+
+&lt;li&gt;&lt;p&gt;&lt;code&gt;weak_grow_maybe&lt;/code&gt;的时候,增加&lt;code&gt;weak_table_t&lt;/code&gt;的容量&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;static void weak_grow_maybe(weak_table_t *weak_table)
+{
+size_t old_size = TABLE_SIZE(weak_table);
+
+// Grow if at least 3/4 full.
+if (weak_table-&amp;gt;num_entries &amp;gt;= old_size * 3 / 4) {
+    weak_resize(weak_table, old_size ? old_size*2 : 64);
+}
+}
+&lt;/code&gt;&lt;/pre&gt;&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;p&gt;问题4&lt;/p&gt;
+
+&lt;ol&gt;
+&lt;li&gt;如何查找弱引用对象的引用计数？&lt;/li&gt;
+&lt;/ol&gt;
+
+&lt;pre&gt;&lt;code&gt;uintptr_t
+_objc_rootRetainCount(id obj)
+{
+    ASSERT(obj);
+
+    return obj-&amp;gt;rootRetainCount();
+}
+
+inline uintptr_t 
+objc_object::rootRetainCount()
+{
+    if (isTaggedPointer()) return (uintptr_t)this;
+
+    sidetable_lock();
+    //获取isa的比特位
+    isa_t bits = LoadExclusive(&amp;amp;isa.bits);
+    ClearExclusive(&amp;amp;isa.bits);
+    //是不是non-pointer
+    if (bits.nonpointer) {
+        //引用比特位上的引用数加1
+        uintptr_t rc = 1 + bits.extra_rc;
+        if (bits.has_sidetable_rc) {
+            //判断sidetable是否存在引用计数，如果存在继续相加
+            rc += sidetable_getExtraRC_nolock();
+        }
+        sidetable_unlock();
+        return rc;
+    }
+
+    sidetable_unlock();
+    return sidetable_retainCount();
+}
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;从&lt;code&gt;rootRetainCount&lt;/code&gt;源码可以看出，弱引用的引用计数分布在两个地方，一个是&lt;code&gt;isa&lt;/code&gt;的比特位中，还有一个在&lt;code&gt;SideTable&lt;/code&gt;中。它们相加才是对象的引用计数的数量。&lt;/p&gt;
+
+&lt;p&gt;最后祭上Weak的类图和四层存储结构图，结构图中有获取对应层级所用到的算法
+&lt;img src=&#34;https://note.youdao.com/yws/api/personal/file/WEBe05b83f81e4040473f0385979441c881?method=download&amp;amp;shareKey=028270cc018dcad1590865e61eb2624c&#34; alt=&#34;&#34; /&gt;
+&lt;img src=&#34;https://note.youdao.com/yws/api/personal/file/WEB97fdb40aae006524c1682b57022200cd?method=download&amp;amp;shareKey=ec82da0a1b701817110cc4a24494437a&#34; alt=&#34;&#34; /&gt;&lt;/p&gt;
+
+&lt;p&gt;参考：&lt;/p&gt;
+
+&lt;p&gt;&lt;a href=&#34;https://www.jianshu.com/p/ef6d9bf8fe59&#34;&gt;iOS管理对象内存的数据结构以及操作算法&amp;ndash;SideTables、RefcountMap、weak_table_t-一
+&lt;/a&gt;&lt;/p&gt;
+
+&lt;p&gt;&lt;a href=&#34;https://www.leewong.cn/2020/08/16/sidetablestructure/&#34;&gt;SideTable结构
+&lt;/a&gt;&lt;/p&gt;</description>
+    </item>
+    
+    <item>
+      <title>Weak的实现（二）</title>
+      <link>https://linkrober.github.io/bookshelf/2020/12/weak%E7%9A%84%E5%AE%9E%E7%8E%B0%E4%BA%8C/</link>
+      <pubDate>Tue, 08 Dec 2020 00:00:00 +0000</pubDate>
+      
+      <guid>https://linkrober.github.io/bookshelf/2020/12/weak%E7%9A%84%E5%AE%9E%E7%8E%B0%E4%BA%8C/</guid>
+      <description>&lt;h4 id=&#34;2-生成新的-weak-entry-t-插入到-weak-entries-中&#34;&gt;2 生成新的&lt;code&gt;weak_entry_t&lt;/code&gt;插入到&lt;code&gt;weak_entries&lt;/code&gt;中&lt;/h4&gt;
+
+&lt;p&gt;&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;/** 
+ * Registers a new (object, weak pointer) pair. Creates a new weak
+ * object entry if it does not exist.
+ * 
+ * @param weak_table The global weak table.弱引用全局表
+ * @param referent The object pointed to by the weak reference. 弱引用对象
+ * @param referrer The weak pointer address. 弱引用指针地址
+ */
+id 
+weak_register_no_lock(weak_table_t *weak_table, id referent_id, 
+                      id *referrer_id, bool crashIfDeallocating)
+{
+    objc_object *referent = (objc_object *)referent_id;
+    objc_object **referrer = (objc_object **)referrer_id;
+
+    if (!referent  ||  referent-&amp;gt;isTaggedPointer()) return referent_id;
+
+    // ensure that the referenced object is viable
+    // 判断对象是否正在释放或者是否支持弱引用
+    bool deallocating;
+    if (!referent-&amp;gt;ISA()-&amp;gt;hasCustomRR()) {
+        deallocating = referent-&amp;gt;rootIsDeallocating();
+    }
+    else {
+        BOOL (*allowsWeakReference)(objc_object *, SEL) = 
+            (BOOL(*)(objc_object *, SEL))
+            object_getMethodImplementation((id)referent, 
+                                           @selector(allowsWeakReference));
+        if ((IMP)allowsWeakReference == _objc_msgForward) {
+            return nil;
+        }
+        deallocating =
+            ! (*allowsWeakReference)(referent, @selector(allowsWeakReference));
+    }
+
+    if (deallocating) {
+        if (crashIfDeallocating) {
+            _objc_fatal(&amp;quot;Cannot form weak reference to instance (%p) of &amp;quot;
+                        &amp;quot;class %s. It is possible that this object was &amp;quot;
+                        &amp;quot;over-released, or is in the process of deallocation.&amp;quot;,
+                        (void*)referent, object_getClassName((id)referent));
+        } else {
+            return nil;
+        }
+    }
+
+    // now remember it and where it is being stored
+    // 如果对象已经在weak_table中存在弱引用记录，就原来的entry上面追加
+    weak_entry_t *entry;
+    //&amp;lt;&amp;lt;1.1&amp;gt;&amp;gt;
+    if ((entry = weak_entry_for_referent(weak_table, referent))) {
+    //&amp;lt;&amp;lt;2.1&amp;gt;&amp;gt;
+        append_referrer(entry, referrer);
+    } 
+    else {
+        //创建新的entry，添加到weak_table中
+        //&amp;lt;&amp;lt;2.2&amp;gt;&amp;gt;
+        weak_entry_t new_entry(referent, referrer);
+        //&amp;lt;&amp;lt;2.3&amp;gt;&amp;gt;
+        weak_grow_maybe(weak_table);
+        //&amp;lt;&amp;lt;2.4&amp;gt;&amp;gt;
+        weak_entry_insert(weak_table, &amp;amp;new_entry);
+    }
+
+    // Do not set *referrer. objc_storeWeak() requires that the 
+    // value not change.
+
+    return referent_id;
+}
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;h5 id=&#34;2-1-在-weak-entry-t-添加新的弱引用-weak-referrer-t&#34;&gt;2.1 在&lt;code&gt;weak_entry_t&lt;/code&gt;添加新的弱引用&lt;code&gt;weak_referrer_t&lt;/code&gt;&lt;/h5&gt;
+
+&lt;pre&gt;&lt;code&gt;/** 
+ * Add the given referrer to set of weak pointers in this entry.
+ * Does not perform duplicate checking (b/c weak pointers are never
+ * added to a set twice). 
+ *
+ * @param entry The entry holding the set of weak pointers. 某个类的弱引用表
+ * @param new_referrer The new weak pointer to be added.新的弱引用
+ */
+static void append_referrer(weak_entry_t *entry, objc_object **new_referrer)
+{
+    //如果inline_referrers中还能存放weak_referrer_t就放在inline_referrers里面
+    if (! entry-&amp;gt;out_of_line()) {
+        // Try to insert inline.
+        for (size_t i = 0; i &amp;lt; WEAK_INLINE_COUNT; i++) {
+            if (entry-&amp;gt;inline_referrers[i] == nil) {
+                entry-&amp;gt;inline_referrers[i] = new_referrer;
+                return;
+            }
+        }
+
+        // Couldn&#39;t insert inline. Allocate out of line.
+        // 如果放不下了，就创建把所有的weak_referrer_t挪到referrers中
+        weak_referrer_t *new_referrers = (weak_referrer_t *)
+            calloc(WEAK_INLINE_COUNT, sizeof(weak_referrer_t));
+        // This constructed table is invalid, but grow_refs_and_insert
+        // will fix it and rehash it.
+        for (size_t i = 0; i &amp;lt; WEAK_INLINE_COUNT; i++) {
+            new_referrers[i] = entry-&amp;gt;inline_referrers[i];
+        }
+        entry-&amp;gt;referrers = new_referrers;
+        entry-&amp;gt;num_refs = WEAK_INLINE_COUNT;
+        entry-&amp;gt;out_of_line_ness = REFERRERS_OUT_OF_LINE;
+        entry-&amp;gt;mask = WEAK_INLINE_COUNT-1;
+        entry-&amp;gt;max_hash_displacement = 0;
+    }
+
+    ASSERT(entry-&amp;gt;out_of_line());
+    // 如果引用数量超过表内存的3/4就自动扩容
+    if (entry-&amp;gt;num_refs &amp;gt;= TABLE_SIZE(entry) * 3/4) {
+        //&amp;lt;&amp;lt;2.1.1&amp;gt;&amp;gt;
+        return grow_refs_and_insert(entry, new_referrer);
+    }
+    //在referrers中找到一个值为nil的weak_referrer_t对象，用新的弱引用对其赋值，并自增数量
+    size_t begin = w_hash_pointer(new_referrer) &amp;amp; (entry-&amp;gt;mask);
+    size_t index = begin;
+    size_t hash_displacement = 0;
+    while (entry-&amp;gt;referrers[index] != nil) {
+        hash_displacement++;
+        index = (index+1) &amp;amp; entry-&amp;gt;mask;
+        if (index == begin) bad_weak_table(entry);
+    }
+    if (hash_displacement &amp;gt; entry-&amp;gt;max_hash_displacement) {
+        entry-&amp;gt;max_hash_displacement = hash_displacement;
+    }
+    weak_referrer_t &amp;amp;ref = entry-&amp;gt;referrers[index];
+    ref = new_referrer;
+    entry-&amp;gt;num_refs++;
+}
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;如果&lt;code&gt;weak_table_t&lt;/code&gt;中存在当前对象的弱引用记录&lt;code&gt;weak_entry_t&lt;/code&gt;，使用该方法在&lt;code&gt;weak_entry_t&lt;/code&gt;添加新的&lt;code&gt;weak_referrer_t&lt;/code&gt;。
+- 如果&lt;code&gt;weak_entry_t&lt;/code&gt;中的&lt;code&gt;weak_referrer_t&lt;/code&gt;数量不超过4个，即&lt;code&gt;weak_referrer_t&lt;/code&gt;用还保存在&lt;code&gt;inline_referrers&lt;/code&gt;中，就将其添加到&lt;code&gt;inline_referrers&lt;/code&gt;中；
+- 如果刚好满4个，就将所有的&lt;code&gt;weak_referrer_t&lt;/code&gt;从定长数组&lt;code&gt;inline_referrers&lt;/code&gt;中取出，开辟新的空间，存储到动态数组&lt;code&gt;referrers&lt;/code&gt;中来记录引用
+- 如果&lt;code&gt;weak_referrer_t&lt;/code&gt;的数量大于表内存大小的3/4，自动扩容&amp;lt;&lt;2.2.1&gt;&amp;gt;
+- 在&lt;code&gt;referrers&lt;/code&gt;找到第一个为nil的&lt;code&gt;weak_referrer_t&lt;/code&gt;指针，新的&lt;code&gt;weak_referrer_t&lt;/code&gt;赋值给它，引用计数自增。&lt;/p&gt;
+
+&lt;h5 id=&#34;2-1-1-增加某个对象弱引用表的容量&#34;&gt;2.1.1 增加某个对象弱引用表的容量&lt;/h5&gt;
+
+&lt;pre&gt;&lt;code&gt;/** 
+ * Grow the entry&#39;s hash table of referrers. Rehashes each
+ * of the referrers.
+ * 
+ * @param entry Weak pointer hash set for a particular object.某个对象的弱引用表
+ */
+__attribute__((noinline, used))
+static void grow_refs_and_insert(weak_entry_t *entry, 
+                                 objc_object **new_referrer)
+{
+    ASSERT(entry-&amp;gt;out_of_line());
+    //原来表大小
+    size_t old_size = TABLE_SIZE(entry);
+    //新表大小，old_size大于0，新size就变成原来大小的两倍，否则就8个字节大小
+    size_t new_size = old_size ? old_size * 2 : 8;
+
+    //原来的弱引用数量
+    size_t num_refs = entry-&amp;gt;num_refs;
+    //原来的弱引用数组
+    weak_referrer_t *old_refs = entry-&amp;gt;referrers;
+    //新的mask
+    entry-&amp;gt;mask = new_size - 1;
+    
+    //重新分配entry的内存
+    entry-&amp;gt;referrers = (weak_referrer_t *)
+        calloc(TABLE_SIZE(entry), sizeof(weak_referrer_t));
+    entry-&amp;gt;num_refs = 0;
+    entry-&amp;gt;max_hash_displacement = 0;
+    
+    //先将老的引用全部插入到新的数组里面
+    for (size_t i = 0; i &amp;lt; old_size &amp;amp;&amp;amp; num_refs &amp;gt; 0; i++) {
+        if (old_refs[i] != nil) {
+            //递归调用 插入weak_referrer_t
+            append_referrer(entry, old_refs[i]);
+            num_refs--;
+        }
+    }
+    // Insert
+    // 最后插入新加入的弱引用
+    append_referrer(entry, new_referrer);
+    if (old_refs) free(old_refs);
+}
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;此方法重新定义了对象弱引用表&lt;code&gt;weak_entry_t&lt;/code&gt;的大小
+1. 原来的表大小等于0，就分配8个字节
+2. 如果原来表大小大于0，就分配原来大小2倍的字节
+3. 然后为&lt;code&gt;referrers&lt;/code&gt;重新分配内存，先将老的&lt;code&gt;weak_entry_t&lt;/code&gt;迁移过去，再插入新的&lt;code&gt;weak_entry_t&lt;/code&gt;。通过递归调用&lt;code&gt;append_referrer&lt;/code&gt;实现插入数据&lt;/p&gt;
+
+&lt;h5 id=&#34;2-2-创建新的-weak-entry-t&#34;&gt;2.2 创建新的&lt;code&gt;weak_entry_t&lt;/code&gt;&lt;/h5&gt;
+
+&lt;pre&gt;&lt;code&gt;    weak_entry_t(objc_object *newReferent, objc_object **newReferrer)
+        : referent(newReferent)
+    {
+        inline_referrers[0] = newReferrer;
+        for (int i = 1; i &amp;lt; WEAK_INLINE_COUNT; i++) {
+            inline_referrers[i] = nil;
+        }
+    }
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;如果对象还没有弱引用表&lt;code&gt;weak_entry_t&lt;/code&gt;就该对象建一个新的，从源码可看出&lt;code&gt;newReferrer&lt;/code&gt;先保存在&lt;code&gt;inline_referrers&lt;/code&gt;中&lt;/p&gt;
+
+&lt;h5 id=&#34;2-3-weak-table-t-的扩容&#34;&gt;2.3 &lt;code&gt;weak_table_t&lt;/code&gt;的扩容&lt;/h5&gt;
+
+&lt;pre&gt;&lt;code&gt;// Grow the given zone&#39;s table of weak references if it is full.
+static void weak_grow_maybe(weak_table_t *weak_table)
+{
+    size_t old_size = TABLE_SIZE(weak_table);
+
+    // Grow if at least 3/4 full.
+    if (weak_table-&amp;gt;num_entries &amp;gt;= old_size * 3 / 4) {
+        //&amp;lt;&amp;lt;2.3.1&amp;gt;&amp;gt;
+        weak_resize(weak_table, old_size ? old_size*2 : 64);
+    }
+}
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;如果&lt;code&gt;weak_table&lt;/code&gt;中&lt;code&gt;num_entries&lt;/code&gt;数组的数量大于其内存大小的3/4就开始为&lt;code&gt;weak_table&lt;/code&gt;扩容
+ - oldsize大于0，扩容为原来大小的两倍
+ - 否则分配64字节&lt;/p&gt;
+
+&lt;h5 id=&#34;2-3-1-weak-resize&#34;&gt;2.3.1 weak_resize&lt;/h5&gt;
+
+&lt;pre&gt;&lt;code&gt;static void weak_resize(weak_table_t *weak_table, size_t new_size)
+{
+    size_t old_size = TABLE_SIZE(weak_table);
+
+    weak_entry_t *old_entries = weak_table-&amp;gt;weak_entries;
+    weak_entry_t *new_entries = (weak_entry_t *)
+        calloc(new_size, sizeof(weak_entry_t));
+
+    weak_table-&amp;gt;mask = new_size - 1;
+    weak_table-&amp;gt;weak_entries = new_entries;
+    weak_table-&amp;gt;max_hash_displacement = 0;
+    weak_table-&amp;gt;num_entries = 0;  // restored by weak_entry_insert below
+    
+    if (old_entries) {
+        weak_entry_t *entry;
+        weak_entry_t *end = old_entries + old_size;
+        for (entry = old_entries; entry &amp;lt; end; entry++) {
+            if (entry-&amp;gt;referent) {
+                //&amp;lt;&amp;lt;2.3.1.1&amp;gt;&amp;gt;
+                weak_entry_insert(weak_table, entry);
+            }
+        }
+        free(old_entries);
+    }
+}
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;ul&gt;
+&lt;li&gt;创建新的指针数组&lt;code&gt;new_entries&lt;/code&gt;，分配新的大小&lt;/li&gt;
+&lt;li&gt;遍历将老的数据迁移到新的数组中&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;h5 id=&#34;2-3-1-1-向-weak-table-t-中插入-weak-entry-t&#34;&gt;2.3.1.1 向&lt;code&gt;weak_table_t&lt;/code&gt;中插入&lt;code&gt;weak_entry_t&lt;/code&gt;&lt;/h5&gt;
+
+&lt;pre&gt;&lt;code&gt;/** 
+ * Add new_entry to the object&#39;s table of weak references.
+ * Does not check whether the referent is already in the table.
+ */
+static void weak_entry_insert(weak_table_t *weak_table, weak_entry_t *new_entry)
+{
+    weak_entry_t *weak_entries = weak_table-&amp;gt;weak_entries;
+    ASSERT(weak_entries != nil);
+
+    size_t begin = hash_pointer(new_entry-&amp;gt;referent) &amp;amp; (weak_table-&amp;gt;mask);
+    size_t index = begin;
+    size_t hash_displacement = 0;
+    while (weak_entries[index].referent != nil) {
+        index = (index+1) &amp;amp; weak_table-&amp;gt;mask;
+        if (index == begin) bad_weak_table(weak_entries);
+        hash_displacement++;
+    }
+
+    weak_entries[index] = *new_entry;
+    weak_table-&amp;gt;num_entries++;
+
+    if (hash_displacement &amp;gt; weak_table-&amp;gt;max_hash_displacement) {
+        weak_table-&amp;gt;max_hash_displacement = hash_displacement;
+    }
+}
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;还是通过BITMASK来遍历所有的&lt;code&gt;weak_entry_t&lt;/code&gt;，直到有一个&lt;code&gt;referent&lt;/code&gt;为nil,就将新的&lt;code&gt;weak_entry_t&lt;/code&gt;赋值给它。&lt;/p&gt;
+
+&lt;h5 id=&#34;2-4-将对象的新-weak-entry-t-插入到-weak-table-t-中&#34;&gt;2.4 将对象的新&lt;code&gt;weak_entry_t&lt;/code&gt;插入到&lt;code&gt;weak_table_t&lt;/code&gt;中&lt;/h5&gt;
+
+&lt;pre&gt;&lt;code&gt;/** 
+ * Add new_entry to the object&#39;s table of weak references.
+ * Does not check whether the referent is already in the table.
+ */
+static void weak_entry_insert(weak_table_t *weak_table, weak_entry_t *new_entry)
+{
+    weak_entry_t *weak_entries = weak_table-&amp;gt;weak_entries;
+    ASSERT(weak_entries != nil);
+    //遍历weak_entries，直到weak_entries[index].referent为nil
+    size_t begin = hash_pointer(new_entry-&amp;gt;referent) &amp;amp; (weak_table-&amp;gt;mask);
+    size_t index = begin;
+    size_t hash_displacement = 0;
+    while (weak_entries[index].referent != nil) {
+        index = (index+1) &amp;amp; weak_table-&amp;gt;mask;
+        if (index == begin) bad_weak_table(weak_entries);
+        hash_displacement++;
+    }
+    //将新的数据赋值给referent为nil的指针
+    weak_entries[index] = *new_entry;
+    //weak_entry_t数量+1
+    weak_table-&amp;gt;num_entries++;
+    //更新max_hash_displacement
+    if (hash_displacement &amp;gt; weak_table-&amp;gt;max_hash_displacement) {
+        weak_table-&amp;gt;max_hash_displacement = hash_displacement;
+    }
+}
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;ul&gt;
+&lt;li&gt;遍历&lt;code&gt;weak_table_t&lt;/code&gt;中的&lt;code&gt;weak_entries&lt;/code&gt;，直到有一个&lt;code&gt;weak_entry_t&lt;/code&gt;的为&lt;code&gt;referent&lt;/code&gt;为&lt;code&gt;nil&lt;/code&gt;&lt;/li&gt;
+&lt;li&gt;将新的&lt;code&gt;weak_entry_t&lt;/code&gt;赋值给&lt;code&gt;referent&lt;/code&gt;为&lt;code&gt;nil&lt;/code&gt;的&lt;code&gt;weak_entry_t&lt;/code&gt;&lt;/li&gt;
+&lt;li&gt;更新&lt;code&gt;num_entries&lt;/code&gt;和&lt;code&gt;max_hash_displacement&lt;/code&gt;的数量&lt;/li&gt;
+&lt;/ul&gt;</description>
+    </item>
+    
+    <item>
       <title>CombineLatest、Zip和Merge的区别</title>
       <link>https://linkrober.github.io/bookshelf/2020/11/combinelatestzip%E5%92%8Cmerge%E7%9A%84%E5%8C%BA%E5%88%AB/</link>
       <pubDate>Fri, 27 Nov 2020 00:00:00 +0000</pubDate>
@@ -2321,627 +3388,6 @@ com/library/content/documentation/Cocoa/Conceptual/Multithreading/ThreadSafety/T
 c&#34;&gt;pthreadcondwait&lt;/a&gt;&lt;/p&gt;
 
 &lt;p&gt;&lt;a href=&#34;https://stackoverflow.com/questions/3513045/conditional-variable-vs-semaphore&#34;&gt;Conditional Variable vs Semaphore&lt;/a&gt;&lt;/p&gt;</description>
-    </item>
-    
-    <item>
-      <title>Runtime(三) 消息转发</title>
-      <link>https://linkrober.github.io/bookshelf/2017/10/runtime%E4%B8%89-%E6%B6%88%E6%81%AF%E8%BD%AC%E5%8F%91/</link>
-      <pubDate>Mon, 16 Oct 2017 00:00:00 +0000</pubDate>
-      
-      <guid>https://linkrober.github.io/bookshelf/2017/10/runtime%E4%B8%89-%E6%B6%88%E6%81%AF%E8%BD%AC%E5%8F%91/</guid>
-      <description>&lt;p&gt;向对象发送一个消息，如果没有处理就会发生错误。但是在产生错误之前，runtime会给接受对象第二次机会来处理消息。
-&lt;/p&gt;
-
-&lt;h3 id=&#34;forwarding&#34;&gt;Forwarding&lt;/h3&gt;
-
-&lt;p&gt;向对象发送一个消息，如果没有处理就会发生错误。但是在产生错误之前，runtime会向对象发送&lt;code&gt;forwardInvocation:&lt;/code&gt;消息，消息携带了一个&lt;code&gt;NSInvocation&lt;/code&gt;对象，这个对象里面包裹了原始消息和参数。&lt;/p&gt;
-
-&lt;p&gt;你可以实现&lt;code&gt;forwardInvocation:&lt;/code&gt;方法来处理消息，来避免错误的发生。正如方法名所暗示的&lt;code&gt;forwardInvocation:&lt;/code&gt;一般用来向另一个对象转发消息。&lt;/p&gt;
-
-&lt;p&gt;为了看到转发的过程和结果，我们想象下面的场景：首先，你设计了一个对象能够响应&lt;code&gt;negotiate&lt;/code&gt;方法，你希望它能够响应另外一个对象的消息。无论&lt;code&gt;negotiate&lt;/code&gt;的方法体是在哪里实现的,你可以通过传入&lt;code&gt;negotiate&lt;/code&gt;消息到另一个对象来完成。下一步，假设你想要&lt;code&gt;negotiate&lt;/code&gt;消息的响应可以被另外一个类明确的接受。一种办法是通过继承的方式，让你的类从父类中继承这个方法。但是如果在不同的继承链中，这种方法是不可能实现的。&lt;/p&gt;
-
-&lt;p&gt;即使你的类不能通过继承的方式使用&lt;code&gt;negotiate&lt;/code&gt;方法，我们仍然可以借用下面这种方式，向另一个类对象传递消息。&lt;/p&gt;
-
-&lt;pre&gt;&lt;code&gt;- (id)negotiate
-{
-    if ( [someOtherObject respondsTo:@selector(negotiate)] )
-        return [someOtherObject negotiate];
-    return self;
-}
-&lt;/code&gt;&lt;/pre&gt;
-
-&lt;p&gt;但是这种方式有点笨重，特别是如果你有大量的消息需要传递到另一个类的时候。你必须要在一个方法里面覆盖所有你想要调用的其他类的方法。而且，可能有些方法你不能考虑周全。所有的方法集合都依赖于运行时事件，在以后类的实现中作为新的方法发生改变。&lt;/p&gt;
-
-&lt;p&gt;第二次机会被&lt;code&gt;forwardInvocation:&lt;/code&gt;方法所提供，这是一种比较特殊的解决方式，它是动态的而不是静态的。它工作起来就像是：当一个对象不能响应一个消息，因为在消息中没有selector匹配这个方法。runtime会用&lt;code&gt;forwardInvocation:&lt;/code&gt;消息来通知对象。每个对象都从NSObject里继承了&lt;code&gt;forwardInvocation:&lt;/code&gt;方法。但是NSObject只是简单的调用&lt;code&gt;doesNotRecognizeSelector:&lt;/code&gt;。通过重写NSObject版本的实现，你可以利用这次机会，通过&lt;code&gt;forwardInvocation:&lt;/code&gt;消息提供一个方法转发到另一个类中。
-为了转发一个消息，所有的&lt;code&gt;forwardInvocation:&lt;/code&gt;方法必须包含下面的两个步骤:&lt;/p&gt;
-
-&lt;ul&gt;
-&lt;li&gt;确定消息的去向&lt;/li&gt;
-&lt;li&gt;转发的时候携带原始的参数&lt;/li&gt;
-&lt;/ul&gt;
-
-&lt;p&gt;消息可以通过&lt;code&gt;invokeWithTarget:&lt;/code&gt;方法被发送：&lt;/p&gt;
-
-&lt;pre&gt;&lt;code&gt;- (void)forwardInvocation:(NSInvocation *)anInvocation
-{
-	if ([someOtherObject respondsToSelector:[anInvocation selector]])
-		[aInvocation invokeWithTarget:someOtherObject];
-	else
-		[super forwardInvocation:anInvocation];
-}
-&lt;/code&gt;&lt;/pre&gt;
-
-&lt;p&gt;被转发的消息的返回值被返回到原始的sender。所有返回值的类型包括：ids、structures，双精度浮点数。
-对于unrecognized消息，&lt;code&gt;forwardInvocation:&lt;/code&gt;方法就像一个消息转发中心，将message包裹起来发送到不同的接受者。或者作为一个中转站，发送所有消息到同样的地方。它可以转发一个消息到另一个。&lt;code&gt;forwardInvocation:&lt;/code&gt;方法可以定位几个消息消息到单一的response。&lt;code&gt;forwardInvocation:&lt;/code&gt;要做的是准备实现。但是，这次机会为转发链中的链接对象提供更多程序设计的可能。&lt;/p&gt;
-
-&lt;blockquote&gt;
-&lt;p&gt;&lt;strong&gt;Note:&lt;/strong&gt;&lt;code&gt;forwardInvocation:&lt;/code&gt;方法开始处理消息，只有它们不能调用在接受者中已经存在的方法时。比如，你想要你的对象去转发&lt;code&gt;negotiate&lt;/code&gt;消息到另一个对象，但对象并没有自己对该消息的实现。如果是这样，消息将永远不会到达&lt;code&gt;forwardInvocation:&lt;/code&gt;&lt;/p&gt;
-&lt;/blockquote&gt;
-
-&lt;h3 id=&#34;forwarding-and-multiple-inheritance&#34;&gt;Forwarding and Multiple Inheritance&lt;/h3&gt;
-
-&lt;p&gt;转发可以模仿多继承，可以实现多继承的一些效果。对象通过转发来响应消息，就像是借用或者继承了另一个类的某个方法的实现
-&lt;img src=&#34;../../../forwarding.png&#34; alt=&#34;forwarding&#34; /&gt;&lt;/p&gt;
-
-&lt;p&gt;在这个例子中，Warrior类的实例转发一个&lt;code&gt;negotiate&lt;/code&gt;消息到Diplomat类的实例。Warrior可以像Diplomat一样调用negotiate。看起来就像响应&lt;code&gt;negotiate&lt;/code&gt;方法。
-对象转发消息，这样“继承”的方法来自两种继承架构链。上面的例子中，它就像Warrior的类继承自Diplomat ，就像子类继承父类一样。&lt;/p&gt;
-
-&lt;p&gt;转发提供了很多特性，一般你可以用它来实现多继承。但是，这和多继承有两个很大不同地方：首先，在一个类中，多继承组合出不同的能力。它趋向于较庞大的多接口对象。另一方面，继承可以区分不同种类的方法到不同的对象。&lt;/p&gt;
-
-&lt;h3 id=&#34;forwarding-and-inheritance&#34;&gt;Forwarding and Inheritance&lt;/h3&gt;
-
-&lt;p&gt;尽管转发可以模仿继承，NSObject类绝不能混合这两种方式。像&lt;code&gt;respondsToSelector:&lt;/code&gt;和&lt;code&gt;isKindOfClass:&lt;/code&gt;方法，只能在继承链中看到，不能用于消息转发链。例如，一个Warrior对象被查询是否响应&lt;code&gt;negotiate&lt;/code&gt;消息，&lt;/p&gt;
-
-&lt;pre&gt;&lt;code&gt;if([aWarrior respondsToSelector:@selector(negotiate)])
-...
-&lt;/code&gt;&lt;/pre&gt;
-
-&lt;p&gt;答案是&lt;code&gt;NO&lt;/code&gt;，在某种意义上，即使它能无错误的接受&lt;code&gt;negotiate&lt;/code&gt;消息，并且响应它们，通过转发它们到Diplomat。&lt;/p&gt;
-
-&lt;p&gt;在许多情况下，&lt;code&gt;NO&lt;/code&gt;是正确的答案。但也需不是。如果你使用转发来设置一个替代的object或者扩展一个类的能力，转发机制应该像继承一样透明。如果你想要你的对象的行为就好像真正是通过继承来实现消息转发的。你将需要重新实现&lt;code&gt;respondsToSelector:&lt;/code&gt;和&lt;code&gt;isKindOfClass:&lt;/code&gt;包括你的转发算法：&lt;/p&gt;
-
-&lt;pre&gt;&lt;code&gt;- (BOOL)respondsToSelector:(SEL)aSelector
-{
-	if([super respondsToSelector:aSelector])
-		return YESl
-	else {
-		/* Here,test whether the aSelector message can *
-		 * be forwarded to another object and whether that *
-		 * object can respond to it.Return YES if it can. */
-	}
-	return NO;
-}
-&lt;/code&gt;&lt;/pre&gt;
-
-&lt;p&gt;除了&lt;code&gt;respondsToSelector:&lt;/code&gt;和&lt;code&gt;isKindOfClass:&lt;/code&gt;,&lt;code&gt;instancesRespondToSelector:&lt;/code&gt;方法应该反映转发算法。如果协议被使用,&lt;code&gt;conformsToProtocol:&lt;/code&gt;方法应该同样被添加到这个list中。类似的，如果一个对象转发任何它接受的远程消息，它应该有一个&lt;code&gt;methodSignatureForSelector:&lt;/code&gt;方法的实现，它能返回方法精确的描述。最终响应转发的消息。例如，如果一个对象能够转发一个消息到它的替代者，你应该向下面这样实现&lt;code&gt;methodSignatureForSelector:&lt;/code&gt;方法：&lt;/p&gt;
-
-&lt;pre&gt;&lt;code&gt;- (NSMethodSignature *)methodSignatureForSelector:(SEL)selector
-{
-	NSMethodSignature *signature = [super methodSignatureForSelector:selector];
-	if(!signature){
-		signature = [surrogate methodSignatureForSelector:selector];
-	}
-	return signature;
-}
-&lt;/code&gt;&lt;/pre&gt;
-
-&lt;p&gt;你可能考虑把转发算法放在私有代码的某个地方并且拥有所有这些方法,&lt;code&gt;forwardInvocation:&lt;/code&gt;包括调用它。&lt;/p&gt;
-
-&lt;blockquote&gt;
-&lt;p&gt;&lt;strong&gt;Note:&lt;/strong&gt;这是一个高级技巧，仅仅适用于没有其他解决方案的时候。这也不将作为继承的替代。如果你必须使用这个技术，确保你能完全理解在进行转发和要转发到的目标类的行为。&lt;/p&gt;
-&lt;/blockquote&gt;
-
-&lt;p&gt;在这部分提到的方法被描述在&lt;code&gt;NSObject&lt;/code&gt;类的说明中。更多的关于&lt;code&gt;invokeWithTarget:&lt;/code&gt;请看&lt;a href=&#34;https://developer.apple.com/documentation/foundation/nsinvocation&#34;&gt;NSInvocation&lt;/a&gt;类的说明。&lt;/p&gt;</description>
-    </item>
-    
-    <item>
-      <title>Runtime (二)  动态方法实现</title>
-      <link>https://linkrober.github.io/bookshelf/2017/10/runtime-%E4%BA%8C--%E5%8A%A8%E6%80%81%E6%96%B9%E6%B3%95%E5%AE%9E%E7%8E%B0/</link>
-      <pubDate>Mon, 09 Oct 2017 18:06:28 +0800</pubDate>
-      
-      <guid>https://linkrober.github.io/bookshelf/2017/10/runtime-%E4%BA%8C--%E5%8A%A8%E6%80%81%E6%96%B9%E6%B3%95%E5%AE%9E%E7%8E%B0/</guid>
-      <description>&lt;h3 id=&#34;dynamic-method-resolution&#34;&gt;Dynamic Method Resolution&lt;/h3&gt;
-
-&lt;p&gt;有的时候，你可能想要提供方法的动态实现。例如，Object-C 属性特征包含了&lt;code&gt;@dynamic&lt;/code&gt;
-&lt;/p&gt;
-
-&lt;pre&gt;&lt;code&gt;@dynamic propertyName;
-&lt;/code&gt;&lt;/pre&gt;
-
-&lt;p&gt;这里是告诉编译器属性相关方法的实现会被动态的提供。&lt;/p&gt;
-
-&lt;p&gt;你可以实现&lt;code&gt;resolveInstanceMethod:&lt;/code&gt;和&lt;code&gt;resolveClassMethod:&lt;/code&gt;为各个实例和类动态的提供一个selector。&lt;/p&gt;
-
-&lt;p&gt;一个Object-C方法是一个简单的C函数，它最少持有两个参数&amp;ndash;&lt;code&gt;self&lt;/code&gt;和&lt;code&gt;_cmd&lt;/code&gt;。你可以使用&lt;code&gt;class_addMethod&lt;/code&gt;添加一个函数到类中作为方法，函数大概像这样：&lt;/p&gt;
-
-&lt;pre&gt;&lt;code&gt;void dynamicMethodIMP(id self,SEL _cmd) {
-	//implementation...
-}
-&lt;/code&gt;&lt;/pre&gt;
-
-&lt;p&gt;你可以动态的把它添加到类中作为一个方法，通过使用&lt;code&gt;resolveInstanceMethod:&lt;/code&gt;调用&lt;code&gt;resolveThisMethodDynamically&lt;/code&gt;方法，像这样：&lt;/p&gt;
-
-&lt;pre&gt;&lt;code&gt;@implementation MyClass
-+ (BOOL)resolveInstanceMethod:(SEL)aSEL
-{
-	if(aSEL == @selector(resolveThisMethodDynamically)){
-		class_addMethod([self class],aSEL,(IMP)dynamicMethodIMP,&amp;quot;v@:&amp;quot;);
-		return YES;
-	}
-	return [super resolveInstanceMethod:aSEL];
-}
-&lt;/code&gt;&lt;/pre&gt;
-
-&lt;p&gt;@end
-一个类在消息转发机制开始前有机会动态的添加一个方法。如果&lt;code&gt;respondsToSelector:&lt;/code&gt;或者&lt;code&gt;instancesRespondToSelector:&lt;/code&gt;方法被调用时，动态的方法接受者首先会被给予一次机会，为selector提供一个&lt;code&gt;IMP&lt;/code&gt;。如果你实现了&lt;code&gt;resolveInstanceMethod:&lt;/code&gt;方法，但是想要指定的selector，通过转发机制被转发，你要return &lt;code&gt;NO&lt;/code&gt;。&lt;/p&gt;
-
-&lt;h3 id=&#34;dynamic-loading&#34;&gt;Dynamic Loading&lt;/h3&gt;
-
-&lt;p&gt;一个Object-C程序可以在运行的时候加载和链接新的类。动态加载可以用来做很多不同的事情。例如，系统偏好中的不同模块是通过动态加载的方式实现的。
-在Cocoa的环境中，动态加载一般被用来让应用更具灵活性。在编写自己的模块的时候，可以在runtime的时候被加载。更多的是用接口加载自定义的模版。OS X的系统设置中加载自定义的偏好模块。你应用程序的模块扩展等。
-因此在Mach-O文件中有一个runtime函数执行Object-C的动态加载(objc_loadModules,定义在objc/objc-load.h中)，Cocoa的&lt;code&gt;NSBundle&lt;/code&gt;类为动态加载提供了一个更方便的接口&amp;ndash;面向对象的聚合相关服务的接口。&lt;/p&gt;</description>
-    </item>
-    
-    <item>
-      <title>Runtime (一) 消息</title>
-      <link>https://linkrober.github.io/bookshelf/2017/09/runtime-%E4%B8%80-%E6%B6%88%E6%81%AF/</link>
-      <pubDate>Fri, 29 Sep 2017 00:00:00 +0000</pubDate>
-      
-      <guid>https://linkrober.github.io/bookshelf/2017/09/runtime-%E4%B8%80-%E6%B6%88%E6%81%AF/</guid>
-      <description>&lt;h3 id=&#34;message&#34;&gt;Message&lt;/h3&gt;
-
-&lt;p&gt;这篇文章描述了消息如何通过使用&lt;code&gt;objc_msgSend&lt;/code&gt;发送，如何通过方法名称找到对应方法的reference&lt;/p&gt;
-
-&lt;h4 id=&#34;the-objc-msgsend-function&#34;&gt;The objc_msgSend Function&lt;/h4&gt;
-
-&lt;p&gt;在Object-C中，发送的消息直到运行时才绑定到正真的方式实现。
-&lt;/p&gt;
-
-&lt;pre&gt;&lt;code&gt;[receiver message]
-&lt;/code&gt;&lt;/pre&gt;
-
-&lt;p&gt;&lt;code&gt;objc_msgSend&lt;/code&gt;是真正调用消息的函数，这个函数持有消息的接受者和方法的名称：&lt;/p&gt;
-
-&lt;pre&gt;&lt;code&gt;objc_msgSend(receiver,selector)
-&lt;/code&gt;&lt;/pre&gt;
-
-&lt;p&gt;任何其他的参数也是通过这个方法传入：&lt;/p&gt;
-
-&lt;pre&gt;&lt;code&gt;objc_msgSend(receiver,selector,arg1,arg2,...)
-&lt;/code&gt;&lt;/pre&gt;
-
-&lt;p&gt;这个方法会做一些必要的事情来进行动态绑定：&lt;/p&gt;
-
-&lt;ul&gt;
-&lt;li&gt;首先找到方法的实现即selector的引用。因为在不同的类中都可以实现相同方法名的方法，所以通过方法的实现找到真正的receiver的class。&lt;/li&gt;
-&lt;li&gt;然后传入该方法指定的receiver和参数。&lt;/li&gt;
-&lt;li&gt;最后将实现的返回值作为它自己的返回值。&lt;/li&gt;
-&lt;/ul&gt;
-
-&lt;blockquote&gt;
-&lt;p&gt;Note:编译器生成调用消息的方法，在日常开发中永远不要在你写的代码中直接调用。&lt;/p&gt;
-&lt;/blockquote&gt;
-
-&lt;p&gt;在架构中消息传递的关键在于编译器编译每个class和object。每个class的结构中包含两个重要元素：&lt;/p&gt;
-
-&lt;ul&gt;
-&lt;li&gt;指向父类的指针&lt;/li&gt;
-&lt;li&gt;一个类的派发表 ，这个表记录了方法的selector和定义该方法的地址。&lt;code&gt;setOrigin::&lt;/code&gt;方法和其对应的地址；&lt;code&gt;display&lt;/code&gt;和其对应的地址。&lt;/li&gt;
-&lt;/ul&gt;
-
-&lt;p&gt;当一个新的对象被创建，内存被分配，实例变量被初始化。第一件事就是对象变量指针指向它的类结构。这个指针一般被称作&lt;code&gt;isa&lt;/code&gt;,给予对象访问类的权利。所有的类都是从这个类继承而来。&lt;/p&gt;
-
-&lt;blockquote&gt;
-&lt;p&gt;Note:尽管这是oc不太严谨的一部分(容易被hook)，但是这也是oc对象在运行时不可缺少的一部分。一个对象需要一个和它等效的结构体来代表，在任何地方都可以用它来定义。如果你曾经需要创建一个根对象。这个对象自动继承&lt;code&gt;NSObject&lt;/code&gt;或者&lt;code&gt;NSProxy&lt;/code&gt;都会携带一个&lt;code&gt;isa&lt;/code&gt;变量。&lt;/p&gt;
-&lt;/blockquote&gt;
-
-&lt;p&gt;类的这些元素和对象结构如下：&lt;/p&gt;
-
-&lt;p&gt;&lt;img src=&#34;../../../messaging1.png&#34; alt=&#34;messaging1&#34; /&gt;&lt;/p&gt;
-
-&lt;p&gt;当消息被发送到一个对象，消息方法跟随对象的&lt;code&gt;isa&lt;/code&gt;指向类结构，在派发表中一直向上寻找对应的方法。如果你不能在这里找到你需要的方法，&lt;code&gt;objc_msgSend&lt;/code&gt;方法会继续向上在父类的派发表里面尝试寻找该方法。还是失败就会一直寻找直到到达&lt;code&gt;NSObject&lt;/code&gt;类，一旦找到selector，就会从表中的入口调用该方法，把它传递到对象的数据结构中。&lt;/p&gt;
-
-&lt;p&gt;这种方式的方法调用是在运行时进行的。在面向对象编程的专业术语中，我们称它为—&lt;strong&gt;动态消息绑定&lt;/strong&gt;&lt;/p&gt;
-
-&lt;p&gt;为了加速消息处理的过程，运行时系统会缓存曾经使用过的selectors和对应的方法地址。每个类是被分开缓存的。和在类中定义的方法一样，它也包含继承方法的selector。在查找派发表之前，消息路径会第一个会检查接受者类的缓存.如果方法的selector在缓存中，消息只比方法调用慢一点点。一旦程序运行了足够长的时间唤醒缓存，几乎发送的所有消息都能在缓存中找到。在程序运行的时候，缓存动态的增加来容纳新的方法。&lt;/p&gt;
-
-&lt;h4 id=&#34;using-hidden-arguments&#34;&gt;Using Hidden Arguments&lt;/h4&gt;
-
-&lt;p&gt;当&lt;code&gt;objc_msgSend&lt;/code&gt;寻找实现方法的过程，它调用方法并传递所有的参数。同时它也为这个程序传递了两个隐藏的参数：&lt;/p&gt;
-
-&lt;ul&gt;
-&lt;li&gt;接受者对象&lt;/li&gt;
-&lt;li&gt;方法的selector&lt;/li&gt;
-&lt;/ul&gt;
-
-&lt;p&gt;这些参数给予每个方法的实现明确的信息。因为这两个参数的隐藏不能表现在编码中，一般是在编译的时候被插入到具体的实现。&lt;/p&gt;
-
-&lt;p&gt;尽管这些参数没有被明确的声明，源码仍然可以引用到它们(就像可以引用对象的实例变量)。方法通过&lt;code&gt;self&lt;/code&gt;引用接受者对象，通过&lt;code&gt;_cmd&lt;/code&gt;代表selector。在下面的例子中，&lt;code&gt;_cmd&lt;/code&gt;指向&lt;code&gt;strange&lt;/code&gt;方法的selector，这个对象的&lt;code&gt;self&lt;/code&gt;接受&lt;code&gt;strange&lt;/code&gt;消息。&lt;/p&gt;
-
-&lt;pre&gt;&lt;code&gt;- strange
-{
-	id target = getTheReceiver();
-	SEL method = getTheMethod();
-
-	if(target == self || method == _cmd)
-		return nil;
-	return [target performSelector:method];
-}
-&lt;/code&gt;&lt;/pre&gt;
-
-&lt;h4 id=&#34;getting-a-method-address&#34;&gt;Getting a Method Address&lt;/h4&gt;
-
-&lt;p&gt;避免动态绑定的唯一办法，就是拿到方法的地址直接调用，就像调用一个方法一样。这只适合在一些少有情况下：当一个具体的方法需要被多次成功的执行，你想要在每次方法执行的时候避免消息带来的开销。&lt;/p&gt;
-
-&lt;p&gt;定义在&lt;code&gt;NSObject&lt;/code&gt;类中的方法&lt;code&gt;methodForSelector:&lt;/code&gt;你可以获得一个指向方法具体实现的指针，然后使用指针调用程序。&lt;code&gt;methodForSelector:&lt;/code&gt;方法返回的指针一定要小心的包裹来指向一个适当的函数类型。返回值和输入参数都需要包含在里面。&lt;/p&gt;
-
-&lt;p&gt;下面的例子展示了&lt;code&gt;setFilled:&lt;/code&gt;方法调用的实现过程：&lt;/p&gt;
-
-&lt;pre&gt;&lt;code&gt;void (*setter)(id,SEL,BOOL);
-int i;
-setter = (void (*)(id,SEL,BOOL))[target methodForSelector:@selector(setFilled:)];
-for(i = 0;i &amp;lt; 100;i++){
-	setter(targetList[i],@selector(setFilled:),YES);
-}
-&lt;/code&gt;&lt;/pre&gt;
-
-&lt;p&gt;首先&lt;code&gt;self&lt;/code&gt;和&lt;code&gt;_cmd&lt;/code&gt;被传递到具体的实现，在两个参数在方法中通过语法的方式被隐藏，但是当这些参数在被作为一个funcation被调用的时候必须要明确。
-使用&lt;code&gt;methodForSelector:&lt;/code&gt;来避免动态绑定可以节省大部分时间。但是如果同一个消息被多次调用，动态绑定的缓存机制可能更优雅点，因为上面的&lt;code&gt;for&lt;/code&gt;循环会遍历所有tartet。
-记住，&lt;code&gt;methodForSelector:&lt;/code&gt;是Cocoa的运行时系统提供的，它不是OC语言自己的特性。&lt;/p&gt;</description>
-    </item>
-    
-    <item>
-      <title>Run Loops (一)</title>
-      <link>https://linkrober.github.io/bookshelf/2017/09/run-loops-%E4%B8%80/</link>
-      <pubDate>Mon, 25 Sep 2017 00:00:00 +0000</pubDate>
-      
-      <guid>https://linkrober.github.io/bookshelf/2017/09/run-loops-%E4%B8%80/</guid>
-      <description>&lt;p&gt;
-&amp;gt;下面会用一些陌生的或者容易让人混淆的字符，我们先来统一概念再继续，这样能够让你更加愉快的阅读：&lt;/p&gt;
-
-&lt;blockquote&gt;
-&lt;p&gt;&lt;strong&gt;runloop:&lt;/strong&gt;iOS一个底层机制的专业术语。&lt;/p&gt;
-
-&lt;p&gt;&lt;strong&gt;run loop:&lt;/strong&gt;一种运行的循环。&lt;/p&gt;
-
-&lt;p&gt;&lt;strong&gt;Handler:&lt;/strong&gt;指&lt;code&gt;handlePort:&lt;/code&gt;、&lt;code&gt;customSrc:&lt;/code&gt;、&lt;code&gt;mySelector:&lt;/code&gt;、&lt;code&gt;timerFired:&lt;/code&gt;，指开发者希望当进入run loop的时候要执行的操作&lt;/p&gt;
-
-&lt;p&gt;&lt;strong&gt;run-loop observer：&lt;/strong&gt;观察runloop行为的观察者&lt;/p&gt;
-
-&lt;p&gt;&lt;strong&gt;run-loop mode：&lt;/strong&gt;每个runloop都要指定一种mode，一种mode可以对应多个input source&lt;/p&gt;
-
-&lt;p&gt;&lt;strong&gt;runloop object：&lt;/strong&gt;runloop相关的对象，这里分Cocoa和CoreFoundation中的&lt;/p&gt;
-&lt;/blockquote&gt;
-
-&lt;p&gt;&lt;i&gt;Runloop&lt;/i&gt;是线程架构相关的一部分，是事件处理的循环。你可以用它来安排循环执行任务，协调相关的事件（kCFRunLoopEntry、kCFRunLoopExit等）。
-用几行示意代码来展示：&lt;/p&gt;
-
-&lt;pre&gt;&lt;code&gt;function loop() {
-    initialize();
-    do {
-        var message = get_next_message();
-        process_message(message);
-    } while (message != quit);
-}
-&lt;/code&gt;&lt;/pre&gt;
-
-&lt;p&gt;&lt;i&gt;Runloop&lt;/i&gt;实际上是一个管理要处理的事件和消息的对象，并为开发者提供了一个入口来执行run loop的逻辑部分。一直处于类似于“接受消息&amp;ndash;&amp;gt;等待&amp;ndash;&amp;gt;处理”这样的一个循环汇总&lt;/p&gt;
-
-&lt;blockquote&gt;
-&lt;p&gt;&lt;i&gt;Runloop&lt;/i&gt;的目的：一般我们自己写的线程在执行完相应的任务就会退出，而runloop&lt;strong&gt;让你的线程在有事干的时候干活，没事干的时候休息，节省系统资源&lt;/strong&gt;。&lt;/p&gt;
-&lt;/blockquote&gt;
-
-&lt;p&gt;&lt;i&gt;Runloop&lt;/i&gt;的管理不全是自动的，&lt;strong&gt;对于自己的线程，必须要自己添加代码，并在适当的时候启动Run loop&lt;/strong&gt;来响应接受的事件。
-Cocoa和Core Foundation提供了&lt;strong&gt;runloop objects&lt;/strong&gt;来帮助你配置和管理线程的run loop。你的Application不需要自己创建这些对象(像alloc、init这些方法)。每个thread，包括Application的主线程，都已经有runloop object，有方法可以直接获取这这些对象，类似于这样的&lt;code&gt;[NSRunLoop currentRunLoop]&lt;/code&gt;。&lt;/p&gt;
-
-&lt;pre&gt;&lt;code&gt;/// 全局的Dictionary，key 是 pthread_t， value 是 CFRunLoopRef
-static CFMutableDictionaryRef loopsDic;
-/// 访问 loopsDic 时的锁
-static CFSpinLock_t loopsLock;
- 
-/// 获取一个 pthread 对应的 RunLoop。
-CFRunLoopRef _CFRunLoopGet(pthread_t thread) {
-    OSSpinLockLock(&amp;amp;loopsLock);
-    
-    if (!loopsDic) {
-        // 第一次进入时，初始化全局Dic，并先为主线程创建一个 RunLoop。
-        loopsDic = CFDictionaryCreateMutable();
-        CFRunLoopRef mainLoop = _CFRunLoopCreate();
-        CFDictionarySetValue(loopsDic, pthread_main_thread_np(), mainLoop);
-    }
-    
-    /// 直接从 Dictionary 里获取。
-    CFRunLoopRef loop = CFDictionaryGetValue(loopsDic, thread));
-    
-    if (!loop) {
-        /// 取不到时，创建一个
-        loop = _CFRunLoopCreate();
-        CFDictionarySetValue(loopsDic, thread, loop);
-        /// 注册一个回调，当线程销毁时，顺便也销毁其对应的 RunLoop。
-        _CFSetTSD(..., thread, loop, __CFFinalizeRunLoop);
-    }
-    
-    OSSpinLockUnLock(&amp;amp;loopsLock);
-    return loop;
-}
- 
-CFRunLoopRef CFRunLoopGetMain() {
-    return _CFRunLoopGet(pthread_main_thread_np());
-}
- 
-CFRunLoopRef CFRunLoopGetCurrent() {
-    return _CFRunLoopGet(pthread_self());
-}
-&lt;/code&gt;&lt;/pre&gt;
-
-&lt;p&gt;苹果提供了&lt;code&gt;CFRunLoopGetMain&lt;/code&gt; 、&lt;code&gt;CFRunLoopGetMain&lt;/code&gt;这两个方法来创建&lt;i&gt;runloop&lt;/i&gt;，如果它不被调用，线程中就不会有runloop。&lt;/p&gt;
-
-&lt;blockquote&gt;
-&lt;p&gt;Cocoa中的&lt;code&gt;NSRunLoop&lt;/code&gt;,和Core Foundation中的&lt;code&gt;CFRunLoopRef&lt;/code&gt;等Run loop相关的类。它们的方法一般也是一一对应的。&lt;/p&gt;
-&lt;/blockquote&gt;
-
-&lt;p&gt;唯一不同的是：你自己创建的线程需要明确的代码来让runloop跑起来，比如&lt;code&gt;[runLoop run]&lt;/code&gt;这样的方法。但是对于主线程的&lt;i&gt;runloop&lt;/i&gt;，系统会在App起来的时候自动设置并跑主线程里面的&lt;i&gt;runloop&lt;/i&gt;，这是Application运行起来的一部分。&lt;/p&gt;
-
-&lt;h3 id=&#34;anatomy-of-run-loop-剖析runloop&#34;&gt;Anatomy of Run Loop（剖析runloop）&lt;/h3&gt;
-
-&lt;p&gt;“一个运行的循环”，看它名字的意思就能猜得到。它会循环不断的进入线程，在&lt;i&gt;runloop&lt;/i&gt;进入之后做一些自己的事情。你的code提供了状态的控制用来实现&lt;i&gt;runloop&lt;/i&gt;真正的循环部分。—— 换句话说，你的code提供&lt;code&gt;while&lt;/code&gt;或&lt;code&gt;for&lt;/code&gt;循环来驱动run loop。在你的循环中，你使用一个&lt;i&gt;runloop object&lt;/i&gt;来运行事件处理的code，&lt;i&gt;runloop&lt;/i&gt;接受事件并调用你已经准备好的方法。&lt;/p&gt;
-
-&lt;pre&gt;&lt;code&gt;/*
- 这里doFireTimer方法就是你要处理的事件的code，&amp;lt;i&amp;gt;runloop&amp;lt;/i&amp;gt;在从sleep状态被wakeup之后会执行改方法。
-*/
-[NSTimer scheduledTimerWithTimeInterval:0.016
-                                     target:self
-                                   selector:@selector(doFireTimer:)
-                                   userInfo:nil
-                                    repeats:YES];
-&lt;/code&gt;&lt;/pre&gt;
-
-&lt;p&gt;上面我们提到&lt;strong&gt;“你使用一个runloop object来运行事件处理的code”&lt;/strong&gt;，这里的事件是从哪里来呢？即事件源是什么？&lt;/p&gt;
-
-&lt;p&gt;事件源分两类：&lt;/p&gt;
-
-&lt;ul&gt;
-&lt;li&gt;&lt;i&gt;Input source&lt;/i&gt;所驱动的异步事件，一般它用来从一个线程向另一个线程发送事件或者从一个Application向另一个Application。&lt;/li&gt;
-&lt;li&gt;&lt;i&gt;Timer sources&lt;/i&gt;所驱动的同步事件，事件发生在一个已经预先设定好的时间，或者在重复的事件间隔发生。&lt;/li&gt;
-&lt;/ul&gt;
-
-&lt;p&gt;当事件到达的时候，这两种source会按照系统指定的步骤来处理事件。&lt;/p&gt;
-
-&lt;p&gt;下图展示了一个&lt;i&gt;runloop&lt;/i&gt;的概念结构和各种不同的sources。Input sources发送一个异步的事件来执行相对应的handler（例如，图中的&lt;code&gt;hanlePort&lt;/code&gt;、&lt;code&gt;mySelector&lt;/code&gt;等），并通过&lt;code&gt;runUntilDate:&lt;/code&gt;方法（调用thread相关的&lt;a href=&#34;https://developer.apple.com/documentation/foundation/runloop&#34;&gt;NSRunLoop&lt;/a&gt;对象）来退出。Timer sources发送事件到runloop的handler，但不会引起runloop的退出。&lt;/p&gt;
-
-&lt;p&gt;&lt;img src=&#34;../../../1086250-2f8e40f8ce0f82c0.jpg&#34; alt=&#34;runloop-1.jpg&#34; /&gt;&lt;/p&gt;
-
-&lt;p&gt;除了处理输入源对应的handler，&lt;i&gt;Runloop&lt;/i&gt;生成关于run loop行为的通知。注册&lt;i&gt;run-loop&lt;/i&gt; 的observer接受这些通知。使用它们在thread上做一些其他的操作。你可以在你的线程中使用Core Foundation里面的类来创建&lt;i&gt;run-loop observer&lt;/i&gt;。&lt;/p&gt;
-
-&lt;h3 id=&#34;run-loop-modes&#34;&gt;Run Loop Modes&lt;/h3&gt;
-
-&lt;p&gt;&lt;i&gt;run-loop mode&lt;/i&gt;是被监听的&lt;i&gt;Input sources&lt;/i&gt;和&lt;i&gt;Timers&lt;/i&gt;的集合，同时还是被通知的&lt;i&gt;run-loop observer&lt;/i&gt;的集合，大家可能比较疑惑怎么是两种东西的集合（source和obaserver），下面是我的理解，从代码出发：
-&lt;code&gt;[runLoop addPort:[NSMachPort port] forMode:NSDefaultRunLoopMode];&lt;/code&gt;
-&lt;strong&gt;线程的每个Source都要指定一个Mode，这里是NSDefaultRunLoopMode&lt;/strong&gt;
-&lt;code&gt;CFRunLoopAddObserver(cfLoop, observer, kCFRunLoopCommonModes);&lt;/code&gt;
-&lt;strong&gt;观察者是观察该Runloop的某些Modes，kCFRunLoopCommonModes是mode的集合，每种mode都可以添加到Common中&lt;/strong&gt;&lt;/p&gt;
-
-&lt;p&gt;每次你运行你的&lt;i&gt;runloop&lt;/i&gt;的时候，要指定一个具体的mode在&lt;i&gt;runloop&lt;/i&gt;里面跑。在进入&lt;i&gt;runloop&lt;/i&gt;的时候，只有和这个mode相关联的source能被对应的&lt;i&gt;run-loop observer&lt;/i&gt;监听到，被允许向它们传递事件。而其他mode相关的source会一直等待，直到&lt;i&gt;run-loop mode&lt;/i&gt;和source指定的mode相对应的时候才开始传递事件。&lt;/p&gt;
-
-&lt;p&gt;在你的代码中，你通过具体的名称来定义mode(&lt;code&gt;kCFRunLoopDefaultMode&lt;/code&gt;、&lt;code&gt;kCFRunLoopCommonModes&lt;/code&gt;等)。Cocoa和Core Foundation都定义了默认的mode和一些经常使用的mode。&lt;/p&gt;
-
-&lt;p&gt;你也能通过简单的字符串来自定义自己的mode。尽管custom mode定义起来好像很随意，但使用起来可不能随意啊。对于任何mode，你必须要确保添加一个或者更多的&lt;i&gt;sources&lt;/i&gt;，&lt;i&gt;timers&lt;/i&gt;或者&lt;i&gt;run-loop observer&lt;/i&gt;，如果你没有做到，&lt;i&gt;run loop&lt;/i&gt;就会直接退出。&lt;/p&gt;
-
-&lt;pre&gt;&lt;code&gt;//如果没有第二行代码，runloop会自动退出
-NSRunLoop *runLoop = [NSRunLoop currentRunLoop];
-[runLoop addPort:[NSMachPort port] forMode:NSDefaultRunLoopMode];
-[runLoop run];
-
-&lt;/code&gt;&lt;/pre&gt;
-
-&lt;p&gt;你可以使用mode过滤掉不想要的source。大多数情况下，你只需要用系统定义的“default”mode来运行你的runloop。&lt;/p&gt;
-
-&lt;blockquote&gt;
-&lt;p&gt;Note:Mode是根据事件source来匹配的而不是根据事件的type。例如，你不可以使用鼠标的按下事件或者键盘按下事件来匹配mode。&lt;/p&gt;
-&lt;/blockquote&gt;
-
-&lt;p&gt;下面是一些系统定义好的Modes&lt;/p&gt;
-
-&lt;table&gt;
-&lt;thead&gt;
-&lt;tr&gt;
-&lt;th align=&#34;center&#34;&gt;Mode&lt;/th&gt;
-&lt;th align=&#34;center&#34;&gt;Name&lt;/th&gt;
-&lt;/tr&gt;
-&lt;/thead&gt;
-
-&lt;tbody&gt;
-&lt;tr&gt;
-&lt;td align=&#34;center&#34;&gt;Default&lt;/td&gt;
-&lt;td align=&#34;center&#34;&gt;&lt;a href=&#34;https://developer.apple.com/documentation/foundation/nsdefaultrunloopmode&#34;&gt;NSDefaultRunLoopMode&lt;/a&gt;(Cocoa)&lt;a href=&#34;https://developer.apple.com/documentation/corefoundation/kcfrunloopdefaultmode&#34;&gt;kCFRunLoopDefaultMode&lt;/a&gt;(Core Foundation)&lt;/td&gt;
-&lt;/tr&gt;
-
-&lt;tr&gt;
-&lt;td align=&#34;center&#34;&gt;Connection&lt;/td&gt;
-&lt;td align=&#34;center&#34;&gt;&lt;a href=&#34;https://developer.apple.com/documentation/foundation/nsconnectionreplymode&#34;&gt;NSConnectionReplyMode&lt;/a&gt;(Cocoa)&lt;/td&gt;
-&lt;/tr&gt;
-
-&lt;tr&gt;
-&lt;td align=&#34;center&#34;&gt;Modal&lt;/td&gt;
-&lt;td align=&#34;center&#34;&gt;&lt;a href=&#34;https://developer.apple.com/documentation/appkit/nsmodalpanelrunloopmode&#34;&gt;NSModalPanelRunLoopMode&lt;/a&gt;(Cocoa)&lt;/td&gt;
-&lt;/tr&gt;
-
-&lt;tr&gt;
-&lt;td align=&#34;center&#34;&gt;Event tracking&lt;/td&gt;
-&lt;td align=&#34;center&#34;&gt;&lt;a href=&#34;https://developer.apple.com/documentation/foundation/runloopmode/1428765-eventtrackingrunloopmode&#34;&gt;NSEventTrackingRunLoopMode&lt;/a&gt;(Cocoa)&lt;/td&gt;
-&lt;/tr&gt;
-
-&lt;tr&gt;
-&lt;td align=&#34;center&#34;&gt;Common modes&lt;/td&gt;
-&lt;td align=&#34;center&#34;&gt;&lt;a href=&#34;https://developer.apple.com/documentation/foundation/runloopmode/1408609-commonmodes&#34;&gt;NSRunLoopCommonModes&lt;/a&gt;(Cocoa)&lt;a href=&#34;https://developer.apple.com/documentation/corefoundation/kcfrunloopcommonmodes&#34;&gt;kCFRunLoopCommonModes&lt;/a&gt;(Core Foundation)&lt;/td&gt;
-&lt;/tr&gt;
-&lt;/tbody&gt;
-&lt;/table&gt;
-
-&lt;h3 id=&#34;input-sources&#34;&gt;Input Sources&lt;/h3&gt;
-
-&lt;p&gt;&lt;i&gt;Input source&lt;/i&gt;通过异步的方式向你的线程传递事件。事件的源取决于&lt;i&gt;input source&lt;/i&gt;的类型。&lt;i&gt;input source&lt;/i&gt;大概分为两类：&lt;/p&gt;
-
-&lt;ul&gt;
-&lt;li&gt;&lt;p&gt;&lt;strong&gt;Port-based port&lt;/strong&gt;
-&lt;i&gt;Port-based port&lt;/i&gt;监控你application的Mach port。&lt;/p&gt;&lt;/li&gt;
-
-&lt;li&gt;&lt;p&gt;&lt;strong&gt;Custom input source&lt;/strong&gt;
-&lt;i&gt;Custom input source&lt;/i&gt;监控自定义的事件source。&lt;/p&gt;&lt;/li&gt;
-&lt;/ul&gt;
-
-&lt;p&gt;&lt;i&gt;runloop&lt;/i&gt;不关心是哪种&lt;i&gt;input source&lt;/i&gt;，这两种*input sources*系统都有实现。这两个&lt;i&gt;input source&lt;/i&gt;唯一的不同就是它们如何发送信号。&lt;i&gt;Port-based port&lt;/i&gt;通过内核自动发送信号。&lt;i&gt;Custom input source&lt;/i&gt;只能从其他线程接受手动发送的信号。&lt;/p&gt;
-
-&lt;p&gt;当你创建一个&lt;i&gt;input source&lt;/i&gt;，你把它赋值到&lt;i&gt;runloop&lt;/i&gt;的mode。mode会影响被监控的input source。大多数情况，你在&lt;code&gt;NSDefaultRunLoopMode&lt;/code&gt;下运行&lt;i&gt;runloop&lt;/i&gt;，但是你也可以指定自定义的mode。如果一个&lt;i&gt;input source&lt;/i&gt;不在当前被监控的mode中，它产生的一些事件将会被暂时的放在一边，直到下一个run loop的mode和input source的mode相同才开始处理这个input source产生的事件。&lt;/p&gt;
-
-&lt;p&gt;接下去的部分描述了一些input source&lt;/p&gt;
-
-&lt;h5 id=&#34;port-based-sources&#34;&gt;Port-Based Sources&lt;/h5&gt;
-
-&lt;p&gt;Cocoa和Core Foundation通过提供端口相关的对象和方法来创建&lt;i&gt;Port-Based Source&lt;/i&gt;。例如，在Cocoa中，你没必要直接创建input source。你使用&lt;code&gt;NSPort&lt;/code&gt;的方法&lt;code&gt;[NSPort port]&lt;/code&gt;，添加port到run loop中。Port object会为你创建和配置所需的&lt;i&gt;Port-Based Sources&lt;/i&gt;。&lt;/p&gt;
-
-&lt;p&gt;在 Core Foundation中，你必须要自己创建port和它的run loop source。用 &lt;a href=&#34;https://developer.apple.com/documentation/corefoundation/cfmachport&#34;&gt;CFMachPortRef&lt;/a&gt;, &lt;a href=&#34;https://developer.apple.com/documentation/corefoundation/cfmessageportref&#34;&gt;CFMessagePortRef&lt;/a&gt;,  &lt;a href=&#34;https://developer.apple.com/documentation/corefoundation/cfsockeref&#34;&gt;CFSocketRef&lt;/a&gt;这些不透明指针创建相应的对象。&lt;/p&gt;
-
-&lt;p&gt;如何配置和设置自定义的&lt;i&gt;Port-Based Sources&lt;/i&gt;，请看&lt;a href=&#34;https://developer.apple.com/library/content/documentation/Cocoa/Conceptual/Multithreading/RunLoopManagement/RunLoopManagement.html#//apple_ref/doc/uid/10000057i-CH16-131281&#34;&gt; Configuring a Port-Based Input Source&lt;/a&gt;&lt;/p&gt;
-
-&lt;h5 id=&#34;custom-input-sources-core-foundation&#34;&gt;Custom Input Sources（Core Foundation）&lt;/h5&gt;
-
-&lt;p&gt;为了创建自定义的input source，你必须使用Core Foundation中的&lt;a href=&#34;https://developer.apple.com/documentation/corefoundation/cfrunloopsource&#34;&gt;CFRunLoopSourceRef&lt;/a&gt;不透明类相关的方法。你需要在回调方法中配置这个Custom Input Sources。Core Foundation会在配置Custom Input Sources、处理输入事件和当source要从runloop中移除的时候调用这几个回调。&lt;/p&gt;
-
-&lt;p&gt;对于如何创建一个custom input source请看这里&lt;a href=&#34;https://developer.apple.com/library/content/documentation/Cocoa/Conceptual/Multithreading/RunLoopManagement/RunLoopManagement.html#//apple_ref/doc/uid/10000057i-CH16-SW3&#34;&gt;Defining a Custom Input Source&lt;/a&gt;&lt;/p&gt;
-
-&lt;h5 id=&#34;cocoa-perform-selector-sources-cocoa&#34;&gt;Cocoa Perform Selector Sources（Cocoa）&lt;/h5&gt;
-
-&lt;p&gt;除了&lt;i&gt;Port-Based Sources&lt;/i&gt;，Cocoa定义了一个&lt;i&gt;custom input source&lt;/i&gt;，这允许你向任何线程中发送选择子。和&lt;i&gt;Port-Based Sources&lt;/i&gt;一样，执行选择子selector的请求在同一个线程上是连续的，当多个方法同时向线程发送请求的时候可能会导致同步的问题。和&lt;i&gt;Port-Based Sources&lt;/i&gt;不同的是：一个&lt;i&gt;perform selector source&lt;/i&gt;执行完它的selector，它自己会从runloop中移除。&lt;/p&gt;
-
-&lt;p&gt;当向另一个线程发送selector请求时，目标线程必须有一个active的&lt;i&gt;runloop&lt;/i&gt;。这意味着你必须等待，直到该线程中runloop的状态变成 active。因为主线程会自己开始一个&lt;i&gt;runloop&lt;/i&gt;，只要系统一调用Application delegate的&lt;code&gt;applicationDidFinishLaunching:&lt;/code&gt;（这时候系统的runloop就创建出来了），你就可以向主线程发送selector请求。每次&lt;i&gt;Runloop&lt;/i&gt;会处理所有队列的selector请求，而不是只处理一个队列的请求。下面列出了一些perform方法&lt;/p&gt;
-
-&lt;table&gt;
-&lt;thead&gt;
-&lt;tr&gt;
-&lt;th align=&#34;center&#34;&gt;Methods&lt;/th&gt;
-&lt;/tr&gt;
-&lt;/thead&gt;
-
-&lt;tbody&gt;
-&lt;tr&gt;
-&lt;td align=&#34;center&#34;&gt;&lt;a href=&#34;https://developer.apple.com/documentation/objectivec/nsobject/1414900-performselector&#34;&gt;performSelectorOnMainThread:withObject:waitUntilDone:&lt;/a&gt;、&lt;a href=&#34;https://developer.apple.com/documentation/objectivec/nsobject/1411637-performselector&#34;&gt;performSelectorOnMainThread:withObject:waitUntilDone:modes:&lt;/a&gt;&lt;/td&gt;
-&lt;/tr&gt;
-
-&lt;tr&gt;
-&lt;td align=&#34;center&#34;&gt;&lt;a href=&#34;https://developer.apple.com/documentation/objectivec/nsobject/1414476-perform&#34;&gt;performSelector:onThread:withObject:waitUntilDone:&lt;/a&gt;、&lt;a href=&#34;https://developer.apple.com/documentation/objectivec/nsobject/1417922-perform&#34;&gt;performSelector:onThread:withObject:waitUntilDone:modes:&lt;/a&gt;&lt;/td&gt;
-&lt;/tr&gt;
-
-&lt;tr&gt;
-&lt;td align=&#34;center&#34;&gt;&lt;a href=&#34;https://developer.apple.com/documentation/objectivec/nsobject/1416176-perform&#34;&gt;performSelector:withObject:afterDelay:&lt;/a&gt;、&lt;a href=&#34;https://developer.apple.com/documentation/objectivec/nsobject/1415652-perform&#34;&gt;performSelector:withObject:afterDelay:inModes:&lt;/a&gt;&lt;/td&gt;
-&lt;/tr&gt;
-
-&lt;tr&gt;
-&lt;td align=&#34;center&#34;&gt;&lt;a href=&#34;https://developer.apple.com/documentation/objectivec/nsobject/1417611-cancelpreviousperformrequests&#34;&gt;cancelPreviousPerformRequestsWithTarget:&lt;/a&gt;、&lt;a href=&#34;https://developer.apple.com/documentation/objectivec/nsobject/1410849-cancelpreviousperformrequests&#34;&gt;cancelPreviousPerformRequestsWithTarget:selector:object:&lt;/a&gt;&lt;/td&gt;
-&lt;/tr&gt;
-&lt;/tbody&gt;
-&lt;/table&gt;
-
-&lt;h5 id=&#34;timer-sources&#34;&gt;Timer Sources&lt;/h5&gt;
-
-&lt;p&gt;&lt;i&gt;Timer sources&lt;/i&gt;会在将来的某个时间，发送同步事件到你的当前的线程。Timer是线程用来通知它自己的一种方式。
-尽管它是基于时间的通知，一个timer并不能保证在准确的时间点执行事件。和其他的&lt;i&gt;Input source&lt;/i&gt;一样，Timer和你&lt;i&gt;run loop&lt;/i&gt;指定的mode有关系。如果Timer的mode不是你当前runloop正在跑的mode，它是不会被触发的，直到你的&lt;i&gt;runloop&lt;/i&gt;运行的的mode是你的Timer所支持的。类似的，如果一个Timer被触发，但是当runloop在执行Handler，Timer将会一直等待，直到下次再次进入runloop的时候才会执行。如果这个&lt;i&gt;runloop&lt;/i&gt;不再跑了，这个Timer将永远不会被触发。&lt;/p&gt;
-
-&lt;p&gt;你可以配置Timer来运行事件，一次或者不停重复。一个重复的Timer会基于设定好的触发时间，自动重新安排它自己到run loop中，但这个时间间隔并不一定准确。例如，如果一个Timer在一个特定时间被触发，每5秒重复一次。即使实际的触发时间被延迟了，被安排的触发时间总落在5秒的延迟时间间隔之内。如果触发时间被延迟太多，会导致它错过了一次或者更多被安排到run loop的机会。在一个不恰当的时机被触发之后，Timer则会被安排到下一次run loop。
-关于配置timer sources的更多信息，请看&lt;a href=&#34;https://developer.apple.com/library/content/documentation/Cocoa/Conceptual/Multithreading/RunLoopManagement/RunLoopManagement.html#//apple_ref/doc/uid/10000057i-CH16-SW6&#34;&gt;Configuring Timer Sources&lt;/a&gt;。更多相关信息&lt;a href=&#34;https://developer.apple.com/documentation/foundation/timer&#34;&gt;NSTimer Class Reference&lt;/a&gt;或&lt;a href=&#34;https://developer.apple.com/documentation/corefoundation/cfrunlooptimer-rhk&#34;&gt;CFRunLoopTimer Reference&lt;/a&gt;。&lt;/p&gt;
-
-&lt;h5 id=&#34;run-loop-observers&#34;&gt;Run Loop Observers&lt;/h5&gt;
-
-&lt;p&gt;一般的source是在一个异步或者同步的事件发生的时候被触发的，而&lt;i&gt;run-loop observer&lt;/i&gt;是在&lt;i&gt;runloop&lt;/i&gt;它执行的时候触发的。你可以通过&lt;i&gt;run-loop observer&lt;/i&gt;来准备一些线程待处理的事件，或者在线程sleep之前，在线程中做一些事。&lt;i&gt;run-loop observers&lt;/i&gt;可以观察到下面的一些事件：&lt;/p&gt;
-
-&lt;ul&gt;
-&lt;li&gt;进入&lt;i&gt;runloop&lt;/i&gt;的时候&lt;/li&gt;
-&lt;li&gt;当&lt;i&gt;runloop&lt;/i&gt;将要处理timer的时候&lt;/li&gt;
-&lt;li&gt;当&lt;i&gt;runloop&lt;/i&gt;将要处理input source的时候&lt;/li&gt;
-&lt;li&gt;当&lt;i&gt;runloop&lt;/i&gt;将要sleep的时候&lt;/li&gt;
-&lt;li&gt;当&lt;i&gt;runloop&lt;/i&gt;已经醒来，还没有开始处理event的时候&lt;/li&gt;
-&lt;li&gt;当&lt;i&gt;runloop&lt;/i&gt;退出的时候&lt;/li&gt;
-&lt;/ul&gt;
-
-&lt;p&gt;你可以使用Core Foundation向Application添加&lt;i&gt;run-loop observer&lt;/i&gt;。为了创建一个&lt;i&gt;run_loop observer&lt;/i&gt;，你需要使用&lt;a href=&#34;https://developer.apple.com/documentation/corefoundation/cfrunloopobserver&#34;&gt;CFRunLoopObserverRef&lt;/a&gt;类。这个类会追踪你自定义callback函数、你感兴趣的&lt;code&gt;CFRunLoopActivity&lt;/code&gt;。&lt;/p&gt;
-
-&lt;p&gt;和Timer相似，&lt;i&gt;run-loop observer&lt;/i&gt;可以只运行一次，或者不停重复。只运行一次的&lt;i&gt;run-loop observer&lt;/i&gt;在一次run loop之后就会从&lt;i&gt;runloop&lt;/i&gt;中移除。当你创建&lt;i&gt;run-loop observer&lt;/i&gt;的时候，你要决定r是一次还是不停重复。&lt;/p&gt;
-
-&lt;p&gt;对于如何创建一个&lt;i&gt;run-loop observer&lt;/i&gt;的例子，看&lt;a href=&#34;https://developer.apple.com/library/content/documentation/Cocoa/Conceptual/Multithreading/RunLoopManagement/RunLoopManagement.html#//apple_ref/doc/uid/10000057i-CH16-SW18&#34;&gt; Configuring the Run Loop&lt;/a&gt;,更多相关信息&lt;a href=&#34;https://developer.apple.com/documentation/corefoundation/cfrunloopobserver-ri3&#34;&gt;CFRunLoopObserver Reference&lt;/a&gt;&lt;/p&gt;
-
-&lt;h5 id=&#34;the-run-loop-sequence-of-events&#34;&gt;The Run Loop Sequence of Events&lt;/h5&gt;
-
-&lt;p&gt;每次你运行&lt;i&gt;runloop&lt;/i&gt;，你线程的&lt;i&gt;runloop&lt;/i&gt;会处理之前挂起的事件，并且向*run-loop observer*发送通知。&lt;i&gt;runloop&lt;/i&gt;执行的顺序如下面所列出的：&lt;/p&gt;
-
-&lt;ol&gt;
-&lt;li&gt;通知&lt;i&gt;run-loop observer&lt;/i&gt;，进入&lt;i&gt;runloop&lt;/i&gt;&lt;/li&gt;
-&lt;li&gt;通知&lt;i&gt;run-loop observer&lt;/i&gt;，已经准备好的Timer将要触发&lt;/li&gt;
-&lt;li&gt;通知&lt;i&gt;run-loop observer&lt;/i&gt;，以及准备好的*no-port-based input source*将要被触发&lt;/li&gt;
-&lt;li&gt;触发&lt;i&gt;no-port-based input source&lt;/i&gt;&lt;/li&gt;
-&lt;li&gt;如果一个&lt;i&gt;port-based input source&lt;/i&gt;准备好等待触发，立即处理该事件，再从第九步开始执行&lt;/li&gt;
-&lt;li&gt;通知&lt;i&gt;run-loop observer&lt;/i&gt;，线程将要sleep&lt;/li&gt;
-&lt;li&gt;线程sleep直到下面的事件发生：
-
-&lt;ul&gt;
-&lt;li&gt;&lt;i&gt;port-based input source&lt;/i&gt;事件到达&lt;/li&gt;
-&lt;li&gt;一个Timer触发了&lt;/li&gt;
-&lt;li&gt;&lt;i&gt;runloop&lt;/i&gt;超时了&lt;/li&gt;
-&lt;li&gt;&lt;i&gt;runloop&lt;/i&gt;被手动唤醒&lt;/li&gt;
-&lt;/ul&gt;&lt;/li&gt;
-&lt;li&gt;通知&lt;i&gt;run-loop observer&lt;/i&gt;，线程将要被唤醒&lt;/li&gt;
-
-&lt;li&gt;&lt;p&gt;处理挂起的事件&lt;/p&gt;
-
-&lt;ul&gt;
-&lt;li&gt;如果一个用户定义的timer触发了，处理相关事件，重新开始循环，回到第二步继续执行&lt;/li&gt;
-&lt;li&gt;如果&lt;i&gt;input source&lt;/i&gt;触发，传递相应的事件&lt;/li&gt;
-&lt;li&gt;如果&lt;i&gt;runloop*&lt;/i&gt;明确的被唤醒，但是还没有超时，重新开始循环，回到第二步继续执行&lt;/li&gt;
-&lt;/ul&gt;&lt;/li&gt;
-
-&lt;li&gt;&lt;p&gt;通知&lt;i&gt;run_loop observer&lt;/i&gt;，&lt;i&gt;runloop&lt;/i&gt;已经退出&lt;/p&gt;&lt;/li&gt;
-&lt;/ol&gt;
-
-&lt;blockquote&gt;
-&lt;p&gt;&lt;strong&gt;Tip:&lt;/strong&gt;no-port-based input source就是我们常说的&lt;strong&gt;source0&lt;/strong&gt;，port-based input source就是&lt;strong&gt;source1&lt;/strong&gt;&lt;/p&gt;
-&lt;/blockquote&gt;
-
-&lt;p&gt;因为Timer和input source的通知是在事件被触发之前，所以这之间有一个过渡时间。如果你要在这个时间做一些事情，你可以使用&lt;strong&gt;sleep&lt;/strong&gt;和 &lt;strong&gt;awake-from-sleep&lt;/strong&gt; 通知来帮助你获得这段时间的控制权。&lt;/p&gt;
-
-&lt;p&gt;一个&lt;i&gt;runloop&lt;em&gt;&lt;/i&gt;可以通过使用&lt;i&gt;run loop object&lt;/i&gt;被唤醒。其他的事件也可能引起&lt;i&gt;runloop&lt;/em&gt;&lt;/i&gt;被唤醒。例如，添加&lt;i&gt;no-port-based input source&lt;/i&gt;来唤醒&lt;i&gt;runloop*&lt;/i&gt;以至于input source可以被立即处理，而不是等待其他的事件发生。&lt;/p&gt;
-
-&lt;hr /&gt;
-
-&lt;blockquote&gt;
-&lt;p&gt;iOS系统中有很多用到了RunLoop的地方：&lt;/p&gt;
-
-&lt;ul&gt;
-&lt;li&gt;AutoreleasePool：监听&lt;code&gt;kCFRunLoopEntry&lt;/code&gt;事件，保证在所以回调之前创建自动释放池；监听&lt;code&gt;BeforeWaiting&lt;/code&gt;事件，释放旧的线程池，创建新的线程池；监听&lt;code&gt;kCFRunLoopExit&lt;/code&gt;事件，保证线程池最后被释放。&lt;/li&gt;
-&lt;li&gt;事件响应：通过port-based input source监听用户的事件，并转发给App进程，如用UIControl的事件。&lt;/li&gt;
-&lt;li&gt;手势识别：监听&lt;code&gt;kCFRunLoopBeforeWaiting&lt;/code&gt;事件在事件的回调函数中标记待处理的手势，并处理手势。&lt;/li&gt;
-&lt;li&gt;界面更新：&lt;code&gt;setNeedsLayout&lt;/code&gt;、&lt;code&gt;setNeedsDisplay&lt;/code&gt;都会将该view标记为待处理，等到下一个runloop的时候会布局UI。&lt;/li&gt;
-&lt;li&gt;定时器：就是一个CFRunLoopTimerRef&lt;/li&gt;
-&lt;li&gt;PerformSelecter：将方法扔到某个线程中，在下一个run loop的时候执行。&lt;/li&gt;
-&lt;li&gt;关于GCD：dispatch_async(dispatch_get_main_queue(), block)向主线程的run loop发送消息，唤醒run loop。并执行block中的内容。&lt;/li&gt;
-&lt;/ul&gt;
-&lt;/blockquote&gt;
-
-&lt;p&gt;PPT总结一下：&lt;/p&gt;
-
-&lt;p&gt;&lt;img src=&#34;../../../1086250-cb2c4b4a6d0973e7.png&#34; alt=&#34;什么是runloop&#34; /&gt;&lt;/p&gt;
-
-&lt;p&gt;&lt;img src=&#34;../../../1086250-7118fdeabb5ffe76.png&#34; alt=&#34;基本组成&#34; /&gt;&lt;/p&gt;
-
-&lt;p&gt;&lt;img src=&#34;../../../1086250-e7ae08b4d61ec9e6.png&#34; alt=&#34;source的种类&#34; /&gt;&lt;/p&gt;
-
-&lt;p&gt;&lt;img src=&#34;../../../1086250-fb6430f46efe4735.png&#34; alt=&#34;runloop生命周期&#34; /&gt;&lt;/p&gt;
-
-&lt;p&gt;&lt;img src=&#34;../../../1086250-073579ed39612c1d.png&#34; alt=&#34;为什么使用runloop&#34; /&gt;&lt;/p&gt;
-
-&lt;p&gt;&lt;img src=&#34;../../../1086250-cae92bc60b877b48.png&#34; alt=&#34;具体列子&#34; /&gt;&lt;/p&gt;
-
-&lt;p&gt;&lt;img src=&#34;../../../1086250-fae8de2bdb8232aa.png&#34; alt=&#34;检测主线程是否卡顿&#34; /&gt;&lt;/p&gt;
-
-&lt;p&gt;&lt;img src=&#34;../../../1086250-ac972598a07a90bc.png&#34; alt=&#34;AFNetworking&#34; /&gt;&lt;/p&gt;</description>
     </item>
     
   </channel>

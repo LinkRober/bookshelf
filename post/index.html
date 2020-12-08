@@ -213,6 +213,258 @@
     
     <div class="postShorten-header">
       <h1 class="postShorten-title" itemprop="headline">
+        <a class="link-unstyled" href="https://linkrober.github.io/bookshelf/2020/12/weak%E7%9A%84%E5%AE%9E%E7%8E%B0-sidetablesoldobj/">
+          Weak的实现-&amp;SideTables()[oldObj]
+        </a>
+      </h1>
+      
+  <div class="postShorten-meta post-meta">
+    
+      <time itemprop="datePublished" datetime="2020-12-08T00:00:00Z">
+        
+  十二月 8, 2020
+
+      </time>
+    
+    
+  
+  
+    <span>发布在</span>
+    
+      <a class="category-link" href="https://LinkRober.github.io/bookshelf/categories/ios">iOS</a>
+    
+  
+
+
+  </div>
+
+    </div>
+    <div class="postShorten-excerpt" itemprop="articleBody">
+      <p><code>&amp;SideTables()[oldObj]</code>这是什么？很多人看到这里都被这操作搞蒙了，下面分三步来理解，分别是<code>SideTables()</code>、<code>[oldObj]</code>、<code>&amp;</code>。先贴上入口的代码</p>
+
+<pre><code>id oldObj;
+SideTable *oldTable;
+
+oldObj = *location;
+oldTable = &amp;SideTables()[oldObj];
+</code></pre>
+
+<p></p>
+      <p>
+        <a href="https://linkrober.github.io/bookshelf/2020/12/weak%E7%9A%84%E5%AE%9E%E7%8E%B0-sidetablesoldobj/" class="postShorten-excerpt_link link">阅读全文</a>
+        
+      </p>
+    </div>
+  </div>
+  
+</article>
+
+          
+            
+  
+    
+      
+        
+      
+    
+  
+
+
+  
+
+<article class="postShorten postShorten--thumbnailimg-bottom" itemscope itemType="http://schema.org/BlogPosting">
+  <div class="postShorten-wrap">
+    
+    <div class="postShorten-header">
+      <h1 class="postShorten-title" itemprop="headline">
+        <a class="link-unstyled" href="https://linkrober.github.io/bookshelf/2020/12/weak%E7%9A%84%E5%AE%9E%E7%8E%B0%E4%B8%80/">
+          Weak的实现（一）
+        </a>
+      </h1>
+      
+  <div class="postShorten-meta post-meta">
+    
+      <time itemprop="datePublished" datetime="2020-12-08T00:00:00Z">
+        
+  十二月 8, 2020
+
+      </time>
+    
+    
+  
+  
+    <span>发布在</span>
+    
+      <a class="category-link" href="https://LinkRober.github.io/bookshelf/categories/ios">iOS</a>
+    
+  
+
+
+  </div>
+
+    </div>
+    <div class="postShorten-excerpt" itemprop="articleBody">
+      <p>本文较长查分为三段按序阅读体验更佳，第四篇为辅助阅读按需看</p>
+
+<ol>
+<li>[Weak的实现（一）]()</li>
+<li>[Weak的实现（二）]()</li>
+<li>[Weak的实现（三）]()</li>
+<li>[Weak的实现-&amp;SideTables()[oldObj]]()</li>
+</ol>
+
+<p>带着问题看源码：</p>
+
+<ol>
+<li>大家都知道weak的底层实现是一个散列表，那么散列表的结构是什么样的？</li>
+<li>散列表的key是什么，value是什么，散列函数是怎样的？</li>
+<li>通过几次查找才能找到对应的弱引用？</li>
+<li>如何查找弱引用对象的引用计数？</li>
+<li>一个对象对应一个<code>SideTable</code>表而一个<code>SideTable</code>对应多个对象，为什么这样设计</li>
+</ol>
+
+<p></p>
+      <p>
+        <a href="https://linkrober.github.io/bookshelf/2020/12/weak%E7%9A%84%E5%AE%9E%E7%8E%B0%E4%B8%80/" class="postShorten-excerpt_link link">阅读全文</a>
+        
+      </p>
+    </div>
+  </div>
+  
+</article>
+
+          
+            
+  
+    
+      
+        
+      
+    
+  
+
+
+  
+
+<article class="postShorten postShorten--thumbnailimg-bottom" itemscope itemType="http://schema.org/BlogPosting">
+  <div class="postShorten-wrap">
+    
+    <div class="postShorten-header">
+      <h1 class="postShorten-title" itemprop="headline">
+        <a class="link-unstyled" href="https://linkrober.github.io/bookshelf/2020/12/weak%E7%9A%84%E5%AE%9E%E7%8E%B0%E4%B8%89/">
+          Weak的实现（三）
+        </a>
+      </h1>
+      
+  <div class="postShorten-meta post-meta">
+    
+      <time itemprop="datePublished" datetime="2020-12-08T00:00:00Z">
+        
+  十二月 8, 2020
+
+      </time>
+    
+    
+  
+  
+    <span>发布在</span>
+    
+      <a class="category-link" href="https://LinkRober.github.io/bookshelf/categories/ios">iOS</a>
+    
+  
+
+
+  </div>
+
+    </div>
+    <div class="postShorten-excerpt" itemprop="articleBody">
+      <h4 id="3-设置弱引用标志位">3 设置弱引用标志位</h4>
+
+<p></p>
+      <p>
+        <a href="https://linkrober.github.io/bookshelf/2020/12/weak%E7%9A%84%E5%AE%9E%E7%8E%B0%E4%B8%89/" class="postShorten-excerpt_link link">阅读全文</a>
+        
+      </p>
+    </div>
+  </div>
+  
+</article>
+
+          
+            
+  
+    
+      
+        
+      
+    
+  
+
+
+  
+
+<article class="postShorten postShorten--thumbnailimg-bottom" itemscope itemType="http://schema.org/BlogPosting">
+  <div class="postShorten-wrap">
+    
+    <div class="postShorten-header">
+      <h1 class="postShorten-title" itemprop="headline">
+        <a class="link-unstyled" href="https://linkrober.github.io/bookshelf/2020/12/weak%E7%9A%84%E5%AE%9E%E7%8E%B0%E4%BA%8C/">
+          Weak的实现（二）
+        </a>
+      </h1>
+      
+  <div class="postShorten-meta post-meta">
+    
+      <time itemprop="datePublished" datetime="2020-12-08T00:00:00Z">
+        
+  十二月 8, 2020
+
+      </time>
+    
+    
+  
+  
+    <span>发布在</span>
+    
+      <a class="category-link" href="https://LinkRober.github.io/bookshelf/categories/ios">iOS</a>
+    
+  
+
+
+  </div>
+
+    </div>
+    <div class="postShorten-excerpt" itemprop="articleBody">
+      <h4 id="2-生成新的-weak-entry-t-插入到-weak-entries-中">2 生成新的<code>weak_entry_t</code>插入到<code>weak_entries</code>中</h4>
+
+<p></p>
+      <p>
+        <a href="https://linkrober.github.io/bookshelf/2020/12/weak%E7%9A%84%E5%AE%9E%E7%8E%B0%E4%BA%8C/" class="postShorten-excerpt_link link">阅读全文</a>
+        
+      </p>
+    </div>
+  </div>
+  
+</article>
+
+          
+            
+  
+    
+      
+        
+      
+    
+  
+
+
+  
+
+<article class="postShorten postShorten--thumbnailimg-bottom" itemscope itemType="http://schema.org/BlogPosting">
+  <div class="postShorten-wrap">
+    
+    <div class="postShorten-header">
+      <h1 class="postShorten-title" itemprop="headline">
         <a class="link-unstyled" href="https://linkrober.github.io/bookshelf/2020/11/combinelatestzip%E5%92%8Cmerge%E7%9A%84%E5%8C%BA%E5%88%AB/">
           CombineLatest、Zip和Merge的区别
         </a>
@@ -426,296 +678,6 @@ RACSignal *signal = [RACSignal createSignal:^RACDisposable *(id&lt;RACSubscriber
 </article>
 
           
-            
-  
-    
-      
-        
-      
-    
-  
-
-
-  
-
-<article class="postShorten postShorten--thumbnailimg-bottom" itemscope itemType="http://schema.org/BlogPosting">
-  <div class="postShorten-wrap">
-    
-    <div class="postShorten-header">
-      <h1 class="postShorten-title" itemprop="headline">
-        <a class="link-unstyled" href="https://linkrober.github.io/bookshelf/2020/11/switchtolatest/">
-          SwitchToLatest
-        </a>
-      </h1>
-      
-  <div class="postShorten-meta post-meta">
-    
-      <time itemprop="datePublished" datetime="2020-11-27T00:00:00Z">
-        
-  十一月 27, 2020
-
-      </time>
-    
-    
-  
-  
-    <span>发布在</span>
-    
-      <a class="category-link" href="https://LinkRober.github.io/bookshelf/categories/ios">ios</a>
-    
-  
-
-
-  </div>
-
-    </div>
-    <div class="postShorten-excerpt" itemprop="articleBody">
-      <p><code>- (RACSignal *)switchToLatest</code>和<code>- (RACSignal *)flatten</code>的功能类似，都可以将信号中的信号的值取出来。不同的是，前者如果订阅者处理多个信号，只有最后一个信号的值能收到，之前的信号会被销毁。而后者则都能收到所有值。</p>
-
-<p></p>
-      <p>
-        <a href="https://linkrober.github.io/bookshelf/2020/11/switchtolatest/" class="postShorten-excerpt_link link">阅读全文</a>
-        
-      </p>
-    </div>
-  </div>
-  
-</article>
-
-          
-            
-  
-    
-      
-        
-      
-    
-  
-
-
-  
-
-<article class="postShorten postShorten--thumbnailimg-bottom" itemscope itemType="http://schema.org/BlogPosting">
-  <div class="postShorten-wrap">
-    
-    <div class="postShorten-header">
-      <h1 class="postShorten-title" itemprop="headline">
-        <a class="link-unstyled" href="https://linkrober.github.io/bookshelf/2020/11/concatcatchtonevertakeuntil/">
-          concat、catchTo、never、takeUntil
-        </a>
-      </h1>
-      
-  <div class="postShorten-meta post-meta">
-    
-      <time itemprop="datePublished" datetime="2020-11-27T00:00:00Z">
-        
-  十一月 27, 2020
-
-      </time>
-    
-    
-  
-  
-    <span>发布在</span>
-    
-      <a class="category-link" href="https://LinkRober.github.io/bookshelf/categories/ios">ios</a>
-    
-  
-
-
-  </div>
-
-    </div>
-    <div class="postShorten-excerpt" itemprop="articleBody">
-      <ol>
-<li><code>- (RACSignal *)concat:(RACSignal *)signal</code></li>
-</ol>
-
-<pre><code>//源码
-- (RACSignal *)concat:(RACSignal *)signal {
-	return [[RACSignal createSignal:^(id&lt;RACSubscriber&gt; subscriber) {
-		RACSerialDisposable *serialDisposable = [[RACSerialDisposable alloc] init];
-
-		RACDisposable *sourceDisposable = [self subscribeNext:^(id x) {
-			[subscriber sendNext:x];
-		} error:^(NSError *error) {
-			[subscriber sendError:error];
-		} completed:^{
-			RACDisposable *concattedDisposable = [signal subscribe:subscriber];
-			serialDisposable.disposable = concattedDisposable;
-		}];
-
-		serialDisposable.disposable = sourceDisposable;
-		return serialDisposable;
-	}] setNameWithFormat:@&quot;[%@] -concat: %@&quot;, self.name, signal];
-}
-</code></pre>
-
-<p></p>
-      <p>
-        <a href="https://linkrober.github.io/bookshelf/2020/11/concatcatchtonevertakeuntil/" class="postShorten-excerpt_link link">阅读全文</a>
-        
-      </p>
-    </div>
-  </div>
-  
-</article>
-
-          
-            
-  
-    
-      
-        
-      
-    
-  
-
-
-  
-
-<article class="postShorten postShorten--thumbnailimg-bottom" itemscope itemType="http://schema.org/BlogPosting">
-  <div class="postShorten-wrap">
-    
-    <div class="postShorten-header">
-      <h1 class="postShorten-title" itemprop="headline">
-        <a class="link-unstyled" href="https://linkrober.github.io/bookshelf/2020/11/zip/">
-          zip
-        </a>
-      </h1>
-      
-  <div class="postShorten-meta post-meta">
-    
-      <time itemprop="datePublished" datetime="2020-11-27T00:00:00Z">
-        
-  十一月 27, 2020
-
-      </time>
-    
-    
-  
-  
-    <span>发布在</span>
-    
-      <a class="category-link" href="https://LinkRober.github.io/bookshelf/categories/ios">ios</a>
-    
-  
-
-
-  </div>
-
-    </div>
-    <div class="postShorten-excerpt" itemprop="articleBody">
-      <pre><code>RACSignal *s1 = [RACSignal createSignal:^RACDisposable *(id&lt;RACSubscriber&gt; subscriber) {
-       [subscriber sendNext:@&quot;1&quot;];
-    return nil;
-}];
-RACSignal *s2 = [RACSignal createSignal:^RACDisposable *(id&lt;RACSubscriber&gt; subscriber) {
-    [subscriber sendNext:@&quot;2&quot;];
-    return nil;
-}];
-RACSignal *s3 = [RACSignal createSignal:^RACDisposable *(id&lt;RACSubscriber&gt; subscriber) {
-    [subscriber sendNext:@&quot;3&quot;];
-    return nil;
-}];
-
-RACSignal *zs = [RACSignal zip:@[s1,s2,s3]];
-
-[zs subscribeNext:^(id x) {
-    NSLog(@&quot;%@&quot;,x);
-}];
-
-</code></pre>
-
-<p>同<code>zip</code>压缩的信号只有等所有的自信号都<code>sendNext</code>之后才会执行订阅回调。</p>
-
-<p>问题：
-1. 如何确保每个信号都发送完，才执行后压缩信号的订阅回调</p>
-
-<p></p>
-      <p>
-        <a href="https://linkrober.github.io/bookshelf/2020/11/zip/" class="postShorten-excerpt_link link">阅读全文</a>
-        
-      </p>
-    </div>
-  </div>
-  
-</article>
-
-          
-            
-  
-    
-      
-        
-      
-    
-  
-
-
-  
-
-<article class="postShorten postShorten--thumbnailimg-bottom" itemscope itemType="http://schema.org/BlogPosting">
-  <div class="postShorten-wrap">
-    
-    <div class="postShorten-header">
-      <h1 class="postShorten-title" itemprop="headline">
-        <a class="link-unstyled" href="https://linkrober.github.io/bookshelf/2020/11/%E4%BF%A1%E5%8F%B7%E4%B8%AD%E7%9A%84%E4%BF%A1%E5%8F%B7-flatten/">
-          信号中的信号-flatten
-        </a>
-      </h1>
-      
-  <div class="postShorten-meta post-meta">
-    
-      <time itemprop="datePublished" datetime="2020-11-27T00:00:00Z">
-        
-  十一月 27, 2020
-
-      </time>
-    
-    
-  
-  
-    <span>发布在</span>
-    
-      <a class="category-link" href="https://LinkRober.github.io/bookshelf/categories/ios">ios</a>
-    
-  
-
-
-  </div>
-
-    </div>
-    <div class="postShorten-excerpt" itemprop="articleBody">
-      <pre><code>    RACSignal *targetSignal = [RACSignal createSignal:^RACDisposable *(id&lt;RACSubscriber&gt; subscriber) {
-        [subscriber sendNext:@&quot;1&quot;];
-        return nil;
-    }];
-    
-    RACSignal *signal = [RACSignal createSignal:^RACDisposable *(id&lt;RACSubscriber&gt; subscriber) {
-    //发送一个信号
-        [subscriber sendNext:targetSignal];
-        return nil;
-    }];
-    
-    RACSignal *flattenSignal = [signal flatten];
-    [flattenSignal subscribeNext:^(id x) {
-        NSLog(@&quot;%@&quot;,x);//1
-    }];
-
-</code></pre>
-
-<p></p>
-      <p>
-        <a href="https://linkrober.github.io/bookshelf/2020/11/%E4%BF%A1%E5%8F%B7%E4%B8%AD%E7%9A%84%E4%BF%A1%E5%8F%B7-flatten/" class="postShorten-excerpt_link link">阅读全文</a>
-        
-      </p>
-    </div>
-  </div>
-  
-</article>
-
-          
           
   <div class="pagination-bar">
     <ul class="pagination">
@@ -728,7 +690,7 @@ RACSignal *zs = [RACSignal zip:@[s1,s2,s3]];
           </a>
         </li>
       
-      <li class="pagination-number">第 1 页 共 4 页</li>
+      <li class="pagination-number">第 1 页 共 5 页</li>
     </ul>
   </div>
 
@@ -785,6 +747,106 @@ RACSignal *zs = [RACSignal zip:@[s1,s2,s3]];
       <div class="no-result text-color-light text-center"></div>
       <div class="results">
         
+        
+          <div class="media">
+            
+            <div class="media-body">
+              <a class="link-unstyled" href="https://linkrober.github.io/bookshelf/2020/12/weak%E7%9A%84%E5%AE%9E%E7%8E%B0-sidetablesoldobj/">
+                <h3 class="media-heading">Weak的实现-&amp;SideTables()[oldObj]</h3>
+              </a>
+              <span class="media-meta">
+                <span class="media-date text-small">
+                  Dec 12, 2020
+                </span>
+              </span>
+              <div class="media-content hide-xs font-merryweather"><p><code>&amp;SideTables()[oldObj]</code>这是什么？很多人看到这里都被这操作搞蒙了，下面分三步来理解，分别是<code>SideTables()</code>、<code>[oldObj]</code>、<code>&amp;</code>。先贴上入口的代码</p>
+
+<pre><code>id oldObj;
+SideTable *oldTable;
+
+oldObj = *location;
+oldTable = &amp;SideTables()[oldObj];
+</code></pre>
+
+<p></p></div>
+            </div>
+            <div style="clear:both;"></div>
+            <hr>
+          </div>
+        
+          <div class="media">
+            
+            <div class="media-body">
+              <a class="link-unstyled" href="https://linkrober.github.io/bookshelf/2020/12/weak%E7%9A%84%E5%AE%9E%E7%8E%B0%E4%B8%80/">
+                <h3 class="media-heading">Weak的实现（一）</h3>
+              </a>
+              <span class="media-meta">
+                <span class="media-date text-small">
+                  Dec 12, 2020
+                </span>
+              </span>
+              <div class="media-content hide-xs font-merryweather"><p>本文较长查分为三段按序阅读体验更佳，第四篇为辅助阅读按需看</p>
+
+<ol>
+<li>[Weak的实现（一）]()</li>
+<li>[Weak的实现（二）]()</li>
+<li>[Weak的实现（三）]()</li>
+<li>[Weak的实现-&amp;SideTables()[oldObj]]()</li>
+</ol>
+
+<p>带着问题看源码：</p>
+
+<ol>
+<li>大家都知道weak的底层实现是一个散列表，那么散列表的结构是什么样的？</li>
+<li>散列表的key是什么，value是什么，散列函数是怎样的？</li>
+<li>通过几次查找才能找到对应的弱引用？</li>
+<li>如何查找弱引用对象的引用计数？</li>
+<li>一个对象对应一个<code>SideTable</code>表而一个<code>SideTable</code>对应多个对象，为什么这样设计</li>
+</ol>
+
+<p></p></div>
+            </div>
+            <div style="clear:both;"></div>
+            <hr>
+          </div>
+        
+          <div class="media">
+            
+            <div class="media-body">
+              <a class="link-unstyled" href="https://linkrober.github.io/bookshelf/2020/12/weak%E7%9A%84%E5%AE%9E%E7%8E%B0%E4%B8%89/">
+                <h3 class="media-heading">Weak的实现（三）</h3>
+              </a>
+              <span class="media-meta">
+                <span class="media-date text-small">
+                  Dec 12, 2020
+                </span>
+              </span>
+              <div class="media-content hide-xs font-merryweather"><h4 id="3-设置弱引用标志位">3 设置弱引用标志位</h4>
+
+<p></p></div>
+            </div>
+            <div style="clear:both;"></div>
+            <hr>
+          </div>
+        
+          <div class="media">
+            
+            <div class="media-body">
+              <a class="link-unstyled" href="https://linkrober.github.io/bookshelf/2020/12/weak%E7%9A%84%E5%AE%9E%E7%8E%B0%E4%BA%8C/">
+                <h3 class="media-heading">Weak的实现（二）</h3>
+              </a>
+              <span class="media-meta">
+                <span class="media-date text-small">
+                  Dec 12, 2020
+                </span>
+              </span>
+              <div class="media-content hide-xs font-merryweather"><h4 id="2-生成新的-weak-entry-t-插入到-weak-entries-中">2 生成新的<code>weak_entry_t</code>插入到<code>weak_entries</code>中</h4>
+
+<p></p></div>
+            </div>
+            <div style="clear:both;"></div>
+            <hr>
+          </div>
         
           <div class="media">
             
@@ -1005,124 +1067,6 @@ RACSignal *zs = [RACSignal zip:@[s1,s2,s3]];
             <hr>
           </div>
         
-          <div class="media">
-            
-            <div class="media-body">
-              <a class="link-unstyled" href="https://linkrober.github.io/bookshelf/2020/11/%E4%BF%A1%E5%8F%B7%E4%B8%AD%E7%9A%84%E4%BF%A1%E5%8F%B7-flatten/">
-                <h3 class="media-heading">信号中的信号-flatten</h3>
-              </a>
-              <span class="media-meta">
-                <span class="media-date text-small">
-                  Nov 11, 2020
-                </span>
-              </span>
-              <div class="media-content hide-xs font-merryweather"><pre><code>    RACSignal *targetSignal = [RACSignal createSignal:^RACDisposable *(id&lt;RACSubscriber&gt; subscriber) {
-        [subscriber sendNext:@&quot;1&quot;];
-        return nil;
-    }];
-    
-    RACSignal *signal = [RACSignal createSignal:^RACDisposable *(id&lt;RACSubscriber&gt; subscriber) {
-    //发送一个信号
-        [subscriber sendNext:targetSignal];
-        return nil;
-    }];
-    
-    RACSignal *flattenSignal = [signal flatten];
-    [flattenSignal subscribeNext:^(id x) {
-        NSLog(@&quot;%@&quot;,x);//1
-    }];
-
-</code></pre>
-
-<p></p></div>
-            </div>
-            <div style="clear:both;"></div>
-            <hr>
-          </div>
-        
-          <div class="media">
-            
-            <div class="media-body">
-              <a class="link-unstyled" href="https://linkrober.github.io/bookshelf/2020/11/%E5%86%B7%E4%BF%A1%E5%8F%B7%E5%92%8C%E7%83%AD%E4%BF%A1%E5%8F%B7%E6%9E%84%E5%BB%BA%E8%A7%A6%E5%8F%91%E6%B5%81%E7%A8%8B/">
-                <h3 class="media-heading">冷信号和热信号构建触发流程</h3>
-              </a>
-              <span class="media-meta">
-                <span class="media-date text-small">
-                  Nov 11, 2020
-                </span>
-              </span>
-              <div class="media-content hide-xs font-merryweather"><p>提到RAC就离不开冷热信号。在实际的开发中如果不理清两者的用法就会出问题。</p>
-
-<p>冷信号像专车，从你打车（订阅）开始，从出发地点（sendNext）发往你在的地方。它是一对一的，不会错过。</p>
-
-<p>热信号像公交车，在你等车（订阅）之前可能已经发车了（sendNext）；不仅你可以上，其他人也能上，它是一对多的；错过了这班车（假设只有一班）就没了。</p>
-
-<p></p></div>
-            </div>
-            <div style="clear:both;"></div>
-            <hr>
-          </div>
-        
-          <div class="media">
-            
-            <div class="media-body">
-              <a class="link-unstyled" href="https://linkrober.github.io/bookshelf/2020/11/%E6%96%B9%E6%B3%95%E6%9B%BF%E6%8D%A2%E5%92%8Caspects/">
-                <h3 class="media-heading">方法替换和Aspects</h3>
-              </a>
-              <span class="media-meta">
-                <span class="media-date text-small">
-                  Nov 11, 2020
-                </span>
-              </span>
-              <div class="media-content hide-xs font-merryweather"><h4 id="带着问题看文章">带着问题看文章：</h4>
-
-<p>1.常规姿势的方法替换原理是什么</p>
-
-<p>2.<code>Aspects</code>的方法替换原理是什么</p>
-
-<p>3.为什么这样下面的代码这样hook之后，所有的实例的<code>viewWillAppear:</code>也被hook了</p>
-
-<pre><code>[[UIViewController class] aspect_hookSelector:@selector(viewWillAppear:) withOptions:AspectPositionBefore usingBlock:^(){
-        
-} error:nil];
-</code></pre>
-
-<p>4.为什么<code>Aspect</code>不能hook静态方法</p>
-
-<p>5.如果用先用Aspects hook了方法A，接着又用MethodSwizzle方法（下文有）对A进行了hook，两个hook都能执行吗？
-</p></div>
-            </div>
-            <div style="clear:both;"></div>
-            <hr>
-          </div>
-        
-          <div class="media">
-            
-            <div class="media-body">
-              <a class="link-unstyled" href="https://linkrober.github.io/bookshelf/2018/05/object-c%E5%A4%9A%E7%BA%BF%E7%A8%8B%E6%80%BB%E7%BB%93/">
-                <h3 class="media-heading">Object-C多线程总结</h3>
-              </a>
-              <span class="media-meta">
-                <span class="media-date text-small">
-                  May 5, 2018
-                </span>
-              </span>
-              <div class="media-content hide-xs font-merryweather"><h3 id="目录">目录</h3>
-
-<ul>
-<li>多线程概念</li>
-<li>NSOperation</li>
-<li>GCD(Grand Central Dispatch)</li>
-<li>NSThread</li>
-<li>资源竞争</li>
-</ul>
-
-<p></p></div>
-            </div>
-            <div style="clear:both;"></div>
-            <hr>
-          </div>
-        
       </div>
     </div>
     <div class="modal-footer">
@@ -1130,7 +1074,7 @@ RACSignal *zs = [RACSignal zip:@[s1,s2,s3]];
          data-message-zero=""
          data-message-one=""
          data-message-other="">
-         27 posts found
+         31 posts found
       </p>
     </div>
   </div>

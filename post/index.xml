@@ -6,8 +6,1075 @@
     <description>Recent content in Post-rsses on 董二千</description>
     <generator>Hugo -- gohugo.io</generator>
     <language>zh-cn</language>
-    <lastBuildDate>Fri, 27 Nov 2020 00:00:00 +0000</lastBuildDate>
+    <lastBuildDate>Tue, 08 Dec 2020 00:00:00 +0000</lastBuildDate>
     <atom:link href="https://LinkRober.github.io/bookshelf/post/index.xml" rel="self" type="application/rss+xml" />
+    
+    <item>
+      <title>Weak的实现-&amp;SideTables()[oldObj]</title>
+      <link>https://linkrober.github.io/bookshelf/2020/12/weak%E7%9A%84%E5%AE%9E%E7%8E%B0-sidetablesoldobj/</link>
+      <pubDate>Tue, 08 Dec 2020 00:00:00 +0000</pubDate>
+      
+      <guid>https://linkrober.github.io/bookshelf/2020/12/weak%E7%9A%84%E5%AE%9E%E7%8E%B0-sidetablesoldobj/</guid>
+      <description>&lt;p&gt;&lt;code&gt;&amp;amp;SideTables()[oldObj]&lt;/code&gt;这是什么？很多人看到这里都被这操作搞蒙了，下面分三步来理解，分别是&lt;code&gt;SideTables()&lt;/code&gt;、&lt;code&gt;[oldObj]&lt;/code&gt;、&lt;code&gt;&amp;amp;&lt;/code&gt;。先贴上入口的代码&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;id oldObj;
+SideTable *oldTable;
+
+oldObj = *location;
+oldTable = &amp;amp;SideTables()[oldObj];
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;&lt;/p&gt;
+
+&lt;h4 id=&#34;1-理解-sidetables&#34;&gt;1. 理解&lt;code&gt;SideTables()&lt;/code&gt;&lt;/h4&gt;
+
+&lt;p&gt;首先&lt;code&gt;SideTables()&lt;/code&gt;是一个静态函数，完全体是这样的&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;static StripedMap&amp;lt;SideTable&amp;gt;&amp;amp; SideTables() {
+    return SideTablesMap.get();
+}
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;函数体里面调用了一个全局的静态变量&lt;code&gt;SideTablesMap&lt;/code&gt;的&lt;code&gt;get()&lt;/code&gt;方法，
+静态变量里面保存了所有的&lt;code&gt;SideTable&lt;/code&gt;。的声明如下：&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;static objc::ExplicitInit&amp;lt;StripedMap&amp;lt;SideTable&amp;gt;&amp;gt; SideTablesMap;
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;可以看出&lt;code&gt;SideTablesMap&lt;/code&gt;是在命名空间objc下面的一个&lt;code&gt;ExplicitInit&lt;/code&gt;类，它里面实现了&lt;code&gt;get()&lt;/code&gt;方法，如下&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;Type &amp;amp;get() {
+    return *reinterpret_cast&amp;lt;Type *&amp;gt;(_storage);
+}
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;对于不熟悉c++的理解下面这几点基本就能看懂：&lt;/p&gt;
+
+&lt;ul&gt;
+&lt;li&gt;c++ 中的引用&lt;code&gt;&amp;amp;&lt;/code&gt;，在c++中&lt;code&gt;&amp;amp;&lt;/code&gt;除了有&lt;code&gt;取地址&lt;/code&gt;的作用还可以作为&lt;code&gt;引用&lt;/code&gt;。方法返回的是一个引用，如果没有c++基础的很容易误认为返回了一个指针。&lt;/li&gt;
+&lt;li&gt;c++中的模板&lt;code&gt;template&lt;/code&gt;，泛型&lt;code&gt;Type&lt;/code&gt;是通过模板传入的，即&lt;code&gt;StripedMap&lt;/code&gt;。
+从上面声明&lt;code&gt;SideTablesMap&lt;/code&gt;的地方可以看到，这里是个模板的嵌套，&lt;code&gt;StripedMap&lt;/code&gt;是&lt;code&gt;ExplicitInit&lt;/code&gt;模板的泛型；&lt;code&gt;SideTable&lt;/code&gt;是&lt;code&gt;StripedMap&lt;/code&gt;模板的泛型。&lt;/li&gt;
+&lt;li&gt;c++中的&lt;code&gt;reinterpret_cast&amp;lt;new_type&amp;gt;(expression)
+&lt;/code&gt;，它可以将两种任何类型进行转换，新值和旧值（expression）有相同的比特位。&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;p&gt;最后用&lt;code&gt;*&lt;/code&gt;取转换后得到的地址的所保存的值，返回，所以说这里返回的不是指针。
+&lt;code&gt;Type *&lt;/code&gt;就相当于&lt;code&gt;StripedMap *&lt;/code&gt;，所以&lt;code&gt;get()&lt;/code&gt;方法返回的就是&lt;code&gt;StripedMap&lt;/code&gt;结构体实例。&lt;/p&gt;
+
+&lt;h4 id=&#34;2-理解-oldobj&#34;&gt;2. 理解&lt;code&gt;[oldObj]&lt;/code&gt;&lt;/h4&gt;
+
+&lt;p&gt;这里的&lt;code&gt;[]&lt;/code&gt;其实是对&lt;code&gt;[]&lt;/code&gt;进行了重载&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;T&amp;amp; operator[] (const void *p) { 
+        return array[indexForPointer(p)].value; 
+}
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;在&lt;code&gt;indexForPointer()&lt;/code&gt;方法里，先将结构体指针&lt;code&gt;oldObj&lt;/code&gt;转化成和其有相同比特位的地址，再进行位移、异或、去模操作得到一个从0-63位之间的&lt;code&gt;index&lt;/code&gt;，通过&lt;code&gt;index&lt;/code&gt;，拿到数组里面的&lt;code&gt;PaddedT&lt;/code&gt;结构体，返回该结构体的&lt;code&gt;value&lt;/code&gt;成员即结构体&lt;code&gt;SideTable&lt;/code&gt;。&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;static unsigned int indexForPointer(const void *p) {
+        uintptr_t addr = reinterpret_cast&amp;lt;uintptr_t&amp;gt;(p);
+        return ((addr &amp;gt;&amp;gt; 4) ^ (addr &amp;gt;&amp;gt; 9)) % StripeCount;
+}
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;pre&gt;&lt;code&gt; struct PaddedT {
+        T value alignas(CacheLineSize);
+    };
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;其实&lt;code&gt;StripedMap&lt;/code&gt;是一个以&lt;code&gt;void *p&lt;/code&gt;为&lt;code&gt;key&lt;/code&gt;，&lt;code&gt;PaddedT&lt;/code&gt;为&lt;code&gt;value&lt;/code&gt;的的表。&lt;/p&gt;
+
+&lt;h4 id=&#34;3&#34;&gt;3. &lt;code&gt;&amp;amp;&lt;/code&gt;&lt;/h4&gt;
+
+&lt;p&gt;最后对&lt;code&gt;SideTables()[oldObj]&lt;/code&gt;即&lt;code&gt;SideTable&lt;/code&gt;取地址，这样就和&lt;code&gt;SideTable *newTable;&lt;/code&gt;对上了。&lt;/p&gt;</description>
+    </item>
+    
+    <item>
+      <title>Weak的实现（一）</title>
+      <link>https://linkrober.github.io/bookshelf/2020/12/weak%E7%9A%84%E5%AE%9E%E7%8E%B0%E4%B8%80/</link>
+      <pubDate>Tue, 08 Dec 2020 00:00:00 +0000</pubDate>
+      
+      <guid>https://linkrober.github.io/bookshelf/2020/12/weak%E7%9A%84%E5%AE%9E%E7%8E%B0%E4%B8%80/</guid>
+      <description>&lt;p&gt;本文较长查分为三段按序阅读体验更佳，第四篇为辅助阅读按需看&lt;/p&gt;
+
+&lt;ol&gt;
+&lt;li&gt;[Weak的实现（一）]()&lt;/li&gt;
+&lt;li&gt;[Weak的实现（二）]()&lt;/li&gt;
+&lt;li&gt;[Weak的实现（三）]()&lt;/li&gt;
+&lt;li&gt;[Weak的实现-&amp;amp;SideTables()[oldObj]]()&lt;/li&gt;
+&lt;/ol&gt;
+
+&lt;p&gt;带着问题看源码：&lt;/p&gt;
+
+&lt;ol&gt;
+&lt;li&gt;大家都知道weak的底层实现是一个散列表，那么散列表的结构是什么样的？&lt;/li&gt;
+&lt;li&gt;散列表的key是什么，value是什么，散列函数是怎样的？&lt;/li&gt;
+&lt;li&gt;通过几次查找才能找到对应的弱引用？&lt;/li&gt;
+&lt;li&gt;如何查找弱引用对象的引用计数？&lt;/li&gt;
+&lt;li&gt;一个对象对应一个&lt;code&gt;SideTable&lt;/code&gt;表而一个&lt;code&gt;SideTable&lt;/code&gt;对应多个对象，为什么这样设计&lt;/li&gt;
+&lt;/ol&gt;
+
+&lt;p&gt;&lt;/p&gt;
+
+&lt;blockquote&gt;
+&lt;p&gt;散列表：散列表（Hash table），根据键直接方法在内存存储位置的数据结构。也就是说，它通过计算一个关于键值的函数，将所需查询的数据映射到表中一个位置来访问记录，这加快了查找速度。这个映射函数称做散列函数，存放记录的数组称做散列表。&lt;/p&gt;
+
+&lt;p&gt;散列函数：它是一个函数，如果把它定义成hash(key)，其中key表示元素的键值，在hash(key)的值表示经过散列函数计算得到的散列值&lt;/p&gt;
+&lt;/blockquote&gt;
+
+&lt;p&gt;从代码开始&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;{
+    NSObject *obj = [[NSObject alloc] init];
+    id __weak obj1 = obj;
+}
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;创建&lt;code&gt;weak&lt;/code&gt;引用的时候会走到&lt;code&gt;runtime&lt;/code&gt;的&lt;code&gt;objc_initWeak&lt;/code&gt;这个方法里面。通过符号断点可以验证。&lt;/p&gt;
+
+&lt;p&gt;&lt;code&gt;runtime&lt;/code&gt;里的入口&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;id objc_initWeak(id *location, id newObj)
+{
+    if (!newObj) {
+        *location = nil;
+        return nil;
+    }
+
+    return storeWeak&amp;lt;DontHaveOld, DoHaveNew, DoCrashIfDeallocating&amp;gt;
+        (location, (objc_object*)newObj);
+}
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;可以看到是走到了&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;/*
+@param `*location`:weak的指针地址
+@param `objc_object`:被引用的对象
+*/
+template &amp;lt;HaveOld haveOld, HaveNew haveNew,
+          CrashIfDeallocating crashIfDeallocating&amp;gt; 
+storeWeak(id *location, objc_object *newObj)
+
+{
+    //校验旧对象和新对象必须存其一
+    ASSERT(haveOld  ||  haveNew);
+    //校验如果haveNew=true，newObj不能为nil
+    if (!haveNew) ASSERT(newObj == nil);
+
+    Class previouslyInitializedClass = nil;
+    id oldObj;
+    SideTable *oldTable;
+    SideTable *newTable;
+
+    // Acquire locks for old and new values.
+    // Order by lock address to prevent lock ordering problems. 
+    // Retry if the old value changes underneath us.
+ retry:
+    if (haveOld) {
+    //如果weak ptr存在旧值，就取出旧值
+        oldObj = *location;
+        //以旧对象为析构函数的入参取出旧的SideTable
+        oldTable = &amp;amp;SideTables()[oldObj];
+    } else {
+        oldTable = nil;
+    }
+    if (haveNew) {
+     //如果weak ptr是新值，以新对象为析构函数的入参取出对应的SideTable
+        newTable = &amp;amp;SideTables()[newObj];
+    } else {
+        newTable = nil;
+    }
+    
+    //将oldTable和newTable都上锁
+    SideTable::lockTwo&amp;lt;haveOld, haveNew&amp;gt;(oldTable, newTable);
+    //校验，如果旧值对不上 goto retry
+    if (haveOld  &amp;amp;&amp;amp;  *location != oldObj) {
+        SideTable::unlockTwo&amp;lt;haveOld, haveNew&amp;gt;(oldTable, newTable);
+        goto retry;
+    }
+
+    // Prevent a deadlock between the weak reference machinery
+    // and the +initialize machinery by ensuring that no 
+    // weakly-referenced object has an un-+initialized isa.
+    //保证弱引用对象的isa非空，防止弱引用机制和+initialize 发生死锁
+    if (haveNew  &amp;amp;&amp;amp;  newObj) {
+        Class cls = newObj-&amp;gt;getIsa();
+        if (cls != previouslyInitializedClass  &amp;amp;&amp;amp;  
+            !((objc_class *)cls)-&amp;gt;isInitialized()) 
+        {
+            SideTable::unlockTwo&amp;lt;haveOld, haveNew&amp;gt;(oldTable, newTable);
+            //如果class没有初始化发送+initialized消息
+            class_initialize(cls, (id)newObj);
+
+            // If this class is finished with +initialize then we&#39;re good.
+            // If this class is still running +initialize on this thread 
+            // (i.e. +initialize called storeWeak on an instance of itself)
+            // then we may proceed but it will appear initializing and 
+            // not yet initialized to the check above.
+            // Instead set previouslyInitializedClass to recognize it on retry.
+            previouslyInitializedClass = cls;
+            //到这里class肯定已经初始化了，在走一遍
+            goto retry;
+        }
+    }
+
+    // Clean up old value, if any.
+    // 如果weak ptr之前引用了其他对象，在这里清空
+    if (haveOld) {
+    //&amp;lt;&amp;lt;1&amp;gt;&amp;gt;
+        weak_unregister_no_lock(&amp;amp;oldTable-&amp;gt;weak_table, oldObj, location);
+    }
+
+    // Assign new value, if any.
+    if (haveNew) {
+    //通过newObj和location生成一个新的weak_entry_t并插入到newObj的弱引用数组中（weak_entries）
+    //&amp;lt;&amp;lt;2&amp;gt;&amp;gt;
+        newObj = (objc_object *)
+            weak_register_no_lock(&amp;amp;newTable-&amp;gt;weak_table, (id)newObj, location, 
+                                  crashIfDeallocating);
+        // weak_register_no_lock returns nil if weak store should be rejected
+
+        // Set is-weakly-referenced bit in refcount table.
+        if (newObj  &amp;amp;&amp;amp;  !newObj-&amp;gt;isTaggedPointer()) {
+           //&amp;lt;&amp;lt;3&amp;gt;&amp;gt; 
+           newObj-&amp;gt;setWeaklyReferenced_nolock();
+        }
+
+        // Do not set *location anywhere else. That would introduce a race.
+        *location = (id)newObj;
+    }
+    else {
+        // No new value. The storage is not changed.
+    }
+    
+    SideTable::unlockTwo&amp;lt;haveOld, haveNew&amp;gt;(oldTable, newTable);
+
+    return (id)newObj;
+}
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;ul&gt;
+&lt;li&gt;获取对象所在的&lt;code&gt;SideTable&lt;/code&gt;&lt;/li&gt;
+&lt;li&gt;&lt;code&gt;isa&lt;/code&gt;非空校验，如果&lt;code&gt;isa&lt;/code&gt;没有初始化执行&lt;code&gt;class_initialize(cls, (id)newObj);&lt;/code&gt;方法&lt;/li&gt;
+&lt;li&gt;如果地址&lt;code&gt;location&lt;/code&gt;的引用对象已经存在，删除其在&lt;code&gt;weak_table_t&lt;/code&gt;表中的所有引用&lt;/li&gt;
+&lt;li&gt;注册新对象的弱引用到&lt;code&gt;weak_table_t&lt;/code&gt;表中&lt;/li&gt;
+&lt;li&gt;设置新对象的弱引用标志符为&lt;code&gt;YES&lt;/code&gt;&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;p&gt;如果对&lt;code&gt;&amp;amp;SideTables()[oldObj]&lt;/code&gt;不太理解的可以先移步&lt;a href=&#34;http://note.youdao.com/s/dIRTiheA&#34;&gt;这篇文章&lt;/a&gt;
+&amp;gt;阅读提醒：每一个&amp;lt;&amp;lt;&amp;gt;&amp;gt;中的序号后面都会扩展开讲&lt;/p&gt;
+
+&lt;h4 id=&#34;1-清除老对象的弱引表&#34;&gt;1.清除老对象的弱引表&lt;/h4&gt;
+
+&lt;pre&gt;&lt;code&gt;/** 
+ * @param weak_table 某个对象的全局weak_table.
+ * @param referent 当前对象
+ * @param referrer 当前对象的弱引用地址
+ */
+void
+weak_unregister_no_lock(weak_table_t *weak_table, id referent_id, 
+                        id *referrer_id)
+    objc_object *referent = (objc_object *)referent_id;
+    objc_object **referrer = (objc_object **)referrer_id;//二级指针 weak_ptr的地址
+
+    weak_entry_t *entry;
+
+    if (!referent) return;
+    //&amp;lt;&amp;lt;1.1&amp;gt;&amp;gt;查找referent对应的weak_entry_t
+    if ((entry = weak_entry_for_referent(weak_table, referent))) {
+        //&amp;lt;&amp;lt;1.2&amp;gt;&amp;gt;如果entry存在，删除entry
+        remove_referrer(entry, referrer);
+        bool empty = true;
+        //判断entry的动态数组referrers中是否有值
+        if (entry-&amp;gt;out_of_line()  &amp;amp;&amp;amp;  entry-&amp;gt;num_refs != 0) {
+            empty = false;
+        }
+        else {
+            //判断entry的定长数组inline_referrers中是否有值
+            for (size_t i = 0; i &amp;lt; WEAK_INLINE_COUNT; i++) {
+                if (entry-&amp;gt;inline_referrers[i]) {
+                    empty = false; 
+                    break;
+                }
+            }
+        }
+        //如果都是空的将entry从weak_table移除
+        if (empty) {
+            //&amp;lt;&amp;lt;1.3&amp;gt;&amp;gt;
+            weak_entry_remove(weak_table, entry);
+        }
+    }
+
+    // Do not set *referrer = nil. objc_storeWeak() requires that the 
+    // value not change.
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;该方法的主要目的是清除存储在&lt;code&gt;entry&lt;/code&gt;中的&lt;code&gt;weak_referrer_t&lt;/code&gt;，如果发现&lt;code&gt;entry&lt;/code&gt;中一个&lt;code&gt;weak_referrer_t&lt;/code&gt;也没有，就将整个&lt;code&gt;entry&lt;/code&gt;从&lt;code&gt;weak_table&lt;/code&gt;中移除。&lt;/p&gt;
+
+&lt;h5 id=&#34;1-1查找-referent-对应的-entry&#34;&gt;1.1查找&lt;code&gt;referent&lt;/code&gt;对应的&lt;code&gt;entry&lt;/code&gt;&lt;/h5&gt;
+
+&lt;pre&gt;&lt;code&gt;* @param weak_table 对象的weak_table 
+* @param referent 当前对象
+static weak_entry_t *
+weak_entry_for_referent(weak_table_t *weak_table, objc_object *referent)
+{
+    ASSERT(referent);
+
+    weak_entry_t *weak_entries = weak_table-&amp;gt;weak_entries;
+
+    if (!weak_entries) return nil;
+
+    size_t begin = hash_pointer(referent) &amp;amp; weak_table-&amp;gt;mask;
+    size_t index = begin;
+    size_t hash_displacement = 0;
+    while (weak_table-&amp;gt;weak_entries[index].referent != referent) {
+        index = (index+1) &amp;amp; weak_table-&amp;gt;mask;
+        if (index == begin) bad_weak_table(weak_table-&amp;gt;weak_entries);
+        hash_displacement++;
+        if (hash_displacement &amp;gt; weak_table-&amp;gt;max_hash_displacement) {
+            return nil;
+        }
+    }
+    
+    return &amp;amp;weak_table-&amp;gt;weak_entries[index];
+}
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;pre&gt;&lt;code&gt;size_t begin = hash_pointer(referent) &amp;amp; weak_table-&amp;gt;mask;
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;ul&gt;
+&lt;li&gt;通过指针的哈希方法生成的值与&lt;code&gt;weak_table-&amp;gt;mask&lt;/code&gt;进行&lt;a href=&#34;https://en.wikipedia.org/wiki/Mask_(computing)&#34;&gt;BITMASK&lt;/a&gt;操作得到一个起始值，这个等下会提一下。&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;pre&gt;&lt;code&gt;#if __LP64__
+static inline uint32_t ptr_hash(uint64_t key)
+{
+    key ^= key &amp;gt;&amp;gt; 4;
+    key *= 0x8a970be7488fda55;
+    key ^= __builtin_bswap64(key);
+    return (uint32_t)key;
+}
+#else
+static inline uint32_t ptr_hash(uint32_t key)
+{
+    key ^= key &amp;gt;&amp;gt; 4;
+    key *= 0x5052acdb;
+    key ^= __builtin_bswap32(key);
+    return key;
+}
+#endif
+
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;ul&gt;
+&lt;li&gt;每次遍历如果没在&lt;code&gt;weak_entries&lt;/code&gt;中找到&lt;code&gt;referent&lt;/code&gt;就对index加1再进行BITMASK操作。遍历一次就认为是哈希冲突一次并记录在遍历&lt;code&gt;hash_displacement&lt;/code&gt;&lt;/li&gt;
+&lt;li&gt;如果哈希冲突超过了最大值返回nil，当前对象在&lt;code&gt;weak_table&lt;/code&gt;中不存在弱引用&lt;/li&gt;
+&lt;li&gt;成功找到对应的&lt;code&gt;referent&lt;/code&gt;就返回相应的&lt;code&gt;weak_entry_t&lt;/code&gt;&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;p&gt;简单说一下&lt;strong&gt;BITMASK&lt;/strong&gt;技术:&lt;/br&gt;&lt;/p&gt;
+
+&lt;p&gt;&lt;code&gt;weak&lt;/code&gt;的实现中在对&lt;code&gt;weak_entry_t&lt;/code&gt;和&lt;code&gt;weak_referrer_t&lt;/code&gt;的遍历查找都是通过&lt;code&gt;BITMASK&lt;/code&gt;来实现的。个人猜测先经过一系列运算得到底位是表示数量的二进制数，在进行BITMASK操作。&lt;/p&gt;
+
+&lt;p&gt;在日常开发中用的不多，主要是用于对二进制位进行操作。能快速的得到我们只关心位的值。&lt;/p&gt;
+
+&lt;p&gt;|value|位操作|mask|结果|
+|-|:-:|-|:-:|
+|0x00000000|&amp;amp;|0x000000011|0|
+|0x00000001|&amp;amp;|0x000000011|1|
+|0x00000010|&amp;amp;|0x000000011|2|
+|0x00000011|&amp;amp;|0x000000011|3|
+|0x00000100|&amp;amp;|0x000000011|0|&lt;/p&gt;
+
+&lt;p&gt;可以看到如果我们只关心低两位地址，进行BITMASK就能屏蔽其他位。所以上文中的&lt;code&gt;weak_table-&amp;gt;mask&lt;/code&gt;就是&lt;code&gt;weak_table_t&lt;/code&gt;中&lt;code&gt;weak_entry_t&lt;/code&gt;的最大容量减1（从0开始算）。从&lt;code&gt;static void weak_resize(weak_table_t *weak_table, size_t new_size)&lt;/code&gt;方法中可以看出&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;...
+weak_table-&amp;gt;mask = new_size - 1;
+...
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;h4 id=&#34;理解结构体-weak-entry-t&#34;&gt;理解结构体&lt;code&gt;weak_entry_t&lt;/code&gt;&lt;/h4&gt;
+
+&lt;p&gt;在继续下去之前先看下这个结构体，要注意的是它里面有个联合体，联合体里面的两个结构体共享内存。而他们的区别在于，如果弱引用的数量不大于4个就有定长数组&lt;code&gt;inline_referrers&lt;/code&gt;，否则使用动态数组&lt;code&gt;referrers&lt;/code&gt;。&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;struct weak_entry_t {
+    DisguisedPtr&amp;lt;objc_object&amp;gt; referent;//弱引用对象
+    union {//联合体，两种结构体共占有一块内存
+        //弱引用数量大于4个用到的结构体
+        struct {
+            weak_referrer_t *referrers;
+            uintptr_t        out_of_line_ness : 2;
+            uintptr_t        num_refs : PTR_MINUS_2;
+            uintptr_t        mask;
+            uintptr_t        max_hash_displacement;
+        };
+        //弱引用数量不大于4个用到的结构体
+        struct {
+            // out_of_line_ness field is low bits of inline_referrers[1]
+            weak_referrer_t  inline_referrers[WEAK_INLINE_COUNT];
+        };
+    };
+    
+    //判断是否是用的referrers来存储弱引用指针
+    bool out_of_line() {
+        return (out_of_line_ness == REFERRERS_OUT_OF_LINE);
+    }
+    //覆盖老数据
+    weak_entry_t&amp;amp; operator=(const weak_entry_t&amp;amp; other) {
+        memcpy(this, &amp;amp;other, sizeof(other));
+        return *this;
+    }
+    //构造方法
+    weak_entry_t(objc_object *newReferent, objc_object **newReferrer)
+        : referent(newReferent)
+    {
+        inline_referrers[0] = newReferrer;
+        for (int i = 1; i &amp;lt; WEAK_INLINE_COUNT; i++) {
+            inline_referrers[i] = nil;
+        }
+    }
+};
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;这个里面存放了某个对象的所有弱引用指针，如果弱引用对象数量不超过四个就报错在结构体数组&lt;code&gt;inline_referrers&lt;/code&gt;，否则保存在&lt;code&gt;referrers&lt;/code&gt;&lt;/p&gt;
+
+&lt;h5 id=&#34;1-2删除-entry-中的-referrer&#34;&gt;1.2删除 &lt;code&gt;entry&lt;/code&gt;中的&lt;code&gt;referrer&lt;/code&gt;&lt;/h5&gt;
+
+&lt;pre&gt;&lt;code&gt;/** 
+ * @param entry 当前对象对应的weak_entry_t
+ * @param old_referrer 弱引用指针地址
+ */
+static void remove_referrer(weak_entry_t *entry, objc_object **old_referrer)
+{
+    if (! entry-&amp;gt;out_of_line()) {
+        for (size_t i = 0; i &amp;lt; WEAK_INLINE_COUNT; i++) {
+            if (entry-&amp;gt;inline_referrers[i] == old_referrer) {
+                entry-&amp;gt;inline_referrers[i] = nil;
+                return;
+            }
+        }
+        _objc_inform(&amp;quot;Attempted to unregister unknown __weak variable &amp;quot;
+                     &amp;quot;at %p. This is probably incorrect use of &amp;quot;
+                     &amp;quot;objc_storeWeak() and objc_loadWeak(). &amp;quot;
+                     &amp;quot;Break on objc_weak_error to debug.\n&amp;quot;, 
+                     old_referrer);
+        objc_weak_error();
+        return;
+    }
+
+    size_t begin = w_hash_pointer(old_referrer) &amp;amp; (entry-&amp;gt;mask);
+    size_t index = begin;
+    size_t hash_displacement = 0;
+    while (entry-&amp;gt;referrers[index] != old_referrer) {
+        index = (index+1) &amp;amp; entry-&amp;gt;mask;
+        if (index == begin) bad_weak_table(entry);
+        hash_displacement++;
+        if (hash_displacement &amp;gt; entry-&amp;gt;max_hash_displacement) {
+            _objc_inform(&amp;quot;Attempted to unregister unknown __weak variable &amp;quot;
+                         &amp;quot;at %p. This is probably incorrect use of &amp;quot;
+                         &amp;quot;objc_storeWeak() and objc_loadWeak(). &amp;quot;
+                         &amp;quot;Break on objc_weak_error to debug.\n&amp;quot;, 
+                         old_referrer);
+            objc_weak_error();
+            return;
+        }
+    }
+    entry-&amp;gt;referrers[index] = nil;
+    entry-&amp;gt;num_refs--;
+}
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;ul&gt;
+&lt;li&gt;如果定长数组&lt;code&gt;inline_referrers&lt;/code&gt;中有值且存在弱引用指针&lt;code&gt;old_referrer&lt;/code&gt;，设为nil&lt;/li&gt;
+&lt;li&gt;如果动态数组&lt;code&gt;referrers&lt;/code&gt;中有值且存在弱引用指针&lt;code&gt;old_referrer&lt;/code&gt;，设为nil,并将引用数量-1&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;h5 id=&#34;1-3-如果有必要删除对象的整个弱引用表&#34;&gt;1.3 如果有必要删除对象的整个弱引用表&lt;/h5&gt;
+
+&lt;pre&gt;&lt;code&gt;**
+ * Remove entry from the zone&#39;s table of weak references.
+ */
+static void weak_entry_remove(weak_table_t *weak_table, weak_entry_t *entry)
+{
+    // remove entry
+    if (entry-&amp;gt;out_of_line()) free(entry-&amp;gt;referrers);
+    bzero(entry, sizeof(*entry));
+
+    weak_table-&amp;gt;num_entries--;
+
+    weak_compact_maybe(weak_table);
+}
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;ul&gt;
+&lt;li&gt;如果使用的是动态数组，释放动态数组的内存&lt;/li&gt;
+&lt;li&gt;以&lt;code&gt;entry&lt;/code&gt;为起始地址的前&lt;code&gt;sizeof(*entry)&lt;/code&gt;个字节区域清零&lt;/li&gt;
+&lt;li&gt;全局&lt;code&gt;weak_table&lt;/code&gt;中，弱引用对象数量-1&lt;/li&gt;
+
+&lt;li&gt;&lt;p&gt;收缩表大小&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;// Shrink the table if it is mostly empty.
+static void weak_compact_maybe(weak_table_t *weak_table)
+{
+size_t old_size = TABLE_SIZE(weak_table);
+
+// Shrink if larger than 1024 buckets and at most 1/16 full.
+if (old_size &amp;gt;= 1024  &amp;amp;&amp;amp; old_size / 16 &amp;gt;= weak_table-&amp;gt;num_entries) {
+    weak_resize(weak_table, old_size / 8);
+    // leaves new table no more than 1/2 full
+}
+}
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;如果&lt;code&gt;weak_table&lt;/code&gt;内存占用超过&lt;strong&gt;1024&lt;/strong&gt;字节且内存的1/16比弱引用对象的数量还多就收缩表大小，使其不大于原来的&lt;strong&gt;&lt;sup&gt;1&lt;/sup&gt;&amp;frasl;&lt;sub&gt;2&lt;/sub&gt;&lt;/strong&gt;。&lt;/p&gt;&lt;/li&gt;
+&lt;/ul&gt;</description>
+    </item>
+    
+    <item>
+      <title>Weak的实现（三）</title>
+      <link>https://linkrober.github.io/bookshelf/2020/12/weak%E7%9A%84%E5%AE%9E%E7%8E%B0%E4%B8%89/</link>
+      <pubDate>Tue, 08 Dec 2020 00:00:00 +0000</pubDate>
+      
+      <guid>https://linkrober.github.io/bookshelf/2020/12/weak%E7%9A%84%E5%AE%9E%E7%8E%B0%E4%B8%89/</guid>
+      <description>&lt;h4 id=&#34;3-设置弱引用标志位&#34;&gt;3 设置弱引用标志位&lt;/h4&gt;
+
+&lt;p&gt;&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;inline void
+objc_object::setWeaklyReferenced_nolock()
+{
+ retry:
+    //去对象的isa指针
+    isa_t oldisa = LoadExclusive(&amp;amp;isa.bits);
+    isa_t newisa = oldisa;
+    //如果不是non-pointer
+    if (slowpath(!newisa.nonpointer)) {
+        ClearExclusive(&amp;amp;isa.bits);
+        //&amp;lt;&amp;lt;3.1&amp;gt;&amp;gt;
+        sidetable_setWeaklyReferenced_nolock();
+        return;
+    }
+    if (newisa.weakly_referenced) {
+        ClearExclusive(&amp;amp;isa.bits);
+        return;
+    }
+    //弱引用标志位设为1
+    newisa.weakly_referenced = true;
+    //如果oldisa.bits和newisa.bits不相等返回NO，继续tery里面的内容，这时候newisa.weakly_referenced已经是true了，所以return
+    if (!StoreExclusive(&amp;amp;isa.bits, oldisa.bits, newisa.bits)) goto retry;
+}
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;设置nonpointer类型的isa和非nonpointer类型的isa的弱引用位为1&lt;/p&gt;
+
+&lt;h5 id=&#34;3-1-设置nonpointer的isa指针的弱引用标志位&#34;&gt;3.1 设置nonpointer的isa指针的弱引用标志位&lt;/h5&gt;
+
+&lt;pre&gt;&lt;code&gt;void 
+objc_object::sidetable_setWeaklyReferenced_nolock()
+{
+#if SUPPORT_NONPOINTER_ISA
+    ASSERT(!isa.nonpointer);
+#endif
+
+    SideTable&amp;amp; table = SideTables()[this];
+    table.refcnts[this] |= SIDE_TABLE_WEAKLY_REFERENCED;
+}
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;&lt;code&gt;RefcountMap&lt;/code&gt;，也是哈希表&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;typedef objc::DenseMap&amp;lt;DisguisedPtr&amp;lt;objc_object&amp;gt;,size_t,RefcountMapValuePurgeable&amp;gt; RefcountMap;
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;key是&lt;code&gt;DisguisedPtr&amp;lt;objc_object&amp;gt;&lt;/code&gt;即&lt;code&gt;weak_referrer_t&lt;/code&gt;，弱引用对象，value是&lt;code&gt;size_t&lt;/code&gt;，弱引用数量&lt;/p&gt;
+
+&lt;p&gt;这里将&lt;code&gt;table.refcnts[this]&lt;/code&gt;即最后一位与SIDE_TABLE_WEAKLY_REFERENCED进行位或操作，这时候弱引用标志位变成&lt;strong&gt;1&lt;/strong&gt;。&lt;/p&gt;
+
+&lt;h4 id=&#34;答题&#34;&gt;答题&lt;/h4&gt;
+
+&lt;p&gt;问题1、2、3、5我们放在一起回答&lt;/p&gt;
+
+&lt;ol&gt;
+&lt;li&gt;大家都知道weak的底层实现是一个散列表，那么散列表的结构是什么样的？&lt;/li&gt;
+&lt;li&gt;散列表的key是什么，value是什么，散列函数是怎样的？&lt;/li&gt;
+&lt;li&gt;通过几次查找才能找到对应的弱引用？&lt;/li&gt;
+&lt;li&gt;一个对象对应一个&lt;code&gt;SideTable&lt;/code&gt;表而一个&lt;code&gt;SideTable&lt;/code&gt;对应多个对象，为什么这样设计&lt;/li&gt;
+&lt;/ol&gt;
+
+&lt;p&gt;大概的讲是一个散列表&lt;code&gt;SideTablesMap&lt;/code&gt;，以对象为&lt;code&gt;key&lt;/code&gt;,&lt;code&gt;SideTable&lt;/code&gt;为&lt;code&gt;value&lt;/code&gt;。散列函数是&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;static unsigned int indexForPointer(const void *p) {
+        uintptr_t addr = reinterpret_cast&amp;lt;uintptr_t&amp;gt;(p);
+        return ((addr &amp;gt;&amp;gt; 4) ^ (addr &amp;gt;&amp;gt; 9)) % StripeCount;
+}
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;但这只是开始，它取到的是很多对象弱引用表的集合。要想准确的找到某个对象的弱引位置用还要经过两步。&lt;/p&gt;
+
+&lt;ul&gt;
+&lt;li&gt;以对象为key，经过一系列运算（位运算，算数运算），最后通过BITMASK找到&lt;code&gt;weak_entries&lt;/code&gt;的入口&lt;code&gt;index&lt;/code&gt;开始变量，判断对象是否相等。最后才能找到对象所在的&lt;code&gt;weak_entry_t&lt;/code&gt;。&lt;/li&gt;
+&lt;li&gt;因为&lt;code&gt;weak_entry_t&lt;/code&gt;这里面保存了对象的所有有弱引用，要找到指定的，还要经历和上述类似的操作对比&lt;code&gt;old_referrer&lt;/code&gt;才能找到正真的弱引用&lt;code&gt;weak_referrer_t&lt;/code&gt;位置。&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;p&gt;所以经过3次查找才能找到正真的弱引用。&lt;/p&gt;
+
+&lt;p&gt;为什么苹果要创建64个&lt;code&gt;SideTable&lt;/code&gt;（在iphone上是8个，其他上面是64个），而不是用一个SideTable解决呢。简单的类比，大家都在火车站或者飞机场打过出租车吧，当你前面的队伍黑压压的一片看不到头你是不是希望多开几个出租车上车点。使用多个&lt;code&gt;SideTable&lt;/code&gt;也是这个原理提高弱引用的索引速度。&lt;/p&gt;
+
+&lt;p&gt;还有一点，我想提下，在整个过程中有两次扩容，一次收缩容量。它们都是动态的。分别是在
+- &lt;code&gt;weak_unregister_no_lock&lt;/code&gt;的时候，收缩&lt;code&gt;weak_table_t&lt;/code&gt;的容量&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;// Shrink the table if it is mostly empty.
+static void weak_compact_maybe(weak_table_t *weak_table)
+{
+    size_t old_size = TABLE_SIZE(weak_table);
+
+    // Shrink if larger than 1024 buckets and at most 1/16 full.
+    if (old_size &amp;gt;= 1024  &amp;amp;&amp;amp; old_size / 16 &amp;gt;= weak_table-&amp;gt;num_entries) {
+        weak_resize(weak_table, old_size / 8);
+        // leaves new table no more than 1/2 full
+    }
+}
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;ul&gt;
+&lt;li&gt;&lt;p&gt;&lt;code&gt;append_referrer&lt;/code&gt;的时候增加&lt;code&gt;weak_entry_t&lt;/code&gt;中动态数组&lt;code&gt;*referrers&lt;/code&gt;的容量&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;__attribute__((noinline, used))
+static void grow_refs_and_insert(weak_entry_t *entry, 
+                             objc_object **new_referrer)
+{
+ASSERT(entry-&amp;gt;out_of_line());
+
+size_t old_size = TABLE_SIZE(entry);
+size_t new_size = old_size ? old_size * 2 : 8;
+
+size_t num_refs = entry-&amp;gt;num_refs;
+weak_referrer_t *old_refs = entry-&amp;gt;referrers;
+entry-&amp;gt;mask = new_size - 1;
+    
+entry-&amp;gt;referrers = (weak_referrer_t *)
+    calloc(TABLE_SIZE(entry), sizeof(weak_referrer_t));
+entry-&amp;gt;num_refs = 0;
+entry-&amp;gt;max_hash_displacement = 0;
+    
+for (size_t i = 0; i &amp;lt; old_size &amp;amp;&amp;amp; num_refs &amp;gt; 0; i++) {
+    if (old_refs[i] != nil) {
+        append_referrer(entry, old_refs[i]);
+        num_refs--;
+    }
+}
+// Insert
+append_referrer(entry, new_referrer);
+if (old_refs) free(old_refs);
+}
+&lt;/code&gt;&lt;/pre&gt;&lt;/li&gt;
+
+&lt;li&gt;&lt;p&gt;&lt;code&gt;weak_grow_maybe&lt;/code&gt;的时候,增加&lt;code&gt;weak_table_t&lt;/code&gt;的容量&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;static void weak_grow_maybe(weak_table_t *weak_table)
+{
+size_t old_size = TABLE_SIZE(weak_table);
+
+// Grow if at least 3/4 full.
+if (weak_table-&amp;gt;num_entries &amp;gt;= old_size * 3 / 4) {
+    weak_resize(weak_table, old_size ? old_size*2 : 64);
+}
+}
+&lt;/code&gt;&lt;/pre&gt;&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;p&gt;问题4&lt;/p&gt;
+
+&lt;ol&gt;
+&lt;li&gt;如何查找弱引用对象的引用计数？&lt;/li&gt;
+&lt;/ol&gt;
+
+&lt;pre&gt;&lt;code&gt;uintptr_t
+_objc_rootRetainCount(id obj)
+{
+    ASSERT(obj);
+
+    return obj-&amp;gt;rootRetainCount();
+}
+
+inline uintptr_t 
+objc_object::rootRetainCount()
+{
+    if (isTaggedPointer()) return (uintptr_t)this;
+
+    sidetable_lock();
+    //获取isa的比特位
+    isa_t bits = LoadExclusive(&amp;amp;isa.bits);
+    ClearExclusive(&amp;amp;isa.bits);
+    //是不是non-pointer
+    if (bits.nonpointer) {
+        //引用比特位上的引用数加1
+        uintptr_t rc = 1 + bits.extra_rc;
+        if (bits.has_sidetable_rc) {
+            //判断sidetable是否存在引用计数，如果存在继续相加
+            rc += sidetable_getExtraRC_nolock();
+        }
+        sidetable_unlock();
+        return rc;
+    }
+
+    sidetable_unlock();
+    return sidetable_retainCount();
+}
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;从&lt;code&gt;rootRetainCount&lt;/code&gt;源码可以看出，弱引用的引用计数分布在两个地方，一个是&lt;code&gt;isa&lt;/code&gt;的比特位中，还有一个在&lt;code&gt;SideTable&lt;/code&gt;中。它们相加才是对象的引用计数的数量。&lt;/p&gt;
+
+&lt;p&gt;最后祭上Weak的类图和四层存储结构图，结构图中有获取对应层级所用到的算法
+&lt;img src=&#34;https://note.youdao.com/yws/api/personal/file/WEBe05b83f81e4040473f0385979441c881?method=download&amp;amp;shareKey=028270cc018dcad1590865e61eb2624c&#34; alt=&#34;&#34; /&gt;
+&lt;img src=&#34;https://note.youdao.com/yws/api/personal/file/WEB97fdb40aae006524c1682b57022200cd?method=download&amp;amp;shareKey=ec82da0a1b701817110cc4a24494437a&#34; alt=&#34;&#34; /&gt;&lt;/p&gt;
+
+&lt;p&gt;参考：&lt;/p&gt;
+
+&lt;p&gt;&lt;a href=&#34;https://www.jianshu.com/p/ef6d9bf8fe59&#34;&gt;iOS管理对象内存的数据结构以及操作算法&amp;ndash;SideTables、RefcountMap、weak_table_t-一
+&lt;/a&gt;&lt;/p&gt;
+
+&lt;p&gt;&lt;a href=&#34;https://www.leewong.cn/2020/08/16/sidetablestructure/&#34;&gt;SideTable结构
+&lt;/a&gt;&lt;/p&gt;</description>
+    </item>
+    
+    <item>
+      <title>Weak的实现（二）</title>
+      <link>https://linkrober.github.io/bookshelf/2020/12/weak%E7%9A%84%E5%AE%9E%E7%8E%B0%E4%BA%8C/</link>
+      <pubDate>Tue, 08 Dec 2020 00:00:00 +0000</pubDate>
+      
+      <guid>https://linkrober.github.io/bookshelf/2020/12/weak%E7%9A%84%E5%AE%9E%E7%8E%B0%E4%BA%8C/</guid>
+      <description>&lt;h4 id=&#34;2-生成新的-weak-entry-t-插入到-weak-entries-中&#34;&gt;2 生成新的&lt;code&gt;weak_entry_t&lt;/code&gt;插入到&lt;code&gt;weak_entries&lt;/code&gt;中&lt;/h4&gt;
+
+&lt;p&gt;&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;/** 
+ * Registers a new (object, weak pointer) pair. Creates a new weak
+ * object entry if it does not exist.
+ * 
+ * @param weak_table The global weak table.弱引用全局表
+ * @param referent The object pointed to by the weak reference. 弱引用对象
+ * @param referrer The weak pointer address. 弱引用指针地址
+ */
+id 
+weak_register_no_lock(weak_table_t *weak_table, id referent_id, 
+                      id *referrer_id, bool crashIfDeallocating)
+{
+    objc_object *referent = (objc_object *)referent_id;
+    objc_object **referrer = (objc_object **)referrer_id;
+
+    if (!referent  ||  referent-&amp;gt;isTaggedPointer()) return referent_id;
+
+    // ensure that the referenced object is viable
+    // 判断对象是否正在释放或者是否支持弱引用
+    bool deallocating;
+    if (!referent-&amp;gt;ISA()-&amp;gt;hasCustomRR()) {
+        deallocating = referent-&amp;gt;rootIsDeallocating();
+    }
+    else {
+        BOOL (*allowsWeakReference)(objc_object *, SEL) = 
+            (BOOL(*)(objc_object *, SEL))
+            object_getMethodImplementation((id)referent, 
+                                           @selector(allowsWeakReference));
+        if ((IMP)allowsWeakReference == _objc_msgForward) {
+            return nil;
+        }
+        deallocating =
+            ! (*allowsWeakReference)(referent, @selector(allowsWeakReference));
+    }
+
+    if (deallocating) {
+        if (crashIfDeallocating) {
+            _objc_fatal(&amp;quot;Cannot form weak reference to instance (%p) of &amp;quot;
+                        &amp;quot;class %s. It is possible that this object was &amp;quot;
+                        &amp;quot;over-released, or is in the process of deallocation.&amp;quot;,
+                        (void*)referent, object_getClassName((id)referent));
+        } else {
+            return nil;
+        }
+    }
+
+    // now remember it and where it is being stored
+    // 如果对象已经在weak_table中存在弱引用记录，就原来的entry上面追加
+    weak_entry_t *entry;
+    //&amp;lt;&amp;lt;1.1&amp;gt;&amp;gt;
+    if ((entry = weak_entry_for_referent(weak_table, referent))) {
+    //&amp;lt;&amp;lt;2.1&amp;gt;&amp;gt;
+        append_referrer(entry, referrer);
+    } 
+    else {
+        //创建新的entry，添加到weak_table中
+        //&amp;lt;&amp;lt;2.2&amp;gt;&amp;gt;
+        weak_entry_t new_entry(referent, referrer);
+        //&amp;lt;&amp;lt;2.3&amp;gt;&amp;gt;
+        weak_grow_maybe(weak_table);
+        //&amp;lt;&amp;lt;2.4&amp;gt;&amp;gt;
+        weak_entry_insert(weak_table, &amp;amp;new_entry);
+    }
+
+    // Do not set *referrer. objc_storeWeak() requires that the 
+    // value not change.
+
+    return referent_id;
+}
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;h5 id=&#34;2-1-在-weak-entry-t-添加新的弱引用-weak-referrer-t&#34;&gt;2.1 在&lt;code&gt;weak_entry_t&lt;/code&gt;添加新的弱引用&lt;code&gt;weak_referrer_t&lt;/code&gt;&lt;/h5&gt;
+
+&lt;pre&gt;&lt;code&gt;/** 
+ * Add the given referrer to set of weak pointers in this entry.
+ * Does not perform duplicate checking (b/c weak pointers are never
+ * added to a set twice). 
+ *
+ * @param entry The entry holding the set of weak pointers. 某个类的弱引用表
+ * @param new_referrer The new weak pointer to be added.新的弱引用
+ */
+static void append_referrer(weak_entry_t *entry, objc_object **new_referrer)
+{
+    //如果inline_referrers中还能存放weak_referrer_t就放在inline_referrers里面
+    if (! entry-&amp;gt;out_of_line()) {
+        // Try to insert inline.
+        for (size_t i = 0; i &amp;lt; WEAK_INLINE_COUNT; i++) {
+            if (entry-&amp;gt;inline_referrers[i] == nil) {
+                entry-&amp;gt;inline_referrers[i] = new_referrer;
+                return;
+            }
+        }
+
+        // Couldn&#39;t insert inline. Allocate out of line.
+        // 如果放不下了，就创建把所有的weak_referrer_t挪到referrers中
+        weak_referrer_t *new_referrers = (weak_referrer_t *)
+            calloc(WEAK_INLINE_COUNT, sizeof(weak_referrer_t));
+        // This constructed table is invalid, but grow_refs_and_insert
+        // will fix it and rehash it.
+        for (size_t i = 0; i &amp;lt; WEAK_INLINE_COUNT; i++) {
+            new_referrers[i] = entry-&amp;gt;inline_referrers[i];
+        }
+        entry-&amp;gt;referrers = new_referrers;
+        entry-&amp;gt;num_refs = WEAK_INLINE_COUNT;
+        entry-&amp;gt;out_of_line_ness = REFERRERS_OUT_OF_LINE;
+        entry-&amp;gt;mask = WEAK_INLINE_COUNT-1;
+        entry-&amp;gt;max_hash_displacement = 0;
+    }
+
+    ASSERT(entry-&amp;gt;out_of_line());
+    // 如果引用数量超过表内存的3/4就自动扩容
+    if (entry-&amp;gt;num_refs &amp;gt;= TABLE_SIZE(entry) * 3/4) {
+        //&amp;lt;&amp;lt;2.1.1&amp;gt;&amp;gt;
+        return grow_refs_and_insert(entry, new_referrer);
+    }
+    //在referrers中找到一个值为nil的weak_referrer_t对象，用新的弱引用对其赋值，并自增数量
+    size_t begin = w_hash_pointer(new_referrer) &amp;amp; (entry-&amp;gt;mask);
+    size_t index = begin;
+    size_t hash_displacement = 0;
+    while (entry-&amp;gt;referrers[index] != nil) {
+        hash_displacement++;
+        index = (index+1) &amp;amp; entry-&amp;gt;mask;
+        if (index == begin) bad_weak_table(entry);
+    }
+    if (hash_displacement &amp;gt; entry-&amp;gt;max_hash_displacement) {
+        entry-&amp;gt;max_hash_displacement = hash_displacement;
+    }
+    weak_referrer_t &amp;amp;ref = entry-&amp;gt;referrers[index];
+    ref = new_referrer;
+    entry-&amp;gt;num_refs++;
+}
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;如果&lt;code&gt;weak_table_t&lt;/code&gt;中存在当前对象的弱引用记录&lt;code&gt;weak_entry_t&lt;/code&gt;，使用该方法在&lt;code&gt;weak_entry_t&lt;/code&gt;添加新的&lt;code&gt;weak_referrer_t&lt;/code&gt;。
+- 如果&lt;code&gt;weak_entry_t&lt;/code&gt;中的&lt;code&gt;weak_referrer_t&lt;/code&gt;数量不超过4个，即&lt;code&gt;weak_referrer_t&lt;/code&gt;用还保存在&lt;code&gt;inline_referrers&lt;/code&gt;中，就将其添加到&lt;code&gt;inline_referrers&lt;/code&gt;中；
+- 如果刚好满4个，就将所有的&lt;code&gt;weak_referrer_t&lt;/code&gt;从定长数组&lt;code&gt;inline_referrers&lt;/code&gt;中取出，开辟新的空间，存储到动态数组&lt;code&gt;referrers&lt;/code&gt;中来记录引用
+- 如果&lt;code&gt;weak_referrer_t&lt;/code&gt;的数量大于表内存大小的3/4，自动扩容&amp;lt;&lt;2.2.1&gt;&amp;gt;
+- 在&lt;code&gt;referrers&lt;/code&gt;找到第一个为nil的&lt;code&gt;weak_referrer_t&lt;/code&gt;指针，新的&lt;code&gt;weak_referrer_t&lt;/code&gt;赋值给它，引用计数自增。&lt;/p&gt;
+
+&lt;h5 id=&#34;2-1-1-增加某个对象弱引用表的容量&#34;&gt;2.1.1 增加某个对象弱引用表的容量&lt;/h5&gt;
+
+&lt;pre&gt;&lt;code&gt;/** 
+ * Grow the entry&#39;s hash table of referrers. Rehashes each
+ * of the referrers.
+ * 
+ * @param entry Weak pointer hash set for a particular object.某个对象的弱引用表
+ */
+__attribute__((noinline, used))
+static void grow_refs_and_insert(weak_entry_t *entry, 
+                                 objc_object **new_referrer)
+{
+    ASSERT(entry-&amp;gt;out_of_line());
+    //原来表大小
+    size_t old_size = TABLE_SIZE(entry);
+    //新表大小，old_size大于0，新size就变成原来大小的两倍，否则就8个字节大小
+    size_t new_size = old_size ? old_size * 2 : 8;
+
+    //原来的弱引用数量
+    size_t num_refs = entry-&amp;gt;num_refs;
+    //原来的弱引用数组
+    weak_referrer_t *old_refs = entry-&amp;gt;referrers;
+    //新的mask
+    entry-&amp;gt;mask = new_size - 1;
+    
+    //重新分配entry的内存
+    entry-&amp;gt;referrers = (weak_referrer_t *)
+        calloc(TABLE_SIZE(entry), sizeof(weak_referrer_t));
+    entry-&amp;gt;num_refs = 0;
+    entry-&amp;gt;max_hash_displacement = 0;
+    
+    //先将老的引用全部插入到新的数组里面
+    for (size_t i = 0; i &amp;lt; old_size &amp;amp;&amp;amp; num_refs &amp;gt; 0; i++) {
+        if (old_refs[i] != nil) {
+            //递归调用 插入weak_referrer_t
+            append_referrer(entry, old_refs[i]);
+            num_refs--;
+        }
+    }
+    // Insert
+    // 最后插入新加入的弱引用
+    append_referrer(entry, new_referrer);
+    if (old_refs) free(old_refs);
+}
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;此方法重新定义了对象弱引用表&lt;code&gt;weak_entry_t&lt;/code&gt;的大小
+1. 原来的表大小等于0，就分配8个字节
+2. 如果原来表大小大于0，就分配原来大小2倍的字节
+3. 然后为&lt;code&gt;referrers&lt;/code&gt;重新分配内存，先将老的&lt;code&gt;weak_entry_t&lt;/code&gt;迁移过去，再插入新的&lt;code&gt;weak_entry_t&lt;/code&gt;。通过递归调用&lt;code&gt;append_referrer&lt;/code&gt;实现插入数据&lt;/p&gt;
+
+&lt;h5 id=&#34;2-2-创建新的-weak-entry-t&#34;&gt;2.2 创建新的&lt;code&gt;weak_entry_t&lt;/code&gt;&lt;/h5&gt;
+
+&lt;pre&gt;&lt;code&gt;    weak_entry_t(objc_object *newReferent, objc_object **newReferrer)
+        : referent(newReferent)
+    {
+        inline_referrers[0] = newReferrer;
+        for (int i = 1; i &amp;lt; WEAK_INLINE_COUNT; i++) {
+            inline_referrers[i] = nil;
+        }
+    }
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;如果对象还没有弱引用表&lt;code&gt;weak_entry_t&lt;/code&gt;就该对象建一个新的，从源码可看出&lt;code&gt;newReferrer&lt;/code&gt;先保存在&lt;code&gt;inline_referrers&lt;/code&gt;中&lt;/p&gt;
+
+&lt;h5 id=&#34;2-3-weak-table-t-的扩容&#34;&gt;2.3 &lt;code&gt;weak_table_t&lt;/code&gt;的扩容&lt;/h5&gt;
+
+&lt;pre&gt;&lt;code&gt;// Grow the given zone&#39;s table of weak references if it is full.
+static void weak_grow_maybe(weak_table_t *weak_table)
+{
+    size_t old_size = TABLE_SIZE(weak_table);
+
+    // Grow if at least 3/4 full.
+    if (weak_table-&amp;gt;num_entries &amp;gt;= old_size * 3 / 4) {
+        //&amp;lt;&amp;lt;2.3.1&amp;gt;&amp;gt;
+        weak_resize(weak_table, old_size ? old_size*2 : 64);
+    }
+}
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;如果&lt;code&gt;weak_table&lt;/code&gt;中&lt;code&gt;num_entries&lt;/code&gt;数组的数量大于其内存大小的3/4就开始为&lt;code&gt;weak_table&lt;/code&gt;扩容
+ - oldsize大于0，扩容为原来大小的两倍
+ - 否则分配64字节&lt;/p&gt;
+
+&lt;h5 id=&#34;2-3-1-weak-resize&#34;&gt;2.3.1 weak_resize&lt;/h5&gt;
+
+&lt;pre&gt;&lt;code&gt;static void weak_resize(weak_table_t *weak_table, size_t new_size)
+{
+    size_t old_size = TABLE_SIZE(weak_table);
+
+    weak_entry_t *old_entries = weak_table-&amp;gt;weak_entries;
+    weak_entry_t *new_entries = (weak_entry_t *)
+        calloc(new_size, sizeof(weak_entry_t));
+
+    weak_table-&amp;gt;mask = new_size - 1;
+    weak_table-&amp;gt;weak_entries = new_entries;
+    weak_table-&amp;gt;max_hash_displacement = 0;
+    weak_table-&amp;gt;num_entries = 0;  // restored by weak_entry_insert below
+    
+    if (old_entries) {
+        weak_entry_t *entry;
+        weak_entry_t *end = old_entries + old_size;
+        for (entry = old_entries; entry &amp;lt; end; entry++) {
+            if (entry-&amp;gt;referent) {
+                //&amp;lt;&amp;lt;2.3.1.1&amp;gt;&amp;gt;
+                weak_entry_insert(weak_table, entry);
+            }
+        }
+        free(old_entries);
+    }
+}
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;ul&gt;
+&lt;li&gt;创建新的指针数组&lt;code&gt;new_entries&lt;/code&gt;，分配新的大小&lt;/li&gt;
+&lt;li&gt;遍历将老的数据迁移到新的数组中&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;h5 id=&#34;2-3-1-1-向-weak-table-t-中插入-weak-entry-t&#34;&gt;2.3.1.1 向&lt;code&gt;weak_table_t&lt;/code&gt;中插入&lt;code&gt;weak_entry_t&lt;/code&gt;&lt;/h5&gt;
+
+&lt;pre&gt;&lt;code&gt;/** 
+ * Add new_entry to the object&#39;s table of weak references.
+ * Does not check whether the referent is already in the table.
+ */
+static void weak_entry_insert(weak_table_t *weak_table, weak_entry_t *new_entry)
+{
+    weak_entry_t *weak_entries = weak_table-&amp;gt;weak_entries;
+    ASSERT(weak_entries != nil);
+
+    size_t begin = hash_pointer(new_entry-&amp;gt;referent) &amp;amp; (weak_table-&amp;gt;mask);
+    size_t index = begin;
+    size_t hash_displacement = 0;
+    while (weak_entries[index].referent != nil) {
+        index = (index+1) &amp;amp; weak_table-&amp;gt;mask;
+        if (index == begin) bad_weak_table(weak_entries);
+        hash_displacement++;
+    }
+
+    weak_entries[index] = *new_entry;
+    weak_table-&amp;gt;num_entries++;
+
+    if (hash_displacement &amp;gt; weak_table-&amp;gt;max_hash_displacement) {
+        weak_table-&amp;gt;max_hash_displacement = hash_displacement;
+    }
+}
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;还是通过BITMASK来遍历所有的&lt;code&gt;weak_entry_t&lt;/code&gt;，直到有一个&lt;code&gt;referent&lt;/code&gt;为nil,就将新的&lt;code&gt;weak_entry_t&lt;/code&gt;赋值给它。&lt;/p&gt;
+
+&lt;h5 id=&#34;2-4-将对象的新-weak-entry-t-插入到-weak-table-t-中&#34;&gt;2.4 将对象的新&lt;code&gt;weak_entry_t&lt;/code&gt;插入到&lt;code&gt;weak_table_t&lt;/code&gt;中&lt;/h5&gt;
+
+&lt;pre&gt;&lt;code&gt;/** 
+ * Add new_entry to the object&#39;s table of weak references.
+ * Does not check whether the referent is already in the table.
+ */
+static void weak_entry_insert(weak_table_t *weak_table, weak_entry_t *new_entry)
+{
+    weak_entry_t *weak_entries = weak_table-&amp;gt;weak_entries;
+    ASSERT(weak_entries != nil);
+    //遍历weak_entries，直到weak_entries[index].referent为nil
+    size_t begin = hash_pointer(new_entry-&amp;gt;referent) &amp;amp; (weak_table-&amp;gt;mask);
+    size_t index = begin;
+    size_t hash_displacement = 0;
+    while (weak_entries[index].referent != nil) {
+        index = (index+1) &amp;amp; weak_table-&amp;gt;mask;
+        if (index == begin) bad_weak_table(weak_entries);
+        hash_displacement++;
+    }
+    //将新的数据赋值给referent为nil的指针
+    weak_entries[index] = *new_entry;
+    //weak_entry_t数量+1
+    weak_table-&amp;gt;num_entries++;
+    //更新max_hash_displacement
+    if (hash_displacement &amp;gt; weak_table-&amp;gt;max_hash_displacement) {
+        weak_table-&amp;gt;max_hash_displacement = hash_displacement;
+    }
+}
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;ul&gt;
+&lt;li&gt;遍历&lt;code&gt;weak_table_t&lt;/code&gt;中的&lt;code&gt;weak_entries&lt;/code&gt;，直到有一个&lt;code&gt;weak_entry_t&lt;/code&gt;的为&lt;code&gt;referent&lt;/code&gt;为&lt;code&gt;nil&lt;/code&gt;&lt;/li&gt;
+&lt;li&gt;将新的&lt;code&gt;weak_entry_t&lt;/code&gt;赋值给&lt;code&gt;referent&lt;/code&gt;为&lt;code&gt;nil&lt;/code&gt;的&lt;code&gt;weak_entry_t&lt;/code&gt;&lt;/li&gt;
+&lt;li&gt;更新&lt;code&gt;num_entries&lt;/code&gt;和&lt;code&gt;max_hash_displacement&lt;/code&gt;的数量&lt;/li&gt;
+&lt;/ul&gt;</description>
+    </item>
     
     <item>
       <title>CombineLatest、Zip和Merge的区别</title>
@@ -2253,865 +3320,6 @@ module.exports = router;
 &lt;p&gt;使用它可以很方便的启动、停止和监控进程。刚开始重新发布接口的时候，都需要停止服务，kill进程，再次启动服务，有了pm2只要&lt;code&gt;pm2 restart 进程名&lt;/code&gt;&lt;/p&gt;
 
 &lt;p&gt;以上是我最近一段时间小程序之旅的总结，希望对你有所帮助。&lt;/p&gt;</description>
-    </item>
-    
-    <item>
-      <title>递归</title>
-      <link>https://linkrober.github.io/bookshelf/2018/02/%E9%80%92%E5%BD%92/</link>
-      <pubDate>Fri, 02 Feb 2018 00:00:00 +0000</pubDate>
-      
-      <guid>https://linkrober.github.io/bookshelf/2018/02/%E9%80%92%E5%BD%92/</guid>
-      <description>&lt;p&gt;&lt;/b&gt;
-&lt;span class=&#34;highlight-text primary&#34;&gt;
-基本思想
-&lt;/span&gt;&lt;/p&gt;
-
-&lt;p&gt;递归是一种直接或者间接调用自身函数或者方法的算法。递归的实质是把问题分解成规模缩小的同类问题的子问题，然后递归调用方法来表示问题的解。递归算法，其实就是程序的自身调用。在一段程序中往往会遇到调用自身的那样一种coding策略。递归往往能带来非常简洁非常直观的代码形式，从而使我们的编码大大简化，但是递归的思想确实和我们的常规思维相逆。我们通常是从上而下的思考问题，而递归是从下往上进行思考。这样我们就能看到我们会用很少的语句解决很大的问题，所以递归策略最主要的体现就是较少的代码量解决复杂的问题。&lt;/p&gt;
-
-&lt;p&gt;&lt;/p&gt;
-
-&lt;p&gt;&lt;/b&gt;
-&lt;span class=&#34;highlight-text primary&#34;&gt;
-Example：计算阶乘
-&lt;/span&gt;
-计算阶乘是递归程序的经典示例。计算某个数的阶乘就是用那个数乘以包含1在内的比它小的所有数。例如，&lt;code&gt;factorial(6)&lt;/code&gt;等价于&lt;code&gt;6*5*4*3*2*1&lt;/code&gt;,阶乘的特性是，某个数的阶乘等于起始数乘以比它小的数的阶乘。阶乘函数：&lt;/p&gt;
-
-&lt;pre&gt;&lt;code&gt;int factorial(int n) {
-	return n * factorial(n-1);
-}
-&lt;/code&gt;&lt;/pre&gt;
-
-&lt;p&gt;但是这个函数会永远执行下去，因为它没有终止条件。所以我们需要一个条件告诉它何时停止。我们这里给出的条件就是&lt;code&gt;n == 1&lt;/code&gt;停止&lt;/p&gt;
-
-&lt;pre&gt;&lt;code&gt;int factorial(int n){
-	if(n == 1){
-		return 1;
-	}
-	else {
-		return n * factorial(n - 1);
-	}
-}
-&lt;/code&gt;&lt;/pre&gt;
-
-&lt;p&gt;流程示意图：&lt;/p&gt;
-
-&lt;p&gt;&lt;img src=&#34;../../../fact-shape.jpg&#34; alt=&#34;fact-shape&#34; /&gt;&lt;/p&gt;
-
-&lt;p&gt;&lt;/b&gt;
-&lt;span class=&#34;highlight-text primary&#34;&gt;
-Example：斐波纳契数列
-&lt;/span&gt;&lt;/p&gt;
-
-&lt;p&gt;数学上&lt;a href=&#34;https://zh.wikipedia.org/wiki/%E6%96%90%E6%B3%A2%E9%82%A3%E5%A5%91%E6%95%B0%E5%88%97&#34;&gt;斐波纳契数列&lt;/a&gt;是以递归的方式来定义的：
-&lt;img src=&#34;../../../Fibonacci Sequence.png&#34; alt=&#34;Fibonacci Sequence&#34; /&gt;&lt;/p&gt;
-
-&lt;p&gt;写成递归程序：&lt;/p&gt;
-
-&lt;pre&gt;&lt;code&gt;int Fibonacci(int n){
-    if (n &amp;lt;= 1)  
-        return n;  
-    else  
-        return Fibonacci(n-1) + Fibonacci(n-2);  
-}
-&lt;/code&gt;&lt;/pre&gt;
-
-&lt;p&gt;&lt;/b&gt;
-&lt;span class=&#34;highlight-text primary&#34;&gt;
-递归条件
-&lt;/span&gt;&lt;/p&gt;
-
-&lt;ul&gt;
-&lt;li&gt;递归开始时需要一个种子值&lt;/li&gt;
-&lt;li&gt;不断的调用自身&lt;/li&gt;
-&lt;li&gt;检查当前值是否已经匹配基本条件。如果匹配，则进行处理并返回值&lt;/li&gt;
-&lt;/ul&gt;</description>
-    </item>
-    
-    <item>
-      <title>再见2017，你好2018</title>
-      <link>https://linkrober.github.io/bookshelf/2018/01/%E5%86%8D%E8%A7%812017%E4%BD%A0%E5%A5%BD2018/</link>
-      <pubDate>Tue, 02 Jan 2018 00:00:00 +0000</pubDate>
-      
-      <guid>https://linkrober.github.io/bookshelf/2018/01/%E5%86%8D%E8%A7%812017%E4%BD%A0%E5%A5%BD2018/</guid>
-      <description>&lt;p&gt;不知不觉工作已有三个年头，在iOS这条路上，从当年战战兢兢的新人变成一个熟练的开发者，这一路走来真不容易。不仅仅是身体上的负荷，个人对于技术的追求也使自己或迷惘或奋起。&lt;/p&gt;
-
-&lt;p&gt;&lt;/p&gt;
-
-&lt;h4 id=&#34;工作&#34;&gt;工作&lt;/h4&gt;
-
-&lt;p&gt;前两年基本上都在加班赶业务做是某块业务，对于一款App从无到有如何架构的没有系统的考虑过。今年在公司的这款Wecycle视频社交App上，团队内从开发语言、设计模式、缓存策略、网络层设计、组件化方案等几个维度来架构这款App。因为前期产品架构的好，后面产品迭代大家都做的比较轻松。就像一幢大厦有了整体的框架，需要什么就往里面塞就行，定期修正下，时间久了，也不用担心楼歪了。&lt;/p&gt;
-
-&lt;p&gt;今年App做了不少，除了刚才说的还有Snapvote，一款投票App；VISO，一款视频和滤镜编辑的App。
-Wecycle是Object-C和Swift混编的工程，在这期间算是入门了苹果爸爸的新开发语言，Swfit所倡导的面相协议编程让开发人员的脑洞可以开的更大了，通过协议抽象各种应用场景着实让人兴奋了一把，在Swfit2.0之后&lt;code&gt;protocol&lt;/code&gt;的&lt;code&gt;extension&lt;/code&gt;支持默认实现，为协议插上了翅膀。感兴趣的同学不妨看看&lt;a href=&#34;https://github.com/ishkawa/APIKit&#34;&gt;&lt;code&gt;APIKit&lt;/code&gt;&lt;/a&gt;这个Swift库，它通过POP的方式在网络请求和模型解析之间给出了一个很棒的解决方案，在此不展开了。Swift的解包、写时复制、大量的值类型的使用使得我们的代码比OC时代写起来更安全。&lt;/p&gt;
-
-&lt;p&gt;Snapvote是一款简单的投票类工具App，没有用户系统，可以说是比较简单的了，所以考虑用跨平台的框架ReactNative开发，顺便练练手。一次使用两个工具（Xcode、React Native Debuger）同时调试,那叫酸爽，两个显示器都不够用。扒拉扒拉ReactNative的OC实现，Runtime、消息转发、RunLoop、多线程、线程锁一大堆的知识点，让人受益匪浅；同时又稍微学了点javascript。关于ReactNative的相关体验自己写了一个系列共四篇文章,从安装到原理的讨论，算是有个交代吧。&lt;/p&gt;
-
-&lt;ul&gt;
-&lt;li&gt;&lt;a href=&#34;https://linkrober.github.io/bookshelf/2017/10/react-native%E5%A6%82%E4%BD%95%E9%9B%86%E6%88%90%E5%88%B0%E7%8E%B0%E6%9C%89%E9%A1%B9%E7%9B%AE%E4%B8%AD/&#34;&gt;React Native如何集成到现有项目中&lt;/a&gt;&lt;/li&gt;
-&lt;li&gt;&lt;a href=&#34;https://linkrober.github.io/bookshelf/2017/10/react-native%E5%92%8Cnative%E9%97%B4%E7%9A%84%E9%80%9A%E4%BF%A1/&#34;&gt;React Native和Native间的通信实践&lt;/a&gt;&lt;/li&gt;
-&lt;li&gt;&lt;a href=&#34;https://linkrober.github.io/bookshelf/2017/10/rctrootviewrctbridge%E5%81%9A%E4%BA%86%E4%BB%80%E4%B9%88/&#34;&gt;RCTRootView、RCTBridge做了什么&lt;/a&gt;&lt;/li&gt;
-&lt;li&gt;&lt;a href=&#34;https://linkrober.github.io/bookshelf/2017/12/object-c%E5%92%8Cjs%E9%80%9A%E4%BF%A1%E6%A6%82%E8%BF%B0/&#34;&gt;Object-C和JS通信概述&lt;/a&gt;&lt;/li&gt;
-&lt;/ul&gt;
-
-&lt;p&gt;&lt;a href=&#34;https://itunes.apple.com/us/app/viso-photo-editor-collage/id1312830469?ls=1&amp;amp;mt=8&#34;&gt;VISO&lt;/a&gt;视频图片编辑的App和VISCO很像，有兴趣的同学可以体验下，期待你们的意见😄。经历了OC和Swift混编的痛苦，本来想使用纯Swift开发，但是受限于公司内部某些视频编辑库是OC写的一时半会儿没发改过来，只能写回OC了。通过这款App的开发让我对音视频的处理有了一个全面的了解。前两年一直忙于业务没有深挖OC的底层，今年花了很多时间在这上面，不仅对Runtime、RunLoop、线程、线程锁有了更深入的理解，还花时间把C又拉出来练了练。用C写了个App上的Socket服务（Ps：因为期间一直在看网络方面的书籍&lt;a href=&#34;https://read.douban.com/ebook/12054542/&#34;&gt;《图解HTTP》&lt;/a&gt;、&lt;a href=&#34;https://book.douban.com/subject/1088054/&#34;&gt;《TCP／IP详解》&lt;/a&gt;，写的时候少走了点弯路，果然是书到用时方恨少），通过浏览器访问App的某个端口实时的查看埋点数据，方便了QA的测试。&lt;/p&gt;
-
-&lt;ul&gt;
-&lt;li&gt;&lt;a href=&#34;https://linkrober.github.io/bookshelf/2017/11/%E4%B8%80%E4%B8%AA%E9%9F%B3%E8%A7%86%E9%A2%91%E5%8E%82%E7%9A%84%E5%9B%BE%E5%83%8F%E5%A4%84%E7%90%86%E6%B5%81%E7%A8%8B%E6%A6%82%E8%BF%B0/&#34;&gt;一个音视频厂的图像处理流程概述&lt;/a&gt;&lt;/li&gt;
-&lt;li&gt;&lt;a href=&#34;https://linkrober.github.io/bookshelf/2017/09/run-loops-%E4%B8%80/&#34;&gt;Run Loops (一)&lt;/a&gt;&lt;/li&gt;
-&lt;li&gt;&lt;a href=&#34;https://linkrober.github.io/bookshelf/2017/12/ios%E5%A4%9A%E7%BA%BF%E7%A8%8B%E4%B8%AD%E7%9A%84%E9%94%81/&#34;&gt;iOS多线程中的锁&lt;/a&gt;&lt;/li&gt;
-&lt;/ul&gt;
-
-&lt;h4 id=&#34;行业&#34;&gt;行业&lt;/h4&gt;
-
-&lt;p&gt;因为市场上的培训班不断的输出iOS开发者，iOS市场基本饱和，工作也不是三年前随随便便的就能找到，对技术人员的基本素养要求更高，市场正在慢慢回归到良性，挺好。 今年Javascript、Python、Java大行其道，但还是相信苹果爸爸。在OC这门语言上我会继续深入，它是一门动态的语言有很多有趣的技术是那些在编译期就决定怎么跑的语言所不具备的。学习并吸收它，让自己更透彻的了解一门语言的底层机制。对一个几年的开发人员来说，如果一门语言都不能理解的比较透彻，那是可悲的。花更多的时间熟悉Swift，今后让自己的技术能够平稳的过渡。&lt;/p&gt;
-
-&lt;p&gt;“在我们这个地方，你必须不停地奔跑，才能留在原地。” —— 《爱丽丝漫游奇境》● 红桃皇后&lt;/p&gt;
-
-&lt;h4 id=&#34;生活&#34;&gt;生活&lt;/h4&gt;
-
-&lt;p&gt;今年自己的个人生活出现了些状况，多的也不说了大家都懂。这次经历让我意识到即使是两个人已经在一起了，也不要丢失掉原来的自己，不要忘记对方是因为原来的你才想和你在一起。如果你变了，她也变了。控制自己，时刻保持优秀。无论是工作还是生活，活的精致点。&lt;/p&gt;
-
-&lt;h4 id=&#34;2017书单&#34;&gt;2017书单&lt;/h4&gt;
-
-&lt;ul&gt;
-&lt;li&gt;&lt;p&gt;《图解HTTP》&lt;/p&gt;
-
-&lt;blockquote&gt;
-&lt;p&gt;图文并茂，叙述生动。适合新手，让读者对HTTP很快形成一个整体的概念，明白为何这样设计。&lt;/p&gt;
-&lt;/blockquote&gt;&lt;/li&gt;
-
-&lt;li&gt;&lt;p&gt;《Linux Shell脚本》&lt;/p&gt;
-
-&lt;blockquote&gt;
-&lt;p&gt;当作参考书需要的时候翻翻&lt;/p&gt;
-&lt;/blockquote&gt;&lt;/li&gt;
-
-&lt;li&gt;&lt;p&gt;《Object-C高级编程（iOS和OSX多线程和内存管理）》&lt;/p&gt;
-
-&lt;blockquote&gt;
-&lt;p&gt;Autorelease、属性修饰符、block、GCD都有比较深入的理解，都是干货，适合反复阅读。&lt;/p&gt;
-&lt;/blockquote&gt;&lt;/li&gt;
-
-&lt;li&gt;&lt;p&gt;《Head First HTML》&lt;/p&gt;
-
-&lt;blockquote&gt;
-&lt;p&gt;入门推荐&lt;/p&gt;
-&lt;/blockquote&gt;&lt;/li&gt;
-
-&lt;li&gt;&lt;p&gt;《程序员的自我修养》&lt;/p&gt;
-
-&lt;blockquote&gt;
-&lt;p&gt;好书，对编译和连接有比较深入的描述，是个大菠萝，得慢慢啃。&lt;/p&gt;
-&lt;/blockquote&gt;&lt;/li&gt;
-
-&lt;li&gt;&lt;p&gt;《深入理解计算机系统》&lt;/p&gt;
-
-&lt;blockquote&gt;
-&lt;p&gt;好书，操作系统必读书籍，又是个大菠萝。&lt;/p&gt;
-&lt;/blockquote&gt;&lt;/li&gt;
-&lt;/ul&gt;</description>
-    </item>
-    
-    <item>
-      <title>Object-C和JS通信概述</title>
-      <link>https://linkrober.github.io/bookshelf/2017/12/object-c%E5%92%8Cjs%E9%80%9A%E4%BF%A1%E6%A6%82%E8%BF%B0/</link>
-      <pubDate>Mon, 25 Dec 2017 00:00:00 +0000</pubDate>
-      
-      <guid>https://linkrober.github.io/bookshelf/2017/12/object-c%E5%92%8Cjs%E9%80%9A%E4%BF%A1%E6%A6%82%E8%BF%B0/</guid>
-      <description>&lt;p&gt;本系列文章作为学习RN期间的总结&lt;/p&gt;
-
-&lt;ul&gt;
-&lt;li&gt;&lt;a href=&#34;https://linkrober.github.io/bookshelf/2017/10/react-native%E5%A6%82%E4%BD%95%E9%9B%86%E6%88%90%E5%88%B0%E7%8E%B0%E6%9C%89%E9%A1%B9%E7%9B%AE%E4%B8%AD/&#34;&gt;React Native如何集成到现有项目中&lt;/a&gt;&lt;/li&gt;
-&lt;li&gt;&lt;a href=&#34;https://linkrober.github.io/bookshelf/2017/10/react-native%E5%92%8Cnative%E9%97%B4%E7%9A%84%E9%80%9A%E4%BF%A1/&#34;&gt;React Native和Native间的通信实践&lt;/a&gt;&lt;/li&gt;
-&lt;li&gt;&lt;a href=&#34;https://linkrober.github.io/bookshelf/2017/10/rctrootviewrctbridge%E5%81%9A%E4%BA%86%E4%BB%80%E4%B9%88/&#34;&gt;RCTRootView、RCTBridge做了什么&lt;/a&gt;&lt;/li&gt;
-&lt;li&gt;Object-C和JS通信概述&lt;/li&gt;
-&lt;/ul&gt;
-
-&lt;p&gt;&lt;/p&gt;
-
-&lt;h4 id=&#34;流程梳理&#34;&gt;流程梳理&lt;/h4&gt;
-
-&lt;p&gt;&lt;img src=&#34;../../../来自JSPath作者Bang的一张流程图.png&#34; alt=&#34;来自JSPath作者Bang的一张流程图&#34; /&gt;
-首先，无论是RN端还是Native端都会持有一个bridge负责对来自不同端的模块进行桥街，再做消息处理。现附上一张来自JSPath作者Bang的图。
-RN调用某个方法向Native发送消息，方法首先会被分解成ModuleId、MethodId和参数，发送到OCBridge。那么OCBridge是如何接受的呢？（因为对JS代码不熟悉这里只讨论OC部分）&lt;/p&gt;
-
-&lt;p&gt;在第一次初始化ReactNative的时候模块信息会被初始化，包括模块名称、方法名。在注册模块的时候我们会用到&lt;code&gt;RCT_EXPORT_MODULE();&lt;/code&gt;这个宏，宏展开&lt;/p&gt;
-
-&lt;pre&gt;&lt;code&gt;#define RCT_EXPORT_MODULE(js_name) \
-RCT_EXTERN void RCTRegisterModule(Class); \
-+ (NSString *)moduleName { return @#js_name; } \
-+ (void)load { RCTRegisterModule(self); }
-&lt;/code&gt;&lt;/pre&gt;
-
-&lt;p&gt;方法1:如果自定义了模块的名称就使用自定义的名称而不是原类的名称&lt;/p&gt;
-
-&lt;p&gt;方法2:在+(void)load方法里对类进行一次注册，注册代码如下&lt;/p&gt;
-
-&lt;pre&gt;&lt;code&gt;void RCTRegisterModule(Class moduleClass)
-{
-  static dispatch_once_t onceToken;
-  dispatch_once(&amp;amp;onceToken, ^{
-    RCTModuleClasses = [NSMutableArray new];
-  });
-
-  RCTAssert([moduleClass conformsToProtocol:@protocol(RCTBridgeModule)],
-            @&amp;quot;%@ does not conform to the RCTBridgeModule protocol&amp;quot;,
-            moduleClass);
-
-  // Register module
-  [RCTModuleClasses addObject:moduleClass];
-}
-&lt;/code&gt;&lt;/pre&gt;
-
-&lt;p&gt;如果当前类遵循协议&lt;code&gt;RCTBridgeModule&lt;/code&gt;,就把它放到一个静态变量数组&lt;code&gt;RCTModuleClasses&lt;/code&gt;中。所以启动之后，所有RN需要的模块都会被动态载入。
-这些模块会被存储在三张表中&lt;code&gt;_moduleDataByName&lt;/code&gt;、&lt;code&gt;_moduleDataByID&lt;/code&gt;、&lt;code&gt;_moduleClassesByID&lt;/code&gt;,在初始化的时候通过遍历该数组来初始化。&lt;/p&gt;
-
-&lt;pre&gt;&lt;code&gt;NSDictionary&amp;lt;NSString *, RCTModuleData *&amp;gt; *_moduleDataByName;
-NSArray&amp;lt;RCTModuleData *&amp;gt; *_moduleDataByID;
-NSArray&amp;lt;Class&amp;gt; *_moduleClassesByID;
-&lt;/code&gt;&lt;/pre&gt;
-
-&lt;pre&gt;&lt;code&gt;for (Class moduleClass in RCTGetModuleClasses()) {
-    NSString *moduleName = RCTBridgeModuleNameForClass(moduleClass);
-
-    // Check for module name collisions
-    RCTModuleData *moduleData = moduleDataByName[moduleName];
-    if (moduleData) {
-      if (moduleData.hasInstance) {
-        // Existing module was preregistered, so it takes precedence
-        continue;
-      } else if ([moduleClass new] == nil) {
-        // The new module returned nil from init, so use the old module
-        continue;
-      } else if ([moduleData.moduleClass new] != nil) {
-        // Both modules were non-nil, so it&#39;s unclear which should take precedence
-        RCTLogError(@&amp;quot;Attempted to register RCTBridgeModule class %@ for the &amp;quot;
-                    &amp;quot;name &#39;%@&#39;, but name was already registered by class %@&amp;quot;,
-                    moduleClass, moduleName, moduleData.moduleClass);
-      }
-    }
-
-    // Instantiate moduleData (TODO: can we defer this until config generation?)
-    moduleData = [[RCTModuleData alloc] initWithModuleClass:moduleClass
-                                                     bridge:self];
-    moduleDataByName[moduleName] = moduleData;
-    [moduleClassesByID addObject:moduleClass];
-    [moduleDataByID addObject:moduleData];
-  }
-&lt;/code&gt;&lt;/pre&gt;
-
-&lt;p&gt;分别是模块名称、模块名称对应的对象&lt;code&gt;RCTModuleData&lt;/code&gt;、模块名称和模块对象的映射字典，方便后续使用。&lt;/p&gt;
-
-&lt;p&gt;这时候还有一个重要的东西需要处理就是callback，JSBridge在传递消息的时候会把callback缓存起来，仅仅把callbackId传递到OCBridge。
-这时候OCBridge拿到了传过来的ModuleId、MethodId、callbackId，再通过Native端的配置表分别取出模块和方法。模块会被转化为&lt;code&gt;RCTModuleData&lt;/code&gt;对象，方法都会被转化为一个&lt;code&gt;RCTModuleMethod&lt;/code&gt;对象，看一下这个对象&lt;/p&gt;
-
-&lt;pre&gt;&lt;code&gt;{
-  Class _moduleClass;
-  const RCTMethodInfo *_methodInfo;
-  NSString *_JSMethodName;
-
-  SEL _selector;
-  NSInvocation *_invocation;
-  NSArray&amp;lt;RCTArgumentBlock&amp;gt; *_argumentBlocks;
-}
-&lt;/code&gt;&lt;/pre&gt;
-
-&lt;p&gt;发现了&lt;code&gt;_moduleClass&lt;/code&gt;、&lt;code&gt;_argumentBlocks&lt;/code&gt;、&lt;code&gt;_invocation&lt;/code&gt;、&lt;code&gt;_selector&lt;/code&gt;这时候就很容易想到消息转发的最后一个阶段，将消息的目标、selector、参数封装到NSInvocation中进行消息转发。&lt;/p&gt;
-
-&lt;p&gt;刚才上面讲到模块的注册，那么方法是如何筛选的呢？注意下面的3个宏&lt;/p&gt;
-
-&lt;pre&gt;&lt;code&gt;#define RCT_EXPORT_METHOD(method) \
-  RCT_REMAP_METHOD(, method)
-&lt;/code&gt;&lt;/pre&gt;
-
-&lt;pre&gt;&lt;code&gt;#define RCT_REMAP_METHOD(js_name, method) \
-  _RCT_EXTERN_REMAP_METHOD(js_name, method, NO) \
-  - (void)method;
-&lt;/code&gt;&lt;/pre&gt;
-
-&lt;pre&gt;&lt;code&gt;#define _RCT_EXTERN_REMAP_METHOD(js_name, method, is_blocking_synchronous_method) \
-  + (const RCTMethodInfo *)RCT_CONCAT(__rct_export__, RCT_CONCAT(js_name, RCT_CONCAT(__LINE__, __COUNTER__))) { \
-    static RCTMethodInfo config = {#js_name, #method, is_blocking_synchronous_method}; \
-    return &amp;amp;config; \
-  }
-&lt;/code&gt;&lt;/pre&gt;
-
-&lt;p&gt;在我们具体定义方法的时候并没有&lt;code&gt;-(void)&lt;/code&gt;字符串前缀，因为在预编译的时候，宏会帮我们加上这段字符（看第二个宏）。
-第三个宏主要实现了字符串的拼接，&lt;code&gt;(__LINE__, __COUNTER__)&lt;/code&gt;的意思是为当前的宏生成一个唯一的tag（行数+一个数字），再和前面的&lt;code&gt;js_name&lt;/code&gt;连接，最后再和&lt;code&gt;__rct_export__&lt;/code&gt;连接，大概像这样&lt;/p&gt;
-
-&lt;pre&gt;&lt;code&gt;-(void)__rct_export__8976699MethodName{
-	//
-}
-&lt;/code&gt;&lt;/pre&gt;
-
-&lt;blockquote&gt;
-&lt;p&gt;其实&lt;strong&gt;COUNTER&lt;/strong&gt;是一个预定义的宏，这个值在编译过程中将从0开始计数，每次被调用时加1。&lt;/p&gt;
-&lt;/blockquote&gt;
-
-&lt;p&gt;所有JSBridge传过来的参数都是&lt;code&gt;NSNumber&lt;/code&gt;,OCBridge会把它们转化成基本类型和字符串。上面在提到JSBridge传参数的时候会带一个callbackId，这时候OCBridge会根据这个Id生成一个callback，保存在内存中。&lt;/p&gt;
-
-&lt;p&gt;这时候OC执行方法的调用，执行block。将参数和callbackId传到JSBridge，JSBridge根据Id找到之前缓存的JSCallback，进行调用。到这里就完成RN-Native-RN的一个闭环。&lt;/p&gt;
-
-&lt;blockquote&gt;
-&lt;p&gt;JS是怎么调用OC的呢？&lt;/p&gt;
-&lt;/blockquote&gt;
-
-&lt;p&gt;其实并不是JS调用OC，而是JS将消息放到一个消息队列里面MessageQueue，等OC来取，这里面还有很多问题值得讨论多长时间取一次；不来取怎么办。有待我们继续研究&lt;/p&gt;
-
-&lt;hr /&gt;
-
-&lt;blockquote&gt;
-&lt;p&gt;为什么OC和JS可以实现这种框架？&lt;/p&gt;
-&lt;/blockquote&gt;
-
-&lt;p&gt;要实现这个机制需要语言有动态反射的特性(OC是一门动态语言，消息和消息的target等都是在运行时决定)，即可以通过类/方法名字符串找到对应的类/方法进行调用，没有这特性就做不了。&lt;/p&gt;
-
-&lt;blockquote&gt;
-&lt;p&gt;知识点&lt;/p&gt;
-&lt;/blockquote&gt;
-
-&lt;ul&gt;
-&lt;li&gt;使用&lt;a href=&#34;https://linkrober.github.io/bookshelf/2017/09/run-loops-%E4%B8%80/&#34;&gt;RunLoop&lt;/a&gt;让JS线程常驻内存&lt;/li&gt;
-&lt;/ul&gt;
-
-&lt;pre&gt;&lt;code&gt;//RCTJSCExecutor
-
-+ (void)runRunLoopThread
-{
-  @autoreleasepool {
-    // copy thread name to pthread name
-    pthread_setname_np([NSThread currentThread].name.UTF8String);
-
-    // Set up a dummy runloop source to avoid spinning
-    CFRunLoopSourceContext noSpinCtx = {0, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL};
-    CFRunLoopSourceRef noSpinSource = CFRunLoopSourceCreate(NULL, 0, &amp;amp;noSpinCtx);
-    CFRunLoopAddSource(CFRunLoopGetCurrent(), noSpinSource, kCFRunLoopDefaultMode);
-    CFRelease(noSpinSource);
-
-    // run the run loop
-    while (kCFRunLoopRunStopped != CFRunLoopRunInMode(kCFRunLoopDefaultMode, ((NSDate *)[NSDate distantFuture]).timeIntervalSinceReferenceDate, NO)) {
-      RCTAssert(NO, @&amp;quot;not reached assertion&amp;quot;); // runloop spun. that&#39;s bad.
-    }
-  }
-}
-
-static NSThread *newJavaScriptThread(void)
-{
-  NSThread *javaScriptThread = [[NSThread alloc] initWithTarget:[RCTJSCExecutor class]
-                                                       selector:@selector(runRunLoopThread)
-                                                         object:nil];
-  javaScriptThread.name = RCTJSCThreadName;
-  javaScriptThread.qualityOfService = NSOperationQualityOfServiceUserInteractive;
-  [javaScriptThread start];
-  return javaScriptThread;
-}
-&lt;/code&gt;&lt;/pre&gt;
-
-&lt;ul&gt;
-&lt;li&gt;通过动态&lt;a href=&#34;https://linkrober.github.io/bookshelf/2017/10/runtime%E4%B8%89-%E6%B6%88%E6%81%AF%E8%BD%AC%E5%8F%91/&#34;&gt;消息转发&lt;/a&gt;发送来自RN的消息,RCTModuleMethod&lt;/li&gt;
-&lt;/ul&gt;
-
-&lt;pre&gt;&lt;code&gt;//RCTModuleMethod
-
-NSMethodSignature *typeSignature = [RCTConvert methodSignatureForSelector:selector];
-NSInvocation *typeInvocation = [NSInvocation invocationWithMethodSignature:typeSignature];
-typeInvocation.selector = selector;
-typeInvocation.target = [RCTConvert class];
-
-[argumentBlocks addObject:^(__unused RCTBridge *bridge, NSUInteger index, id json) {
-void *returnValue = malloc(typeSignature.methodReturnLength);
-[typeInvocation setArgument:&amp;amp;json atIndex:2];
-[typeInvocation invoke];
-[typeInvocation getReturnValue:returnValue];
-[invocation setArgument:returnValue atIndex:index + 2];
-free(returnValue);
-&lt;/code&gt;&lt;/pre&gt;
-
-&lt;ul&gt;
-&lt;li&gt;用Runtime拿到所有的类信息和方法&lt;/li&gt;
-&lt;/ul&gt;
-
-&lt;pre&gt;&lt;code&gt;//RCTBridge
-
-void RCTVerifyAllModulesExported(NSArray *extraModules)
-{
-  // Check for unexported modules
-  unsigned int classCount;
-  Class *classes = objc_copyClassList(&amp;amp;classCount);
-
-  NSMutableSet *moduleClasses = [NSMutableSet new];
-  [moduleClasses addObjectsFromArray:RCTGetModuleClasses()];
-  [moduleClasses addObjectsFromArray:[extraModules valueForKeyPath:@&amp;quot;class&amp;quot;]];
-
-  for (unsigned int i = 0; i &amp;lt; classCount; i++) {
-    Class cls = classes[i];
-    Class superclass = cls;
-    while (superclass) {
-      if (class_conformsToProtocol(superclass, @protocol(RCTBridgeModule))) {
-        if ([moduleClasses containsObject:cls]) {
-          break;
-        }
-
-        // Verify it&#39;s not a super-class of one of our moduleClasses
-        BOOL isModuleSuperClass = NO;
-        for (Class moduleClass in moduleClasses) {
-          if ([moduleClass isSubclassOfClass:cls]) {
-            isModuleSuperClass = YES;
-            break;
-          }
-        }
-        if (isModuleSuperClass) {
-          break;
-        }
-
-        RCTLogWarn(@&amp;quot;Class %@ was not exported. Did you forget to use RCT_EXPORT_MODULE()?&amp;quot;, cls);
-        break;
-      }
-      superclass = class_getSuperclass(superclass);
-    }
-  }
-
-  free(classes);
-}
-&lt;/code&gt;&lt;/pre&gt;
-
-&lt;ul&gt;
-&lt;li&gt;GCD的大量使用，在初始化各个模块时(initModulesAndLoadSource和setupJSExecutorAndModuleConfig这两个group)对于线程依赖的控制&lt;code&gt;dispatch_group_enter();&lt;/code&gt;&lt;code&gt;dispatch_group_leave()&lt;/code&gt;&lt;/li&gt;
-&lt;/ul&gt;
-
-&lt;pre&gt;&lt;code&gt;//RCTBatchedBridge
-
-- (void)start
-{
-  [[NSNotificationCenter defaultCenter]
-    postNotificationName:RCTJavaScriptWillStartLoadingNotification
-    object:_parentBridge userInfo:@{@&amp;quot;bridge&amp;quot;: self}];
-
-  RCT_PROFILE_BEGIN_EVENT(0, @&amp;quot;-[RCTBatchedBridge setUp]&amp;quot;, nil);
-
-  dispatch_queue_t bridgeQueue = dispatch_queue_create(&amp;quot;com.facebook.react.RCTBridgeQueue&amp;quot;, DISPATCH_QUEUE_CONCURRENT);
-
-  dispatch_group_t initModulesAndLoadSource = dispatch_group_create();
-
-  // Asynchronously load source code
-  dispatch_group_enter(initModulesAndLoadSource);
-  __weak RCTBatchedBridge *weakSelf = self;
-  __block NSData *sourceCode;
-  [self loadSource:^(NSError *error, NSData *source, __unused int64_t sourceLength) {
-    if (error) {
-      RCTLogWarn(@&amp;quot;Failed to load source: %@&amp;quot;, error);
-      dispatch_async(dispatch_get_main_queue(), ^{
-        [weakSelf stopLoadingWithError:error];
-      });
-    }
-
-    sourceCode = source;
-    dispatch_group_leave(initModulesAndLoadSource);
-  } onProgress:^(RCTLoadingProgress *progressData) {
-#if RCT_DEV &amp;amp;&amp;amp; __has_include(&amp;quot;RCTDevLoadingView.h&amp;quot;)
-    RCTDevLoadingView *loadingView = [weakSelf moduleForClass:[RCTDevLoadingView class]];
-    [loadingView updateProgress:progressData];
-#endif
-  }];
-
-  // Synchronously initialize all native modules that cannot be loaded lazily
-  [self initModulesWithDispatchGroup:initModulesAndLoadSource];
-
-  RCTPerformanceLogger *performanceLogger = self-&amp;gt;_performanceLogger;
-  __block NSString *config;
-  dispatch_group_enter(initModulesAndLoadSource);
-  dispatch_async(bridgeQueue, ^{
-    dispatch_group_t setupJSExecutorAndModuleConfig = dispatch_group_create();
-
-    // Asynchronously initialize the JS executor
-    dispatch_group_async(setupJSExecutorAndModuleConfig, bridgeQueue, ^{
-      [performanceLogger markStartForTag:RCTPLJSCExecutorSetup];
-      [weakSelf setUpExecutor];
-      [performanceLogger markStopForTag:RCTPLJSCExecutorSetup];
-    });
-
-    // Asynchronously gather the module config
-    dispatch_group_async(setupJSExecutorAndModuleConfig, bridgeQueue, ^{
-      if (weakSelf.valid) {
-        RCT_PROFILE_BEGIN_EVENT(0, @&amp;quot;-[RCTBatchedBridge moduleConfig&amp;quot;, nil);
-        [performanceLogger markStartForTag:RCTPLNativeModulePrepareConfig];
-        config = [weakSelf moduleConfig];
-        [performanceLogger markStopForTag:RCTPLNativeModulePrepareConfig];
-        RCT_PROFILE_END_EVENT(RCTProfileTagAlways, @&amp;quot;&amp;quot;);
-      }
-    });
-
-    dispatch_group_notify(setupJSExecutorAndModuleConfig, bridgeQueue, ^{
-      // We&#39;re not waiting for this to complete to leave dispatch group, since
-      // injectJSONConfiguration and executeSourceCode will schedule operations
-      // on the same queue anyway.
-      [performanceLogger markStartForTag:RCTPLNativeModuleInjectConfig];
-      [weakSelf injectJSONConfiguration:config onComplete:^(NSError *error) {
-        [performanceLogger markStopForTag:RCTPLNativeModuleInjectConfig];
-        if (error) {
-          RCTLogWarn(@&amp;quot;Failed to inject config: %@&amp;quot;, error);
-          dispatch_async(dispatch_get_main_queue(), ^{
-            [weakSelf stopLoadingWithError:error];
-          });
-        }
-      }];
-      dispatch_group_leave(initModulesAndLoadSource);
-    });
-  });
-
-  dispatch_group_notify(initModulesAndLoadSource, bridgeQueue, ^{
-    RCTBatchedBridge *strongSelf = weakSelf;
-    if (sourceCode &amp;amp;&amp;amp; strongSelf.loading) {
-      [strongSelf executeSourceCode:sourceCode];
-    }
-  });
-
-  RCT_PROFILE_END_EVENT(RCTProfileTagAlways, @&amp;quot;&amp;quot;);
-}
-&lt;/code&gt;&lt;/pre&gt;
-
-&lt;h4 id=&#34;参考文档&#34;&gt;参考文档&lt;/h4&gt;
-
-&lt;p&gt;&lt;a href=&#34;http://blog.cnbang.net/tech/2698/&#34;&gt;React Native通信机制详解&lt;/a&gt;&lt;/p&gt;
-
-&lt;p&gt;&lt;a href=&#34;http://awhisper.github.io/2016/06/24/ReactNative%E6%B5%81%E7%A8%8B%E6%BA%90%E7%A0%81%E5%88%86%E6%9E%90/&#34;&gt;ReactNative iOS源码解析&lt;/a&gt;&lt;/p&gt;</description>
-    </item>
-    
-    <item>
-      <title>iOS多线程中的锁</title>
-      <link>https://linkrober.github.io/bookshelf/2017/12/ios%E5%A4%9A%E7%BA%BF%E7%A8%8B%E4%B8%AD%E7%9A%84%E9%94%81/</link>
-      <pubDate>Fri, 01 Dec 2017 00:00:00 +0000</pubDate>
-      
-      <guid>https://linkrober.github.io/bookshelf/2017/12/ios%E5%A4%9A%E7%BA%BF%E7%A8%8B%E4%B8%AD%E7%9A%84%E9%94%81/</guid>
-      <description>&lt;p&gt;涉及到多线程共享资源的情况下就避免不了资源竞争的问题，这时候就会用到各种锁，例如，&lt;code&gt;@synchronized&lt;/code&gt;、&lt;code&gt;NSLock&lt;/code&gt;、&lt;code&gt;OSSpinLock&lt;/code&gt;等等，虽然都是锁，但是锁的底层实现也不尽相同。大概可以分为：&lt;span class=&#34;highlight-text blue&#34;&gt;互斥锁&lt;/span&gt;、&lt;span class=&#34;highlight-text blue&#34;&gt;自旋锁&lt;/span&gt;、&lt;span class=&#34;highlight-text blue&#34;&gt;递归锁&lt;/span&gt;、
-&lt;span class=&#34;highlight-text blue&#34;&gt;读写锁&lt;/span&gt;。&lt;/p&gt;
-
-&lt;pre&gt;&lt;code&gt;{
-	lock()//加锁
-		doSomeThing()//临界区
-	unlock()//解锁
-}
-&lt;/code&gt;&lt;/pre&gt;
-
-&lt;p&gt;我们锁的目的是在任何时刻最多只能有一个线程在修改资源，即在任何时刻只能有一个操作者保持锁。&lt;/p&gt;
-
-&lt;p&gt;&lt;/p&gt;
-
-&lt;h4 id=&#34;互斥锁&#34;&gt;互斥锁&lt;/h4&gt;
-
-&lt;p&gt;通过一个全局变量来控制某个线程是否可以在某个时刻访问资源，该变量值大于0说明锁正在被使用。如果某个线程在尝试获得锁的是否发现已经被占用，线程挂起，等待锁的释放。&lt;/p&gt;
-
-&lt;h4 id=&#34;自旋锁&#34;&gt;自旋锁&lt;/h4&gt;
-
-&lt;p&gt;通过一个全局变量来控制某个线程是否可以在某个时刻访问资源，该变量值大于0说明锁正在被使用。如果某个线程在尝试获得锁的是否发现已经被占用，进入忙等状态，直到获得锁。&lt;/p&gt;
-
-&lt;blockquote&gt;
-&lt;p&gt;以上可以看出，互斥锁和自旋锁很类似，稍有不同的地方在于当处于等待状态的时候各自的线程是怎么调度的。互斥锁即使时间片还未用尽，互斥锁也会直接挂起，这样就减少了CPU的开销。但是这时候会进行上下文（线程）的切换，也会带来一定的开销，适合I/O密集型操作。自旋锁，顾名思义，即使处于等待状态线程也不会挂起，一直处于忙等状态，类似于一直在进行一个whilte循环。这样增加了CPU的开销，所以对于需要保持上下文的任务必须要使用自旋锁，同时它是不能被抢占的（高优先级会抢占低优先级的进程），适用于CPU密集型的任务。&lt;/p&gt;
-&lt;/blockquote&gt;
-
-&lt;h4 id=&#34;递归锁&#34;&gt;递归锁&lt;/h4&gt;
-
-&lt;p&gt;对于递归调的时候我们不能简单的使用某个锁来锁住临界区，这样就会造成死锁，必须要使用递归锁。当加锁的时候，变量就会加1，解锁的时候开始减1，直到值为0的时候释放锁。&lt;/p&gt;
-
-&lt;h4 id=&#34;读写锁&#34;&gt;读写锁&lt;/h4&gt;
-
-&lt;p&gt;在上面提到的几种锁同一时刻只允许一个线程访问资源，在操作资源的时候，往往会出现一个线程在写操作，一个线程在读操作，这时候我们就会用到读写锁。
-读写锁，它分为两种锁，读锁和写锁。当一个线程在读资源的时候，我们为其加上读锁，有另一个线程也要访问资源的时候我们需要再加一个读锁。当第三个线程需要进行写操作的时候我们就要加上一个写锁，但是这个写锁只有当读锁的使用者为0的时候才有效。也就是说我们必须等另外两个线程的读操作结束之后才能为其加上写锁。虽然互斥锁和自旋锁也能达到要求，但是读写锁无疑让控制更加精细，节省了CPU。&lt;/p&gt;
-
-&lt;h4 id=&#34;ios中的锁&#34;&gt;iOS中的锁&lt;/h4&gt;
-
-&lt;p&gt;大神ibireme的一篇博客&lt;a href=&#34;https://blog.ibireme.com/2016/01/16/spinlock_is_unsafe_in_ios/&#34;&gt;不再安全的 OSSpinLock&lt;/a&gt;对锁的性能做了简单的比较，大家可以看下。
-&lt;img src=&#34;../../../来自ibireme的博客.png&#34; alt=&#34;来自ibireme的博客&#34; /&gt;&lt;/p&gt;
-
-&lt;h6 id=&#34;osspinlock&#34;&gt;OSSpinLock&lt;/h6&gt;
-
-&lt;span class=&#34;highlight-text blue&#34;&gt;自旋锁&lt;/span&gt;
-
-&lt;p&gt;在此之前OSSpinLock是无疑性能最好的锁，在2015年的时候苹果工程师透露出了自旋锁的bug。具体问题大概如下：
-系统维护了不同等级优先级的线程，高优先级的线程更容易获得系统资源。当一个低优先级的线程先获得锁之后，高优先级线程这时候也试图获取锁。这时候高优先级占据了大量的CPU，一直处于忙等状态。而低优先级的线程因为没有分配到足够的CPU一直无法完成任务，也就无法释放锁。这时候线程的调度就产生了优先级翻转。&lt;/b&gt;&lt;/p&gt;
-
-&lt;p&gt;&lt;/b&gt;
-&lt;span class=&#34;highlight-text success&#34;&gt;
-Example
-&lt;/span&gt;&lt;/p&gt;
-
-&lt;pre&gt;&lt;code&gt;//定义OSSpinLock锁
-__block OSSpinLock theLock = OS_SPINLOCK_INIT;
-//线程1
-dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
-    OSSpinLockLock(&amp;amp;theLock); 
-    NSLog(@&amp;quot;需要线程同步的操作1 开始&amp;quot;); 
-    sleep(3); 
-    NSLog(@&amp;quot;需要线程同步的操作1 结束&amp;quot;);
-    OSSpinLockUnlock(&amp;amp;theLock);
-});
-//线程2
-dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
-     OSSpinLockLock(&amp;amp;theLock); 
-     sleep(1); 
-     NSLog(@&amp;quot;需要线程同步的操作2&amp;quot;); 
-     OSSpinLockUnlock(&amp;amp;theLock);
-});
-
-&lt;/code&gt;&lt;/pre&gt;
-
-&lt;h6 id=&#34;sychronized&#34;&gt;sychronized&lt;/h6&gt;
-
-&lt;p&gt;&lt;span class=&#34;highlight-text blue&#34;&gt;互斥锁&lt;/span&gt; &lt;span class=&#34;highlight-text blue&#34;&gt;递归锁&lt;/span&gt;&lt;/p&gt;
-
-&lt;p&gt;iOS中性能最差的锁，但是写起来很开心，用起来简单，无论普通的锁还是递归锁都能应对。它牺牲了性能，保证了接口得友好。它会把每个传入的对象当作锁（这要求我们要保证对象的唯一性）并把他们放在一个哈希表中存储，通过这张表来管理锁。要注意的是，对象不能为&lt;strong&gt;nil&lt;/strong&gt;，这会让临界区不再是线程安全的。&lt;/b&gt;&lt;/p&gt;
-
-&lt;p&gt;&lt;/b&gt;&lt;/p&gt;
-
-&lt;span class=&#34;highlight-text success&#34;&gt;
-Example
-&lt;/span&gt;
-
-&lt;pre&gt;&lt;code&gt;//需要加锁的对象
-NSObject *obj = [[NSObject alloc] init];
-//线程1
-dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
-    @synchronized(obj) {
-         NSLog(@&amp;quot;需要线程同步的操作1 开始&amp;quot;);
-         sleep(3); 
-         NSLog(@&amp;quot;需要线程同步的操作1 结束&amp;quot;);
-     } 
-  }); 
-//线程2
-dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{ 
-    sleep(1); 
-    @synchronized(obj) { 
-         NSLog(@&amp;quot;需要线程同步的操作2&amp;quot;); 
-     } 
-});
-
-&lt;/code&gt;&lt;/pre&gt;
-
-&lt;p&gt;&lt;strong&gt;Result&lt;/strong&gt;&lt;/p&gt;
-
-&lt;pre&gt;&lt;code&gt;ThreadTest[13438:385647] 需要线程同步的操作1 开始
-ThreadTest[13438:385647] 需要线程同步的操作1 结束
-ThreadTest[13438:385646] 需要线程同步的操作2
-&lt;/code&gt;&lt;/pre&gt;
-
-&lt;h6 id=&#34;nslock&#34;&gt;NSLock&lt;/h6&gt;
-
-&lt;span class=&#34;highlight-text blue&#34;&gt;互斥锁&lt;/span&gt;
-
-&lt;p&gt;将C语言的pthread_mutex锁进行了一次封装，更加的OC。&lt;code&gt;NSLock&lt;/code&gt;提供了&lt;code&gt;tryLock&lt;/code&gt;和&lt;code&gt;lockBeforeDate:&lt;/code&gt;方法。在加锁前尝试加锁，如果返回无法获得锁，并不会阻塞线程会继续往下走，返回&lt;code&gt;NO&lt;/code&gt;,&lt;code&gt;lockBeforeDate:&lt;/code&gt;让你控制加锁的时间，在规定时间未获得锁返回&lt;code&gt;NO&lt;/code&gt;
-&lt;/b&gt;&lt;/p&gt;
-
-&lt;p&gt;&lt;/b&gt;
-&lt;span class=&#34;highlight-text success&#34;&gt;
-Example
-&lt;/span&gt;&lt;/p&gt;
-
-&lt;pre&gt;&lt;code&gt;//创建锁
-NSLock *lock = [[NSLock alloc] init];
-//线程1
-dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{ 
-    //[lock lock]; 
-    //立即加锁
-    [lock lockBeforeDate:[NSDate date]];
-    NSLog(@&amp;quot;需要线程同步的操作1 开始&amp;quot;); 
-    sleep(2); 
-    NSLog(@&amp;quot;需要线程同步的操作1 结束&amp;quot;); 
-    [lock unlock];
-});
-//线程2
-dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
-    sleep(1);
-    //尝试加锁
-    if ([lock tryLock]) {
-        //尝试获取锁，如果获取不到返回NO，不会阻塞该线程 
-        NSLog(@&amp;quot;锁可用的操作&amp;quot;); 
-        [lock unlock]; 
-    }else{
-        NSLog(@&amp;quot;锁不可用的操作&amp;quot;); 
-    } 
-    
-    NSDate *date = [[NSDate alloc] initWithTimeIntervalSinceNow:3]; 
-    if ([lock lockBeforeDate:date]) {
-          //尝试在未来的3s内获取锁，并阻塞该线程，如果3s内获取不到恢复线程, 返回NO,不会阻塞该线程
-          NSLog(@&amp;quot;没有超时，获得锁&amp;quot;); 
-          [lock unlock]; 
-     }else{ 
-          NSLog(@&amp;quot;超时，没有获得锁&amp;quot;); 
-     } 
-});
-
-&lt;/code&gt;&lt;/pre&gt;
-
-&lt;p&gt;&lt;strong&gt;Result&lt;/strong&gt;&lt;/p&gt;
-
-&lt;pre&gt;&lt;code&gt;ThreadTest[13541:394814] 需要线程同步的操作 1 开始
-ThreadTest[13541:394804] 锁不可用的操作
-ThreadTest[13541:394814] 需要线程同步的操作 1 结束
-ThreadTest[13541:394804] 没有超时，获得锁
-&lt;/code&gt;&lt;/pre&gt;
-
-&lt;h6 id=&#34;nsrecursivelock&#34;&gt;NSRecursiveLock&lt;/h6&gt;
-
-&lt;p&gt;&lt;span class=&#34;highlight-text blue&#34;&gt;互斥锁&lt;/span&gt; &lt;span class=&#34;highlight-text blue&#34;&gt;递归锁&lt;/span&gt;&lt;/p&gt;
-
-&lt;p&gt;实现和&lt;code&gt;NSLock&lt;/code&gt;差不多，只不过在底层NSLock使用的C的&lt;code&gt;pthread_mutex_lock&lt;/code&gt;,而&lt;code&gt;NSRecursiveLock&lt;/code&gt;使用的是&lt;code&gt;pthread_mutex_recursive&lt;/code&gt;。
-它也同样提供了&lt;code&gt;- (BOOL)tryLock&lt;/code&gt;和&lt;code&gt;- (BOOL)lockBeforeDate:(NSDate *)limit&lt;/code&gt;方法&lt;/b&gt;&lt;/p&gt;
-
-&lt;p&gt;&lt;/b&gt;
-&lt;span class=&#34;highlight-text success&#34;&gt;
-Example
-&lt;/span&gt;&lt;/p&gt;
-
-&lt;pre&gt;&lt;code&gt;//NSLock *lock = [[NSLock alloc] init];
-NSRecursiveLock *lock = [[NSRecursiveLock alloc] init];
-dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{ 
-    static void (^RecursiveMethod)(int); 
-    RecursiveMethod = ^(int value) { 
-        [lock lock]; 
-        if (value &amp;gt; 0) { 
-            NSLog(@&amp;quot;value = %d&amp;quot;, value); 
-            sleep(1); 
-            RecursiveMethod(value - 1); 
-      } 
-        [lock unlock]; 
-    };
-     RecursiveMethod(5); 
-});
-
-&lt;/code&gt;&lt;/pre&gt;
-
-&lt;p&gt;如果使用&lt;code&gt;NSLock&lt;/code&gt;就会直接死锁。&lt;/p&gt;
-
-&lt;p&gt;&lt;strong&gt;Result&lt;/strong&gt;&lt;/p&gt;
-
-&lt;pre&gt;&lt;code&gt;ThreadTest[13593:400360] value = 5
-ThreadTest[13593:400360] value = 4
-ThreadTest[13593:400360] value = 4
-ThreadTest[13593:400360] value = 2
-ThreadTest[13593:400360] value = 1
-&lt;/code&gt;&lt;/pre&gt;
-
-&lt;h6 id=&#34;nscondition&#34;&gt;NSCondition&lt;/h6&gt;
-
-&lt;p&gt;&lt;span class=&#34;highlight-text blue&#34;&gt;互斥锁&lt;/span&gt; &lt;span class=&#34;highlight-text blue&#34;&gt;条件变量&lt;/span&gt;&lt;/p&gt;
-
-&lt;p&gt;条件变量和信号量很类似，提供了阻塞、等待就绪、唤醒线程的方法。比如，生产-消费者模式。
-在单线程执行中，我们经常会通过一个布尔值来控制某个方法或者值是否需要被执行和修改。在多线程的环境下，需要互斥锁来配合保证线程安全。&lt;/b&gt;&lt;/p&gt;
-
-&lt;p&gt;&lt;/b&gt;
-&lt;span class=&#34;highlight-text success&#34;&gt;
-Example
-&lt;/span&gt;&lt;/p&gt;
-
-&lt;pre&gt;&lt;code&gt;NSConditionLock *lock = [[NSConditionLock alloc] init];
-NSMutableArray *products = [NSMutableArray array]; 
-NSInteger HAS_DATA = 1; 
-NSInteger NO_DATA = 0;
-
-dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{ 
-    while (1) { 
-        [lock lockWhenCondition:NO_DATA]; 
-        [products addObject:[[NSObject alloc] init]]; 
-        NSLog(@&amp;quot;produce a product,总量:%zi&amp;quot;,products.count); 
-        [lock unlockWithCondition:HAS_DATA]; 
-        sleep(1); 
-   } 
-}); 
-
-dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{ 
-    while (1) { 
-         NSLog(@&amp;quot;wait for product&amp;quot;); 
-         [lock lockWhenCondition:HAS_DATA]; 
-         [products removeObjectAtIndex:0]; 
-         NSLog(@&amp;quot;custome a product&amp;quot;); 
-         [lock unlockWithCondition:NO_DATA]; 
-    } 
-});
-
-&lt;/code&gt;&lt;/pre&gt;
-
-&lt;p&gt;&lt;strong&gt;Result&lt;/strong&gt;&lt;/p&gt;
-
-&lt;pre&gt;&lt;code&gt;ThreadTest[13645:406942] wait for product
-ThreadTest[13645:406951] produce a product, 总量 :1
-ThreadTest[13645:406942] custome a product
-ThreadTest[13645:406942] wait for product
-ThreadTest[13645:406951] produce a product, 总量:1
-ThreadTest[13645:406942] custome a product
-&lt;/code&gt;&lt;/pre&gt;
-
-&lt;p&gt;只有当&lt;code&gt;unlock&lt;/code&gt;和&lt;code&gt;lock&lt;/code&gt;的值一一对应才能唤醒线程，执行后续操作。&lt;/p&gt;
-
-&lt;h5 id=&#34;dispatch-semaphore-信号&#34;&gt;dispatch_semaphore（信号）&lt;/h5&gt;
-
-&lt;p&gt;通过信号来控制同时执行的线程个数，来达到枷锁的目的。只有当信号大于0的时候才能执行接下去的操作。&lt;/p&gt;
-
-&lt;pre&gt;&lt;code&gt;//创建一个信号，同一时间只有一个线程可以执行，10即10个线程可以同时执行
-dispatch_semaphore_create(1)
-&lt;/code&gt;&lt;/pre&gt;
-
-&lt;pre&gt;&lt;code&gt;//等待信号&amp;gt;0的时候再执行下面的操作，并将信号减一
-dispatch_semaphore_wait(self._lock, DISPATCH_TIME_FOREVER)
-&lt;/code&gt;&lt;/pre&gt;
-
-&lt;pre&gt;&lt;code&gt;//信号+1
-dispatch_semaphore_signal(self._lock)
-&lt;/code&gt;&lt;/pre&gt;
-
-&lt;p&gt;&lt;/b&gt;
-&lt;span class=&#34;highlight-text success&#34;&gt;
-Example
-&lt;/span&gt;&lt;/p&gt;
-
-&lt;pre&gt;&lt;code&gt;self._lock = dispatch_semaphore_create(1);
-    self.array = [[NSMutableArray alloc] initWithObjects:@(1),@(2),@(3), nil];
-    for (int i = 0; i &amp;lt; 100; i ++) {
-        dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
-            dispatch_semaphore_wait(self._lock, DISPATCH_TIME_FOREVER);
-            NSLog(@&amp;quot;-----%d&amp;quot;,i);
-            sleep(2);
-            dispatch_semaphore_signal(self._lock);
-        });
-    }
-&lt;/code&gt;&lt;/pre&gt;
-
-&lt;p&gt;&lt;strong&gt;Result&lt;/strong&gt;&lt;/p&gt;
-
-&lt;pre&gt;&lt;code&gt;MultiThread[10894:436938] -----0
-MultiThread[10894:436939] -----1
-MultiThread[10894:436945] -----2
-MultiThread[10894:436937] -----3
-MultiThread[10894:436936] -----4
-&lt;/code&gt;&lt;/pre&gt;
-
-&lt;p&gt;以上除了第一个结果其他的每隔2s才打印出来&lt;/p&gt;
-
-&lt;h4 id=&#34;参考资料&#34;&gt;参考资料&lt;/h4&gt;
-
-&lt;p&gt;&lt;a href=&#34;https://blog.ibireme.com/2016/01/16/spinlock_is_unsafe_in_ios/&#34;&gt;不再安全的 OSSpinLock&lt;/a&gt;&lt;/p&gt;
-
-&lt;p&gt;&lt;a href=&#34;https://casatwy.com/pthreadde-ge-chong-tong-bu-ji-zhi.html&#34;&gt;pthread的各种同步机制&lt;/a&gt;&lt;/p&gt;
-
-&lt;p&gt;&lt;a href=&#34;https://bestswifter.com/ios-lock/&#34;&gt;深入理解 iOS 开发中的锁&lt;/a&gt;&lt;/p&gt;
-
-&lt;p&gt;&lt;a href=&#34;http://www.jianshu.com/p/4edf98a61483&#34;&gt;IOS 保证线程同步方式&amp;amp;性能对比&lt;/a&gt;&lt;/p&gt;
-
-&lt;p&gt;&lt;a href=&#34;https://github.com/lattera/glibc/blob/master/nptl/pthread_mutex_lock.c&#34;&gt;pthreadmutexlock.c 源码&lt;/a&gt;&lt;/p&gt;
-
-&lt;p&gt;&lt;a href=&#34;http://yulingtianxia.com/blog/2015/11/01/More-than-you-want-to-know-about-synchronized/&#34;&gt;关于 @synchronized，这儿比你想知道的还要多&lt;/a&gt;&lt;/p&gt;
-
-&lt;p&gt;&lt;a href=&#34;http://pubs.opengroup.org/onlinepubs/7908799/xsh/pthread_mutex_lock.html&#34;&gt;pthreadmutexlock&lt;/a&gt;
-&lt;a href=&#34;https://developer.apple.
-com/library/content/documentation/Cocoa/Conceptual/Multithreading/ThreadSafety/ThreadSafety.html&#34;&gt;ThreadSafety&lt;/a&gt;&lt;/p&gt;
-
-&lt;p&gt;&lt;a href=&#34;https://stackoverflow.com/questions/62814/difference-between-binary-semaphore-and-mutex&#34;&gt;Difference between binary semaphore and mutex&lt;/a&gt;&lt;/p&gt;
-
-&lt;p&gt;&lt;a href=&#34;http://blog.csdn.net/Javadino/article/details/2891388&#34;&gt;[Pthread] Linux中的线程同步机制(二)&amp;ndash;In Glibc&lt;/a&gt;&lt;/p&gt;
-
-&lt;p&gt;&lt;a href=&#34;https://android.googlesource.com/platform/external/pthreads/+/master/pthread_cond_wait.
-c&#34;&gt;pthreadcondwait&lt;/a&gt;&lt;/p&gt;
-
-&lt;p&gt;&lt;a href=&#34;https://stackoverflow.com/questions/3513045/conditional-variable-vs-semaphore&#34;&gt;Conditional Variable vs Semaphore&lt;/a&gt;&lt;/p&gt;</description>
     </item>
     
   </channel>
