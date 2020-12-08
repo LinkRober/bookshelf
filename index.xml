@@ -96,7 +96,7 @@ oldTable = &amp;amp;SideTables()[oldObj];
       <pubDate>Tue, 08 Dec 2020 00:00:00 +0000</pubDate>
       
       <guid>https://linkrober.github.io/bookshelf/2020/12/weak%E7%9A%84%E5%AE%9E%E7%8E%B0%E4%B8%80/</guid>
-      <description>&lt;p&gt;本文较长查分为三段按序阅读体验更佳，第四篇为辅助阅读按需看&lt;/p&gt;
+      <description>&lt;p&gt;本文较长分三篇按序阅读体验更佳，第四篇为辅助阅读按需看&lt;/p&gt;
 
 &lt;ol&gt;
 &lt;li&gt;&lt;a href=&#34;https://linkrober.github.io/bookshelf/2020/12/weak%E7%9A%84%E5%AE%9E%E7%8E%B0%E4%B8%80/&#34;&gt;Weak的实现（一）&lt;/a&gt;&lt;/li&gt;
@@ -539,7 +539,18 @@ if (old_size &amp;gt;= 1024  &amp;amp;&amp;amp; old_size / 16 &amp;gt;= weak_tab
       <pubDate>Tue, 08 Dec 2020 00:00:00 +0000</pubDate>
       
       <guid>https://linkrober.github.io/bookshelf/2020/12/weak%E7%9A%84%E5%AE%9E%E7%8E%B0%E4%B8%89/</guid>
-      <description>&lt;h4 id=&#34;3-设置弱引用标志位&#34;&gt;3 设置弱引用标志位&lt;/h4&gt;
+      <description>&lt;p&gt;本文较长分三篇按序阅读体验更佳，第四篇为辅助阅读按需看&lt;/p&gt;
+
+&lt;ol&gt;
+&lt;li&gt;&lt;a href=&#34;https://linkrober.github.io/bookshelf/2020/12/weak%E7%9A%84%E5%AE%9E%E7%8E%B0%E4%B8%80/&#34;&gt;Weak的实现（一）&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;&lt;a href=&#34;https://linkrober.github.io/bookshelf/2020/12/weak%E7%9A%84%E5%AE%9E%E7%8E%B0%E4%BA%8C/&#34;&gt;Weak的实现（二）&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;&lt;a href=&#34;https://linkrober.github.io/bookshelf/2020/12/weak%E7%9A%84%E5%AE%9E%E7%8E%B0%E4%B8%89/&#34;&gt;Weak的实现（三）&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;&lt;a href=&#34;https://linkrober.github.io/bookshelf/2020/12/weak%E7%9A%84%E5%AE%9E%E7%8E%B0-sidetablesoldobj/&#34;&gt;Weak的实现-&amp;amp;SideTables()[oldObj]&lt;/a&gt;&lt;/li&gt;
+&lt;/ol&gt;
+
+&lt;h5 id=&#34;正文-接-weak的实现-二&#34;&gt;正文 接 Weak的实现（二）&lt;/h5&gt;
+
+&lt;h4 id=&#34;3-设置弱引用标志位&#34;&gt;3 设置弱引用标志位&lt;/h4&gt;
 
 &lt;p&gt;&lt;/p&gt;
 
@@ -747,7 +758,16 @@ objc_object::rootRetainCount()
       <pubDate>Tue, 08 Dec 2020 00:00:00 +0000</pubDate>
       
       <guid>https://linkrober.github.io/bookshelf/2020/12/weak%E7%9A%84%E5%AE%9E%E7%8E%B0%E4%BA%8C/</guid>
-      <description>&lt;h4 id=&#34;2-生成新的-weak-entry-t-插入到-weak-entries-中&#34;&gt;2 生成新的&lt;code&gt;weak_entry_t&lt;/code&gt;插入到&lt;code&gt;weak_entries&lt;/code&gt;中&lt;/h4&gt;
+      <description>&lt;ol&gt;
+&lt;li&gt;&lt;a href=&#34;https://linkrober.github.io/bookshelf/2020/12/weak%E7%9A%84%E5%AE%9E%E7%8E%B0%E4%B8%80/&#34;&gt;Weak的实现（一）&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;&lt;a href=&#34;https://linkrober.github.io/bookshelf/2020/12/weak%E7%9A%84%E5%AE%9E%E7%8E%B0%E4%BA%8C/&#34;&gt;Weak的实现（二）&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;&lt;a href=&#34;https://linkrober.github.io/bookshelf/2020/12/weak%E7%9A%84%E5%AE%9E%E7%8E%B0%E4%B8%89/&#34;&gt;Weak的实现（三）&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;&lt;a href=&#34;https://linkrober.github.io/bookshelf/2020/12/weak%E7%9A%84%E5%AE%9E%E7%8E%B0-sidetablesoldobj/&#34;&gt;Weak的实现-&amp;amp;SideTables()[oldObj]&lt;/a&gt;&lt;/li&gt;
+&lt;/ol&gt;
+
+&lt;h5 id=&#34;正文-接-weak的实现-一&#34;&gt;正文 接 Weak的实现（一）&lt;/h5&gt;
+
+&lt;h4 id=&#34;2-生成新的-weak-entry-t-插入到-weak-entries-中&#34;&gt;2 生成新的&lt;code&gt;weak_entry_t&lt;/code&gt;插入到&lt;code&gt;weak_entries&lt;/code&gt;中&lt;/h4&gt;
 
 &lt;p&gt;&lt;/p&gt;
 
