@@ -6,8 +6,367 @@
     <description>Recent content on 董二千</description>
     <generator>Hugo -- gohugo.io</generator>
     <language>zh-cn</language>
-    <lastBuildDate>Tue, 08 Dec 2020 00:00:00 +0000</lastBuildDate>
+    <lastBuildDate>Tue, 08 Jun 2021 00:00:00 +0000</lastBuildDate>
     <atom:link href="https://LinkRober.github.io/bookshelf/index.xml" rel="self" type="application/rss+xml" />
+    
+    <item>
+      <title>iOS中的方法编码</title>
+      <link>https://linkrober.github.io/bookshelf/2021/06/ios%E4%B8%AD%E7%9A%84%E6%96%B9%E6%B3%95%E7%BC%96%E7%A0%81/</link>
+      <pubDate>Tue, 08 Jun 2021 00:00:00 +0000</pubDate>
+      
+      <guid>https://linkrober.github.io/bookshelf/2021/06/ios%E4%B8%AD%E7%9A%84%E6%96%B9%E6%B3%95%E7%BC%96%E7%A0%81/</guid>
+      <description>&lt;p&gt;当我们在日常开发中，如果涉及到一些iOS底层的东西就可能会遇到方法编码，这里了解这门语言必不可少的一个环节。&lt;/p&gt;
+
+&lt;p&gt;&lt;/p&gt;
+
+&lt;h5 id=&#34;object-c-编码类型&#34;&gt;Object-C 编码类型&lt;/h5&gt;
+
+&lt;table&gt;
+&lt;thead&gt;
+&lt;tr&gt;
+&lt;th align=&#34;center&#34;&gt;类型&lt;/th&gt;
+&lt;th align=&#34;center&#34;&gt;意义&lt;/th&gt;
+&lt;/tr&gt;
+&lt;/thead&gt;
+
+&lt;tbody&gt;
+&lt;tr&gt;
+&lt;td align=&#34;center&#34;&gt;c&lt;/td&gt;
+&lt;td align=&#34;center&#34;&gt;A char&lt;/td&gt;
+&lt;/tr&gt;
+
+&lt;tr&gt;
+&lt;td align=&#34;center&#34;&gt;i&lt;/td&gt;
+&lt;td align=&#34;center&#34;&gt;An int&lt;/td&gt;
+&lt;/tr&gt;
+
+&lt;tr&gt;
+&lt;td align=&#34;center&#34;&gt;s&lt;/td&gt;
+&lt;td align=&#34;center&#34;&gt;A short&lt;/td&gt;
+&lt;/tr&gt;
+
+&lt;tr&gt;
+&lt;td align=&#34;center&#34;&gt;l&lt;/td&gt;
+&lt;td align=&#34;center&#34;&gt;A long l is treated as a 32-bit quantity on 64-bit programs&lt;/td&gt;
+&lt;/tr&gt;
+
+&lt;tr&gt;
+&lt;td align=&#34;center&#34;&gt;q&lt;/td&gt;
+&lt;td align=&#34;center&#34;&gt;A long long&lt;/td&gt;
+&lt;/tr&gt;
+
+&lt;tr&gt;
+&lt;td align=&#34;center&#34;&gt;C&lt;/td&gt;
+&lt;td align=&#34;center&#34;&gt;An unsigned char&lt;/td&gt;
+&lt;/tr&gt;
+
+&lt;tr&gt;
+&lt;td align=&#34;center&#34;&gt;I&lt;/td&gt;
+&lt;td align=&#34;center&#34;&gt;An unsigned int&lt;/td&gt;
+&lt;/tr&gt;
+
+&lt;tr&gt;
+&lt;td align=&#34;center&#34;&gt;S&lt;/td&gt;
+&lt;td align=&#34;center&#34;&gt;An unsigned short&lt;/td&gt;
+&lt;/tr&gt;
+
+&lt;tr&gt;
+&lt;td align=&#34;center&#34;&gt;L&lt;/td&gt;
+&lt;td align=&#34;center&#34;&gt;An unsigned long&lt;/td&gt;
+&lt;/tr&gt;
+
+&lt;tr&gt;
+&lt;td align=&#34;center&#34;&gt;Q&lt;/td&gt;
+&lt;td align=&#34;center&#34;&gt;An unsigned long long&lt;/td&gt;
+&lt;/tr&gt;
+
+&lt;tr&gt;
+&lt;td align=&#34;center&#34;&gt;f&lt;/td&gt;
+&lt;td align=&#34;center&#34;&gt;A float&lt;/td&gt;
+&lt;/tr&gt;
+
+&lt;tr&gt;
+&lt;td align=&#34;center&#34;&gt;d&lt;/td&gt;
+&lt;td align=&#34;center&#34;&gt;A double&lt;/td&gt;
+&lt;/tr&gt;
+
+&lt;tr&gt;
+&lt;td align=&#34;center&#34;&gt;B&lt;/td&gt;
+&lt;td align=&#34;center&#34;&gt;A C++ bool or a C99 _Bool&lt;/td&gt;
+&lt;/tr&gt;
+
+&lt;tr&gt;
+&lt;td align=&#34;center&#34;&gt;v&lt;/td&gt;
+&lt;td align=&#34;center&#34;&gt;A void&lt;/td&gt;
+&lt;/tr&gt;
+
+&lt;tr&gt;
+&lt;td align=&#34;center&#34;&gt;*&lt;/td&gt;
+&lt;td align=&#34;center&#34;&gt;A character string(char *)&lt;/td&gt;
+&lt;/tr&gt;
+
+&lt;tr&gt;
+&lt;td align=&#34;center&#34;&gt;@&lt;/td&gt;
+&lt;td align=&#34;center&#34;&gt;An object (whether statically typed or typed id)&lt;/td&gt;
+&lt;/tr&gt;
+
+&lt;tr&gt;
+&lt;td align=&#34;center&#34;&gt;#&lt;/td&gt;
+&lt;td align=&#34;center&#34;&gt;A class object(Class)&lt;/td&gt;
+&lt;/tr&gt;
+
+&lt;tr&gt;
+&lt;td align=&#34;center&#34;&gt;:&lt;/td&gt;
+&lt;td align=&#34;center&#34;&gt;A method selector(SEL)&lt;/td&gt;
+&lt;/tr&gt;
+
+&lt;tr&gt;
+&lt;td align=&#34;center&#34;&gt;[array type]&lt;/td&gt;
+&lt;td align=&#34;center&#34;&gt;An array&lt;/td&gt;
+&lt;/tr&gt;
+
+&lt;tr&gt;
+&lt;td align=&#34;center&#34;&gt;{name=type&amp;hellip;}&lt;/td&gt;
+&lt;td align=&#34;center&#34;&gt;A structure&lt;/td&gt;
+&lt;/tr&gt;
+
+&lt;tr&gt;
+&lt;td align=&#34;center&#34;&gt;(name=type&amp;hellip;)&lt;/td&gt;
+&lt;td align=&#34;center&#34;&gt;A union&lt;/td&gt;
+&lt;/tr&gt;
+
+&lt;tr&gt;
+&lt;td align=&#34;center&#34;&gt;bnum&lt;/td&gt;
+&lt;td align=&#34;center&#34;&gt;A bit field of num bits&lt;/td&gt;
+&lt;/tr&gt;
+
+&lt;tr&gt;
+&lt;td align=&#34;center&#34;&gt;^type&lt;/td&gt;
+&lt;td align=&#34;center&#34;&gt;A pointer to type&lt;/td&gt;
+&lt;/tr&gt;
+
+&lt;tr&gt;
+&lt;td align=&#34;center&#34;&gt;?&lt;/td&gt;
+&lt;td align=&#34;center&#34;&gt;An unknown type(among other things, this code is used for function pointers)&lt;/td&gt;
+&lt;/tr&gt;
+&lt;/tbody&gt;
+&lt;/table&gt;
+
+&lt;blockquote&gt;
+&lt;p&gt;&lt;a href=&#34;https://developer.apple.com/library/archive/documentation/Cocoa/Conceptual/ObjCRuntimeGuide/Articles/ocrtTypeEncodings.html#//apple_ref/doc/uid/TP40008048-CH100&#34;&gt;来自苹果文档&lt;/a&gt;&lt;/p&gt;
+&lt;/blockquote&gt;
+
+&lt;p&gt;如何获取某个类型的编码：&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;NSLog(@&amp;quot;int        : %s&amp;quot;, @encode(int));
+NSLog(@&amp;quot;float      : %s&amp;quot;, @encode(float));
+NSLog(@&amp;quot;float *    : %s&amp;quot;, @encode(float*));
+NSLog(@&amp;quot;char       : %s&amp;quot;, @encode(char));
+NSLog(@&amp;quot;char *     : %s&amp;quot;, @encode(char *));
+NSLog(@&amp;quot;BOOL       : %s&amp;quot;, @encode(BOOL));
+NSLog(@&amp;quot;void       : %s&amp;quot;, @encode(void));
+NSLog(@&amp;quot;void *     : %s&amp;quot;, @encode(void *));
+
+NSLog(@&amp;quot;NSObject * : %s&amp;quot;, @encode(NSObject *));
+NSLog(@&amp;quot;NSObject   : %s&amp;quot;, @encode(NSObject));
+NSLog(@&amp;quot;[NSObject] : %s&amp;quot;, @encode(typeof([NSObject class])));
+NSLog(@&amp;quot;NSError ** : %s&amp;quot;, @encode(typeof(NSError **)));
+
+int intArray[5] = {1, 2, 3, 4, 5};
+NSLog(@&amp;quot;int[]      : %s&amp;quot;, @encode(typeof(intArray)));
+
+float floatArray[3] = {0.1f, 0.2f, 0.3f};
+NSLog(@&amp;quot;float[]    : %s&amp;quot;, @encode(typeof(floatArray)));
+
+typedef struct _struct {
+    short a;
+    long long b;
+    unsigned long long c;
+} Struct;
+NSLog(@&amp;quot;struct     : %s&amp;quot;, @encode(typeof(Struct)));
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;h5 id=&#34;实例或类方法编码&#34;&gt;实例或类方法编码&lt;/h5&gt;
+
+&lt;h6 id=&#34;定义一个person类&#34;&gt;定义一个Person类&lt;/h6&gt;
+
+&lt;pre&gt;&lt;code&gt;@interface Person : NSObject
+
+- (void)say:(NSString *)something;
+
+@end
+
+
+@implementation Person
+
+- (void)say:(NSString *)something {
+    NSLog(@&amp;quot;Well Done&amp;quot;);
+}
+
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;h6 id=&#34;获取person实例方法的方法编码&#34;&gt;获取Person实例方法的方法编码&lt;/h6&gt;
+
+&lt;pre&gt;&lt;code&gt;Person *p = [Person new];
+Method method = class_getInstanceMethod([Person class], @selector(say:));
+const char *paramsType = method_getTypeEncoding(method);
+//输出：&amp;quot;v24@0:8@16&amp;quot;
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;blockquote&gt;
+&lt;p&gt;类方法使用&lt;code&gt;class_getClassMethod(&amp;lt;Class  _Nullable __unsafe_unretained cls&amp;gt;, &amp;lt;SEL  _Nonnull name&amp;gt;)&lt;/code&gt;获取Method&lt;/p&gt;
+&lt;/blockquote&gt;
+
+&lt;p&gt;&lt;code&gt;v&lt;/code&gt;返回值是&lt;code&gt;void&lt;/code&gt;类型，&lt;code&gt;24&lt;/code&gt;方法参数占24个字节，&lt;code&gt;@&lt;/code&gt;指self，&lt;code&gt;0&lt;/code&gt;代表self起始地址的偏移量是0，&lt;code&gt;:&lt;/code&gt;指selector，&lt;code&gt;8&lt;/code&gt;代表selector起始地址偏移量是8，&lt;code&gt;@&lt;/code&gt;指入参是一个对象，&lt;code&gt;16&lt;/code&gt;代表入参起始地址的偏移量是16。16+8(对象占8个字节大小)=24，就是这个方法的大小了。&lt;/p&gt;
+
+&lt;h5 id=&#34;代码块&#34;&gt;代码块&lt;/h5&gt;
+
+&lt;p&gt;苹果的Block内存布局：&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;enum {
+    BLOCK_DEALLOCATING =      (0x0001),  // runtime
+    BLOCK_REFCOUNT_MASK =     (0xfffe),  // runtime
+    BLOCK_NEEDS_FREE =        (1 &amp;lt;&amp;lt; 24), // runtime
+    BLOCK_HAS_COPY_DISPOSE =  (1 &amp;lt;&amp;lt; 25), // compiler
+    BLOCK_HAS_CTOR =          (1 &amp;lt;&amp;lt; 26), // compiler: helpers have C++ code
+    BLOCK_IS_GC =             (1 &amp;lt;&amp;lt; 27), // runtime
+    BLOCK_IS_GLOBAL =         (1 &amp;lt;&amp;lt; 28), // compiler
+    BLOCK_USE_STRET =         (1 &amp;lt;&amp;lt; 29), // compiler: undefined if !BLOCK_HAS_SIGNATURE
+    BLOCK_HAS_SIGNATURE  =    (1 &amp;lt;&amp;lt; 30)  // compiler
+};
+
+// revised new layout
+
+#define BLOCK_DESCRIPTOR_1 1
+struct Block_descriptor_1 {
+    unsigned long int reserved;
+    unsigned long int size;
+};
+
+#define BLOCK_DESCRIPTOR_2 1
+struct Block_descriptor_2 {
+    // requires BLOCK_HAS_COPY_DISPOSE
+    void (*copy)(void *dst, const void *src);
+    void (*dispose)(const void *);
+};
+
+#define BLOCK_DESCRIPTOR_3 1
+struct Block_descriptor_3 {
+    // requires BLOCK_HAS_SIGNATURE
+    const char *signature;
+    const char *layout;
+};
+
+struct Block_layout {
+    void *isa;
+    volatile int flags; // contains ref count
+    int reserved; 
+    void (*invoke)(void *, ...);
+    struct Block_descriptor_1 *descriptor;
+    // imported variables
+};
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;可以看到这里有三个结构体&lt;code&gt;Block_layout&lt;/code&gt; &lt;code&gt;Block_descriptor_1&lt;/code&gt; &lt;code&gt;Block_descriptor_2&lt;/code&gt; &lt;code&gt;Block_descriptor_3&lt;/code&gt;主结构体是&lt;code&gt;Block_layout&lt;/code&gt;，&lt;code&gt;Block_descriptor_1&lt;/code&gt;是每个Block结构体都有的，&lt;code&gt;Block_descriptor_2&lt;/code&gt; &lt;code&gt;Block_descriptor_3&lt;/code&gt;要根据&lt;code&gt;flags&lt;/code&gt;来判断。如果&lt;code&gt;flags&amp;amp;BLOCK_HAS_COPY_DISPOSE&lt;/code&gt;为真，就会有&lt;code&gt;Block_descriptor_2&lt;/code&gt;结构体；如果&lt;code&gt;flags&amp;amp;BLOCK_HAS_SIGNATURE&lt;/code&gt;为真，就会有&lt;code&gt;Block_descriptor_3&lt;/code&gt;结构体。一个完全体的Block结构体就是:&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;struct Block_layout {
+    void *isa;
+    volatile int flags; // contains ref count
+    int reserved; 
+    void (*invoke)(void *, ...);
+    struct Block_descriptor_1 *descriptor;
+    struct Block_descriptor_2 *descriptor2;
+    struct Block_descriptor_3 *descriptor3;
+};
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;&lt;code&gt;Block_descriptor_3&lt;/code&gt;里面就保存了我们想要的&lt;strong&gt;方法编码&lt;/strong&gt;。将Block的结构体铺开，大概是下面的样子（一张Aspect实现的结构体的内部布局图）
+&lt;img src=&#34;https://lc-api-gold-cdn.xitu.io/3293f66aeb756e10eba7&#34; alt=&#34;&#34; /&gt;
+这时候我们可以先定义一个Block结构&lt;code&gt;AspectBlockRef&lt;/code&gt;，通过&lt;code&gt;__bridge void *&lt;/code&gt;将OC对象转换成结构体指针。
+Aspect定义的结构体&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;typedef struct _AspectBlock {
+    __unused Class isa;
+    AspectBlockFlags flags;
+    __unused int reserved;
+    void (__unused *invoke)(struct _AspectBlock *block, ...);
+    struct {
+        unsigned long int reserved;
+        unsigned long int size;
+        // requires AspectBlockFlagsHasCopyDisposeHelpers
+        void (*copy)(void *dst, const void *src);
+        void (*dispose)(const void *);
+        // requires AspectBlockFlagsHasSignature
+        const char *signature;
+        const char *layout;
+    } *descriptor;
+    // imported variables
+} *AspectBlockRef;
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;成功转换得到结构体之后，可以访问成员&lt;code&gt;descriptor&lt;/code&gt;，再通过指针的偏移拿到签名&lt;code&gt;signature&lt;/code&gt;所在的地址。&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;static NSMethodSignature *aspect_blockMethodSignature(id block, NSError **error) {
+    AspectBlockRef layout = (__bridge void *)block;
+    if (!(layout-&amp;gt;flags &amp;amp; AspectBlockFlagsHasSignature)) {
+        NSString *description = [NSString stringWithFormat:@&amp;quot;The block %@ doesn&#39;t contain a type signature.&amp;quot;, block];
+//        AspectError(AspectErrorMissingBlockSignature, description);
+        return nil;
+    }
+    void *desc = layout-&amp;gt;descriptor;
+    desc += 2 * sizeof(unsigned long int);
+    if (layout-&amp;gt;flags &amp;amp; AspectBlockFlagsHasCopyDisposeHelpers) {
+        desc += 2 * sizeof(void *);
+    }
+    if (!desc) {
+        NSString *description = [NSString stringWithFormat:@&amp;quot;The block %@ doesn&#39;t has a type signature.&amp;quot;, block];
+//        AspectError(AspectErrorMissingBlockSignature, description);
+        return nil;
+    }
+    const char *signature = (*(const char **)desc);
+    return [NSMethodSignature signatureWithObjCTypes:signature];
+}
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;当拿到签名&lt;code&gt;NSMethodSignature&lt;/code&gt;之后我们可以通过runtime获得我们所需要的方法编码:&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;NSString *getMethodSignatureTypeEncoding(NSMethodSignature *methodSignature){
+    NSMutableString *str = @&amp;quot;&amp;quot;.mutableCopy;
+    const char *rtvType = methodSignature.methodReturnType;
+    [str appendString:[NSString stringWithUTF8String:rtvType]];
+
+    for (int i = 0; i &amp;lt; methodSignature.numberOfArguments; i ++) {
+        const char *type = [methodSignature getArgumentTypeAtIndex:i];
+        [str appendString:[NSString stringWithUTF8String:type]];
+    }
+    return [str copy];
+}
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;写个例子：&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;typedef id (^TestBlock)(id a);
+TestBlock block = ^id (id a){
+        return [NSObject new];
+    };
+NSMethodSignature *mallocBlockSignature = aspect_blockMethodSignature(block, NULL);
+NSString *methodTypes = getMethodSignatureTypeEncoding(mallocBlockSignature);
+//输出：@@?@
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;第一个&lt;code&gt;@&lt;/code&gt;是返回值；第二个&lt;code&gt;@&lt;/code&gt;是self；&lt;code&gt;?&lt;/code&gt;这是Block和普通的方法编码有别的地方，不是&lt;code&gt;:&lt;/code&gt;而是&lt;code&gt;?&lt;/code&gt;；第三个&lt;code&gt;@&lt;/code&gt;是入参。&lt;/p&gt;
+
+&lt;h5 id=&#34;为什么要研究方法编码&#34;&gt;为什么要研究方法编码&lt;/h5&gt;
+
+&lt;p&gt;我们在做一些框架的时候并不能像做业务开发一样直接向这个对象发送消息，我们需要自己去组装，通过&lt;code&gt;NSInvocation&lt;/code&gt;或&lt;code&gt;消息转发&lt;/code&gt;进行发送。比如，&lt;code&gt;Aspect&lt;/code&gt; &lt;code&gt;一些组件间通信框架&lt;/code&gt; &lt;code&gt;JSPatch&lt;/code&gt;等。&lt;/p&gt;
+
+&lt;h5 id=&#34;参考资料&#34;&gt;参考资料&lt;/h5&gt;
+
+&lt;p&gt;&lt;a href=&#34;https://opensource.apple.com/source/libclosure/libclosure-59/Block_private.h.auto.html&#34;&gt;Block_private.h&lt;/a&gt;&lt;/p&gt;
+
+&lt;p&gt;&lt;a href=&#34;https://dmaclach.medium.com/objective-c-encoding-and-you-866624cc02de&#34;&gt;Objective C, Encoding and You
+&lt;/a&gt;&lt;/p&gt;</description>
+    </item>
     
     <item>
       <title>Weak的实现-&amp;SideTables()[oldObj]</title>
@@ -3072,274 +3431,6 @@ NSLog(@&amp;quot;==============end sleep=================&amp;quot;);
 &lt;h3 id=&#34;资源竞争&#34;&gt;资源竞争&lt;/h3&gt;
 
 &lt;p&gt;&lt;a href=&#34;https://linkrober.github.io/bookshelf/2017/12/ios%E5%A4%9A%E7%BA%BF%E7%A8%8B%E4%B8%AD%E7%9A%84%E9%94%81/&#34;&gt;iOS多线程中的锁&lt;/a&gt;&lt;/p&gt;</description>
-    </item>
-    
-    <item>
-      <title>入坑小程序</title>
-      <link>https://linkrober.github.io/bookshelf/2018/03/%E5%85%A5%E5%9D%91%E5%B0%8F%E7%A8%8B%E5%BA%8F/</link>
-      <pubDate>Sun, 25 Mar 2018 00:00:00 +0000</pubDate>
-      
-      <guid>https://linkrober.github.io/bookshelf/2018/03/%E5%85%A5%E5%9D%91%E5%B0%8F%E7%A8%8B%E5%BA%8F/</guid>
-      <description>&lt;h3 id=&#34;描述&#34;&gt;描述&lt;/h3&gt;
-
-&lt;p&gt;去年各大平台纷纷开始占领微信上的又一流量入口——小程序。因为小程序的门槛低，这里指，技术上和前端大同小异，审核刚开始也比较松。除了大厂，很多个人开发这都投入进去。想在小程序上打响自己的个人品牌。在筹备了三个月之久，我的第一款小程序，终于快要完成了。在这里我会总结一下整体的过程，从idea到一个完整的小程序、期间遇到的坑、和觉得挺有意思的地方。&lt;/p&gt;
-
-&lt;p&gt;&lt;/p&gt;
-
-&lt;h3 id=&#34;流程&#34;&gt;流程&lt;/h3&gt;
-
-&lt;p&gt;&lt;br /&gt;
-1. 购买服务器
-    本人购买的服务器是阿里云服务器，因为经历的几家公司都是用的它，感觉还是比较靠谱的（我一同事也用过腾讯的服务，一直在吐槽不稳定，后来也换到阿里云了)&lt;/p&gt;
-
-&lt;p&gt;&lt;/br&gt;
-2. 购买域名
-    小程序的是无法直接通过IP访问，必须申请一个域名，同样的阿里云上买就行了。这里要提醒大家的是，因为国家政策原因域名需要备案，整个过程大概需要一个月时间。阿里云还是比较良心的，备案成功之后会再赠送你一个月的服务器时间。因为整个备案时间大概是一个月。所有绑定域名一定要提前。&lt;/p&gt;
-
-&lt;p&gt;&lt;/br&gt;
-3. 申请CA证书绑定到域名。在小程序里的API都需要Htps服务，如果你有CA证书可以直接使用，我也是通过阿里云申请的免费CA证书，时间是一年，到期看可以续的。&lt;/p&gt;
-
-&lt;p&gt;&lt;/br&gt;
-4. 根据idea设计产品&lt;/p&gt;
-
-&lt;p&gt;&lt;/br&gt;
-5. 开发小程序和server&lt;/p&gt;
-
-&lt;p&gt;&lt;/br&gt;
-6.发布&lt;/p&gt;
-
-&lt;h3 id=&#34;小程序&#34;&gt;小程序&lt;/h3&gt;
-
-&lt;p&gt;因为是我的第一个小程序，先试试手，所以选了一个比较简单的东西，音乐欣赏。数据是从其他网站爬过来插到数据库的。
-本人是移动端出生，对前端和后端的东西都不是很熟，不过刚好去年写了不少RN的东西，前端的东西也算是半只脚入门了。在小程序里面文件分为下面几种&lt;/p&gt;
-
-&lt;ul&gt;
-&lt;li&gt;js文件，和前端的一样，&lt;/li&gt;
-&lt;li&gt;wxml文件，类似于html文件&lt;/li&gt;
-&lt;li&gt;wxss文件，类似于css文件&lt;/li&gt;
-&lt;li&gt;wxs文件，这是小程序的一套脚本语言，语法看似和JavaScript语法一样，其实他们是不同的语言，有自己的语法，并不和 javascript 一致    。我们可以把它当做方法类在wxml中来使用。在wxml中是无法调用js中的非事件方法的，如果从js文件里拿到的数据你希望再做一步处理然后展示，这样的处理需要放到wxs文件里。&lt;/li&gt;
-&lt;/ul&gt;
-
-&lt;p&gt;开发前花半天浏览下微信小程序的API差不多就可以了，套路都差不多MVC。&lt;/p&gt;
-
-&lt;h3 id=&#34;数据库&#34;&gt;数据库&lt;/h3&gt;
-
-&lt;p&gt;服务器是用Node.js+MongoDB+Express搭建的，全套搭建起来还是很快的。Node.js是一个基于事件驱动I/O的服务端JavaScript环境，它在高并发的服务上有很好的体验。同样是js所以语法基本没门槛了。
-MongoDB数据库和一般的关系型数据库不同，它是非关系型数据库。关系型数据库对数据操作都是:&lt;code&gt;SELECT&lt;/code&gt;、&lt;code&gt;FROM&lt;/code&gt;、&lt;code&gt;WHERE&lt;/code&gt;、&lt;code&gt;BY&lt;/code&gt;等。来感受一下MongoDB怎么操作数据：&lt;/p&gt;
-
-&lt;pre&gt;&lt;code&gt;//插入一个数据
-var user = {
-    &amp;quot;name&amp;quot;:&amp;quot;小芳&amp;quot;，
-    &amp;quot;age&amp;quot;:18,
-    &amp;quot;gender&amp;quot;:1,
-    &amp;quot;country&amp;quot;:&amp;quot;中国&amp;quot;
-};
-db.user.insert(user)
-&lt;/code&gt;&lt;/pre&gt;
-
-&lt;pre&gt;&lt;code&gt;//查询姓名是：张三、李四、王五的信息
-db.user.find({&amp;quot;name&amp;quot;:  {&amp;quot;\$in&amp;quot; : [&amp;quot;张三&amp;quot;,&amp;quot;李四&amp;quot;,&amp;quot;王五&amp;quot;] }})
-&lt;/code&gt;&lt;/pre&gt;
-
-&lt;p&gt;给我最大的感觉，它是一个面向对象面向集合的存储过程，对于经常做面向对象开发人来说是比较容易入手的。&lt;/p&gt;
-
-&lt;h3 id=&#34;express&#34;&gt;Express&lt;/h3&gt;
-
-&lt;p&gt;基于Node.js的极其简洁灵活的web应用开发框架，它有丰富的HTTP快捷方法，非常快捷的创建node服务.&lt;/p&gt;
-
-&lt;p&gt;&lt;strong&gt;首页模块入口设置&lt;/strong&gt;&lt;/p&gt;
-
-&lt;pre&gt;&lt;code&gt;...
-...
-...
-var home = require(&#39;./routes/home&#39;);//首页接口
-...
-...
-...
-app.use(&#39;/home&#39;, home);//将home绑定到首页接口path
-&lt;/code&gt;&lt;/pre&gt;
-
-&lt;p&gt;&lt;strong&gt;详细的首页模块&lt;/strong&gt;&lt;/p&gt;
-
-&lt;pre&gt;&lt;code&gt;var express = require(&#39;express&#39;);
-var router = express.Router();
-var URL = require(&#39;url&#39;);
-var MusicModel = require(&#39;./model.js&#39;);
-const mongoose = require(&#39;mongoose&#39;);
-//连接数据库并打开
-mongoose.connect(&#39;mongodb://localhost:27017/funmusic&#39;)
-var db = mongoose.connection;
-
-db.on(&#39;open&#39;,function(){
-	console.log(&#39;MongoDB Connect Successed&#39;);
-});
-db.on(&#39;error&#39;,function(){
-	console.log(&#39;MongoDB Connect Error&#39;);
-});
-//定义card模型
-const cardSchema = new mongoose.Schema({
- 	vol_id:String,
- 	vol_number:String,
- 	number:Number,
- 	title:String,
- 	summary:String,
- 	covers:[{
- 		origin:String,
- 		large:String,
- 		large_low:String,
- 		small:String,
- 	}],
- 	create_time:Number,
- 	is_free:Number,
- 	is_trial:Number,
- 	tags:[{
- 		tag_id:String,
- 		name:String,
- 		alias:String,
- 		cover:String,
- 	}],
- 	comments_count:String,
- 	favs_count:Number,
- 	url:String,
- 	detail_desc:String
- }, { collection: &#39;card&#39; });
-const cardModel = mongoose.model(&#39;card&#39;,cardSchema);
-
-//list接口
-router.get(&#39;/list&#39;,function(req,res,next){
-	var params = URL.parse(req.url,true).query;
-	var response = res;
-	cardModel.find({},(err,result,res) =&amp;gt; {
-		if(err)  return console.log(err);
-		console.log(result);
-		var content = {status:1,data:result};
-		response.send(JSON.stringify(content));
-	});
-	
-})
-
-//定义cardDetail模型
-const cardDetailSchema = new mongoose.Schema({
-	covers:[{
-		origin:String,
-		large:String,
-		large_low:String,
-		small:String,
-	}],
-	detail_desc:String,
-	title:String,
-	number:Number,
-	tags:[{
- 		tag_id:String,
- 		name:String,
- 		alias:String,
- 		cover:String,
- 	}],
-},{collection:&#39;card&#39;});
-
-//detail接口
-router.get(&#39;/detail&#39;,function(req,res,next){
-	var params = URL.parse(req.url,true).query;
-	var response = res;
-	var _vol_id = params.vol_id;
-	console.log(_vol_id);
-	cardModel.aggregate([{ $match : { vol_id : _vol_id}},{ $project : {title : 1,covers : 1,detail_desc : 1,number : 1,tags : 1,&amp;quot;_id&amp;quot; : 0}}],(err,result,res) =&amp;gt; {
-		if(err)  return console.log(err);
-		console.log(result);
-		var restruct = {
-			image_large:result[0].covers[0].large,
-			detail_desc:result[0].detail_desc,
-			title:result[0].title,
-			number:result[0].number,
-			tags:result[0].tags,
-		}
-		var content = {status:1,data:restruct};
-		response.send(JSON.stringify(content));
-	});
-});
-
-
-
-module.exports = router;
-
-&lt;/code&gt;&lt;/pre&gt;
-
-&lt;h3 id=&#34;端口管理-nginx&#34;&gt;端口管理 - Nginx&lt;/h3&gt;
-
-&lt;p&gt;Nginx是一个反向代理服务器，平时我们抓包数据从server到client是正向代理，从client到server就是反向代理。服务器的http服务只会向外暴露80端口（默认），https服务暴露443(默认)端口。我们的服务则是3000端口，Nginx会将请求反向代理到3000端口，无论你是http还是hppts请求。&lt;/p&gt;
-
-&lt;pre&gt;&lt;code&gt;http {
-    log_format  main  &#39;$remote_addr - $remote_user [$time_local] &amp;quot;$request&amp;quot; &#39;
-                      &#39;$status $body_bytes_sent &amp;quot;$http_referer&amp;quot; &#39;
-                      &#39;&amp;quot;$http_user_agent&amp;quot; &amp;quot;$http_x_forwarded_for&amp;quot;&#39;;
-
-    access_log  /var/log/nginx/access.log  main;
-
-    sendfile            on;
-    tcp_nopush          on;
-    tcp_nodelay         on;
-    keepalive_timeout   65;
-    types_hash_max_size 2048;
-
-    include             /etc/nginx/mime.types;
-    default_type        application/octet-stream;
-
-    # Load modular configuration files from the /etc/nginx/conf.d directory.
-    # See http://nginx.org/en/docs/ngx_core_module.html#include
-    # for more information.
-    include /etc/nginx/conf.d/*.conf;
-
-    server {
-        listen       80 default_server;
-        listen       [::]:80 default_server;
-        server_name  _;
-        root         /usr/share/nginx/html;
-
-        # Load configuration files for the default server block.
-        include /etc/nginx/default.d/*.conf;
-
-        location / {
-	  proxy_pass http://127.0.0.1:3000;
-        }
-
-        error_page 404 /404.html;
-            location = /40x.html {
-        }
-
-        error_page 500 502 503 504 /50x.html;
-            location = /50x.html {
-        }
-    }
-
-# Settings for a TLS enabled server.
-#
-    server {
-        listen       443;
-        server_name  www.lify.online;
-	ssl on;
-        root         html;
-	index index.html index.htm;
-        ssl_certificate cert/214534222920959.pem;
-        ssl_certificate_key cert/214534222920959.key;
-        ssl_session_timeout  5m;
-        ssl_ciphers ECDHE-RSA-AES128-GCM-SHA256:ECDHE:ECDH:AES:HIGH:!NULL:!aNULL:!MD5:!ADH:!RC4;
-        ssl_protocols TLSv1 TLSv1.1 TLSv1.2;
-        ssl_prefer_server_ciphers on;
-        location / {
-	  #root html;
-	  #index index.html index.htm;
-	  proxy_pass http://127.0.0.1:3000;
-        }
-
-}
-}
-&lt;/code&gt;&lt;/pre&gt;
-
-&lt;h3 id=&#34;进程管理-pm2&#34;&gt;进程管理 - PM2&lt;/h3&gt;
-
-&lt;p&gt;使用它可以很方便的启动、停止和监控进程。刚开始重新发布接口的时候，都需要停止服务，kill进程，再次启动服务，有了pm2只要&lt;code&gt;pm2 restart 进程名&lt;/code&gt;&lt;/p&gt;
-
-&lt;p&gt;以上是我最近一段时间小程序之旅的总结，希望对你有所帮助。&lt;/p&gt;</description>
     </item>
     
   </channel>

@@ -216,6 +216,79 @@
     
     <div class="postShorten-header">
       <h1 class="postShorten-title" itemprop="headline">
+        <a class="link-unstyled" href="https://linkrober.github.io/bookshelf/2020/11/racsignal/">
+          RACSignal
+        </a>
+      </h1>
+      
+  <div class="postShorten-meta post-meta">
+    
+      <time itemprop="datePublished" datetime="2020-11-27T00:00:00Z">
+        
+  十一月 27, 2020
+
+      </time>
+    
+    
+  
+  
+    <span>发布在</span>
+    
+      <a class="category-link" href="https://LinkRober.github.io/bookshelf/categories/ios">ios</a>
+    
+  
+
+
+  </div>
+
+    </div>
+    <div class="postShorten-excerpt" itemprop="articleBody">
+      <h4 id="创建信号">创建信号</h4>
+
+<pre><code>
+RACSignal *signal = [RACSignal createSignal:^RACDisposable *(id&lt;RACSubscriber&gt; subscriber) {
+        [subscriber sendNext:@&quot;1&quot;];
+        return nil;
+    }];
+
+</code></pre>
+
+<p>分析</p>
+
+<pre><code>//RACSignal.m
++ (RACSignal *)createSignal:(RACDisposable * (^)(id&lt;RACSubscriber&gt; subscriber))didSubscribe {
+	return [RACDynamicSignal createSignal:didSubscribe];
+}
+</code></pre>
+
+<p></p>
+      <p>
+        <a href="https://linkrober.github.io/bookshelf/2020/11/racsignal/" class="postShorten-excerpt_link link">阅读全文</a>
+        
+      </p>
+    </div>
+  </div>
+  
+</article>
+
+            
+              
+  
+    
+      
+        
+      
+    
+  
+
+
+  
+
+<article class="postShorten postShorten--thumbnailimg-bottom" itemscope itemType="http://schema.org/BlogPosting">
+  <div class="postShorten-wrap">
+    
+    <div class="postShorten-header">
+      <h1 class="postShorten-title" itemprop="headline">
         <a class="link-unstyled" href="https://linkrober.github.io/bookshelf/2020/11/switchtolatest/">
           SwitchToLatest
         </a>
@@ -621,71 +694,6 @@ RACSignal *zs = [RACSignal zip:@[s1,s2,s3]];
 </article>
 
             
-              
-  
-    
-      
-        
-      
-    
-  
-
-
-  
-
-<article class="postShorten postShorten--thumbnailimg-bottom" itemscope itemType="http://schema.org/BlogPosting">
-  <div class="postShorten-wrap">
-    
-    <div class="postShorten-header">
-      <h1 class="postShorten-title" itemprop="headline">
-        <a class="link-unstyled" href="https://linkrober.github.io/bookshelf/2018/05/object-c%E5%A4%9A%E7%BA%BF%E7%A8%8B%E6%80%BB%E7%BB%93/">
-          Object-C多线程总结
-        </a>
-      </h1>
-      
-  <div class="postShorten-meta post-meta">
-    
-      <time itemprop="datePublished" datetime="2018-05-27T00:00:00Z">
-        
-  五月 27, 2018
-
-      </time>
-    
-    
-  
-  
-    <span>发布在</span>
-    
-      <a class="category-link" href="https://LinkRober.github.io/bookshelf/categories/ios">ios</a>
-    
-  
-
-
-  </div>
-
-    </div>
-    <div class="postShorten-excerpt" itemprop="articleBody">
-      <h3 id="目录">目录</h3>
-
-<ul>
-<li>多线程概念</li>
-<li>NSOperation</li>
-<li>GCD(Grand Central Dispatch)</li>
-<li>NSThread</li>
-<li>资源竞争</li>
-</ul>
-
-<p></p>
-      <p>
-        <a href="https://linkrober.github.io/bookshelf/2018/05/object-c%E5%A4%9A%E7%BA%BF%E7%A8%8B%E6%80%BB%E7%BB%93/" class="postShorten-excerpt_link link">阅读全文</a>
-        
-      </p>
-    </div>
-  </div>
-  
-</article>
-
-            
             
   <div class="pagination-bar">
     <ul class="pagination">
@@ -763,6 +771,25 @@ RACSignal *zs = [RACSignal zip:@[s1,s2,s3]];
       <div class="no-result text-color-light text-center"></div>
       <div class="results">
         
+        
+          <div class="media">
+            
+            <div class="media-body">
+              <a class="link-unstyled" href="https://linkrober.github.io/bookshelf/2021/06/ios%E4%B8%AD%E7%9A%84%E6%96%B9%E6%B3%95%E7%BC%96%E7%A0%81/">
+                <h3 class="media-heading">iOS中的方法编码</h3>
+              </a>
+              <span class="media-meta">
+                <span class="media-date text-small">
+                  Jun 6, 2021
+                </span>
+              </span>
+              <div class="media-content hide-xs font-merryweather"><p>当我们在日常开发中，如果涉及到一些iOS底层的东西就可能会遇到方法编码，这里了解这门语言必不可少的一个环节。</p>
+
+<p></p></div>
+            </div>
+            <div style="clear:both;"></div>
+            <hr>
+          </div>
         
           <div class="media">
             
@@ -1060,49 +1087,6 @@ RACSignal *signal = [RACSignal createSignal:^RACDisposable *(id&lt;RACSubscriber
             <hr>
           </div>
         
-          <div class="media">
-            
-            <div class="media-body">
-              <a class="link-unstyled" href="https://linkrober.github.io/bookshelf/2020/11/zip/">
-                <h3 class="media-heading">zip</h3>
-              </a>
-              <span class="media-meta">
-                <span class="media-date text-small">
-                  Nov 11, 2020
-                </span>
-              </span>
-              <div class="media-content hide-xs font-merryweather"><pre><code>RACSignal *s1 = [RACSignal createSignal:^RACDisposable *(id&lt;RACSubscriber&gt; subscriber) {
-       [subscriber sendNext:@&quot;1&quot;];
-    return nil;
-}];
-RACSignal *s2 = [RACSignal createSignal:^RACDisposable *(id&lt;RACSubscriber&gt; subscriber) {
-    [subscriber sendNext:@&quot;2&quot;];
-    return nil;
-}];
-RACSignal *s3 = [RACSignal createSignal:^RACDisposable *(id&lt;RACSubscriber&gt; subscriber) {
-    [subscriber sendNext:@&quot;3&quot;];
-    return nil;
-}];
-
-RACSignal *zs = [RACSignal zip:@[s1,s2,s3]];
-
-[zs subscribeNext:^(id x) {
-    NSLog(@&quot;%@&quot;,x);
-}];
-
-</code></pre>
-
-<p>同<code>zip</code>压缩的信号只有等所有的自信号都<code>sendNext</code>之后才会执行订阅回调。</p>
-
-<p>问题：
-1. 如何确保每个信号都发送完，才执行后压缩信号的订阅回调</p>
-
-<p></p></div>
-            </div>
-            <div style="clear:both;"></div>
-            <hr>
-          </div>
-        
       </div>
     </div>
     <div class="modal-footer">
@@ -1110,7 +1094,7 @@ RACSignal *zs = [RACSignal zip:@[s1,s2,s3]];
          data-message-zero=""
          data-message-one=""
          data-message-other="">
-         31 posts found
+         32 posts found
       </p>
     </div>
   </div>

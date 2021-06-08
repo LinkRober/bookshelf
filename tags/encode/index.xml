@@ -1,0 +1,371 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes" ?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>董二千</title>
+    <link>https://LinkRober.github.io/bookshelf/tags/encode/index.xml</link>
+    <description>Recent content on 董二千</description>
+    <generator>Hugo -- gohugo.io</generator>
+    <language>zh-cn</language>
+    <atom:link href="https://LinkRober.github.io/bookshelf/tags/encode/index.xml" rel="self" type="application/rss+xml" />
+    
+    <item>
+      <title>iOS中的方法编码</title>
+      <link>https://linkrober.github.io/bookshelf/2021/06/ios%E4%B8%AD%E7%9A%84%E6%96%B9%E6%B3%95%E7%BC%96%E7%A0%81/</link>
+      <pubDate>Tue, 08 Jun 2021 00:00:00 +0000</pubDate>
+      
+      <guid>https://linkrober.github.io/bookshelf/2021/06/ios%E4%B8%AD%E7%9A%84%E6%96%B9%E6%B3%95%E7%BC%96%E7%A0%81/</guid>
+      <description>&lt;p&gt;当我们在日常开发中，如果涉及到一些iOS底层的东西就可能会遇到方法编码，这里了解这门语言必不可少的一个环节。&lt;/p&gt;
+
+&lt;p&gt;&lt;/p&gt;
+
+&lt;h5 id=&#34;object-c-编码类型&#34;&gt;Object-C 编码类型&lt;/h5&gt;
+
+&lt;table&gt;
+&lt;thead&gt;
+&lt;tr&gt;
+&lt;th align=&#34;center&#34;&gt;类型&lt;/th&gt;
+&lt;th align=&#34;center&#34;&gt;意义&lt;/th&gt;
+&lt;/tr&gt;
+&lt;/thead&gt;
+
+&lt;tbody&gt;
+&lt;tr&gt;
+&lt;td align=&#34;center&#34;&gt;c&lt;/td&gt;
+&lt;td align=&#34;center&#34;&gt;A char&lt;/td&gt;
+&lt;/tr&gt;
+
+&lt;tr&gt;
+&lt;td align=&#34;center&#34;&gt;i&lt;/td&gt;
+&lt;td align=&#34;center&#34;&gt;An int&lt;/td&gt;
+&lt;/tr&gt;
+
+&lt;tr&gt;
+&lt;td align=&#34;center&#34;&gt;s&lt;/td&gt;
+&lt;td align=&#34;center&#34;&gt;A short&lt;/td&gt;
+&lt;/tr&gt;
+
+&lt;tr&gt;
+&lt;td align=&#34;center&#34;&gt;l&lt;/td&gt;
+&lt;td align=&#34;center&#34;&gt;A long l is treated as a 32-bit quantity on 64-bit programs&lt;/td&gt;
+&lt;/tr&gt;
+
+&lt;tr&gt;
+&lt;td align=&#34;center&#34;&gt;q&lt;/td&gt;
+&lt;td align=&#34;center&#34;&gt;A long long&lt;/td&gt;
+&lt;/tr&gt;
+
+&lt;tr&gt;
+&lt;td align=&#34;center&#34;&gt;C&lt;/td&gt;
+&lt;td align=&#34;center&#34;&gt;An unsigned char&lt;/td&gt;
+&lt;/tr&gt;
+
+&lt;tr&gt;
+&lt;td align=&#34;center&#34;&gt;I&lt;/td&gt;
+&lt;td align=&#34;center&#34;&gt;An unsigned int&lt;/td&gt;
+&lt;/tr&gt;
+
+&lt;tr&gt;
+&lt;td align=&#34;center&#34;&gt;S&lt;/td&gt;
+&lt;td align=&#34;center&#34;&gt;An unsigned short&lt;/td&gt;
+&lt;/tr&gt;
+
+&lt;tr&gt;
+&lt;td align=&#34;center&#34;&gt;L&lt;/td&gt;
+&lt;td align=&#34;center&#34;&gt;An unsigned long&lt;/td&gt;
+&lt;/tr&gt;
+
+&lt;tr&gt;
+&lt;td align=&#34;center&#34;&gt;Q&lt;/td&gt;
+&lt;td align=&#34;center&#34;&gt;An unsigned long long&lt;/td&gt;
+&lt;/tr&gt;
+
+&lt;tr&gt;
+&lt;td align=&#34;center&#34;&gt;f&lt;/td&gt;
+&lt;td align=&#34;center&#34;&gt;A float&lt;/td&gt;
+&lt;/tr&gt;
+
+&lt;tr&gt;
+&lt;td align=&#34;center&#34;&gt;d&lt;/td&gt;
+&lt;td align=&#34;center&#34;&gt;A double&lt;/td&gt;
+&lt;/tr&gt;
+
+&lt;tr&gt;
+&lt;td align=&#34;center&#34;&gt;B&lt;/td&gt;
+&lt;td align=&#34;center&#34;&gt;A C++ bool or a C99 _Bool&lt;/td&gt;
+&lt;/tr&gt;
+
+&lt;tr&gt;
+&lt;td align=&#34;center&#34;&gt;v&lt;/td&gt;
+&lt;td align=&#34;center&#34;&gt;A void&lt;/td&gt;
+&lt;/tr&gt;
+
+&lt;tr&gt;
+&lt;td align=&#34;center&#34;&gt;*&lt;/td&gt;
+&lt;td align=&#34;center&#34;&gt;A character string(char *)&lt;/td&gt;
+&lt;/tr&gt;
+
+&lt;tr&gt;
+&lt;td align=&#34;center&#34;&gt;@&lt;/td&gt;
+&lt;td align=&#34;center&#34;&gt;An object (whether statically typed or typed id)&lt;/td&gt;
+&lt;/tr&gt;
+
+&lt;tr&gt;
+&lt;td align=&#34;center&#34;&gt;#&lt;/td&gt;
+&lt;td align=&#34;center&#34;&gt;A class object(Class)&lt;/td&gt;
+&lt;/tr&gt;
+
+&lt;tr&gt;
+&lt;td align=&#34;center&#34;&gt;:&lt;/td&gt;
+&lt;td align=&#34;center&#34;&gt;A method selector(SEL)&lt;/td&gt;
+&lt;/tr&gt;
+
+&lt;tr&gt;
+&lt;td align=&#34;center&#34;&gt;[array type]&lt;/td&gt;
+&lt;td align=&#34;center&#34;&gt;An array&lt;/td&gt;
+&lt;/tr&gt;
+
+&lt;tr&gt;
+&lt;td align=&#34;center&#34;&gt;{name=type&amp;hellip;}&lt;/td&gt;
+&lt;td align=&#34;center&#34;&gt;A structure&lt;/td&gt;
+&lt;/tr&gt;
+
+&lt;tr&gt;
+&lt;td align=&#34;center&#34;&gt;(name=type&amp;hellip;)&lt;/td&gt;
+&lt;td align=&#34;center&#34;&gt;A union&lt;/td&gt;
+&lt;/tr&gt;
+
+&lt;tr&gt;
+&lt;td align=&#34;center&#34;&gt;bnum&lt;/td&gt;
+&lt;td align=&#34;center&#34;&gt;A bit field of num bits&lt;/td&gt;
+&lt;/tr&gt;
+
+&lt;tr&gt;
+&lt;td align=&#34;center&#34;&gt;^type&lt;/td&gt;
+&lt;td align=&#34;center&#34;&gt;A pointer to type&lt;/td&gt;
+&lt;/tr&gt;
+
+&lt;tr&gt;
+&lt;td align=&#34;center&#34;&gt;?&lt;/td&gt;
+&lt;td align=&#34;center&#34;&gt;An unknown type(among other things, this code is used for function pointers)&lt;/td&gt;
+&lt;/tr&gt;
+&lt;/tbody&gt;
+&lt;/table&gt;
+
+&lt;blockquote&gt;
+&lt;p&gt;&lt;a href=&#34;https://developer.apple.com/library/archive/documentation/Cocoa/Conceptual/ObjCRuntimeGuide/Articles/ocrtTypeEncodings.html#//apple_ref/doc/uid/TP40008048-CH100&#34;&gt;来自苹果文档&lt;/a&gt;&lt;/p&gt;
+&lt;/blockquote&gt;
+
+&lt;p&gt;如何获取某个类型的编码：&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;NSLog(@&amp;quot;int        : %s&amp;quot;, @encode(int));
+NSLog(@&amp;quot;float      : %s&amp;quot;, @encode(float));
+NSLog(@&amp;quot;float *    : %s&amp;quot;, @encode(float*));
+NSLog(@&amp;quot;char       : %s&amp;quot;, @encode(char));
+NSLog(@&amp;quot;char *     : %s&amp;quot;, @encode(char *));
+NSLog(@&amp;quot;BOOL       : %s&amp;quot;, @encode(BOOL));
+NSLog(@&amp;quot;void       : %s&amp;quot;, @encode(void));
+NSLog(@&amp;quot;void *     : %s&amp;quot;, @encode(void *));
+
+NSLog(@&amp;quot;NSObject * : %s&amp;quot;, @encode(NSObject *));
+NSLog(@&amp;quot;NSObject   : %s&amp;quot;, @encode(NSObject));
+NSLog(@&amp;quot;[NSObject] : %s&amp;quot;, @encode(typeof([NSObject class])));
+NSLog(@&amp;quot;NSError ** : %s&amp;quot;, @encode(typeof(NSError **)));
+
+int intArray[5] = {1, 2, 3, 4, 5};
+NSLog(@&amp;quot;int[]      : %s&amp;quot;, @encode(typeof(intArray)));
+
+float floatArray[3] = {0.1f, 0.2f, 0.3f};
+NSLog(@&amp;quot;float[]    : %s&amp;quot;, @encode(typeof(floatArray)));
+
+typedef struct _struct {
+    short a;
+    long long b;
+    unsigned long long c;
+} Struct;
+NSLog(@&amp;quot;struct     : %s&amp;quot;, @encode(typeof(Struct)));
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;h5 id=&#34;实例或类方法编码&#34;&gt;实例或类方法编码&lt;/h5&gt;
+
+&lt;h6 id=&#34;定义一个person类&#34;&gt;定义一个Person类&lt;/h6&gt;
+
+&lt;pre&gt;&lt;code&gt;@interface Person : NSObject
+
+- (void)say:(NSString *)something;
+
+@end
+
+
+@implementation Person
+
+- (void)say:(NSString *)something {
+    NSLog(@&amp;quot;Well Done&amp;quot;);
+}
+
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;h6 id=&#34;获取person实例方法的方法编码&#34;&gt;获取Person实例方法的方法编码&lt;/h6&gt;
+
+&lt;pre&gt;&lt;code&gt;Person *p = [Person new];
+Method method = class_getInstanceMethod([Person class], @selector(say:));
+const char *paramsType = method_getTypeEncoding(method);
+//输出：&amp;quot;v24@0:8@16&amp;quot;
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;blockquote&gt;
+&lt;p&gt;类方法使用&lt;code&gt;class_getClassMethod(&amp;lt;Class  _Nullable __unsafe_unretained cls&amp;gt;, &amp;lt;SEL  _Nonnull name&amp;gt;)&lt;/code&gt;获取Method&lt;/p&gt;
+&lt;/blockquote&gt;
+
+&lt;p&gt;&lt;code&gt;v&lt;/code&gt;返回值是&lt;code&gt;void&lt;/code&gt;类型，&lt;code&gt;24&lt;/code&gt;方法参数占24个字节，&lt;code&gt;@&lt;/code&gt;指self，&lt;code&gt;0&lt;/code&gt;代表self起始地址的偏移量是0，&lt;code&gt;:&lt;/code&gt;指selector，&lt;code&gt;8&lt;/code&gt;代表selector起始地址偏移量是8，&lt;code&gt;@&lt;/code&gt;指入参是一个对象，&lt;code&gt;16&lt;/code&gt;代表入参起始地址的偏移量是16。16+8(对象占8个字节大小)=24，就是这个方法的大小了。&lt;/p&gt;
+
+&lt;h5 id=&#34;代码块&#34;&gt;代码块&lt;/h5&gt;
+
+&lt;p&gt;苹果的Block内存布局：&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;enum {
+    BLOCK_DEALLOCATING =      (0x0001),  // runtime
+    BLOCK_REFCOUNT_MASK =     (0xfffe),  // runtime
+    BLOCK_NEEDS_FREE =        (1 &amp;lt;&amp;lt; 24), // runtime
+    BLOCK_HAS_COPY_DISPOSE =  (1 &amp;lt;&amp;lt; 25), // compiler
+    BLOCK_HAS_CTOR =          (1 &amp;lt;&amp;lt; 26), // compiler: helpers have C++ code
+    BLOCK_IS_GC =             (1 &amp;lt;&amp;lt; 27), // runtime
+    BLOCK_IS_GLOBAL =         (1 &amp;lt;&amp;lt; 28), // compiler
+    BLOCK_USE_STRET =         (1 &amp;lt;&amp;lt; 29), // compiler: undefined if !BLOCK_HAS_SIGNATURE
+    BLOCK_HAS_SIGNATURE  =    (1 &amp;lt;&amp;lt; 30)  // compiler
+};
+
+// revised new layout
+
+#define BLOCK_DESCRIPTOR_1 1
+struct Block_descriptor_1 {
+    unsigned long int reserved;
+    unsigned long int size;
+};
+
+#define BLOCK_DESCRIPTOR_2 1
+struct Block_descriptor_2 {
+    // requires BLOCK_HAS_COPY_DISPOSE
+    void (*copy)(void *dst, const void *src);
+    void (*dispose)(const void *);
+};
+
+#define BLOCK_DESCRIPTOR_3 1
+struct Block_descriptor_3 {
+    // requires BLOCK_HAS_SIGNATURE
+    const char *signature;
+    const char *layout;
+};
+
+struct Block_layout {
+    void *isa;
+    volatile int flags; // contains ref count
+    int reserved; 
+    void (*invoke)(void *, ...);
+    struct Block_descriptor_1 *descriptor;
+    // imported variables
+};
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;可以看到这里有三个结构体&lt;code&gt;Block_layout&lt;/code&gt; &lt;code&gt;Block_descriptor_1&lt;/code&gt; &lt;code&gt;Block_descriptor_2&lt;/code&gt; &lt;code&gt;Block_descriptor_3&lt;/code&gt;主结构体是&lt;code&gt;Block_layout&lt;/code&gt;，&lt;code&gt;Block_descriptor_1&lt;/code&gt;是每个Block结构体都有的，&lt;code&gt;Block_descriptor_2&lt;/code&gt; &lt;code&gt;Block_descriptor_3&lt;/code&gt;要根据&lt;code&gt;flags&lt;/code&gt;来判断。如果&lt;code&gt;flags&amp;amp;BLOCK_HAS_COPY_DISPOSE&lt;/code&gt;为真，就会有&lt;code&gt;Block_descriptor_2&lt;/code&gt;结构体；如果&lt;code&gt;flags&amp;amp;BLOCK_HAS_SIGNATURE&lt;/code&gt;为真，就会有&lt;code&gt;Block_descriptor_3&lt;/code&gt;结构体。一个完全体的Block结构体就是:&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;struct Block_layout {
+    void *isa;
+    volatile int flags; // contains ref count
+    int reserved; 
+    void (*invoke)(void *, ...);
+    struct Block_descriptor_1 *descriptor;
+    struct Block_descriptor_2 *descriptor2;
+    struct Block_descriptor_3 *descriptor3;
+};
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;&lt;code&gt;Block_descriptor_3&lt;/code&gt;里面就保存了我们想要的&lt;strong&gt;方法编码&lt;/strong&gt;。将Block的结构体铺开，大概是下面的样子（一张Aspect实现的结构体的内部布局图）
+&lt;img src=&#34;https://lc-api-gold-cdn.xitu.io/3293f66aeb756e10eba7&#34; alt=&#34;&#34; /&gt;
+这时候我们可以先定义一个Block结构&lt;code&gt;AspectBlockRef&lt;/code&gt;，通过&lt;code&gt;__bridge void *&lt;/code&gt;将OC对象转换成结构体指针。
+Aspect定义的结构体&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;typedef struct _AspectBlock {
+    __unused Class isa;
+    AspectBlockFlags flags;
+    __unused int reserved;
+    void (__unused *invoke)(struct _AspectBlock *block, ...);
+    struct {
+        unsigned long int reserved;
+        unsigned long int size;
+        // requires AspectBlockFlagsHasCopyDisposeHelpers
+        void (*copy)(void *dst, const void *src);
+        void (*dispose)(const void *);
+        // requires AspectBlockFlagsHasSignature
+        const char *signature;
+        const char *layout;
+    } *descriptor;
+    // imported variables
+} *AspectBlockRef;
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;成功转换得到结构体之后，可以访问成员&lt;code&gt;descriptor&lt;/code&gt;，再通过指针的偏移拿到签名&lt;code&gt;signature&lt;/code&gt;所在的地址。&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;static NSMethodSignature *aspect_blockMethodSignature(id block, NSError **error) {
+    AspectBlockRef layout = (__bridge void *)block;
+    if (!(layout-&amp;gt;flags &amp;amp; AspectBlockFlagsHasSignature)) {
+        NSString *description = [NSString stringWithFormat:@&amp;quot;The block %@ doesn&#39;t contain a type signature.&amp;quot;, block];
+//        AspectError(AspectErrorMissingBlockSignature, description);
+        return nil;
+    }
+    void *desc = layout-&amp;gt;descriptor;
+    desc += 2 * sizeof(unsigned long int);
+    if (layout-&amp;gt;flags &amp;amp; AspectBlockFlagsHasCopyDisposeHelpers) {
+        desc += 2 * sizeof(void *);
+    }
+    if (!desc) {
+        NSString *description = [NSString stringWithFormat:@&amp;quot;The block %@ doesn&#39;t has a type signature.&amp;quot;, block];
+//        AspectError(AspectErrorMissingBlockSignature, description);
+        return nil;
+    }
+    const char *signature = (*(const char **)desc);
+    return [NSMethodSignature signatureWithObjCTypes:signature];
+}
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;当拿到签名&lt;code&gt;NSMethodSignature&lt;/code&gt;之后我们可以通过runtime获得我们所需要的方法编码:&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;NSString *getMethodSignatureTypeEncoding(NSMethodSignature *methodSignature){
+    NSMutableString *str = @&amp;quot;&amp;quot;.mutableCopy;
+    const char *rtvType = methodSignature.methodReturnType;
+    [str appendString:[NSString stringWithUTF8String:rtvType]];
+
+    for (int i = 0; i &amp;lt; methodSignature.numberOfArguments; i ++) {
+        const char *type = [methodSignature getArgumentTypeAtIndex:i];
+        [str appendString:[NSString stringWithUTF8String:type]];
+    }
+    return [str copy];
+}
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;写个例子：&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;typedef id (^TestBlock)(id a);
+TestBlock block = ^id (id a){
+        return [NSObject new];
+    };
+NSMethodSignature *mallocBlockSignature = aspect_blockMethodSignature(block, NULL);
+NSString *methodTypes = getMethodSignatureTypeEncoding(mallocBlockSignature);
+//输出：@@?@
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;第一个&lt;code&gt;@&lt;/code&gt;是返回值；第二个&lt;code&gt;@&lt;/code&gt;是self；&lt;code&gt;?&lt;/code&gt;这是Block和普通的方法编码有别的地方，不是&lt;code&gt;:&lt;/code&gt;而是&lt;code&gt;?&lt;/code&gt;；第三个&lt;code&gt;@&lt;/code&gt;是入参。&lt;/p&gt;
+
+&lt;h5 id=&#34;为什么要研究方法编码&#34;&gt;为什么要研究方法编码&lt;/h5&gt;
+
+&lt;p&gt;我们在做一些框架的时候并不能像做业务开发一样直接向这个对象发送消息，我们需要自己去组装，通过&lt;code&gt;NSInvocation&lt;/code&gt;或&lt;code&gt;消息转发&lt;/code&gt;进行发送。比如，&lt;code&gt;Aspect&lt;/code&gt; &lt;code&gt;一些组件间通信框架&lt;/code&gt; &lt;code&gt;JSPatch&lt;/code&gt;等。&lt;/p&gt;
+
+&lt;h5 id=&#34;参考资料&#34;&gt;参考资料&lt;/h5&gt;
+
+&lt;p&gt;&lt;a href=&#34;https://opensource.apple.com/source/libclosure/libclosure-59/Block_private.h.auto.html&#34;&gt;Block_private.h&lt;/a&gt;&lt;/p&gt;
+
+&lt;p&gt;&lt;a href=&#34;https://dmaclach.medium.com/objective-c-encoding-and-you-866624cc02de&#34;&gt;Objective C, Encoding and You
+&lt;/a&gt;&lt;/p&gt;</description>
+    </item>
+    
+  </channel>
+</rss>

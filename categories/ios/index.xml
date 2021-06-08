@@ -9,6 +9,365 @@
     <atom:link href="https://LinkRober.github.io/bookshelf/categories/ios/index.xml" rel="self" type="application/rss+xml" />
     
     <item>
+      <title>iOS中的方法编码</title>
+      <link>https://linkrober.github.io/bookshelf/2021/06/ios%E4%B8%AD%E7%9A%84%E6%96%B9%E6%B3%95%E7%BC%96%E7%A0%81/</link>
+      <pubDate>Tue, 08 Jun 2021 00:00:00 +0000</pubDate>
+      
+      <guid>https://linkrober.github.io/bookshelf/2021/06/ios%E4%B8%AD%E7%9A%84%E6%96%B9%E6%B3%95%E7%BC%96%E7%A0%81/</guid>
+      <description>&lt;p&gt;当我们在日常开发中，如果涉及到一些iOS底层的东西就可能会遇到方法编码，这里了解这门语言必不可少的一个环节。&lt;/p&gt;
+
+&lt;p&gt;&lt;/p&gt;
+
+&lt;h5 id=&#34;object-c-编码类型&#34;&gt;Object-C 编码类型&lt;/h5&gt;
+
+&lt;table&gt;
+&lt;thead&gt;
+&lt;tr&gt;
+&lt;th align=&#34;center&#34;&gt;类型&lt;/th&gt;
+&lt;th align=&#34;center&#34;&gt;意义&lt;/th&gt;
+&lt;/tr&gt;
+&lt;/thead&gt;
+
+&lt;tbody&gt;
+&lt;tr&gt;
+&lt;td align=&#34;center&#34;&gt;c&lt;/td&gt;
+&lt;td align=&#34;center&#34;&gt;A char&lt;/td&gt;
+&lt;/tr&gt;
+
+&lt;tr&gt;
+&lt;td align=&#34;center&#34;&gt;i&lt;/td&gt;
+&lt;td align=&#34;center&#34;&gt;An int&lt;/td&gt;
+&lt;/tr&gt;
+
+&lt;tr&gt;
+&lt;td align=&#34;center&#34;&gt;s&lt;/td&gt;
+&lt;td align=&#34;center&#34;&gt;A short&lt;/td&gt;
+&lt;/tr&gt;
+
+&lt;tr&gt;
+&lt;td align=&#34;center&#34;&gt;l&lt;/td&gt;
+&lt;td align=&#34;center&#34;&gt;A long l is treated as a 32-bit quantity on 64-bit programs&lt;/td&gt;
+&lt;/tr&gt;
+
+&lt;tr&gt;
+&lt;td align=&#34;center&#34;&gt;q&lt;/td&gt;
+&lt;td align=&#34;center&#34;&gt;A long long&lt;/td&gt;
+&lt;/tr&gt;
+
+&lt;tr&gt;
+&lt;td align=&#34;center&#34;&gt;C&lt;/td&gt;
+&lt;td align=&#34;center&#34;&gt;An unsigned char&lt;/td&gt;
+&lt;/tr&gt;
+
+&lt;tr&gt;
+&lt;td align=&#34;center&#34;&gt;I&lt;/td&gt;
+&lt;td align=&#34;center&#34;&gt;An unsigned int&lt;/td&gt;
+&lt;/tr&gt;
+
+&lt;tr&gt;
+&lt;td align=&#34;center&#34;&gt;S&lt;/td&gt;
+&lt;td align=&#34;center&#34;&gt;An unsigned short&lt;/td&gt;
+&lt;/tr&gt;
+
+&lt;tr&gt;
+&lt;td align=&#34;center&#34;&gt;L&lt;/td&gt;
+&lt;td align=&#34;center&#34;&gt;An unsigned long&lt;/td&gt;
+&lt;/tr&gt;
+
+&lt;tr&gt;
+&lt;td align=&#34;center&#34;&gt;Q&lt;/td&gt;
+&lt;td align=&#34;center&#34;&gt;An unsigned long long&lt;/td&gt;
+&lt;/tr&gt;
+
+&lt;tr&gt;
+&lt;td align=&#34;center&#34;&gt;f&lt;/td&gt;
+&lt;td align=&#34;center&#34;&gt;A float&lt;/td&gt;
+&lt;/tr&gt;
+
+&lt;tr&gt;
+&lt;td align=&#34;center&#34;&gt;d&lt;/td&gt;
+&lt;td align=&#34;center&#34;&gt;A double&lt;/td&gt;
+&lt;/tr&gt;
+
+&lt;tr&gt;
+&lt;td align=&#34;center&#34;&gt;B&lt;/td&gt;
+&lt;td align=&#34;center&#34;&gt;A C++ bool or a C99 _Bool&lt;/td&gt;
+&lt;/tr&gt;
+
+&lt;tr&gt;
+&lt;td align=&#34;center&#34;&gt;v&lt;/td&gt;
+&lt;td align=&#34;center&#34;&gt;A void&lt;/td&gt;
+&lt;/tr&gt;
+
+&lt;tr&gt;
+&lt;td align=&#34;center&#34;&gt;*&lt;/td&gt;
+&lt;td align=&#34;center&#34;&gt;A character string(char *)&lt;/td&gt;
+&lt;/tr&gt;
+
+&lt;tr&gt;
+&lt;td align=&#34;center&#34;&gt;@&lt;/td&gt;
+&lt;td align=&#34;center&#34;&gt;An object (whether statically typed or typed id)&lt;/td&gt;
+&lt;/tr&gt;
+
+&lt;tr&gt;
+&lt;td align=&#34;center&#34;&gt;#&lt;/td&gt;
+&lt;td align=&#34;center&#34;&gt;A class object(Class)&lt;/td&gt;
+&lt;/tr&gt;
+
+&lt;tr&gt;
+&lt;td align=&#34;center&#34;&gt;:&lt;/td&gt;
+&lt;td align=&#34;center&#34;&gt;A method selector(SEL)&lt;/td&gt;
+&lt;/tr&gt;
+
+&lt;tr&gt;
+&lt;td align=&#34;center&#34;&gt;[array type]&lt;/td&gt;
+&lt;td align=&#34;center&#34;&gt;An array&lt;/td&gt;
+&lt;/tr&gt;
+
+&lt;tr&gt;
+&lt;td align=&#34;center&#34;&gt;{name=type&amp;hellip;}&lt;/td&gt;
+&lt;td align=&#34;center&#34;&gt;A structure&lt;/td&gt;
+&lt;/tr&gt;
+
+&lt;tr&gt;
+&lt;td align=&#34;center&#34;&gt;(name=type&amp;hellip;)&lt;/td&gt;
+&lt;td align=&#34;center&#34;&gt;A union&lt;/td&gt;
+&lt;/tr&gt;
+
+&lt;tr&gt;
+&lt;td align=&#34;center&#34;&gt;bnum&lt;/td&gt;
+&lt;td align=&#34;center&#34;&gt;A bit field of num bits&lt;/td&gt;
+&lt;/tr&gt;
+
+&lt;tr&gt;
+&lt;td align=&#34;center&#34;&gt;^type&lt;/td&gt;
+&lt;td align=&#34;center&#34;&gt;A pointer to type&lt;/td&gt;
+&lt;/tr&gt;
+
+&lt;tr&gt;
+&lt;td align=&#34;center&#34;&gt;?&lt;/td&gt;
+&lt;td align=&#34;center&#34;&gt;An unknown type(among other things, this code is used for function pointers)&lt;/td&gt;
+&lt;/tr&gt;
+&lt;/tbody&gt;
+&lt;/table&gt;
+
+&lt;blockquote&gt;
+&lt;p&gt;&lt;a href=&#34;https://developer.apple.com/library/archive/documentation/Cocoa/Conceptual/ObjCRuntimeGuide/Articles/ocrtTypeEncodings.html#//apple_ref/doc/uid/TP40008048-CH100&#34;&gt;来自苹果文档&lt;/a&gt;&lt;/p&gt;
+&lt;/blockquote&gt;
+
+&lt;p&gt;如何获取某个类型的编码：&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;NSLog(@&amp;quot;int        : %s&amp;quot;, @encode(int));
+NSLog(@&amp;quot;float      : %s&amp;quot;, @encode(float));
+NSLog(@&amp;quot;float *    : %s&amp;quot;, @encode(float*));
+NSLog(@&amp;quot;char       : %s&amp;quot;, @encode(char));
+NSLog(@&amp;quot;char *     : %s&amp;quot;, @encode(char *));
+NSLog(@&amp;quot;BOOL       : %s&amp;quot;, @encode(BOOL));
+NSLog(@&amp;quot;void       : %s&amp;quot;, @encode(void));
+NSLog(@&amp;quot;void *     : %s&amp;quot;, @encode(void *));
+
+NSLog(@&amp;quot;NSObject * : %s&amp;quot;, @encode(NSObject *));
+NSLog(@&amp;quot;NSObject   : %s&amp;quot;, @encode(NSObject));
+NSLog(@&amp;quot;[NSObject] : %s&amp;quot;, @encode(typeof([NSObject class])));
+NSLog(@&amp;quot;NSError ** : %s&amp;quot;, @encode(typeof(NSError **)));
+
+int intArray[5] = {1, 2, 3, 4, 5};
+NSLog(@&amp;quot;int[]      : %s&amp;quot;, @encode(typeof(intArray)));
+
+float floatArray[3] = {0.1f, 0.2f, 0.3f};
+NSLog(@&amp;quot;float[]    : %s&amp;quot;, @encode(typeof(floatArray)));
+
+typedef struct _struct {
+    short a;
+    long long b;
+    unsigned long long c;
+} Struct;
+NSLog(@&amp;quot;struct     : %s&amp;quot;, @encode(typeof(Struct)));
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;h5 id=&#34;实例或类方法编码&#34;&gt;实例或类方法编码&lt;/h5&gt;
+
+&lt;h6 id=&#34;定义一个person类&#34;&gt;定义一个Person类&lt;/h6&gt;
+
+&lt;pre&gt;&lt;code&gt;@interface Person : NSObject
+
+- (void)say:(NSString *)something;
+
+@end
+
+
+@implementation Person
+
+- (void)say:(NSString *)something {
+    NSLog(@&amp;quot;Well Done&amp;quot;);
+}
+
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;h6 id=&#34;获取person实例方法的方法编码&#34;&gt;获取Person实例方法的方法编码&lt;/h6&gt;
+
+&lt;pre&gt;&lt;code&gt;Person *p = [Person new];
+Method method = class_getInstanceMethod([Person class], @selector(say:));
+const char *paramsType = method_getTypeEncoding(method);
+//输出：&amp;quot;v24@0:8@16&amp;quot;
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;blockquote&gt;
+&lt;p&gt;类方法使用&lt;code&gt;class_getClassMethod(&amp;lt;Class  _Nullable __unsafe_unretained cls&amp;gt;, &amp;lt;SEL  _Nonnull name&amp;gt;)&lt;/code&gt;获取Method&lt;/p&gt;
+&lt;/blockquote&gt;
+
+&lt;p&gt;&lt;code&gt;v&lt;/code&gt;返回值是&lt;code&gt;void&lt;/code&gt;类型，&lt;code&gt;24&lt;/code&gt;方法参数占24个字节，&lt;code&gt;@&lt;/code&gt;指self，&lt;code&gt;0&lt;/code&gt;代表self起始地址的偏移量是0，&lt;code&gt;:&lt;/code&gt;指selector，&lt;code&gt;8&lt;/code&gt;代表selector起始地址偏移量是8，&lt;code&gt;@&lt;/code&gt;指入参是一个对象，&lt;code&gt;16&lt;/code&gt;代表入参起始地址的偏移量是16。16+8(对象占8个字节大小)=24，就是这个方法的大小了。&lt;/p&gt;
+
+&lt;h5 id=&#34;代码块&#34;&gt;代码块&lt;/h5&gt;
+
+&lt;p&gt;苹果的Block内存布局：&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;enum {
+    BLOCK_DEALLOCATING =      (0x0001),  // runtime
+    BLOCK_REFCOUNT_MASK =     (0xfffe),  // runtime
+    BLOCK_NEEDS_FREE =        (1 &amp;lt;&amp;lt; 24), // runtime
+    BLOCK_HAS_COPY_DISPOSE =  (1 &amp;lt;&amp;lt; 25), // compiler
+    BLOCK_HAS_CTOR =          (1 &amp;lt;&amp;lt; 26), // compiler: helpers have C++ code
+    BLOCK_IS_GC =             (1 &amp;lt;&amp;lt; 27), // runtime
+    BLOCK_IS_GLOBAL =         (1 &amp;lt;&amp;lt; 28), // compiler
+    BLOCK_USE_STRET =         (1 &amp;lt;&amp;lt; 29), // compiler: undefined if !BLOCK_HAS_SIGNATURE
+    BLOCK_HAS_SIGNATURE  =    (1 &amp;lt;&amp;lt; 30)  // compiler
+};
+
+// revised new layout
+
+#define BLOCK_DESCRIPTOR_1 1
+struct Block_descriptor_1 {
+    unsigned long int reserved;
+    unsigned long int size;
+};
+
+#define BLOCK_DESCRIPTOR_2 1
+struct Block_descriptor_2 {
+    // requires BLOCK_HAS_COPY_DISPOSE
+    void (*copy)(void *dst, const void *src);
+    void (*dispose)(const void *);
+};
+
+#define BLOCK_DESCRIPTOR_3 1
+struct Block_descriptor_3 {
+    // requires BLOCK_HAS_SIGNATURE
+    const char *signature;
+    const char *layout;
+};
+
+struct Block_layout {
+    void *isa;
+    volatile int flags; // contains ref count
+    int reserved; 
+    void (*invoke)(void *, ...);
+    struct Block_descriptor_1 *descriptor;
+    // imported variables
+};
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;可以看到这里有三个结构体&lt;code&gt;Block_layout&lt;/code&gt; &lt;code&gt;Block_descriptor_1&lt;/code&gt; &lt;code&gt;Block_descriptor_2&lt;/code&gt; &lt;code&gt;Block_descriptor_3&lt;/code&gt;主结构体是&lt;code&gt;Block_layout&lt;/code&gt;，&lt;code&gt;Block_descriptor_1&lt;/code&gt;是每个Block结构体都有的，&lt;code&gt;Block_descriptor_2&lt;/code&gt; &lt;code&gt;Block_descriptor_3&lt;/code&gt;要根据&lt;code&gt;flags&lt;/code&gt;来判断。如果&lt;code&gt;flags&amp;amp;BLOCK_HAS_COPY_DISPOSE&lt;/code&gt;为真，就会有&lt;code&gt;Block_descriptor_2&lt;/code&gt;结构体；如果&lt;code&gt;flags&amp;amp;BLOCK_HAS_SIGNATURE&lt;/code&gt;为真，就会有&lt;code&gt;Block_descriptor_3&lt;/code&gt;结构体。一个完全体的Block结构体就是:&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;struct Block_layout {
+    void *isa;
+    volatile int flags; // contains ref count
+    int reserved; 
+    void (*invoke)(void *, ...);
+    struct Block_descriptor_1 *descriptor;
+    struct Block_descriptor_2 *descriptor2;
+    struct Block_descriptor_3 *descriptor3;
+};
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;&lt;code&gt;Block_descriptor_3&lt;/code&gt;里面就保存了我们想要的&lt;strong&gt;方法编码&lt;/strong&gt;。将Block的结构体铺开，大概是下面的样子（一张Aspect实现的结构体的内部布局图）
+&lt;img src=&#34;https://lc-api-gold-cdn.xitu.io/3293f66aeb756e10eba7&#34; alt=&#34;&#34; /&gt;
+这时候我们可以先定义一个Block结构&lt;code&gt;AspectBlockRef&lt;/code&gt;，通过&lt;code&gt;__bridge void *&lt;/code&gt;将OC对象转换成结构体指针。
+Aspect定义的结构体&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;typedef struct _AspectBlock {
+    __unused Class isa;
+    AspectBlockFlags flags;
+    __unused int reserved;
+    void (__unused *invoke)(struct _AspectBlock *block, ...);
+    struct {
+        unsigned long int reserved;
+        unsigned long int size;
+        // requires AspectBlockFlagsHasCopyDisposeHelpers
+        void (*copy)(void *dst, const void *src);
+        void (*dispose)(const void *);
+        // requires AspectBlockFlagsHasSignature
+        const char *signature;
+        const char *layout;
+    } *descriptor;
+    // imported variables
+} *AspectBlockRef;
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;成功转换得到结构体之后，可以访问成员&lt;code&gt;descriptor&lt;/code&gt;，再通过指针的偏移拿到签名&lt;code&gt;signature&lt;/code&gt;所在的地址。&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;static NSMethodSignature *aspect_blockMethodSignature(id block, NSError **error) {
+    AspectBlockRef layout = (__bridge void *)block;
+    if (!(layout-&amp;gt;flags &amp;amp; AspectBlockFlagsHasSignature)) {
+        NSString *description = [NSString stringWithFormat:@&amp;quot;The block %@ doesn&#39;t contain a type signature.&amp;quot;, block];
+//        AspectError(AspectErrorMissingBlockSignature, description);
+        return nil;
+    }
+    void *desc = layout-&amp;gt;descriptor;
+    desc += 2 * sizeof(unsigned long int);
+    if (layout-&amp;gt;flags &amp;amp; AspectBlockFlagsHasCopyDisposeHelpers) {
+        desc += 2 * sizeof(void *);
+    }
+    if (!desc) {
+        NSString *description = [NSString stringWithFormat:@&amp;quot;The block %@ doesn&#39;t has a type signature.&amp;quot;, block];
+//        AspectError(AspectErrorMissingBlockSignature, description);
+        return nil;
+    }
+    const char *signature = (*(const char **)desc);
+    return [NSMethodSignature signatureWithObjCTypes:signature];
+}
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;当拿到签名&lt;code&gt;NSMethodSignature&lt;/code&gt;之后我们可以通过runtime获得我们所需要的方法编码:&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;NSString *getMethodSignatureTypeEncoding(NSMethodSignature *methodSignature){
+    NSMutableString *str = @&amp;quot;&amp;quot;.mutableCopy;
+    const char *rtvType = methodSignature.methodReturnType;
+    [str appendString:[NSString stringWithUTF8String:rtvType]];
+
+    for (int i = 0; i &amp;lt; methodSignature.numberOfArguments; i ++) {
+        const char *type = [methodSignature getArgumentTypeAtIndex:i];
+        [str appendString:[NSString stringWithUTF8String:type]];
+    }
+    return [str copy];
+}
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;写个例子：&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;typedef id (^TestBlock)(id a);
+TestBlock block = ^id (id a){
+        return [NSObject new];
+    };
+NSMethodSignature *mallocBlockSignature = aspect_blockMethodSignature(block, NULL);
+NSString *methodTypes = getMethodSignatureTypeEncoding(mallocBlockSignature);
+//输出：@@?@
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;第一个&lt;code&gt;@&lt;/code&gt;是返回值；第二个&lt;code&gt;@&lt;/code&gt;是self；&lt;code&gt;?&lt;/code&gt;这是Block和普通的方法编码有别的地方，不是&lt;code&gt;:&lt;/code&gt;而是&lt;code&gt;?&lt;/code&gt;；第三个&lt;code&gt;@&lt;/code&gt;是入参。&lt;/p&gt;
+
+&lt;h5 id=&#34;为什么要研究方法编码&#34;&gt;为什么要研究方法编码&lt;/h5&gt;
+
+&lt;p&gt;我们在做一些框架的时候并不能像做业务开发一样直接向这个对象发送消息，我们需要自己去组装，通过&lt;code&gt;NSInvocation&lt;/code&gt;或&lt;code&gt;消息转发&lt;/code&gt;进行发送。比如，&lt;code&gt;Aspect&lt;/code&gt; &lt;code&gt;一些组件间通信框架&lt;/code&gt; &lt;code&gt;JSPatch&lt;/code&gt;等。&lt;/p&gt;
+
+&lt;h5 id=&#34;参考资料&#34;&gt;参考资料&lt;/h5&gt;
+
+&lt;p&gt;&lt;a href=&#34;https://opensource.apple.com/source/libclosure/libclosure-59/Block_private.h.auto.html&#34;&gt;Block_private.h&lt;/a&gt;&lt;/p&gt;
+
+&lt;p&gt;&lt;a href=&#34;https://dmaclach.medium.com/objective-c-encoding-and-you-866624cc02de&#34;&gt;Objective C, Encoding and You
+&lt;/a&gt;&lt;/p&gt;</description>
+    </item>
+    
+    <item>
       <title>Weak的实现-&amp;SideTables()[oldObj]</title>
       <link>https://linkrober.github.io/bookshelf/2020/12/weak%E7%9A%84%E5%AE%9E%E7%8E%B0-sidetablesoldobj/</link>
       <pubDate>Tue, 08 Dec 2020 00:00:00 +0000</pubDate>
@@ -3071,343 +3430,6 @@ NSLog(@&amp;quot;==============end sleep=================&amp;quot;);
 &lt;h3 id=&#34;资源竞争&#34;&gt;资源竞争&lt;/h3&gt;
 
 &lt;p&gt;&lt;a href=&#34;https://linkrober.github.io/bookshelf/2017/12/ios%E5%A4%9A%E7%BA%BF%E7%A8%8B%E4%B8%AD%E7%9A%84%E9%94%81/&#34;&gt;iOS多线程中的锁&lt;/a&gt;&lt;/p&gt;</description>
-    </item>
-    
-    <item>
-      <title>iOS多线程中的锁</title>
-      <link>https://linkrober.github.io/bookshelf/2017/12/ios%E5%A4%9A%E7%BA%BF%E7%A8%8B%E4%B8%AD%E7%9A%84%E9%94%81/</link>
-      <pubDate>Fri, 01 Dec 2017 00:00:00 +0000</pubDate>
-      
-      <guid>https://linkrober.github.io/bookshelf/2017/12/ios%E5%A4%9A%E7%BA%BF%E7%A8%8B%E4%B8%AD%E7%9A%84%E9%94%81/</guid>
-      <description>&lt;p&gt;涉及到多线程共享资源的情况下就避免不了资源竞争的问题，这时候就会用到各种锁，例如，&lt;code&gt;@synchronized&lt;/code&gt;、&lt;code&gt;NSLock&lt;/code&gt;、&lt;code&gt;OSSpinLock&lt;/code&gt;等等，虽然都是锁，但是锁的底层实现也不尽相同。大概可以分为：&lt;span class=&#34;highlight-text blue&#34;&gt;互斥锁&lt;/span&gt;、&lt;span class=&#34;highlight-text blue&#34;&gt;自旋锁&lt;/span&gt;、&lt;span class=&#34;highlight-text blue&#34;&gt;递归锁&lt;/span&gt;、
-&lt;span class=&#34;highlight-text blue&#34;&gt;读写锁&lt;/span&gt;。&lt;/p&gt;
-
-&lt;pre&gt;&lt;code&gt;{
-	lock()//加锁
-		doSomeThing()//临界区
-	unlock()//解锁
-}
-&lt;/code&gt;&lt;/pre&gt;
-
-&lt;p&gt;我们锁的目的是在任何时刻最多只能有一个线程在修改资源，即在任何时刻只能有一个操作者保持锁。&lt;/p&gt;
-
-&lt;p&gt;&lt;/p&gt;
-
-&lt;h4 id=&#34;互斥锁&#34;&gt;互斥锁&lt;/h4&gt;
-
-&lt;p&gt;通过一个全局变量来控制某个线程是否可以在某个时刻访问资源，该变量值大于0说明锁正在被使用。如果某个线程在尝试获得锁的是否发现已经被占用，线程挂起，等待锁的释放。&lt;/p&gt;
-
-&lt;h4 id=&#34;自旋锁&#34;&gt;自旋锁&lt;/h4&gt;
-
-&lt;p&gt;通过一个全局变量来控制某个线程是否可以在某个时刻访问资源，该变量值大于0说明锁正在被使用。如果某个线程在尝试获得锁的是否发现已经被占用，进入忙等状态，直到获得锁。&lt;/p&gt;
-
-&lt;blockquote&gt;
-&lt;p&gt;以上可以看出，互斥锁和自旋锁很类似，稍有不同的地方在于当处于等待状态的时候各自的线程是怎么调度的。互斥锁即使时间片还未用尽，互斥锁也会直接挂起，这样就减少了CPU的开销。但是这时候会进行上下文（线程）的切换，也会带来一定的开销，适合I/O密集型操作。自旋锁，顾名思义，即使处于等待状态线程也不会挂起，一直处于忙等状态，类似于一直在进行一个whilte循环。这样增加了CPU的开销，所以对于需要保持上下文的任务必须要使用自旋锁，同时它是不能被抢占的（高优先级会抢占低优先级的进程），适用于CPU密集型的任务。&lt;/p&gt;
-&lt;/blockquote&gt;
-
-&lt;h4 id=&#34;递归锁&#34;&gt;递归锁&lt;/h4&gt;
-
-&lt;p&gt;对于递归调的时候我们不能简单的使用某个锁来锁住临界区，这样就会造成死锁，必须要使用递归锁。当加锁的时候，变量就会加1，解锁的时候开始减1，直到值为0的时候释放锁。&lt;/p&gt;
-
-&lt;h4 id=&#34;读写锁&#34;&gt;读写锁&lt;/h4&gt;
-
-&lt;p&gt;在上面提到的几种锁同一时刻只允许一个线程访问资源，在操作资源的时候，往往会出现一个线程在写操作，一个线程在读操作，这时候我们就会用到读写锁。
-读写锁，它分为两种锁，读锁和写锁。当一个线程在读资源的时候，我们为其加上读锁，有另一个线程也要访问资源的时候我们需要再加一个读锁。当第三个线程需要进行写操作的时候我们就要加上一个写锁，但是这个写锁只有当读锁的使用者为0的时候才有效。也就是说我们必须等另外两个线程的读操作结束之后才能为其加上写锁。虽然互斥锁和自旋锁也能达到要求，但是读写锁无疑让控制更加精细，节省了CPU。&lt;/p&gt;
-
-&lt;h4 id=&#34;ios中的锁&#34;&gt;iOS中的锁&lt;/h4&gt;
-
-&lt;p&gt;大神ibireme的一篇博客&lt;a href=&#34;https://blog.ibireme.com/2016/01/16/spinlock_is_unsafe_in_ios/&#34;&gt;不再安全的 OSSpinLock&lt;/a&gt;对锁的性能做了简单的比较，大家可以看下。
-&lt;img src=&#34;../../../来自ibireme的博客.png&#34; alt=&#34;来自ibireme的博客&#34; /&gt;&lt;/p&gt;
-
-&lt;h6 id=&#34;osspinlock&#34;&gt;OSSpinLock&lt;/h6&gt;
-
-&lt;span class=&#34;highlight-text blue&#34;&gt;自旋锁&lt;/span&gt;
-
-&lt;p&gt;在此之前OSSpinLock是无疑性能最好的锁，在2015年的时候苹果工程师透露出了自旋锁的bug。具体问题大概如下：
-系统维护了不同等级优先级的线程，高优先级的线程更容易获得系统资源。当一个低优先级的线程先获得锁之后，高优先级线程这时候也试图获取锁。这时候高优先级占据了大量的CPU，一直处于忙等状态。而低优先级的线程因为没有分配到足够的CPU一直无法完成任务，也就无法释放锁。这时候线程的调度就产生了优先级翻转。&lt;/b&gt;&lt;/p&gt;
-
-&lt;p&gt;&lt;/b&gt;
-&lt;span class=&#34;highlight-text success&#34;&gt;
-Example
-&lt;/span&gt;&lt;/p&gt;
-
-&lt;pre&gt;&lt;code&gt;//定义OSSpinLock锁
-__block OSSpinLock theLock = OS_SPINLOCK_INIT;
-//线程1
-dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
-    OSSpinLockLock(&amp;amp;theLock); 
-    NSLog(@&amp;quot;需要线程同步的操作1 开始&amp;quot;); 
-    sleep(3); 
-    NSLog(@&amp;quot;需要线程同步的操作1 结束&amp;quot;);
-    OSSpinLockUnlock(&amp;amp;theLock);
-});
-//线程2
-dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
-     OSSpinLockLock(&amp;amp;theLock); 
-     sleep(1); 
-     NSLog(@&amp;quot;需要线程同步的操作2&amp;quot;); 
-     OSSpinLockUnlock(&amp;amp;theLock);
-});
-
-&lt;/code&gt;&lt;/pre&gt;
-
-&lt;h6 id=&#34;sychronized&#34;&gt;sychronized&lt;/h6&gt;
-
-&lt;p&gt;&lt;span class=&#34;highlight-text blue&#34;&gt;互斥锁&lt;/span&gt; &lt;span class=&#34;highlight-text blue&#34;&gt;递归锁&lt;/span&gt;&lt;/p&gt;
-
-&lt;p&gt;iOS中性能最差的锁，但是写起来很开心，用起来简单，无论普通的锁还是递归锁都能应对。它牺牲了性能，保证了接口得友好。它会把每个传入的对象当作锁（这要求我们要保证对象的唯一性）并把他们放在一个哈希表中存储，通过这张表来管理锁。要注意的是，对象不能为&lt;strong&gt;nil&lt;/strong&gt;，这会让临界区不再是线程安全的。&lt;/b&gt;&lt;/p&gt;
-
-&lt;p&gt;&lt;/b&gt;&lt;/p&gt;
-
-&lt;span class=&#34;highlight-text success&#34;&gt;
-Example
-&lt;/span&gt;
-
-&lt;pre&gt;&lt;code&gt;//需要加锁的对象
-NSObject *obj = [[NSObject alloc] init];
-//线程1
-dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
-    @synchronized(obj) {
-         NSLog(@&amp;quot;需要线程同步的操作1 开始&amp;quot;);
-         sleep(3); 
-         NSLog(@&amp;quot;需要线程同步的操作1 结束&amp;quot;);
-     } 
-  }); 
-//线程2
-dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{ 
-    sleep(1); 
-    @synchronized(obj) { 
-         NSLog(@&amp;quot;需要线程同步的操作2&amp;quot;); 
-     } 
-});
-
-&lt;/code&gt;&lt;/pre&gt;
-
-&lt;p&gt;&lt;strong&gt;Result&lt;/strong&gt;&lt;/p&gt;
-
-&lt;pre&gt;&lt;code&gt;ThreadTest[13438:385647] 需要线程同步的操作1 开始
-ThreadTest[13438:385647] 需要线程同步的操作1 结束
-ThreadTest[13438:385646] 需要线程同步的操作2
-&lt;/code&gt;&lt;/pre&gt;
-
-&lt;h6 id=&#34;nslock&#34;&gt;NSLock&lt;/h6&gt;
-
-&lt;span class=&#34;highlight-text blue&#34;&gt;互斥锁&lt;/span&gt;
-
-&lt;p&gt;将C语言的pthread_mutex锁进行了一次封装，更加的OC。&lt;code&gt;NSLock&lt;/code&gt;提供了&lt;code&gt;tryLock&lt;/code&gt;和&lt;code&gt;lockBeforeDate:&lt;/code&gt;方法。在加锁前尝试加锁，如果返回无法获得锁，并不会阻塞线程会继续往下走，返回&lt;code&gt;NO&lt;/code&gt;,&lt;code&gt;lockBeforeDate:&lt;/code&gt;让你控制加锁的时间，在规定时间未获得锁返回&lt;code&gt;NO&lt;/code&gt;
-&lt;/b&gt;&lt;/p&gt;
-
-&lt;p&gt;&lt;/b&gt;
-&lt;span class=&#34;highlight-text success&#34;&gt;
-Example
-&lt;/span&gt;&lt;/p&gt;
-
-&lt;pre&gt;&lt;code&gt;//创建锁
-NSLock *lock = [[NSLock alloc] init];
-//线程1
-dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{ 
-    //[lock lock]; 
-    //立即加锁
-    [lock lockBeforeDate:[NSDate date]];
-    NSLog(@&amp;quot;需要线程同步的操作1 开始&amp;quot;); 
-    sleep(2); 
-    NSLog(@&amp;quot;需要线程同步的操作1 结束&amp;quot;); 
-    [lock unlock];
-});
-//线程2
-dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
-    sleep(1);
-    //尝试加锁
-    if ([lock tryLock]) {
-        //尝试获取锁，如果获取不到返回NO，不会阻塞该线程 
-        NSLog(@&amp;quot;锁可用的操作&amp;quot;); 
-        [lock unlock]; 
-    }else{
-        NSLog(@&amp;quot;锁不可用的操作&amp;quot;); 
-    } 
-    
-    NSDate *date = [[NSDate alloc] initWithTimeIntervalSinceNow:3]; 
-    if ([lock lockBeforeDate:date]) {
-          //尝试在未来的3s内获取锁，并阻塞该线程，如果3s内获取不到恢复线程, 返回NO,不会阻塞该线程
-          NSLog(@&amp;quot;没有超时，获得锁&amp;quot;); 
-          [lock unlock]; 
-     }else{ 
-          NSLog(@&amp;quot;超时，没有获得锁&amp;quot;); 
-     } 
-});
-
-&lt;/code&gt;&lt;/pre&gt;
-
-&lt;p&gt;&lt;strong&gt;Result&lt;/strong&gt;&lt;/p&gt;
-
-&lt;pre&gt;&lt;code&gt;ThreadTest[13541:394814] 需要线程同步的操作 1 开始
-ThreadTest[13541:394804] 锁不可用的操作
-ThreadTest[13541:394814] 需要线程同步的操作 1 结束
-ThreadTest[13541:394804] 没有超时，获得锁
-&lt;/code&gt;&lt;/pre&gt;
-
-&lt;h6 id=&#34;nsrecursivelock&#34;&gt;NSRecursiveLock&lt;/h6&gt;
-
-&lt;p&gt;&lt;span class=&#34;highlight-text blue&#34;&gt;互斥锁&lt;/span&gt; &lt;span class=&#34;highlight-text blue&#34;&gt;递归锁&lt;/span&gt;&lt;/p&gt;
-
-&lt;p&gt;实现和&lt;code&gt;NSLock&lt;/code&gt;差不多，只不过在底层NSLock使用的C的&lt;code&gt;pthread_mutex_lock&lt;/code&gt;,而&lt;code&gt;NSRecursiveLock&lt;/code&gt;使用的是&lt;code&gt;pthread_mutex_recursive&lt;/code&gt;。
-它也同样提供了&lt;code&gt;- (BOOL)tryLock&lt;/code&gt;和&lt;code&gt;- (BOOL)lockBeforeDate:(NSDate *)limit&lt;/code&gt;方法&lt;/b&gt;&lt;/p&gt;
-
-&lt;p&gt;&lt;/b&gt;
-&lt;span class=&#34;highlight-text success&#34;&gt;
-Example
-&lt;/span&gt;&lt;/p&gt;
-
-&lt;pre&gt;&lt;code&gt;//NSLock *lock = [[NSLock alloc] init];
-NSRecursiveLock *lock = [[NSRecursiveLock alloc] init];
-dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{ 
-    static void (^RecursiveMethod)(int); 
-    RecursiveMethod = ^(int value) { 
-        [lock lock]; 
-        if (value &amp;gt; 0) { 
-            NSLog(@&amp;quot;value = %d&amp;quot;, value); 
-            sleep(1); 
-            RecursiveMethod(value - 1); 
-      } 
-        [lock unlock]; 
-    };
-     RecursiveMethod(5); 
-});
-
-&lt;/code&gt;&lt;/pre&gt;
-
-&lt;p&gt;如果使用&lt;code&gt;NSLock&lt;/code&gt;就会直接死锁。&lt;/p&gt;
-
-&lt;p&gt;&lt;strong&gt;Result&lt;/strong&gt;&lt;/p&gt;
-
-&lt;pre&gt;&lt;code&gt;ThreadTest[13593:400360] value = 5
-ThreadTest[13593:400360] value = 4
-ThreadTest[13593:400360] value = 4
-ThreadTest[13593:400360] value = 2
-ThreadTest[13593:400360] value = 1
-&lt;/code&gt;&lt;/pre&gt;
-
-&lt;h6 id=&#34;nscondition&#34;&gt;NSCondition&lt;/h6&gt;
-
-&lt;p&gt;&lt;span class=&#34;highlight-text blue&#34;&gt;互斥锁&lt;/span&gt; &lt;span class=&#34;highlight-text blue&#34;&gt;条件变量&lt;/span&gt;&lt;/p&gt;
-
-&lt;p&gt;条件变量和信号量很类似，提供了阻塞、等待就绪、唤醒线程的方法。比如，生产-消费者模式。
-在单线程执行中，我们经常会通过一个布尔值来控制某个方法或者值是否需要被执行和修改。在多线程的环境下，需要互斥锁来配合保证线程安全。&lt;/b&gt;&lt;/p&gt;
-
-&lt;p&gt;&lt;/b&gt;
-&lt;span class=&#34;highlight-text success&#34;&gt;
-Example
-&lt;/span&gt;&lt;/p&gt;
-
-&lt;pre&gt;&lt;code&gt;NSConditionLock *lock = [[NSConditionLock alloc] init];
-NSMutableArray *products = [NSMutableArray array]; 
-NSInteger HAS_DATA = 1; 
-NSInteger NO_DATA = 0;
-
-dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{ 
-    while (1) { 
-        [lock lockWhenCondition:NO_DATA]; 
-        [products addObject:[[NSObject alloc] init]]; 
-        NSLog(@&amp;quot;produce a product,总量:%zi&amp;quot;,products.count); 
-        [lock unlockWithCondition:HAS_DATA]; 
-        sleep(1); 
-   } 
-}); 
-
-dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{ 
-    while (1) { 
-         NSLog(@&amp;quot;wait for product&amp;quot;); 
-         [lock lockWhenCondition:HAS_DATA]; 
-         [products removeObjectAtIndex:0]; 
-         NSLog(@&amp;quot;custome a product&amp;quot;); 
-         [lock unlockWithCondition:NO_DATA]; 
-    } 
-});
-
-&lt;/code&gt;&lt;/pre&gt;
-
-&lt;p&gt;&lt;strong&gt;Result&lt;/strong&gt;&lt;/p&gt;
-
-&lt;pre&gt;&lt;code&gt;ThreadTest[13645:406942] wait for product
-ThreadTest[13645:406951] produce a product, 总量 :1
-ThreadTest[13645:406942] custome a product
-ThreadTest[13645:406942] wait for product
-ThreadTest[13645:406951] produce a product, 总量:1
-ThreadTest[13645:406942] custome a product
-&lt;/code&gt;&lt;/pre&gt;
-
-&lt;p&gt;只有当&lt;code&gt;unlock&lt;/code&gt;和&lt;code&gt;lock&lt;/code&gt;的值一一对应才能唤醒线程，执行后续操作。&lt;/p&gt;
-
-&lt;h5 id=&#34;dispatch-semaphore-信号&#34;&gt;dispatch_semaphore（信号）&lt;/h5&gt;
-
-&lt;p&gt;通过信号来控制同时执行的线程个数，来达到枷锁的目的。只有当信号大于0的时候才能执行接下去的操作。&lt;/p&gt;
-
-&lt;pre&gt;&lt;code&gt;//创建一个信号，同一时间只有一个线程可以执行，10即10个线程可以同时执行
-dispatch_semaphore_create(1)
-&lt;/code&gt;&lt;/pre&gt;
-
-&lt;pre&gt;&lt;code&gt;//等待信号&amp;gt;0的时候再执行下面的操作，并将信号减一
-dispatch_semaphore_wait(self._lock, DISPATCH_TIME_FOREVER)
-&lt;/code&gt;&lt;/pre&gt;
-
-&lt;pre&gt;&lt;code&gt;//信号+1
-dispatch_semaphore_signal(self._lock)
-&lt;/code&gt;&lt;/pre&gt;
-
-&lt;p&gt;&lt;/b&gt;
-&lt;span class=&#34;highlight-text success&#34;&gt;
-Example
-&lt;/span&gt;&lt;/p&gt;
-
-&lt;pre&gt;&lt;code&gt;self._lock = dispatch_semaphore_create(1);
-    self.array = [[NSMutableArray alloc] initWithObjects:@(1),@(2),@(3), nil];
-    for (int i = 0; i &amp;lt; 100; i ++) {
-        dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
-            dispatch_semaphore_wait(self._lock, DISPATCH_TIME_FOREVER);
-            NSLog(@&amp;quot;-----%d&amp;quot;,i);
-            sleep(2);
-            dispatch_semaphore_signal(self._lock);
-        });
-    }
-&lt;/code&gt;&lt;/pre&gt;
-
-&lt;p&gt;&lt;strong&gt;Result&lt;/strong&gt;&lt;/p&gt;
-
-&lt;pre&gt;&lt;code&gt;MultiThread[10894:436938] -----0
-MultiThread[10894:436939] -----1
-MultiThread[10894:436945] -----2
-MultiThread[10894:436937] -----3
-MultiThread[10894:436936] -----4
-&lt;/code&gt;&lt;/pre&gt;
-
-&lt;p&gt;以上除了第一个结果其他的每隔2s才打印出来&lt;/p&gt;
-
-&lt;h4 id=&#34;参考资料&#34;&gt;参考资料&lt;/h4&gt;
-
-&lt;p&gt;&lt;a href=&#34;https://blog.ibireme.com/2016/01/16/spinlock_is_unsafe_in_ios/&#34;&gt;不再安全的 OSSpinLock&lt;/a&gt;&lt;/p&gt;
-
-&lt;p&gt;&lt;a href=&#34;https://casatwy.com/pthreadde-ge-chong-tong-bu-ji-zhi.html&#34;&gt;pthread的各种同步机制&lt;/a&gt;&lt;/p&gt;
-
-&lt;p&gt;&lt;a href=&#34;https://bestswifter.com/ios-lock/&#34;&gt;深入理解 iOS 开发中的锁&lt;/a&gt;&lt;/p&gt;
-
-&lt;p&gt;&lt;a href=&#34;http://www.jianshu.com/p/4edf98a61483&#34;&gt;IOS 保证线程同步方式&amp;amp;性能对比&lt;/a&gt;&lt;/p&gt;
-
-&lt;p&gt;&lt;a href=&#34;https://github.com/lattera/glibc/blob/master/nptl/pthread_mutex_lock.c&#34;&gt;pthreadmutexlock.c 源码&lt;/a&gt;&lt;/p&gt;
-
-&lt;p&gt;&lt;a href=&#34;http://yulingtianxia.com/blog/2015/11/01/More-than-you-want-to-know-about-synchronized/&#34;&gt;关于 @synchronized，这儿比你想知道的还要多&lt;/a&gt;&lt;/p&gt;
-
-&lt;p&gt;&lt;a href=&#34;http://pubs.opengroup.org/onlinepubs/7908799/xsh/pthread_mutex_lock.html&#34;&gt;pthreadmutexlock&lt;/a&gt;
-&lt;a href=&#34;https://developer.apple.
-com/library/content/documentation/Cocoa/Conceptual/Multithreading/ThreadSafety/ThreadSafety.html&#34;&gt;ThreadSafety&lt;/a&gt;&lt;/p&gt;
-
-&lt;p&gt;&lt;a href=&#34;https://stackoverflow.com/questions/62814/difference-between-binary-semaphore-and-mutex&#34;&gt;Difference between binary semaphore and mutex&lt;/a&gt;&lt;/p&gt;
-
-&lt;p&gt;&lt;a href=&#34;http://blog.csdn.net/Javadino/article/details/2891388&#34;&gt;[Pthread] Linux中的线程同步机制(二)&amp;ndash;In Glibc&lt;/a&gt;&lt;/p&gt;
-
-&lt;p&gt;&lt;a href=&#34;https://android.googlesource.com/platform/external/pthreads/+/master/pthread_cond_wait.
-c&#34;&gt;pthreadcondwait&lt;/a&gt;&lt;/p&gt;
-
-&lt;p&gt;&lt;a href=&#34;https://stackoverflow.com/questions/3513045/conditional-variable-vs-semaphore&#34;&gt;Conditional Variable vs Semaphore&lt;/a&gt;&lt;/p&gt;</description>
     </item>
     
   </channel>

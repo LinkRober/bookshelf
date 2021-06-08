@@ -1,5 +1,9 @@
 
 
+  
+    
+  
+
 
   
 
@@ -16,25 +20,29 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <meta name="generator" content="Hugo 0.17 with theme Tranquilpeak 0.4.1-BETA">
-    <title>Reactnative</title>
+    <title>iOS中的方法编码</title>
     <meta name="author" content="董二千">
-    <meta name="keywords" content="">
+    <meta name="keywords" content="runtime, encode">
 
     <link rel="icon" href="https://LinkRober.github.io/bookshelf/favicon.png">
     
-      <link rel="alternate" type="application/rss+xml" title="RSS" href="https://LinkRober.github.io/bookshelf/tags/reactnative/index.xml">
-    
 
     
-    <meta name="description" content="我们为什么要学习，毕竟改变需要时间">
-    <meta property="og:description" content="我们为什么要学习，毕竟改变需要时间">
+    <meta name="description" content="当我们在日常开发中，如果涉及到一些iOS底层的东西就可能会遇到方法编码，这里了解这门语言必不可少的一个环节。
+
+">
+    <meta property="og:description" content="当我们在日常开发中，如果涉及到一些iOS底层的东西就可能会遇到方法编码，这里了解这门语言必不可少的一个环节。
+
+">
     <meta property="og:type" content="blog">
-    <meta property="og:title" content="Reactnative">
-    <meta property="og:url" content="/tags/reactnative/">
+    <meta property="og:title" content="iOS中的方法编码">
+    <meta property="og:url" content="/2021/06/ios%E4%B8%AD%E7%9A%84%E6%96%B9%E6%B3%95%E7%BC%96%E7%A0%81/">
     <meta property="og:site_name" content="董二千">
     <meta name="twitter:card" content="summary">
     <meta name="twitter:title" content="董二千">
-    <meta name="twitter:description" content="我们为什么要学习，毕竟改变需要时间">
+    <meta name="twitter:description" content="当我们在日常开发中，如果涉及到一些iOS底层的东西就可能会遇到方法编码，这里了解这门语言必不可少的一个环节。
+
+">
     
     
 
@@ -69,7 +77,7 @@
 
   <body>
     <div id="blog">
-      <header id="header" data-behavior="1">
+      <header id="header" data-behavior="4">
   <i id="btn-open-sidebar" class="fa fa-lg fa-bars"></i>
   <div class="header-title">
     <a class="header-title-link" href="https://LinkRober.github.io/bookshelf/">董二千</a>
@@ -89,7 +97,7 @@
   
 </header>
 
-      <nav id="sidebar" data-behavior="1">
+      <nav id="sidebar" data-behavior="4">
   <div class="sidebar-container">
     
       <div class="sidebar-profile">
@@ -188,46 +196,26 @@
 </nav>
 
       
-        
 
-      
-      <div id="main" data-behavior="1"
+      <div id="main" data-behavior="4"
         class="
                hasCoverMetaIn
                ">
-        
-          <section class="postShorten-group main-content-wrap">
-            
-            
-              
-  
-    
-      
-        
+        <article class="post" itemscope itemType="http://schema.org/BlogPosting">
           
-        
-      
-    
+          
+            <div class="post-header main-content-wrap text-left">
   
-
-
+    <h1 class="post-title" itemprop="headline">
+      iOS中的方法编码
+    </h1>
   
-
-<article class="postShorten postShorten--thumbnailimg-bottom" itemscope itemType="http://schema.org/BlogPosting">
-  <div class="postShorten-wrap">
-    
-    <div class="postShorten-header">
-      <h1 class="postShorten-title" itemprop="headline">
-        <a class="link-unstyled" href="https://linkrober.github.io/bookshelf/2017/12/object-c%E5%92%8Cjs%E9%80%9A%E4%BF%A1%E6%A6%82%E8%BF%B0/">
-          Object-C和JS通信概述
-        </a>
-      </h1>
-      
+  
   <div class="postShorten-meta post-meta">
     
-      <time itemprop="datePublished" datetime="2017-12-25T00:00:00Z">
+      <time itemprop="datePublished" datetime="2021-06-08T00:00:00Z">
         
-  十二月 25, 2017
+  六月 8, 2021
 
       </time>
     
@@ -236,269 +224,505 @@
   
     <span>发布在</span>
     
-      <a class="category-link" href="https://LinkRober.github.io/bookshelf/categories/reactnative">ReactNative</a>
+      <a class="category-link" href="https://LinkRober.github.io/bookshelf/categories/ios">iOS</a>
     
   
 
 
   </div>
 
-    </div>
-    <div class="postShorten-excerpt" itemprop="articleBody">
-      <p>本系列文章作为学习RN期间的总结</p>
-
-<ul>
-<li><a href="https://linkrober.github.io/bookshelf/2017/10/react-native%E5%A6%82%E4%BD%95%E9%9B%86%E6%88%90%E5%88%B0%E7%8E%B0%E6%9C%89%E9%A1%B9%E7%9B%AE%E4%B8%AD/">React Native如何集成到现有项目中</a></li>
-<li><a href="https://linkrober.github.io/bookshelf/2017/10/react-native%E5%92%8Cnative%E9%97%B4%E7%9A%84%E9%80%9A%E4%BF%A1/">React Native和Native间的通信实践</a></li>
-<li><a href="https://linkrober.github.io/bookshelf/2017/10/rctrootviewrctbridge%E5%81%9A%E4%BA%86%E4%BB%80%E4%B9%88/">RCTRootView、RCTBridge做了什么</a></li>
-<li>Object-C和JS通信概述</li>
-</ul>
+</div>
+          
+          <div class="post-content markdown" itemprop="articleBody">
+            <div class="main-content-wrap">
+              <p>当我们在日常开发中，如果涉及到一些iOS底层的东西就可能会遇到方法编码，这里了解这门语言必不可少的一个环节。</p>
 
 <p></p>
-      <p>
-        <a href="https://linkrober.github.io/bookshelf/2017/12/object-c%E5%92%8Cjs%E9%80%9A%E4%BF%A1%E6%A6%82%E8%BF%B0/" class="postShorten-excerpt_link link">阅读全文</a>
+
+<h5 id="object-c-编码类型">Object-C 编码类型</h5>
+
+<table>
+<thead>
+<tr>
+<th align="center">类型</th>
+<th align="center">意义</th>
+</tr>
+</thead>
+
+<tbody>
+<tr>
+<td align="center">c</td>
+<td align="center">A char</td>
+</tr>
+
+<tr>
+<td align="center">i</td>
+<td align="center">An int</td>
+</tr>
+
+<tr>
+<td align="center">s</td>
+<td align="center">A short</td>
+</tr>
+
+<tr>
+<td align="center">l</td>
+<td align="center">A long l is treated as a 32-bit quantity on 64-bit programs</td>
+</tr>
+
+<tr>
+<td align="center">q</td>
+<td align="center">A long long</td>
+</tr>
+
+<tr>
+<td align="center">C</td>
+<td align="center">An unsigned char</td>
+</tr>
+
+<tr>
+<td align="center">I</td>
+<td align="center">An unsigned int</td>
+</tr>
+
+<tr>
+<td align="center">S</td>
+<td align="center">An unsigned short</td>
+</tr>
+
+<tr>
+<td align="center">L</td>
+<td align="center">An unsigned long</td>
+</tr>
+
+<tr>
+<td align="center">Q</td>
+<td align="center">An unsigned long long</td>
+</tr>
+
+<tr>
+<td align="center">f</td>
+<td align="center">A float</td>
+</tr>
+
+<tr>
+<td align="center">d</td>
+<td align="center">A double</td>
+</tr>
+
+<tr>
+<td align="center">B</td>
+<td align="center">A C++ bool or a C99 _Bool</td>
+</tr>
+
+<tr>
+<td align="center">v</td>
+<td align="center">A void</td>
+</tr>
+
+<tr>
+<td align="center">*</td>
+<td align="center">A character string(char *)</td>
+</tr>
+
+<tr>
+<td align="center">@</td>
+<td align="center">An object (whether statically typed or typed id)</td>
+</tr>
+
+<tr>
+<td align="center">#</td>
+<td align="center">A class object(Class)</td>
+</tr>
+
+<tr>
+<td align="center">:</td>
+<td align="center">A method selector(SEL)</td>
+</tr>
+
+<tr>
+<td align="center">[array type]</td>
+<td align="center">An array</td>
+</tr>
+
+<tr>
+<td align="center">{name=type&hellip;}</td>
+<td align="center">A structure</td>
+</tr>
+
+<tr>
+<td align="center">(name=type&hellip;)</td>
+<td align="center">A union</td>
+</tr>
+
+<tr>
+<td align="center">bnum</td>
+<td align="center">A bit field of num bits</td>
+</tr>
+
+<tr>
+<td align="center">^type</td>
+<td align="center">A pointer to type</td>
+</tr>
+
+<tr>
+<td align="center">?</td>
+<td align="center">An unknown type(among other things, this code is used for function pointers)</td>
+</tr>
+</tbody>
+</table>
+
+<blockquote>
+<p><a href="https://developer.apple.com/library/archive/documentation/Cocoa/Conceptual/ObjCRuntimeGuide/Articles/ocrtTypeEncodings.html#//apple_ref/doc/uid/TP40008048-CH100">来自苹果文档</a></p>
+</blockquote>
+
+<p>如何获取某个类型的编码：</p>
+
+<pre><code>NSLog(@&quot;int        : %s&quot;, @encode(int));
+NSLog(@&quot;float      : %s&quot;, @encode(float));
+NSLog(@&quot;float *    : %s&quot;, @encode(float*));
+NSLog(@&quot;char       : %s&quot;, @encode(char));
+NSLog(@&quot;char *     : %s&quot;, @encode(char *));
+NSLog(@&quot;BOOL       : %s&quot;, @encode(BOOL));
+NSLog(@&quot;void       : %s&quot;, @encode(void));
+NSLog(@&quot;void *     : %s&quot;, @encode(void *));
+
+NSLog(@&quot;NSObject * : %s&quot;, @encode(NSObject *));
+NSLog(@&quot;NSObject   : %s&quot;, @encode(NSObject));
+NSLog(@&quot;[NSObject] : %s&quot;, @encode(typeof([NSObject class])));
+NSLog(@&quot;NSError ** : %s&quot;, @encode(typeof(NSError **)));
+
+int intArray[5] = {1, 2, 3, 4, 5};
+NSLog(@&quot;int[]      : %s&quot;, @encode(typeof(intArray)));
+
+float floatArray[3] = {0.1f, 0.2f, 0.3f};
+NSLog(@&quot;float[]    : %s&quot;, @encode(typeof(floatArray)));
+
+typedef struct _struct {
+    short a;
+    long long b;
+    unsigned long long c;
+} Struct;
+NSLog(@&quot;struct     : %s&quot;, @encode(typeof(Struct)));
+</code></pre>
+
+<h5 id="实例或类方法编码">实例或类方法编码</h5>
+
+<h6 id="定义一个person类">定义一个Person类</h6>
+
+<pre><code>@interface Person : NSObject
+
+- (void)say:(NSString *)something;
+
+@end
+
+
+@implementation Person
+
+- (void)say:(NSString *)something {
+    NSLog(@&quot;Well Done&quot;);
+}
+
+</code></pre>
+
+<h6 id="获取person实例方法的方法编码">获取Person实例方法的方法编码</h6>
+
+<pre><code>Person *p = [Person new];
+Method method = class_getInstanceMethod([Person class], @selector(say:));
+const char *paramsType = method_getTypeEncoding(method);
+//输出：&quot;v24@0:8@16&quot;
+</code></pre>
+
+<blockquote>
+<p>类方法使用<code>class_getClassMethod(&lt;Class  _Nullable __unsafe_unretained cls&gt;, &lt;SEL  _Nonnull name&gt;)</code>获取Method</p>
+</blockquote>
+
+<p><code>v</code>返回值是<code>void</code>类型，<code>24</code>方法参数占24个字节，<code>@</code>指self，<code>0</code>代表self起始地址的偏移量是0，<code>:</code>指selector，<code>8</code>代表selector起始地址偏移量是8，<code>@</code>指入参是一个对象，<code>16</code>代表入参起始地址的偏移量是16。16+8(对象占8个字节大小)=24，就是这个方法的大小了。</p>
+
+<h5 id="代码块">代码块</h5>
+
+<p>苹果的Block内存布局：</p>
+
+<pre><code>enum {
+    BLOCK_DEALLOCATING =      (0x0001),  // runtime
+    BLOCK_REFCOUNT_MASK =     (0xfffe),  // runtime
+    BLOCK_NEEDS_FREE =        (1 &lt;&lt; 24), // runtime
+    BLOCK_HAS_COPY_DISPOSE =  (1 &lt;&lt; 25), // compiler
+    BLOCK_HAS_CTOR =          (1 &lt;&lt; 26), // compiler: helpers have C++ code
+    BLOCK_IS_GC =             (1 &lt;&lt; 27), // runtime
+    BLOCK_IS_GLOBAL =         (1 &lt;&lt; 28), // compiler
+    BLOCK_USE_STRET =         (1 &lt;&lt; 29), // compiler: undefined if !BLOCK_HAS_SIGNATURE
+    BLOCK_HAS_SIGNATURE  =    (1 &lt;&lt; 30)  // compiler
+};
+
+// revised new layout
+
+#define BLOCK_DESCRIPTOR_1 1
+struct Block_descriptor_1 {
+    unsigned long int reserved;
+    unsigned long int size;
+};
+
+#define BLOCK_DESCRIPTOR_2 1
+struct Block_descriptor_2 {
+    // requires BLOCK_HAS_COPY_DISPOSE
+    void (*copy)(void *dst, const void *src);
+    void (*dispose)(const void *);
+};
+
+#define BLOCK_DESCRIPTOR_3 1
+struct Block_descriptor_3 {
+    // requires BLOCK_HAS_SIGNATURE
+    const char *signature;
+    const char *layout;
+};
+
+struct Block_layout {
+    void *isa;
+    volatile int flags; // contains ref count
+    int reserved; 
+    void (*invoke)(void *, ...);
+    struct Block_descriptor_1 *descriptor;
+    // imported variables
+};
+</code></pre>
+
+<p>可以看到这里有三个结构体<code>Block_layout</code> <code>Block_descriptor_1</code> <code>Block_descriptor_2</code> <code>Block_descriptor_3</code>主结构体是<code>Block_layout</code>，<code>Block_descriptor_1</code>是每个Block结构体都有的，<code>Block_descriptor_2</code> <code>Block_descriptor_3</code>要根据<code>flags</code>来判断。如果<code>flags&amp;BLOCK_HAS_COPY_DISPOSE</code>为真，就会有<code>Block_descriptor_2</code>结构体；如果<code>flags&amp;BLOCK_HAS_SIGNATURE</code>为真，就会有<code>Block_descriptor_3</code>结构体。一个完全体的Block结构体就是:</p>
+
+<pre><code>struct Block_layout {
+    void *isa;
+    volatile int flags; // contains ref count
+    int reserved; 
+    void (*invoke)(void *, ...);
+    struct Block_descriptor_1 *descriptor;
+    struct Block_descriptor_2 *descriptor2;
+    struct Block_descriptor_3 *descriptor3;
+};
+</code></pre>
+
+<p><code>Block_descriptor_3</code>里面就保存了我们想要的<strong>方法编码</strong>。将Block的结构体铺开，大概是下面的样子（一张Aspect实现的结构体的内部布局图）
+<img src="https://lc-api-gold-cdn.xitu.io/3293f66aeb756e10eba7" alt="" />
+这时候我们可以先定义一个Block结构<code>AspectBlockRef</code>，通过<code>__bridge void *</code>将OC对象转换成结构体指针。
+Aspect定义的结构体</p>
+
+<pre><code>typedef struct _AspectBlock {
+    __unused Class isa;
+    AspectBlockFlags flags;
+    __unused int reserved;
+    void (__unused *invoke)(struct _AspectBlock *block, ...);
+    struct {
+        unsigned long int reserved;
+        unsigned long int size;
+        // requires AspectBlockFlagsHasCopyDisposeHelpers
+        void (*copy)(void *dst, const void *src);
+        void (*dispose)(const void *);
+        // requires AspectBlockFlagsHasSignature
+        const char *signature;
+        const char *layout;
+    } *descriptor;
+    // imported variables
+} *AspectBlockRef;
+</code></pre>
+
+<p>成功转换得到结构体之后，可以访问成员<code>descriptor</code>，再通过指针的偏移拿到签名<code>signature</code>所在的地址。</p>
+
+<pre><code>static NSMethodSignature *aspect_blockMethodSignature(id block, NSError **error) {
+    AspectBlockRef layout = (__bridge void *)block;
+    if (!(layout-&gt;flags &amp; AspectBlockFlagsHasSignature)) {
+        NSString *description = [NSString stringWithFormat:@&quot;The block %@ doesn't contain a type signature.&quot;, block];
+//        AspectError(AspectErrorMissingBlockSignature, description);
+        return nil;
+    }
+    void *desc = layout-&gt;descriptor;
+    desc += 2 * sizeof(unsigned long int);
+    if (layout-&gt;flags &amp; AspectBlockFlagsHasCopyDisposeHelpers) {
+        desc += 2 * sizeof(void *);
+    }
+    if (!desc) {
+        NSString *description = [NSString stringWithFormat:@&quot;The block %@ doesn't has a type signature.&quot;, block];
+//        AspectError(AspectErrorMissingBlockSignature, description);
+        return nil;
+    }
+    const char *signature = (*(const char **)desc);
+    return [NSMethodSignature signatureWithObjCTypes:signature];
+}
+</code></pre>
+
+<p>当拿到签名<code>NSMethodSignature</code>之后我们可以通过runtime获得我们所需要的方法编码:</p>
+
+<pre><code>NSString *getMethodSignatureTypeEncoding(NSMethodSignature *methodSignature){
+    NSMutableString *str = @&quot;&quot;.mutableCopy;
+    const char *rtvType = methodSignature.methodReturnType;
+    [str appendString:[NSString stringWithUTF8String:rtvType]];
+
+    for (int i = 0; i &lt; methodSignature.numberOfArguments; i ++) {
+        const char *type = [methodSignature getArgumentTypeAtIndex:i];
+        [str appendString:[NSString stringWithUTF8String:type]];
+    }
+    return [str copy];
+}
+</code></pre>
+
+<p>写个例子：</p>
+
+<pre><code>typedef id (^TestBlock)(id a);
+TestBlock block = ^id (id a){
+        return [NSObject new];
+    };
+NSMethodSignature *mallocBlockSignature = aspect_blockMethodSignature(block, NULL);
+NSString *methodTypes = getMethodSignatureTypeEncoding(mallocBlockSignature);
+//输出：@@?@
+</code></pre>
+
+<p>第一个<code>@</code>是返回值；第二个<code>@</code>是self；<code>?</code>这是Block和普通的方法编码有别的地方，不是<code>:</code>而是<code>?</code>；第三个<code>@</code>是入参。</p>
+
+<h5 id="为什么要研究方法编码">为什么要研究方法编码</h5>
+
+<p>我们在做一些框架的时候并不能像做业务开发一样直接向这个对象发送消息，我们需要自己去组装，通过<code>NSInvocation</code>或<code>消息转发</code>进行发送。比如，<code>Aspect</code> <code>一些组件间通信框架</code> <code>JSPatch</code>等。</p>
+
+<h5 id="参考资料">参考资料</h5>
+
+<p><a href="https://opensource.apple.com/source/libclosure/libclosure-59/Block_private.h.auto.html">Block_private.h</a></p>
+
+<p><a href="https://dmaclach.medium.com/objective-c-encoding-and-you-866624cc02de">Objective C, Encoding and You
+</a></p>
+              
+            </div>
+          </div>
+          <div id="post-footer" class="post-footer main-content-wrap">
+            
+              
+                
+                
+                  <div class="post-footer-tags">
+                    <span class="text-color-light text-small">标签</span><br/>
+                    
+  <a class="tag tag--primary tag--small" href="https://linkrober.github.io/bookshelf//tags/runtime/">runtime</a>
+
+  <a class="tag tag--primary tag--small" href="https://linkrober.github.io/bookshelf//tags/encode/">encode</a>
+
+                  </div>
+                
+              
+            
+            
+  <div class="post-actions-wrap">
+      <nav >
+        <ul class="post-actions post-action-nav">
+            <li class="post-action">
+              
+                <a class="post-action-btn btn btn--disabled">
+              
+                <i class="fa fa-angle-left"></i>
+                <span class="hide-xs hide-sm text-small icon-ml">下一篇</span>
+              </a>
+            </li>
+            <li class="post-action">
+              
+                <a class="post-action-btn btn btn--default tooltip--top" href="https://LinkRober.github.io/bookshelf/2020/12/weak%E7%9A%84%E5%AE%9E%E7%8E%B0-sidetablesoldobj/" data-tooltip="Weak的实现-&amp;SideTables()[oldObj]">
+              
+                <span class="hide-xs hide-sm text-small icon-mr">上一篇</span>
+                <i class="fa fa-angle-right"></i>
+              </a>
+            </li>
+        </ul>
+      </nav>
+    <ul class="post-actions post-action-share" >
+      
+        <li class="post-action hide-lg hide-md hide-sm">
+          <a class="post-action-btn btn btn--default btn-open-shareoptions" href="#btn-open-shareoptions">
+            <i class="fa fa-share-alt"></i>
+          </a>
+        </li>
         
-      </p>
-    </div>
+      
+      
+        <li class="post-action">
+          <a class="post-action-btn btn btn--default" href="#disqus_thread">
+            <i class="fa fa-comment-o"></i>
+          </a>
+        </li>
+      
+      <li class="post-action">
+        
+          <a class="post-action-btn btn btn--default" href="#">
+        
+          <i class="fa fa-list"></i>
+        </a>
+      </li>
+    </ul>
   </div>
-  
-    <a href="https://linkrober.github.io/bookshelf/2017/12/object-c%E5%92%8Cjs%E9%80%9A%E4%BF%A1%E6%A6%82%E8%BF%B0/">
-      <div class="postShorten-thumbnailimg">
-        <img alt="" itemprop="image" src="https://LinkRober.github.io/Merry-Christmas-Wallpapers.jpg"/>
-      </div>
-    </a>
-  
-</article>
+
 
             
               
-  
-    
-      
-        
-          
-        
-      
-    
-  
-
-
-  
-
-<article class="postShorten postShorten--thumbnailimg-bottom" itemscope itemType="http://schema.org/BlogPosting">
-  <div class="postShorten-wrap">
-    
-    <div class="postShorten-header">
-      <h1 class="postShorten-title" itemprop="headline">
-        <a class="link-unstyled" href="https://linkrober.github.io/bookshelf/2017/10/rctrootviewrctbridge%E5%81%9A%E4%BA%86%E4%BB%80%E4%B9%88/">
-          RCTRootView、RCTBridge做了什么
-        </a>
-      </h1>
-      
-  <div class="postShorten-meta post-meta">
-    
-      <time itemprop="datePublished" datetime="2017-10-28T00:00:00Z">
-        
-  十月 28, 2017
-
-      </time>
-    
-    
-  
-  
-    <span>发布在</span>
-    
-      <a class="category-link" href="https://LinkRober.github.io/bookshelf/categories/reactnative">ReactNative</a>
-    
-  
-
-
-  </div>
-
-    </div>
-    <div class="postShorten-excerpt" itemprop="articleBody">
-      <p>本系列文章作为学习RN期间的总结</p>
-
-<ul>
-<li><a href="https://linkrober.github.io/bookshelf/2017/10/react-native%E5%A6%82%E4%BD%95%E9%9B%86%E6%88%90%E5%88%B0%E7%8E%B0%E6%9C%89%E9%A1%B9%E7%9B%AE%E4%B8%AD/">React Native如何集成到现有项目中</a></li>
-<li><a href="https://linkrober.github.io/bookshelf/2017/10/react-native%E5%92%8Cnative%E9%97%B4%E7%9A%84%E9%80%9A%E4%BF%A1/">React Native和Native间的通信实践</a></li>
-<li>RCTRootView、RCTBridge做了什么</li>
-<li><a href="https://linkrober.github.io/bookshelf/2017/12/native%E5%92%8Cjs%E9%80%9A%E4%BF%A1%E6%A6%82%E8%BF%B0/">Object-C和JS通信概述</a></li>
-</ul>
-
-<p></p>
-      <p>
-        <a href="https://linkrober.github.io/bookshelf/2017/10/rctrootviewrctbridge%E5%81%9A%E4%BA%86%E4%BB%80%E4%B9%88/" class="postShorten-excerpt_link link">阅读全文</a>
-        
-      </p>
-    </div>
-  </div>
-  
-    <a href="https://linkrober.github.io/bookshelf/2017/10/rctrootviewrctbridge%E5%81%9A%E4%BA%86%E4%BB%80%E4%B9%88/">
-      <div class="postShorten-thumbnailimg">
-        <img alt="" itemprop="image" src="https://LinkRober.github.io/rn_image.jpg"/>
-      </div>
-    </a>
-  
-</article>
-
-            
+                <div id="disqus_thread">
+  <noscript>Please enable JavaScript to view the <a href="//disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
+</div>
               
-  
-    
-      
-        
-          
-        
-      
-    
-  
-
-
-  
-
-<article class="postShorten postShorten--thumbnailimg-bottom" itemscope itemType="http://schema.org/BlogPosting">
-  <div class="postShorten-wrap">
-    
-    <div class="postShorten-header">
-      <h1 class="postShorten-title" itemprop="headline">
-        <a class="link-unstyled" href="https://linkrober.github.io/bookshelf/2017/10/react-native%E5%92%8Cnative%E9%97%B4%E7%9A%84%E9%80%9A%E4%BF%A1%E5%AE%9E%E8%B7%B5/">
-          React Native和Native间的通信实践
-        </a>
-      </h1>
-      
-  <div class="postShorten-meta post-meta">
-    
-      <time itemprop="datePublished" datetime="2017-10-25T00:00:00Z">
-        
-  十月 25, 2017
-
-      </time>
-    
-    
-  
-  
-    <span>发布在</span>
-    
-      <a class="category-link" href="https://LinkRober.github.io/bookshelf/categories/reactnative">ReactNative</a>
-    
-  
-
-
-  </div>
-
-    </div>
-    <div class="postShorten-excerpt" itemprop="articleBody">
-      <!-- thumbnailImage = 'rn_image.jpeg'
-thumbnailImagePosition = 'bottom' -->
-
-<p>本系列文章作为学习RN期间的总结</p>
-
-<ul>
-<li><a href="https://linkrober.github.io/bookshelf/2017/10/react-native%E5%A6%82%E4%BD%95%E9%9B%86%E6%88%90%E5%88%B0%E7%8E%B0%E6%9C%89%E9%A1%B9%E7%9B%AE%E4%B8%AD/">React Native如何集成到现有项目中</a></li>
-<li>React Native和Native间的通信实践</li>
-<li><a href="https://linkrober.github.io/bookshelf/2017/10/rctrootviewrctbridge%E5%81%9A%E4%BA%86%E4%BB%80%E4%B9%88/">RCTRootView、RCTBridge做了什么</a></li>
-<li><a href="https://linkrober.github.io/bookshelf/2017/12/native%E5%92%8Cjs%E9%80%9A%E4%BF%A1%E6%A6%82%E8%BF%B0/">Object-C和JS通信概述</a></li>
-</ul>
-
-<p></p>
-      <p>
-        <a href="https://linkrober.github.io/bookshelf/2017/10/react-native%E5%92%8Cnative%E9%97%B4%E7%9A%84%E9%80%9A%E4%BF%A1%E5%AE%9E%E8%B7%B5/" class="postShorten-excerpt_link link">阅读全文</a>
-        
-      </p>
-    </div>
-  </div>
-  
-    <a href="https://linkrober.github.io/bookshelf/2017/10/react-native%E5%92%8Cnative%E9%97%B4%E7%9A%84%E9%80%9A%E4%BF%A1%E5%AE%9E%E8%B7%B5/">
-      <div class="postShorten-thumbnailimg">
-        <img alt="" itemprop="image" src="https://LinkRober.github.io/rn_image.jpg"/>
-      </div>
-    </a>
-  
-</article>
-
             
+          </div>
+        </article>
+        
+      </div>
+      <div id="bottom-bar" class="post-bottom-bar" data-behavior="4">
+        
+  <div class="post-actions-wrap">
+      <nav >
+        <ul class="post-actions post-action-nav">
+            <li class="post-action">
               
-  
-    
+                <a class="post-action-btn btn btn--disabled">
+              
+                <i class="fa fa-angle-left"></i>
+                <span class="hide-xs hide-sm text-small icon-ml">下一篇</span>
+              </a>
+            </li>
+            <li class="post-action">
+              
+                <a class="post-action-btn btn btn--default tooltip--top" href="https://LinkRober.github.io/bookshelf/2020/12/weak%E7%9A%84%E5%AE%9E%E7%8E%B0-sidetablesoldobj/" data-tooltip="Weak的实现-&amp;SideTables()[oldObj]">
+              
+                <span class="hide-xs hide-sm text-small icon-mr">上一篇</span>
+                <i class="fa fa-angle-right"></i>
+              </a>
+            </li>
+        </ul>
+      </nav>
+    <ul class="post-actions post-action-share" >
       
-        
-          
+        <li class="post-action hide-lg hide-md hide-sm">
+          <a class="post-action-btn btn btn--default btn-open-shareoptions" href="#btn-open-shareoptions">
+            <i class="fa fa-share-alt"></i>
+          </a>
+        </li>
         
       
-    
-  
-
-
-  
-
-<article class="postShorten postShorten--thumbnailimg-bottom" itemscope itemType="http://schema.org/BlogPosting">
-  <div class="postShorten-wrap">
-    
-    <div class="postShorten-header">
-      <h1 class="postShorten-title" itemprop="headline">
-        <a class="link-unstyled" href="https://linkrober.github.io/bookshelf/2017/10/react-native%E5%A6%82%E4%BD%95%E9%9B%86%E6%88%90%E5%88%B0%E7%8E%B0%E6%9C%89%E9%A1%B9%E7%9B%AE%E4%B8%AD/">
-          React Native如何集成到现有项目中
+      
+        <li class="post-action">
+          <a class="post-action-btn btn btn--default" href="#disqus_thread">
+            <i class="fa fa-comment-o"></i>
+          </a>
+        </li>
+      
+      <li class="post-action">
+        
+          <a class="post-action-btn btn btn--default" href="#">
+        
+          <i class="fa fa-list"></i>
         </a>
-      </h1>
-      
-  <div class="postShorten-meta post-meta">
-    
-      <time itemprop="datePublished" datetime="2017-10-23T00:00:00Z">
-        
-  十月 23, 2017
-
-      </time>
-    
-    
-  
-  
-    <span>发布在</span>
-    
-      <a class="category-link" href="https://LinkRober.github.io/bookshelf/categories/reactnative">ReactNative</a>
-    
-  
-
-
+      </li>
+    </ul>
   </div>
 
-    </div>
-    <div class="postShorten-excerpt" itemprop="articleBody">
-      <!-- thumbnailImage = 'rn_thumbnailImage.jpeg'
-thumbnailImagePosition = 'bottom' -->
 
-<p>本系列文章作为学习RN期间的总结</p>
-
-<ul>
-<li>React Native如何集成到现有项目中</li>
-<li><a href="https://linkrober.github.io/bookshelf/2017/10/react-native%E5%92%8Cnative%E9%97%B4%E7%9A%84%E9%80%9A%E4%BF%A1/">React Native和Native间的通信实践</a></li>
-<li><a href="https://linkrober.github.io/bookshelf/2017/10/rctrootviewrctbridge%E5%81%9A%E4%BA%86%E4%BB%80%E4%B9%88/">RCTRootView、RCTBridge做了什么</a></li>
-<li><a href="https://linkrober.github.io/bookshelf/2017/12/native%E5%92%8Cjs%E9%80%9A%E4%BF%A1%E6%A6%82%E8%BF%B0/">Object-C和JS通信概述</a></li>
-</ul>
-
-<p></p>
-      <p>
-        <a href="https://linkrober.github.io/bookshelf/2017/10/react-native%E5%A6%82%E4%BD%95%E9%9B%86%E6%88%90%E5%88%B0%E7%8E%B0%E6%9C%89%E9%A1%B9%E7%9B%AE%E4%B8%AD/" class="postShorten-excerpt_link link">阅读全文</a>
-        
-      </p>
-    </div>
-  </div>
-  
-    <a href="https://linkrober.github.io/bookshelf/2017/10/react-native%E5%A6%82%E4%BD%95%E9%9B%86%E6%88%90%E5%88%B0%E7%8E%B0%E6%9C%89%E9%A1%B9%E7%9B%AE%E4%B8%AD/">
-      <div class="postShorten-thumbnailimg">
-        <img alt="" itemprop="image" src="https://LinkRober.github.io/rn_image.jpg"/>
       </div>
-    </a>
-  
-</article>
-
-            
-            
-
-          </section>
-        
-        
-      </div>
+      <div id="share-options-bar" class="share-options-bar" data-behavior="4">
+  <i id="btn-close-shareoptions" class="fa fa-close"></i>
+  <ul class="share-options">
+    
+  </ul>
+</div>
+<div id="share-options-mask" class="share-options-mask"></div>
     </div>
     
     <div id="about">
@@ -904,6 +1128,32 @@ $(document).ready(function() {
   });
 });
 </script>
+
+  
+    
+      <script>
+        var disqus_config = function () {
+          this.page.url = 'https:\/\/linkrober.github.io\/bookshelf\/2021\/06\/ios%E4%B8%AD%E7%9A%84%E6%96%B9%E6%B3%95%E7%BC%96%E7%A0%81\/';
+          
+            this.page.identifier = '\/2021\/06\/ios%E4%B8%AD%E7%9A%84%E6%96%B9%E6%B3%95%E7%BC%96%E7%A0%81\/'
+          
+        };
+        (function() {
+          
+          
+          if (window.location.hostname == "localhost") {
+            return;
+          }
+          var d = document, s = d.createElement('script');
+          var disqus_shortname = 'dongerqian';
+          s.src = '//' + disqus_shortname + '.disqus.com/embed.js';
+
+          s.setAttribute('data-timestamp', +new Date());
+          (d.head || d.body).appendChild(s);
+        })();
+      </script>
+    
+  
 
 
 
